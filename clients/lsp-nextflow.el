@@ -31,7 +31,7 @@
 (defgroup lsp-nextflow nil
   "LSP support for nextflow, using nextflow-language-server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/nextflow-io/vscode-language-nextflow")
+  :link '(url-link "https://github.com/nextflow-io/language-server")
   :package-version `(lsp-mode . "8.0.0"))
 
 (defcustom lsp-nextflow-java-path "java"
@@ -45,58 +45,48 @@
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-nextflow-extension-name
-  (format "nextflow-%s.vsix" lsp-nextflow-version)
-  "File name of the extension file from language server."
-  :type 'string
-  :group 'lsp-nextflow
-  :package-version '(lsp-mode . "8.0.0"))
-
 (defcustom lsp-nextflow-server-download-url
-  (format "https://github.com/nextflow-io/vscode-language-nextflow/releases/download/v%s/%s"
-          lsp-nextflow-version lsp-nextflow-extension-name)
+  (format "https://github.com/nextflow-io/language-server/releases/download/v%s/language-server-all.jar"
+          lsp-nextflow-version)
   "Automatic download url for lsp-nextflow."
   :type 'string
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-nextflow-server-store-path
-  (f-join lsp-server-install-dir "nf-ls")
+  (f-join lsp-server-install-dir "nextflow-language-server.jar")
   "The path to the file in which `lsp-nextflow' will be stored."
   :type 'file
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "8.0.0"))
 
-(defun lsp-nextflow--extension-path ()
-  "Return full path of the downloaded extension."
-  (f-join lsp-nextflow-server-store-path lsp-nextflow-extension-name))
-
-(defun lsp-nextflow--extension-dir ()
-  "Return Nextflow extension path."
-  (f-join lsp-nextflow-server-store-path "extension"))
-
-(defun lsp-nextflow--server-command ()
+(defun lsp-nextflow-server-command ()
   "Startup command for Nextflow language server."
-  `("java" "-jar" (f-join lsp-nextflow-language-server-install-dir "extension/bin/language-server-all.jar")))
+  `("java" "-jar" lsp-nextflow-server-store-path))
 
-(lsp-dependency
- 'nf-ls
- '(:system "nf-ls")
- `(:download :url lsp-nextflow-server-download-url
-   :decompress :zip
-   :store-path ,(f-no-ext (lsp-nextflow--extension-path))
-   :set-executable? t))
+;; (lsp-dependency 'nextflow-lsp
+;;                 `(:download :url lsp-nextflow-server-download-url
+;;                   :decompress :zip
+;;                   :store-path lsp-nextflow-server-store-path
+;;                   :set-executable? t)
+;;                 '(:system "nextflow-lsp"))
+
+(lsp-dependency 'nextflow-lsp
+                '(:system lsp-nextflow-server-store-path)
+                `(:download :url lsp-nextflow-server-download-url
+                  :store-path lsp-nextflow-server-store-path))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
-                   #'lsp-nextflow--server-command
-                   (lambda () (f-exists? (lsp-nextflow--extension-dir))))
+                   #'lsp-nextflow-server-command
+                   (lambda () (f-exists? (lsp-nextflow-server-store-path))))
   :major-modes '(nextflow-mode)
-  :priority -1
-  :server-id 'nextflow-ls
+  :multi-root t
+  ;; :priority -1
+  :server-id 'nextflow-lsp
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'nextflow-ls callback error-callback))))
+                        (lsp-package-ensure 'nextflow-lsp callback error-callback))))
 
 (lsp-consistency-check lsp-nextflow)
 
