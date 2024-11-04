@@ -70,18 +70,6 @@
 ;;                 `(:download :url lsp-nextflow-server-download-url
 ;;                   :store-path lsp-nextflow-server-file))
 
-(lsp-register-client
- (make-lsp-client
-  ;; TODO :download-server-fn (lambda (_client callback error-callback _update?)
-  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))))
-  :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
-  :major-modes '(nextflow-mode)
-  :multi-root t
-  :priority 1
-  :server-id 'nextflow-lsp))
-
-(lsp-consistency-check lsp-nextflow)
-
 ;;
 ;;; Settings
 
@@ -124,6 +112,21 @@
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.suppressFutureWarnings")
+
+;;
+;;; Client
+
+(lsp-register-client
+ (make-lsp-client
+  ;; TODO :download-server-fn (lambda (_client callback error-callback _update?)
+  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))))
+  :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
+  :major-modes '(nextflow-mode)
+  ;; :multi-root t
+  :priority 1
+  :server-id 'nextflow-lsp))
+
+(lsp-consistency-check lsp-nextflow)
 
 (provide 'lsp-nextflow)
 ;;; lsp-nextflow.el ends here
