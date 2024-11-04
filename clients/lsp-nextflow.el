@@ -31,8 +31,7 @@
 (defgroup lsp-nextflow nil
   "LSP support for nextflow, using nextflow-language-server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/nextflow-io/language-server")
-  :package-version `(lsp-mode . "8.0.0"))
+  :link '(url-link "https://github.com/nextflow-io/language-server"))
 
 (defcustom lsp-nextflow-java-path "java"
   "Path of the java executable."
@@ -43,7 +42,7 @@
   "Version of Nextflow language server."
   :type 'string
   :group 'lsp-nextflow
-  :package-version '(lsp-mode . "8.0.0"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-nextflow-server-download-url
   (format "https://github.com/nextflow-io/language-server/releases/download/v%s/language-server-all.jar"
@@ -51,7 +50,7 @@
   "Automatic download url for lsp-nextflow."
   :type 'string
   :group 'lsp-nextflow
-  :package-version '(lsp-mode . "8.0.0"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-nextflow-server-file
   (f-join lsp-server-install-dir "nextflow-language-server.jar")
@@ -59,7 +58,7 @@
   :group 'lsp-nextflow
   :risky t
   :type 'file
-  :package-version '(lsp-mode . "8.0.0"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-nextflow-server-command ()
   "Startup command for Nextflow language server."
@@ -123,7 +122,8 @@
   :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
   :major-modes '(nextflow-mode)
   ;; :multi-root t
-  :priority 1
+  :activation-fn (lsp-activate-on "nextflow")
+  :priority -1
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
