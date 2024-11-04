@@ -124,6 +124,10 @@
   :major-modes '(nextflow-mode)
   ;; :multi-root t
   :priority 1
+  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "nextflow"))))
   :server-id 'nextflow-lsp))
 
 (lsp-consistency-check lsp-nextflow)
