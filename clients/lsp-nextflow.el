@@ -53,40 +53,32 @@
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-nextflow-server-store-path
+(defcustom lsp-nextflow-server-file
   (f-join lsp-server-install-dir "nextflow-language-server.jar")
   "The path to the file in which `lsp-nextflow' will be stored."
-  :type 'file
   :group 'lsp-nextflow
+  :risky t
+  :type 'file
   :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-nextflow-server-command ()
   "Startup command for Nextflow language server."
-  `("java" "-jar" lsp-nextflow-server-store-path))
+  `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
 ;; (lsp-dependency 'nextflow-lsp
+;;                 '(:system lsp-nextflow-server-file)
 ;;                 `(:download :url lsp-nextflow-server-download-url
-;;                   :decompress :zip
-;;                   :store-path lsp-nextflow-server-store-path
-;;                   :set-executable? t)
-;;                 '(:system "nextflow-lsp"))
-
-(lsp-dependency 'nextflow-lsp
-                '(:system lsp-nextflow-server-store-path)
-                `(:download :url lsp-nextflow-server-download-url
-                  :store-path lsp-nextflow-server-store-path))
+;;                   :store-path lsp-nextflow-server-file))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   #'lsp-nextflow-server-command
-                   (lambda () (f-exists? (lsp-nextflow-server-store-path))))
+  ;; TODO :download-server-fn (lambda (_client callback error-callback _update?)
+  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))))
+  :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
   :major-modes '(nextflow-mode)
   :multi-root t
-  ;; :priority -1
-  :server-id 'nextflow-lsp
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'nextflow-lsp callback error-callback))))
+  :priority 1
+  :server-id 'nextflow-lsp))
 
 (lsp-consistency-check lsp-nextflow)
 
