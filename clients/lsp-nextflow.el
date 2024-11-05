@@ -128,6 +128,7 @@
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (lsp-configuration-section "nextflow"))))
+  ;; TODO Handle preview dag
   :server-id 'nextflow-lsp))
 
 (lsp-consistency-check lsp-nextflow)
