@@ -64,10 +64,10 @@
   "Startup command for Nextflow language server."
   `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
-;; (lsp-dependency 'nextflow-lsp
-;;                 '(:system lsp-nextflow-server-file)
-;;                 `(:download :url lsp-nextflow-server-download-url
-;;                   :store-path lsp-nextflow-server-file))
+(lsp-dependency 'nextflow-lsp
+                '(:system lsp-nextflow-server-file)
+                `(:download :url lsp-nextflow-server-download-url
+                  :store-path lsp-nextflow-server-file))
 
 ;;
 ;;; Settings
@@ -117,8 +117,9 @@
 
 (lsp-register-client
  (make-lsp-client
-  ;; TODO :download-server-fn (lambda (_client callback error-callback _update?)
-  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))))
+  ;; FIXME
+  ;; :download-server-fn (lambda (_client callback error-callback _update?)
+  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))
   :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
   :major-modes '(nextflow-mode)
   :multi-root t
