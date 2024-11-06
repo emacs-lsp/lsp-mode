@@ -82,7 +82,8 @@
   :lsp-path "nextflow.debug")
 
 (lsp-defcustom lsp-nextflow-files-exclude [".git" ".nf-test" "work"]
-  "Configure glob patterns for excluding folders from being searched for Nextflow scripts and configuration files."
+  "Configure glob patterns for excluding folders from being searched for
+Nextflow scripts and configuration files."
   :type 'lsp-string-vector
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
@@ -91,14 +92,15 @@
 (lsp-defcustom lsp-nextflow-formatting-harshil-alignment nil
   "Use the [Harshil Alignment™️](https://nf-co.re/docs/contributing/code_editors_and_styling/harshil_alignment) when formatting Nextflow scripts and config files.
 
-  *Note: not all rules are supported yet*"
+*Note: not all rules are supported yet*"
   :type 'boolean
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.formatting.harshilAlignment")
 
 (lsp-defcustom lsp-nextflow-java-home nil
-  "Specifies the folder path to the JDK. Use this setting if the extension cannot find Java automatically."
+  "Specifies the folder path to the JDK. Use this setting if the extension cannot
+find Java automatically."
   :type '(choice (const :tag "Auto" nil)
           (directory :tag "Custom JDK path"))
   :group 'lsp-nextflow
