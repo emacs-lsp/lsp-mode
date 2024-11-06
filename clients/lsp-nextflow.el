@@ -1,5 +1,4 @@
-;;; .local/straight/repos/lsp-mode/clients/lsp-nextflow.el -*- lexical-binding: t; -*-
-
+;;; lsp-nextflow.el --- lsp-mode nextflow integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Edmund Miller
 
