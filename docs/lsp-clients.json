@@ -500,7 +500,7 @@
     "name": "typespec",
     "full-name": "TypeSpec",
     "server-name": "tsp server",
-    "server-url": https://github.com/microsoft/typespec/tree/main/packages/compiler",
+    "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
     "installation": "npm i -g @typespec/compiler",
     "lsp-install-server": "@typespec/compiler",
     "debugger": "Yes (Firefox/Chrome)"
