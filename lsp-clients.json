@@ -678,6 +678,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nextflow",
+    "full-name": "Nextflow",
+    "server-name": "nextflow-language-server",
+    "server-url": "https://github.com/nextflow-io/language-server",
+    "installation-url": "https://github.com/nextflow-io/language-server#build",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
