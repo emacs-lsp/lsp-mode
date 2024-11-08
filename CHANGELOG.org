@@ -22,6 +22,7 @@
   * Fix zls wrong bin path
   * Add support for buf CLI ([[https://github.com/bufbuild/buf/releases/tag/v1.43.0][beta]])
   * Add fennel support
+  * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
