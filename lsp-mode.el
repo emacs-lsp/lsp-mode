@@ -3716,6 +3716,7 @@ disappearing, unset all the variables related to it."
                                                                    :json-false))))))
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    ,@(when lsp-inlay-hint-enable '((inlayHint . ((refreshSupport . :json-false)))))
+                   (diagnostics . ((refreshSupport . :json-false)))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
                                       (didRename . t)
@@ -6953,6 +6954,8 @@ server. WORKSPACE is the active workspace."
                       (when (and lsp-lens-enable
                                  (fboundp 'lsp--lens-on-refresh))
                         (lsp--lens-on-refresh workspace))
+                      nil)
+                     ((equal method "workspace/diagnostic/refresh")
                       nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
