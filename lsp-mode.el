@@ -5797,7 +5797,10 @@ RENDER-ALL - nil if only the signature should be rendered."
               (list :position (point)
                     :background-color (face-attribute 'lsp-signature-posframe :background nil t)
                     :foreground-color (face-attribute 'lsp-signature-posframe :foreground nil t)
-                    :border-color (face-attribute 'font-lock-comment-face :foreground nil t))))
+                    :border-color (face-attribute (if (facep 'child-frame-border)
+                                                      'child-frame-border
+                                                    'internal-border)
+                                                  :background nil t))))
     (posframe-hide " *lsp-signature*")))
 
 (defun lsp--handle-signature-update (signature)
