@@ -5855,6 +5855,11 @@ It will show up only if current point has signature help."
                                     (list lsp-signature-doc-lines))))
   (lsp-signature-activate))
 
+(defface lsp-signature-highlight-function-argument
+  '((t :inherit eldoc-highlight-function-argument))
+  "The face to use to highlight function arguments in signatures."
+  :group 'lsp-mode)
+
 (defun lsp--signature->message (signature-help)
   "Generate eldoc message from SIGNATURE-HELP response."
   (setq lsp--signature-last signature-help)
@@ -5900,7 +5905,7 @@ It will show up only if current point has signature help."
                      (end (if (stringp selected-param-label)
                               (+ start (length selected-param-label))
                             (cl-second selected-param-label))))
-          (add-face-text-property start end 'eldoc-highlight-function-argument nil label)))
+          (add-face-text-property start end 'lsp-signature-highlight-function-argument nil label)))
       (concat prefix label method-docs))))
 
 (defun lsp-signature ()
