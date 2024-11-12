@@ -181,7 +181,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
      lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
-     lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
+     lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint
      lsp-mojo lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
      lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
      lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
@@ -982,7 +982,8 @@ Changes take effect only when a new session is started."
     (nushell-mode . "nushell")
     (nushell-ts-mode . "nushell")
     (meson-mode . "meson")
-    (yang-mode . "yang"))
+    (yang-mode . "yang")
+    (matlab-mode . "matlab"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
