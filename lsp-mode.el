@@ -3775,9 +3775,7 @@ disappearing, unset all the variables related to it."
                                                         (insertReplaceSupport . t)
                                                         (deprecatedSupport . t)
                                                         (resolveSupport
-                                                         . ((properties . ["documentation"
-                                                                           "detail"
-                                                                           "additionalTextEdits"
+                                                         . ((properties . ["additionalTextEdits"
                                                                            "command"
                                                                            "insertTextFormat"
                                                                            "insertTextMode"])))
