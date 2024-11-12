@@ -3773,7 +3773,9 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "detail"
                                                                            "additionalTextEdits"
-                                                                           "command"])))
+                                                                           "command"
+                                                                           "insertTextFormat"
+                                                                           "insertTextMode"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
