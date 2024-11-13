@@ -587,7 +587,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
 (defun lsp--semantic-tokens-as-defined-by-workspace (workspace)
   "Return plist of token-types and token-modifiers defined by WORKSPACE,
 or nil if none are defined."
-  (when-let ((token-capabilities
+  (when-let* ((token-capabilities
               (or
                (-some->
                    (lsp--registered-capability "textDocument/semanticTokens")

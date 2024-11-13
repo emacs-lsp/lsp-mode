@@ -296,7 +296,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                                         :end (&Position :line end-line))) it)
                             ((start . end) (lsp--range-to-region range)))
                       (when (= start end)
-                        (if-let ((region (flymake-diag-region (current-buffer)
+                        (if-let* ((region (flymake-diag-region (current-buffer)
                                                               (1+ start-line)
                                                               character)))
                             (setq start (car region)

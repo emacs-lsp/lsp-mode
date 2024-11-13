@@ -94,7 +94,7 @@
                                           (expand-file-name "~/.gitlibs/libs"))
   "LSP clojure dirs that should be considered library folders."
   :group 'lsp-clojure
-  :type 'list)
+  :type '(list string))
 
 (defcustom lsp-clojure-test-tree-position-params nil
   "The optional test tree position params.
@@ -434,7 +434,7 @@ Focus on it if IGNORE-FOCUS? is nil."
 NOTIFICATION is the test tree notification data received from server.
 It updates the test tree view data."
   (when (require 'lsp-treemacs nil t)
-    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+    (when-let* ((buffer (find-buffer-visiting (lsp--uri-to-path uri))))
       (with-current-buffer buffer
         (setq lsp-clojure--test-tree-data notification)
         (when (get-buffer-window lsp-clojure--test-tree-buffer-name)
@@ -593,8 +593,8 @@ Focus on it if IGNORE-FOCUS? is nil."
   (let ((info (lsp-clojure-server-info-raw)))
     (save-match-data
       (when (functionp 'cider-connect-clj)
-        (when-let (port (and (string-match "\"port\":\\([0-9]+\\)" info)
-                             (match-string 1 info)))
+        (when-let* ((port (and (string-match "\"port\":\\([0-9]+\\)" info)
+                              (match-string 1 info))))
           (cider-connect-clj `(:host "localhost"
                                :port ,port)))))))
 
@@ -602,7 +602,7 @@ Focus on it if IGNORE-FOCUS? is nil."
 
 (defun lsp-clojure-semantic-tokens-refresh (&rest _)
   "Force refresh semantic tokens."
-  (when-let ((workspace (and lsp-semantic-tokens-enable
+  (when-let* ((workspace (and lsp-semantic-tokens-enable
                              (lsp-find-workspace 'clojure-lsp (buffer-file-name)))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)

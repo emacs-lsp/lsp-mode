@@ -168,7 +168,7 @@ Information comes from the clang.llvm.org website."
   (url-retrieve (format
                  "https://clang.llvm.org/extra/clang-tidy/checks/%s.html" error-id)
                 (lambda (status)
-                  (if-let ((error-status (plist-get status :error)))
+                  (if-let* ((error-status (plist-get status :error)))
                       (lsp-cpp-flycheck-clang-tidy--explain-error
                        #'insert
                        (format
@@ -185,7 +185,7 @@ Information comes from the clang.llvm.org website."
   "Explain a clang-tidy ERROR by scraping documentation from llvm.org."
   (unless (fboundp 'libxml-parse-html-region)
     (error "This function requires Emacs to be compiled with libxml2"))
-  (if-let ((clang-tidy-error-id (flycheck-error-id error)))
+  (if-let* ((clang-tidy-error-id (flycheck-error-id error)))
       (condition-case err
           (lsp-cpp-flycheck-clang-tidy--show-documentation clang-tidy-error-id)
         (error

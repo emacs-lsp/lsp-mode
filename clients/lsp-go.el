@@ -412,7 +412,7 @@ flake.nix file with:
 
   (use-package nix-sandbox)
   (defun my/nix--lsp-go-wrapper (args)
-    (if-let ((sandbox (nix-current-sandbox)))
+    (if-let* ((sandbox (nix-current-sandbox)))
         (apply `nix-shell-command sandbox args)
       args))
   (setq lsp-go-server-path \"gopls\"

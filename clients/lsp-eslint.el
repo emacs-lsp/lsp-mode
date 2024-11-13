@@ -243,7 +243,7 @@ stored."
 
 (defun lsp--find-eslint ()
   (or
-   (when-let ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
+   (when-let* ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
      (let ((eslint-local-path (f-join workspace-folder "node_modules" ".bin"
                                       (if (eq system-type 'windows-nt) "eslint.cmd" "eslint"))))
        (when (f-exists? eslint-local-path)
@@ -374,7 +374,7 @@ to allow or deny it.")
   (setq lsp-eslint--stored-libraries (lsp--read-from-file lsp-eslint-library-choices-file)))
 
 (lsp-defun lsp-eslint--confirm-local (_workspace (&eslint:ConfirmExecutionParams :library-path) callback)
-  (if-let ((option-alist '(("Always" 4 . t)
+  (if-let* ((option-alist '(("Always" 4 . t)
                            ("Yes" 4 . nil)
                            ("No" 1 . nil)
                            ("Never" 1 . t)))

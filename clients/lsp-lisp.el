@@ -34,7 +34,7 @@
 (defcustom lsp-lisp-active-modes
   '( lisp-mode)
   "List of major mode that work with lisp."
-  :type 'list
+  :type '(list symbol)
   :group 'lsp-lisp)
 
 (defcustom lsp-lisp-alive-port 8006
@@ -49,7 +49,7 @@
 (defun lsp-lisp-alive-start-ls ()
   "Start the alive-lsp."
   (interactive)
-  (when-let ((exe (executable-find "sbcl"))
+  (when-let* ((exe (executable-find "sbcl"))
              ((lsp--port-available "localhost" lsp-lisp-alive-port)))
     (lsp-async-start-process #'ignore #'ignore
                              exe

@@ -41,7 +41,7 @@ This is only for development use."
 (defcustom lsp-cucumber-active-modes
   '( feature-mode)
   "List of major mode that work with Cucumber language server."
-  :type 'list
+  :type '(list symbol)
   :group 'lsp-cucumber)
 
 (lsp-defcustom lsp-cucumber-features

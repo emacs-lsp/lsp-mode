@@ -161,7 +161,7 @@ creates another process connecting to the named pipe it specifies."
             (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn process-name stderr-buf)))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
-      (when-let ((stderr-buffer (get-buffer stderr-buf)))
+      (when-let* ((stderr-buffer (get-buffer stderr-buf)))
         (with-current-buffer stderr-buffer
           ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
           (special-mode))
@@ -186,7 +186,7 @@ creates another process connecting to the named pipe it specifies."
                                    uri)))
                     (concat "#" target))))
          (file-name (if (and type (not (string= type "file")))
-                        (if-let ((handler (lsp--get-uri-handler type)))
+                        (if-let* ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
                           uri)
                       ;; `url-generic-parse-url' is buggy on windows:
@@ -271,7 +271,7 @@ Assumes it was installed with the server install function."
   (let* ((is-x64 (string-match-p (rx (or "x86_64" "aarch64")) system-configuration))
          (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64)))
          (is-arm (string-match-p (rx (or "arm" "aarch")) system-configuration)))
-    (if-let ((platform-name (cond
+    (if-let* ((platform-name (cond
                              ((eq system-type 'gnu/linux) "linux")
                              ((eq system-type 'darwin) "osx")
                              ((eq system-type 'windows-nt) "win")))
