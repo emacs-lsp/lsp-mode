@@ -157,7 +157,8 @@ caching purposes.")
    lsp-headerline-arrow
    (setq lsp-headerline-arrow (let ((all-the-icons-scale-factor 1.0)
                                     (all-the-icons-default-adjust 0))
-                                (lsp-icons-all-the-icons-material-icon
+                                (lsp-icons-all-the-icons-icon
+                                 'material
                                  "chevron_right"
                                  'lsp-headerline-breadcrumb-separator-face
                                  ">"
