@@ -118,6 +118,7 @@ nav:
     - Move: page/lsp-move.md
     - MDX: page/lsp-mdx.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
+    - Nextflow: page/lsp-nextflow.md
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
     - Nix (nixd-lsp): page/lsp-nix-nixd.md
@@ -173,6 +174,7 @@ nav:
     - TOML: page/lsp-toml.md
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
+    - TypeSpec: page/lsp-typespec.md
     - V: page/lsp-v.md
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md

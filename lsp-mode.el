@@ -182,14 +182,14 @@ As defined by the Language Server Protocol 3.16."
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
      lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
      lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
-     lsp-mojo lsp-move lsp-mssql lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
+     lsp-mojo lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
      lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
      lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
      lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roslyn lsp-rubocop lsp-ruby-lsp
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-v
+     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
      lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl
      lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
@@ -796,6 +796,7 @@ Changes take effect only when a new session is started."
     ("\\.svelte$" . "svelte")
     ("\\.toml\\'" . "toml")
     ("\\.ts$" . "typescript")
+    ("\\.tsp$" . "typespec")
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
     ("\\.vue$" . "vue")
@@ -835,6 +836,7 @@ Changes take effect only when a new session is started."
     (java-ts-mode . "java")
     (jdee-mode . "java")
     (groovy-mode . "groovy")
+    (nextflow-mode . "nextflow")
     (python-mode . "python")
     (python-ts-mode . "python")
     (cython-mode . "python")
@@ -890,6 +892,7 @@ Changes take effect only when a new session is started."
     (js-ts-mode . "javascript")
     (typescript-mode . "typescript")
     (typescript-ts-mode . "typescript")
+    (typespec-mode . "typespec")
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
@@ -3715,6 +3718,7 @@ disappearing, unset all the variables related to it."
                                                                    :json-false))))))
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    ,@(when lsp-inlay-hint-enable '((inlayHint . ((refreshSupport . :json-false)))))
+                   (diagnostics . ((refreshSupport . :json-false)))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
                                       (didRename . t)
@@ -3769,7 +3773,9 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "detail"
                                                                            "additionalTextEdits"
-                                                                           "command"])))
+                                                                           "command"
+                                                                           "insertTextFormat"
+                                                                           "insertTextMode"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
@@ -5795,7 +5801,10 @@ RENDER-ALL - nil if only the signature should be rendered."
               (list :position (point)
                     :background-color (face-attribute 'lsp-signature-posframe :background nil t)
                     :foreground-color (face-attribute 'lsp-signature-posframe :foreground nil t)
-                    :border-color (face-attribute 'font-lock-comment-face :foreground nil t))))
+                    :border-color (face-attribute (if (facep 'child-frame-border)
+                                                      'child-frame-border
+                                                    'internal-border)
+                                                  :background nil t))))
     (posframe-hide " *lsp-signature*")))
 
 (defun lsp--handle-signature-update (signature)
@@ -5853,6 +5862,11 @@ It will show up only if current point has signature help."
                                     (list lsp-signature-doc-lines))))
   (lsp-signature-activate))
 
+(defface lsp-signature-highlight-function-argument
+  '((t :inherit eldoc-highlight-function-argument))
+  "The face to use to highlight function arguments in signatures."
+  :group 'lsp-mode)
+
 (defun lsp--signature->message (signature-help)
   "Generate eldoc message from SIGNATURE-HELP response."
   (setq lsp--signature-last signature-help)
@@ -5898,7 +5912,7 @@ It will show up only if current point has signature help."
                      (end (if (stringp selected-param-label)
                               (+ start (length selected-param-label))
                             (cl-second selected-param-label))))
-          (add-face-text-property start end 'eldoc-highlight-function-argument nil label)))
+          (add-face-text-property start end 'lsp-signature-highlight-function-argument nil label)))
       (concat prefix label method-docs))))
 
 (defun lsp-signature ()
@@ -6953,6 +6967,8 @@ server. WORKSPACE is the active workspace."
                                  (fboundp 'lsp--lens-on-refresh))
                         (lsp--lens-on-refresh workspace))
                       nil)
+                     ((equal method "workspace/diagnostic/refresh")
+                      nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
     (unless (eq response 'delay-response)
@@ -7070,8 +7086,8 @@ server. WORKSPACE is the active workspace."
         leftovers body-length body chunk)
     (lambda (_proc input)
       (setf chunk (if (s-blank? leftovers)
-                      input
-                    (concat leftovers input)))
+                      (encode-coding-string input 'utf-8-unix t)
+                    (concat leftovers (encode-coding-string input 'utf-8-unix t))))
 
       (let (messages)
         (while (not (s-blank? chunk))

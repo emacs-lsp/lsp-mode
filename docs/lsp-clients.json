@@ -497,6 +497,15 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
+    "name": "typespec",
+    "full-name": "TypeSpec",
+    "server-name": "tsp server",
+    "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
+    "installation": "npm i -g @typespec/compiler",
+    "lsp-install-server": "@typespec/compiler",
+    "debugger": "Yes (Firefox/Chrome)"
+  },
+  {
     "name": "deno",
     "common-group-name": "javascript",
     "full-name": "Javascript/Typescript (deno)",
@@ -675,6 +684,14 @@
     "server-name": "mdx-analyzer",
     "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
     "installation": "npm install -g @mdx-js/language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "nextflow",
+    "full-name": "Nextflow",
+    "server-name": "nextflow-language-server",
+    "server-url": "https://github.com/nextflow-io/language-server",
+    "installation-url": "https://github.com/nextflow-io/language-server#build",
     "debugger": "Not available"
   },
   {
