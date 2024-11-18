@@ -6287,7 +6287,10 @@ A reference is highlighted only if it is visible in a window."
 
   (let* ((wins-visible-pos (-map (lambda (win)
                                    (cons (1- (line-number-at-pos (window-start win) t))
-                                         (1+ (line-number-at-pos (window-end win) t))))
+                                         (1+ (line-number-at-pos (min (window-end win)
+                                                                      (with-current-buffer (window-buffer win)
+                                                                        (buffer-end +1)))
+                                                                 t))))
                                  (get-buffer-window-list nil nil 'visible))))
     (setq lsp--have-document-highlights t)
     (-map
