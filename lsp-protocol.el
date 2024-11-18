@@ -500,6 +500,8 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/completion-trigger-kind-invoked 1)
 (defconst lsp/completion-trigger-kind-trigger-character 2)
 (defconst lsp/completion-trigger-kind-trigger-for-incomplete-completions 3)
+(defconst lsp/inline-completion-trigger-invoked 1 "Explicit invocation as per https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#inlineCompletionTriggerKind")
+(defconst lsp/inline-completion-trigger-automatic 2 "Automatic invocation as per https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#inlineCompletionTriggerKind")
 (defvar lsp/diagnostic-severity-lookup
   [nil Error Warning Information Hint Max])
 (defconst lsp/diagnostic-severity-error 1)
@@ -624,6 +626,8 @@ See `-let' for a description of the destructuring mechanism."
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
  (CompletionOptions nil (:resolveProvider :triggerCharacters :allCommitCharacters))
+ (InlineCompletionItem (:insertText) (:filterText :range :command))
+ (InlineCompletionList (:items) nil)
  (ConfigurationItem nil (:scopeUri :section))
  (CreateFileOptions nil (:ignoreIfExists :overwrite))
  (DeclarationCapabilities nil (:dynamicRegistration :linkSupport))

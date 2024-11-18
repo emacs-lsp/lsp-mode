@@ -1010,6 +1010,7 @@ directory")
                       (with-lsp-workspace wk
                         (lsp:completion-options-resolve-provider?
                          (lsp--capability-for-method "textDocument/completion")))))
+    ("textDocument/inlineCompletion" :capability :inlineCompletionProvider)
     ("textDocument/declaration" :capability :declarationProvider)
     ("textDocument/definition" :capability :definitionProvider)
     ("textDocument/documentColor" :capability :colorProvider)
