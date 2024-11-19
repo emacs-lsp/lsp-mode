@@ -182,7 +182,7 @@ Make sure to make mkdocs.yml updated as well.")
 
 (defun lsp-doc--add-feature-variables (group dest-file)
   "Add FEATURE variables from GROUP to DEST-FILE."
-  (if-let ((variables (lsp-doc--variables group)))
+  (if-let* ((variables (lsp-doc--variables group)))
       (--each variables
         (with-temp-buffer
           (insert-file-contents "../../template/lsp-var.md")
