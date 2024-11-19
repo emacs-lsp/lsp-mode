@@ -36,7 +36,7 @@
   "Command to run the AWK language server."
   :group 'lsp-awk
   :risky t
-  :type 'list)
+  :type '(list string))
 
 (lsp-register-client
  (make-lsp-client

@@ -179,7 +179,7 @@ Limited for performance reasons."
   "User defined schemas that extend default schema store.
 Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
 `lsp-yaml-schema-store-uri'."
-  :type  'list
+  :type  '(list alist)
   :group 'lsp-yaml
   :package-version '(lsp-mode . "9.0.1"))
 

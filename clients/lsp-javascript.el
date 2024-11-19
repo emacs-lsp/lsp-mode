@@ -787,7 +787,7 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
 (defun lsp-javascript-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-clients-typescript-require-resolve (&optional dir)
@@ -891,7 +891,7 @@ finding the executable with variable `exec-path'."
 (defun lsp-clients-flow-tag-file-present-p (file-name)
   "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
-  (if-let ((buffer (find-buffer-visiting file-name)))
+  (if-let* ((buffer (find-buffer-visiting file-name)))
       (with-current-buffer buffer
         (lsp-clients-flow-tag-string-present-p))
     (with-temp-buffer

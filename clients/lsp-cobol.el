@@ -106,7 +106,7 @@ This is only for development use."
 (defun lsp-cobol-start-ls ()
   "Start the COBOL language service."
   (interactive)
-  (when-let ((exe (lsp-cobol--executable))
+  (when-let* ((exe (lsp-cobol--executable))
              ((lsp--port-available "localhost" lsp-cobol-port)))
     (lsp-async-start-process #'ignore #'ignore exe)))
 

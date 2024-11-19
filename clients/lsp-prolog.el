@@ -40,7 +40,7 @@
   "The prolog-lsp server command."
   :group 'lsp-prolog
   :risky t
-  :type 'list)
+  :type '(list string))
 
 (lsp-register-client
  (make-lsp-client

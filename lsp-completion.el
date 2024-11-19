@@ -250,10 +250,10 @@ The CLEANUP-FN will be called to cleanup."
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
-              (when-let ((description (and label-details? (lsp:label-details-description label-details?))))
+              (when-let* ((description (and label-details? (lsp:label-details-description label-details?))))
                 (format " %s" description)))
             (when lsp-completion-show-kind
-              (when-let ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
+              (when-let* ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
@@ -412,7 +412,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
-  (if-let ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
+  (if-let* ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
       (let (matches start end)
         (while (progn (setq start (pop md) end (pop md))
                       (and start end))

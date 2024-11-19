@@ -162,7 +162,7 @@ creates another process connecting to the named pipe it specifies."
             (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn process-name stderr-buf)))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
-      (when-let ((stderr-buffer (get-buffer stderr-buf)))
+      (when-let* ((stderr-buffer (get-buffer stderr-buf)))
         (with-current-buffer stderr-buffer
           ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
           (special-mode))
@@ -187,7 +187,7 @@ creates another process connecting to the named pipe it specifies."
                                    uri)))
                     (concat "#" target))))
          (file-name (if (and type (not (string= type "file")))
-                        (if-let ((handler (lsp--get-uri-handler type)))
+                        (if-let* ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
                           uri)
                       ;; `url-generic-parse-url' is buggy on windows:

@@ -161,7 +161,7 @@ Returns empty array if not found:
  empty array is the usual representation of empty result.
 
 The response is not removed to cover for potential plural requests."
-  (if-let ((response (gethash method scheduled-responses)))
+  (if-let* ((response (gethash method scheduled-responses)))
       response
     []))
 

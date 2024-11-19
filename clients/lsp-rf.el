@@ -34,7 +34,7 @@
 (defcustom lsp-rf-language-server-start-command '("~/.nvm/versions/node/v9.11.2/bin/node" "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js")
   "Path to the server.js file of the rf-intellisense server.
 Accepts a list of strings (path/to/interpreter path/to/server.js)"
-  :type 'list
+  :type '(list string)
   :group 'lsp-rf)
 
 (defcustom lsp-rf-language-server-include-paths []
