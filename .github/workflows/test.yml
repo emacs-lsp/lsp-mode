@@ -44,7 +44,7 @@ jobs:
 
     - name: Setup cmake
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      uses: jwlawson/actions-setup-cmake@v1.4
+      uses: jwlawson/actions-setup-cmake@v2.0
       with:
         cmake-version: '3.18.x'
 
