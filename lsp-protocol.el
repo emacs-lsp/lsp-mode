@@ -115,8 +115,10 @@ Example usage with `dash`.
                                                        (if (special-variable-p key-sym)
                                                            `((,key ,(intern (format "%s_" (symbol-name key-sym)))))
                                                          key-sym)))
-                                                     params)
+                                                   params)
                                 &allow-other-keys)
+                       (ignore ,@(-map (-lambda ((key))
+                                         (intern (substring (symbol-name key) 1))) params))
                        ,(format "Constructs %s from `plist.'
 Allowed params: %s" interface (reverse (-map #'cl-first params)))
                        (ignore ,@(-map (-lambda ((key))
