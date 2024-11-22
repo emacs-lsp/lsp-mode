@@ -33,6 +33,12 @@
   :link '(url-link "https://github.com/bash-lsp/bash-language-server")
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-bash-allowed-shells '(sh bash)
+  "List of allowed `sh-shell` values that LSP will be enabled for."
+  :type '(list symbol)
+  :group 'lsp-bash
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-bash-explainshell-endpoint nil
   "The endpoint to use explainshell.com to answer `onHover' queries.
 See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
@@ -65,10 +71,10 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
 (defvar sh-shell)
 
 (defun lsp-bash-check-sh-shell (&rest _)
-  "Check whether `sh-shell' is sh or bash.
+  "Check whether `sh-shell' is supported.
 
-This prevents the Bash server from being turned on in zsh files."
-  (memq sh-shell '(sh bash)))
+This prevents the Bash server from being turned on for unsupported dialects, e.g. `zsh`."
+  (memq sh-shell lsp-bash-allowed-shells))
 
 (lsp-register-client
  (make-lsp-client
