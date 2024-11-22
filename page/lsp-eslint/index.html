@@ -4328,14 +4328,18 @@ from running.</p>
 <p>Controls whether a warning should be emitted when a file is ignored.</p>
 <hr />
 <h3 id="lsp-eslint-working-directories"><code>lsp-eslint-working-directories</code><a class="headerlink" href="#lsp-eslint-working-directories" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Type:</em> <code>(lsp-repeatable-vector (choice string (plist mode string)))</code></p>
 <p><em>Default:</em> <code>[]</code></p>
-<p>A vector of working directory names to use. Can be a pattern, an absolute path
-or a path relative to the workspace. Examples:
+<p>A vector of working directory names to use.
+Can be a pattern, an absolute path, a path relative to the workspace,
+or a supported mode such as "auto" or "location".
+Examples:
  - "/home/user/abc/"
  - "abc/"
  - (directory "abc") which is equivalent to "abc" above
  - (pattern "abc/*")
+ - (mode "auto")
+ - (mode "location")
 Note that the home directory reference ~/ is not currently supported, use
 /home/[user]/ instead.</p>
 <hr />
