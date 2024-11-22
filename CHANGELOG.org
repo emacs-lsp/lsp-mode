@@ -25,6 +25,7 @@
   * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
   * Add TypeSpec support
   * Add ~lsp-bash-allowed-shells~ to configure supported ~sh-shell~ values.
+  * Add hint about ~activation-fn~ for unsupported buffers.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
