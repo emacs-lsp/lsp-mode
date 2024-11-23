@@ -117,8 +117,6 @@ Example usage with `dash`.
                                                          key-sym)))
                                                    params)
                                 &allow-other-keys)
-                       (ignore ,@(-map (-lambda ((key))
-                                         (intern (substring (symbol-name key) 1))) params))
                        ,(format "Constructs %s from `plist.'
 Allowed params: %s" interface (reverse (-map #'cl-first params)))
                        (ignore ,@(-map (-lambda ((key))
@@ -829,5 +827,4 @@ See `-let' for a description of the destructuring mechanism."
 
 
 (provide 'lsp-protocol)
-
 ;;; lsp-protocol.el ends here
