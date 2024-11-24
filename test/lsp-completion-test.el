@@ -36,11 +36,12 @@
 
 (ert-deftest lsp-completion-test-fuz-score ()
   (cl-labels ((do-test (query cands expected)
-                       (should (equal
-                                (sort cands
-                                      (lambda (l r) (> (lsp-completion--fuz-score query l)
-                                                       (lsp-completion--fuz-score query r))))
-                                expected))))
+                (let ((completion-ignore-case t))
+                  (should (equal
+                           (sort cands
+                                 (lambda (l r) (> (or (lsp-completion--fuz-score query l) 0)
+                                                  (or (lsp-completion--fuz-score query r) 0))))
+                           expected)))))
     (do-test "as"
              '("hashCode() : int"
                "asSubclass(Class<U> clazz) : Class<? extends U>")

@@ -350,7 +350,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                                  (setq fuz-queries
                                                        (plist-put fuz-queries start-point s))
                                                  s)))
-                                (label-len (length label)))
+                                (label-len (length label))
+                                (case-fold-search completion-ignore-case))
                            (when (string-match fuz-query label)
                              (put-text-property 0 label-len 'match-data (match-data) label)
                              (plist-put cand
@@ -701,7 +702,8 @@ Others: CANDIDATES"
   "Calculate fuzzy score for STR with query QUERY.
 The return is nil or in range of (0, inf)."
   (-when-let* ((md (cddr (or (get-text-property 0 'match-data str)
-                             (let ((re (lsp-completion--regex-fuz query)))
+                             (let ((re (lsp-completion--regex-fuz query))
+                                   (case-fold-search completion-ignore-case))
                                (when (string-match re str)
                                  (match-data))))))
                (start (pop md))
@@ -776,19 +778,9 @@ The return is nil or in range of (0, inf)."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
-(defun lsp-completion-passthrough-try-completion (string table pred point)
-  (let* ((completion-ignore-case t)
-         (try (completion-basic-try-completion string table pred point))
-         (newstr (car try))
-         (newpoint (cdr try))
-         (beforepoint (and try (substring newstr 0 newpoint))))
-    (if (and beforepoint
-             (string-prefix-p
-              beforepoint
-              (try-completion "" table pred)
-              t))
-        try
-      (cons string point))))
+(defun lsp-completion-passthrough-try-completion (string _table _pred point)
+  "Passthrough try function, always return the passed STRING and POINT."
+  (cons string point))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
   "Passthrough all completions from TABLE with PRED."
