@@ -95,7 +95,8 @@
 ;;;###autoload
 (defface lsp-inline-completion-overlay-face
   '((t :inherit shadow))
-  "Face for the inline code suggestions overlay.")
+  "Face for the inline code suggestions overlay."
+  :group 'lsp-mode)
 
 ;; Local Buffer State
 
@@ -106,20 +107,24 @@
 
 (defcustom lsp-before-inline-completion-hook nil
   "Hooks run before starting code suggestions"
-  :type 'hook)
+  :type 'hook
+  :group 'lsp-mode)
 
 (defcustom lsp-after-inline-completion-hook nil
   "Hooks executed after asking for code suggestions."
-  :type 'hook)
+  :type 'hook
+  :group 'lsp-mode)
 
 ;; TODO: Add parameters to the hooks!
 (defcustom lsp-inline-completion-accepted-hook nil
   "Hooks executed after accepting a code suggestion."
-  :type 'hook)
+  :type 'hook
+  :group 'lsp-mode)
 
 (defcustom lsp-inline-completion-shown-hook nil
   "Hooks executed after showing a suggestion."
-  :type 'hook)
+  :type 'hook
+  :group 'lsp-mode)
 
 (defsubst lsp-inline-completion--overlay-visible ()
   "Return whether the `overlay' is avaiable."
@@ -184,7 +189,7 @@
   (-let* ((suggestion
            (elt lsp-inline-completion--items
                 lsp-inline-completion--current))
-          ((&InlineCompletionItem? :insert-text :filter-text? :range? :command?) suggestion)
+          ((&InlineCompletionItem? :insert-text :range?) suggestion)
           ((&RangeToPoint :start :end) range?)
           (start-point (or start (point)))
           (showing-at-eol (save-excursion
@@ -218,8 +223,7 @@
 
       (setq display-str (substring propertizedText 0 1))
       (setq after-str (substring propertizedText 1))
-      (setq target-position beg)
-      )
+      (setq target-position beg))
 
     (overlay-put ov 'display display-str)
     (overlay-put ov 'after-string after-str)
@@ -236,7 +240,7 @@
 
   (lsp-inline-completion--clear-overlay)
   (-let* ((suggestion (elt lsp-inline-completion--items lsp-inline-completion--current))
-          ((&InlineCompletionItem? :insert-text :filter-text? :range? :command?) suggestion)
+          ((&InlineCompletionItem? :insert-text :range? :command?) suggestion)
           ((kind . text) (cond
                           ((lsp-markup-content? insert-text)
                            (cons 'snippet (lsp:markup-content-value insert-text) ))
@@ -276,6 +280,7 @@
     ;; hooks
     (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
 
+;;;###autoload
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay"
   (interactive)
