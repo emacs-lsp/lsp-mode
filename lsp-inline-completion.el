@@ -267,7 +267,7 @@
 
     ;; If a template, format it -- keep track of the end position!
     (when (eq kind 'snippet)
-      (let ((end-marker (set-marker (make-marker))))
+      (let ((end-marker (set-marker (make-marker) (point))))
         (lsp--expand-snippet (buffer-substring text-insert-start text-insert-end)
                              text-insert-start
                              text-insert-end)
