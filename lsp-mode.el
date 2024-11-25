@@ -4274,6 +4274,10 @@ yet."
                  (lsp-feature? "textDocument/inlayHint"))
         (lsp-inlay-hints-mode))
 
+      (when (and lsp-inline-completion-enable
+                 (lsp-feature? "textDocument/inlineCompletion"))
+        (lsp-inline-completion-mode))
+
       (when (and lsp-enable-dap-auto-configure
                  (functionp 'dap-mode))
         (dap-auto-configure-mode 1)))
@@ -5430,9 +5434,9 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
               (lsp-help-mode)
               (with-help-window lsp-help-buf-name
                 (insert
-		 (mapconcat 'string-trim-right
-			    (split-string (lsp--render-on-hover-content contents t) "\n")
-			    "\n"))))
+         (mapconcat 'string-trim-right
+                (split-string (lsp--render-on-hover-content contents t) "\n")
+                "\n"))))
             (run-mode-hooks)))
       (lsp--info "No content at point."))))
 
@@ -9937,6 +9941,46 @@ string."
     (remove-hook 'lsp-on-idle-hook #'lsp--update-inlay-hints t)
     (setf window-scroll-functions
           (delete #'lsp--update-inlay-hints-scroll-function window-scroll-functions)))))
+
+
+;; Inline Completions
+(defcustom lsp-inline-completion-enable t
+  "If non-nil it will enable inline completions on idle."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-inline-completion-idle-delay 2
+  "The number of seconds before trying to fetch inline completions, when
+lsp-inline-completion-mode is active"
+  :type 'number)
+
+(defvar-local lsp-inline-completion--idle-timer nil
+  "The idle timer used by lsp-inline-completion-mode")
+
+(defun lsp-inline-completion--after-change (&rest args)
+  (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
+    (when lsp-inline-completion--idle-timer
+      (cancel-timer lsp-inline-completion--idle-timer))
+    (setq lsp-inline-completion--idle-timer
+          (run-with-timer lsp-inline-completion-idle-delay
+                          nil
+                          #'lsp-inline-completion-display
+                          'implicit))))
+
+(define-minor-mode lsp-inline-completion-mode
+  "Mode automatically displaying inline completions."
+  :lighter nil
+  (cond
+   ((and lsp-inline-completion-mode lsp--buffer-workspaces)
+    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+   (t
+    (when lsp-inline-completion--idle-timer
+      (cancel-timer lsp-inline-completion--idle-timer))
+
+    (lsp-inline-completion-cancel)
+
+    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
 
 
