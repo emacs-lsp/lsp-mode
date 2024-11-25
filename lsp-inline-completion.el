@@ -88,7 +88,7 @@
     (define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
     (define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
     (define-key map [mouse-movement] #'ignore)
-    (define-key map [t] #'lsp-inline-completion-cancel)
+    (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
   "Keymap active when showing inline code suggestions")
 
@@ -258,13 +258,24 @@
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay"
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
-    (error "Not showing suggestions"))
+  (when (lsp-inline-completion--overlay-visible)
 
-  (lsp-inline-completion--clear-overlay)
+    (lsp-inline-completion--clear-overlay)
 
-  (when lsp-inline-completion--start-point
-    (goto-char lsp-inline-completion--start-point)))
+    (when lsp-inline-completion--start-point
+      (goto-char lsp-inline-completion--start-point))))
+
+(defun lsp-inline-completion-cancel-with-input (event &optional arg)
+  "Cancel the inline completion and executes whatever event was received"
+  (interactive (list last-input-event current-prefix-arg))
+
+  (lsp-inline-completion-cancel)
+
+  (let ((command (lookup-key (current-global-map) (vector event)))
+        (current-prefix-arg current-prefix-arg))
+
+    (when (commandp command)
+      (call-interactively command))))
 
 (defun lsp-inline-completion-next ()
   "Display the next inline completion"
