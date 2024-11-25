@@ -327,10 +327,12 @@
 
   (if-let* ((items (lsp-inline-completion-get-items implicit)))
       (progn
+        (lsp-inline-completion--clear-overlay)
         (setq lsp-inline-completion--items items)
         (setq lsp-inline-completion--current 0)
         (setq lsp-inline-completion--start-point (point))
         (lsp-inline-completion-show-overlay))
-    (message "No Suggestions!")))
+    (unless implicit
+      (message "No Suggestions!"))))
 
 (provide 'lsp-inline-completion)
