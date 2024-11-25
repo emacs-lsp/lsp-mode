@@ -248,7 +248,10 @@
           ((start . end) (when range?
                            (-let (((&RangeToPoint :start :end) range?)) (cons start end))))
           (text-insert-start (or start lsp-inline-completion--start-point))
-          text-insert-end)
+          text-insert-end
+          (completion-is-substr (string-equal
+                                 (buffer-substring text-insert-start lsp-inline-completion--start-point)
+                                 (substring text 0 (- lsp-inline-completion--start-point text-insert-start)))))
 
     (when text-insert-start
       (goto-char text-insert-start))
@@ -275,7 +278,9 @@
     (when command?
       (lsp--execute-command command?))
 
-    (goto-char text-insert-start)
+    (if completion-is-substr
+        (goto-char lsp-inline-completion--start-point)
+      (goto-char text-insert-start))
 
     ;; hooks
     (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
