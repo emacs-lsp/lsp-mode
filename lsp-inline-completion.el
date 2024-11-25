@@ -198,12 +198,33 @@
           (propertizedText (concat
                             (buffer-substring beg start-point)
                             (propertize text 'face 'lsp-inline-completion-overlay-face)))
-          (ov (lsp-inline-completion--get-overlay  beg end-point)))
+          (ov (lsp-inline-completion--get-overlay beg end-point))
+          (completion-is-substr (string-equal
+                                 (buffer-substring beg lsp-inline-completion--start-point)
+                                 (substring propertizedText 0 (- lsp-inline-completion--start-point beg))))
+          display-str after-str target-position)
+
     (goto-char beg)
 
-    (put-text-property 0 1 'cursor t propertizedText)
-    (overlay-put ov 'display (substring propertizedText 0 1))
-    (overlay-put ov 'after-string (substring propertizedText 1))
+    (put-text-property 0 (length propertizedText) 'cursor t propertizedText)
+
+    (if completion-is-substr
+        (progn
+          ;; Show the prefix as `display'
+          (setq display-str (substring propertizedText 0 (- lsp-inline-completion--start-point beg)))
+          (setq after-str (substring propertizedText (- lsp-inline-completion--start-point beg) nil))
+          (setq target-position lsp-inline-completion--start-point))
+
+
+      (setq display-str (substring propertizedText 0 1))
+      (setq after-str (substring propertizedText 1))
+      (setq target-position beg)
+      )
+
+    (overlay-put ov 'display display-str)
+    (overlay-put ov 'after-string after-str)
+
+    (goto-char target-position)
 
     (run-hooks 'lsp-inline-completion-shown-hook)))
 
