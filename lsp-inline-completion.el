@@ -30,6 +30,7 @@
 
 (require 'lsp-mode)
 (require 'dash)
+(require 'cl-lib)
 
 (defun lsp-inline-completion--trigger-kind (implicit)
   (plist-put (lsp--text-document-position-params)
@@ -54,7 +55,7 @@
 
         ;; Response may or may not come inside an :items. Parse each
         ;; response to ensure compatibility.
-        (map 'list (lambda (elt)
+        (cl-map 'list (lambda (elt)
                      (if (lsp-inline-completion-list? elt)
                          (lsp:inline-completion-list-items elt)
                        elt))
