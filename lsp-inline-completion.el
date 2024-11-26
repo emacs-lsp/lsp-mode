@@ -32,6 +32,10 @@
 (require 'dash)
 (require 'cl-lib)
 
+(declare-function company--active-p "ext:company")
+(declare-function company-cancel "ext:company" (&optional result))
+(declare-function company-manual-begin "ext:company")
+
 (defun lsp-inline-completion--trigger-kind (implicit)
   (plist-put (lsp--text-document-position-params)
              :context (ht ("triggerKind"
