@@ -156,7 +156,7 @@
 
   (unless (and lsp-inline-completion--items
                (numberp lsp-inline-completion--current))
-    (error "No completions to show 1"))
+    (error "No completions to show"))
 
   (let ((message-log-max nil))
     (message (concat "Completion "
@@ -182,7 +182,7 @@
   "Makes the suggestion overlay visible"
   (unless (and lsp-inline-completion--items
                (numberp lsp-inline-completion--current))
-    (error "No completions to show 2"))
+    (error "No completions to show"))
 
   (lsp-inline-completion--clear-overlay)
 
