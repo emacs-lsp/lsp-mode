@@ -308,7 +308,7 @@
 
   (lsp-inline-completion-cancel)
 
-  (let ((command (lookup-key (current-global-map) (vector event)))
+  (let ((command (lookup-key (current-active-maps) (vector event)))
         (current-prefix-arg arg))
 
     (when (commandp command)
