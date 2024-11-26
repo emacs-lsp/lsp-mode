@@ -105,6 +105,7 @@
 (defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed")
 (defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions")
 (defvar-local lsp-inline-completion--start-point nil "The point where the completion started")
+(defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown")
 
 (defcustom lsp-before-inline-completion-hook nil
   "Hooks run before starting code suggestions"
@@ -186,6 +187,13 @@
     (error "No completions to show 2"))
 
   (lsp-inline-completion--clear-overlay)
+
+  (setq lsp-inline-completion--showing-company
+        (and (bound-and-true-p company-mode)
+             (company--active-p)))
+
+  (when lsp-inline-completion--showing-company
+    (company-cancel))
 
   (-let* ((suggestion
            (elt lsp-inline-completion--items
@@ -295,7 +303,10 @@
     (lsp-inline-completion--clear-overlay)
 
     (when lsp-inline-completion--start-point
-      (goto-char lsp-inline-completion--start-point))))
+      (goto-char lsp-inline-completion--start-point))
+
+    (when lsp-inline-completion--showing-company
+      (company-manual-begin))))
 
 (defun lsp-inline-completion-cancel-with-input (event &optional arg)
   "Cancel the inline completion and executes whatever event was received"
