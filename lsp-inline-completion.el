@@ -40,32 +40,26 @@
                              lsp/inline-completion-trigger-invoked)))))
 
 ;;;###autoload
-(defun lsp-inline-completion-get-items (&optional implicit)
+(defun lsp-inline-completion-parse-items (response)
   "Calls textDocument_inlineCompletion and returns a list of InlineCompletionItem's"
 
-  (lsp--spinner-start)
-  (unwind-protect
-      (-some-->
-          (lsp-request-while-no-input "textDocument/inlineCompletion"
-                                      (lsp-inline-completion--trigger-kind implicit))
-        ;; Kludge to workaround multiple backends responding -- it may
-        ;; come as a list (multiple servers) or as a single ht (single
-        ;; server). Promote it to list and move on
-        (if (ht-p it) (list it) it)
+  (-some-->
+      response
+    ;; Kludge to workaround multiple backends responding -- it may
+    ;; come as a list (multiple servers) or as a single ht (single
+    ;; server). Promote it to list and move on
+    (if (ht-p it) (list it) it)
 
-        ;; Response may or may not come inside an :items. Parse each
-        ;; response to ensure compatibility.
-        (cl-map 'list (lambda (elt)
-                     (if (lsp-inline-completion-list? elt)
-                         (lsp:inline-completion-list-items elt)
-                       elt))
-             it)
+    ;; Response may or may not come inside an :items. Parse each
+    ;; response to ensure compatibility.
+    (cl-map 'list (lambda (elt)
+                    (if (lsp-inline-completion-list? elt)
+                        (lsp:inline-completion-list-items elt)
+                      elt))
+            it)
 
-        ;; Join everything into a single list
-        (apply 'seq-concatenate `(list ,@it)))
-
-    ;; Clean up
-    (lsp--spinner-stop)))
+    ;; Join everything into a single list
+    (apply 'seq-concatenate `(list ,@it))))
 
 
 ;;;;;; Default UI -- overlay
@@ -347,14 +341,21 @@
   "Displays the inline completions overlay"
   (interactive)
 
-  (if-let* ((items (lsp-inline-completion-get-items implicit)))
-      (progn
-        (lsp-inline-completion--clear-overlay)
-        (setq lsp-inline-completion--items items)
-        (setq lsp-inline-completion--current 0)
-        (setq lsp-inline-completion--start-point (point))
-        (lsp-inline-completion-show-overlay))
-    (unless implicit
-      (message "No Suggestions!"))))
+  (lsp--spinner-start)
+  (unwind-protect
+      (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
+                                                  (lsp-inline-completion--trigger-kind implicit)))
+                (items (lsp-inline-completion-parse-items resp)))
+
+          (progn
+            (lsp-inline-completion--clear-overlay)
+            (setq lsp-inline-completion--items items)
+            (setq lsp-inline-completion--current 0)
+            (setq lsp-inline-completion--start-point (point))
+            (lsp-inline-completion-show-overlay))
+        (unless implicit
+          (message "No Suggestions!")))
+    ;; Clean up
+    (lsp--spinner-stop)))
 
 (provide 'lsp-inline-completion)
