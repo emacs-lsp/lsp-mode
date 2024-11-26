@@ -9976,6 +9976,15 @@ string."
 
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
+(defcustom lsp-inline-completion-inhibit-predicates nil
+  "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion"
+  :type '(repeat function)
+  :group 'lsp-mode)
+
+(defun lsp-inline-completion--maybe-display ()
+  (unless (--any (funcall it) lsp-inline-completion-inhibit-predicates)
+    (lsp-inline-completion-display 'implicit)))
+
 (defun lsp-inline-completion--after-change (&rest _)
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
     (when lsp-inline-completion--idle-timer
@@ -9983,8 +9992,7 @@ string."
     (setq lsp-inline-completion--idle-timer
           (run-with-timer lsp-inline-completion-idle-delay
                           nil
-                          #'lsp-inline-completion-display
-                          'implicit))))
+                          #'lsp-inline-completion--maybe-display))))
 
 
 
