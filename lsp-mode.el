@@ -227,17 +227,17 @@ Takes a value accepted by `spinner-start'."
 
 (define-error 'lsp-error "Unknown lsp-mode error")
 (define-error 'lsp-empty-response-error
-  "Empty response from the language server" 'lsp-error)
+              "Empty response from the language server" 'lsp-error)
 (define-error 'lsp-timed-out-error
-  "Timed out while waiting for a response from the language server" 'lsp-error)
+              "Timed out while waiting for a response from the language server" 'lsp-error)
 (define-error 'lsp-capability-not-supported
-  "Capability not supported by the language server" 'lsp-error)
+              "Capability not supported by the language server" 'lsp-error)
 (define-error 'lsp-file-scheme-not-supported
-  "Unsupported file scheme" 'lsp-error)
+              "Unsupported file scheme" 'lsp-error)
 (define-error 'lsp-client-already-exists-error
-  "A client with this server-id already exists" 'lsp-error)
+              "A client with this server-id already exists" 'lsp-error)
 (define-error 'lsp-no-code-actions
-  "No code actions" 'lsp-error)
+              "No code actions" 'lsp-error)
 
 (defcustom lsp-auto-guess-root nil
   "Automatically guess the project root using projectile/project.
@@ -519,7 +519,7 @@ supported by the language server."
   :group 'lsp-mode)
 
 (defcustom lsp-eldoc-render-all nil
-  "Display all of the info returned by document/onHover.
+  "Display all of the info returned by textDocument/hover.
 If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
@@ -1474,9 +1474,9 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                         ((rx "aarch64-") 'arm64)
                                         (_ 'x64)))
                                      ('gnu/linux
-                                       (pcase system-configuration
-                                         ((rx bol "x86_64") 'x64)
-                                         ((rx bol (| "i386" "i886")) 'x32)))
+                                      (pcase system-configuration
+                                        ((rx bol "x86_64") 'x64)
+                                        ((rx bol (| "i386" "i886")) 'x32)))
                                      (_
                                       (pcase system-configuration
                                         ((rx bol "x86_64") 'x64)
@@ -1868,9 +1868,9 @@ This set of allowed chars is enough for hexifying local file paths.")
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
           (--> path
-            (expand-file-name it)
-            (or (file-remote-p it 'localname t) it)
-            (url-hexify-string it lsp--url-path-allowed-chars))))
+               (expand-file-name it)
+               (or (file-remote-p it 'localname t) it)
+               (url-hexify-string it lsp--url-path-allowed-chars))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
@@ -2356,25 +2356,25 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq lsp--cached-folding-ranges
             (cons (buffer-chars-modified-tick)
                   (--> ranges
-                    (seq-map (-lambda ((range &as
-                                              &FoldingRange :start-line
-                                              :start-character?
-                                              :end-line
-                                              :end-character?
-                                              :kind?))
-                               (make-lsp--folding-range
-                                :beg (ht-get line-col-to-point-map
-                                             (cons start-line start-character?))
-                                :end (ht-get line-col-to-point-map
-                                             (cons end-line end-character?))
-                                :kind kind?))
-                             it)
-                    (seq-filter (lambda (folding-range)
-                                  (< (lsp--folding-range-beg folding-range)
-                                     (lsp--folding-range-end folding-range)))
+                       (seq-map (-lambda ((range &as
+                                                 &FoldingRange :start-line
+                                                 :start-character?
+                                                 :end-line
+                                                 :end-character?
+                                                 :kind?))
+                                  (make-lsp--folding-range
+                                   :beg (ht-get line-col-to-point-map
+                                                (cons start-line start-character?))
+                                   :end (ht-get line-col-to-point-map
+                                                (cons end-line end-character?))
+                                   :kind kind?))
                                 it)
-                    (seq-into it 'list)
-                    (delete-dups it))))))
+                       (seq-filter (lambda (folding-range)
+                                     (< (lsp--folding-range-beg folding-range)
+                                        (lsp--folding-range-end folding-range)))
+                                   it)
+                       (seq-into it 'list)
+                       (delete-dups it))))))
   (cdr lsp--cached-folding-ranges))
 
 (defun lsp--get-nested-folding-ranges ()
@@ -2563,16 +2563,16 @@ BINDINGS is a list of (key def desc cond)."
        (-partition 4)
        (-mapcat (-lambda ((key def desc cond))
                   `((define-key ,keymap ,key
-                      '(menu-item
-                        ,(format "maybe-%s" def)
-                        ,def
-                        :filter
-                        (lambda (item)
-                          (when (with-current-buffer (or (when (buffer-live-p lsp--describe-buffer)
-                                                           lsp--describe-buffer)
-                                                         (current-buffer))
-                                  ,cond)
-                            item))))
+                                '(menu-item
+                                  ,(format "maybe-%s" def)
+                                  ,def
+                                  :filter
+                                  (lambda (item)
+                                    (when (with-current-buffer (or (when (buffer-live-p lsp--describe-buffer)
+                                                                     lsp--describe-buffer)
+                                                                   (current-buffer))
+                                            ,cond)
+                                      item))))
                     (when (stringp ,key)
                       (setq lsp--binding-descriptions
                             (append lsp--binding-descriptions '(,key ,desc)))))))
@@ -3607,7 +3607,7 @@ disappearing, unset all the variables related to it."
     (mapc (lambda (buf)
             (when (lsp-buffer-live-p buf)
               (lsp-with-current-buffer buf
-                                       (lsp-managed-mode -1))))
+                (lsp-managed-mode -1))))
           buffers)
     (lsp-diagnostics--workspace-cleanup lsp--cur-workspace)))
 
@@ -4206,7 +4206,7 @@ yet."
                                         (point-max)))))
 
 (defun lsp--text-document-did-open ()
-  "`document/didOpen' event."
+  "`textDocument/didOpen' event."
   (run-hooks 'lsp-before-open-hook)
   (when (and lsp-auto-touch-files
              (not (f-exists? (lsp--uri-to-path (lsp--buffer-uri)))))
@@ -5167,25 +5167,25 @@ type Location, LocationLink, Location[] or LocationLink[]."
            (list locations))))
 
   (cl-labels ((get-xrefs-in-file
-               (file-locs)
-               (-let [(filename . matches) file-locs]
-                 (condition-case err
-                     (let ((visiting (find-buffer-visiting filename))
-                           (fn (lambda (loc)
-                                 (lsp-with-filename filename
-                                   (lsp--xref-make-item filename
-                                                        (lsp--location-range loc))))))
-                       (if visiting
-                           (with-current-buffer visiting
-                             (seq-map fn matches))
-                         (when (file-readable-p filename)
-                           (with-temp-buffer
-                             (insert-file-contents-literally filename)
-                             (seq-map fn matches)))))
-                   (error (lsp-warn "Failed to process xref entry for filename '%s': %s"
-                                    filename (error-message-string err)))
-                   (file-error (lsp-warn "Failed to process xref entry, file-error, '%s': %s"
-                                         filename (error-message-string err)))))))
+                (file-locs)
+                (-let [(filename . matches) file-locs]
+                  (condition-case err
+                      (let ((visiting (find-buffer-visiting filename))
+                            (fn (lambda (loc)
+                                  (lsp-with-filename filename
+                                    (lsp--xref-make-item filename
+                                                         (lsp--location-range loc))))))
+                        (if visiting
+                            (with-current-buffer visiting
+                              (seq-map fn matches))
+                          (when (file-readable-p filename)
+                            (with-temp-buffer
+                              (insert-file-contents-literally filename)
+                              (seq-map fn matches)))))
+                    (error (lsp-warn "Failed to process xref entry for filename '%s': %s"
+                                     filename (error-message-string err)))
+                    (file-error (lsp-warn "Failed to process xref entry, file-error, '%s': %s"
+                                          filename (error-message-string err)))))))
 
     (->> locations
          (seq-sort #'lsp--location-before-p)
@@ -5580,7 +5580,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (car (s-lines (s-trim (lsp--render-element contents)))))
 
 (defun lsp--render-on-hover-content (contents render-all)
-  "Render the content received from `document/onHover' request.
+  "Render the content received from `textDocument/hover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
   (cond
@@ -6248,14 +6248,14 @@ perform the request synchronously."
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
   "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
   (--> symbols-informations
-    (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-             (when (lsp-point-in-range? current-position range)
-               (lsp--symbol-information->document-symbol symbol)))
-           it)
-    (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
-                       (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
-               (and (lsp--position-compare b-start-position a-start-position)
-                    (lsp--position-compare a-end-position b-end-position))))))
+       (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
+                (when (lsp-point-in-range? current-position range)
+                  (lsp--symbol-information->document-symbol symbol)))
+              it)
+       (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
+                          (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
+                  (and (lsp--position-compare b-start-position a-start-position)
+                       (lsp--position-compare a-end-position b-end-position))))))
 
 (defun lsp--symbols->document-symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
@@ -6624,15 +6624,15 @@ textDocument/didOpen for the new file."
   (lsp-process-send proc message))
 
 (define-error 'lsp-parse-error
-  "Error parsing message from language server" 'lsp-error)
+              "Error parsing message from language server" 'lsp-error)
 (define-error 'lsp-unknown-message-type
-  "Unknown message type" '(lsp-error lsp-parse-error))
+              "Unknown message type" '(lsp-error lsp-parse-error))
 (define-error 'lsp-unknown-json-rpc-version
-  "Unknown JSON-RPC protocol version" '(lsp-error lsp-parse-error))
+              "Unknown JSON-RPC protocol version" '(lsp-error lsp-parse-error))
 (define-error 'lsp-no-content-length
-  "Content-Length header missing in message" '(lsp-error lsp-parse-error))
+              "Content-Length header missing in message" '(lsp-error lsp-parse-error))
 (define-error 'lsp-invalid-header-name
-  "Invalid header name" '(lsp-error lsp-parse-error))
+              "Invalid header name" '(lsp-error lsp-parse-error))
 
 ;;  id  method
 ;;   x    x     request
@@ -6867,8 +6867,8 @@ server. WORKSPACE is the active workspace."
 (defun lsp--read-json-file (file-path)
   "Read json file."
   (-> file-path
-    (f-read-text)
-    (lsp--read-json)))
+      (f-read-text)
+      (lsp--read-json)))
 
 (defun lsp--parser-on-message (json-data workspace)
   "Called when the parser P read a complete MSG from the server."
@@ -7911,34 +7911,34 @@ are still shown."
   (setf (lsp--client-download-in-progress? client) t)
   (add-to-list 'global-mode-string '(t (:eval (lsp--download-status))))
   (cl-flet ((done
-             (success? &optional error-message)
-             ;; run with idle timer to make sure the lsp command is executed in
-             ;; the main thread, see #2739.
-             (run-with-timer
-              0.0
-              nil
-              (lambda ()
-                (-let [(&lsp-cln 'server-id 'buffers) client]
-                  (setf (lsp--client-download-in-progress? client) nil
-                        (lsp--client-buffers client) nil)
-                  (if success?
-                      (lsp--info "Server %s downloaded, auto-starting in %s buffers." server-id
-                                 (length buffers))
-                    (lsp--error "Server %s install process failed with the following error message: %s.
+              (success? &optional error-message)
+              ;; run with idle timer to make sure the lsp command is executed in
+              ;; the main thread, see #2739.
+              (run-with-timer
+               0.0
+               nil
+               (lambda ()
+                 (-let [(&lsp-cln 'server-id 'buffers) client]
+                   (setf (lsp--client-download-in-progress? client) nil
+                         (lsp--client-buffers client) nil)
+                   (if success?
+                       (lsp--info "Server %s downloaded, auto-starting in %s buffers." server-id
+                                  (length buffers))
+                     (lsp--error "Server %s install process failed with the following error message: %s.
 Check `*lsp-install*' and `*lsp-log*' buffer."
-                                server-id
-                                error-message))
-                  (seq-do
-                   (lambda (buffer)
-                     (when (lsp-buffer-live-p buffer)
-                       (lsp-with-current-buffer buffer
-                         (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
-                                    global-mode-string)
-                         (when success? (lsp)))))
-                   buffers)
-                  (unless (lsp--filter-clients #'lsp--client-download-in-progress?)
-                    (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
-                               global-mode-string)))))))
+                                 server-id
+                                 error-message))
+                   (seq-do
+                    (lambda (buffer)
+                      (when (lsp-buffer-live-p buffer)
+                        (lsp-with-current-buffer buffer
+                          (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
+                                     global-mode-string)
+                          (when success? (lsp)))))
+                    buffers)
+                   (unless (lsp--filter-clients #'lsp--client-download-in-progress?)
+                     (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
+                                global-mode-string)))))))
     (lsp--info "Download %s started." (lsp--client-server-id client))
     (condition-case err
         (funcall
@@ -8065,8 +8065,8 @@ When prefix UPDATE? is t force installation even if the server is present."
                                                                                          (not (null cmd)))
                                                                                        command)
                                                        " ") t
-                                            (lambda (&rest _)
-                                              (generate-new-buffer-name (format "*lsp-install: %s*" name))))
+                                                       (lambda (&rest _)
+                                                         (generate-new-buffer-name (format "*lsp-install: %s*" name))))
       (lsp-installation-buffer-mode +1)
       (view-mode +1)
       (add-hook
