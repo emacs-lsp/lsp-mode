@@ -4,7 +4,7 @@
 
 ;; Author: Rodrigo Kassick
 ;; Keywords: languages
-;; Package-Requires: ((emacs "27.1") (dash "2.18.0") (ht "2.3") (spinner "1.7.3"))
+;; Package-Requires: ((emacs "27.1") (dash "2.18.0") (spinner "1.7.3"))
 ;; Version: 9.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
