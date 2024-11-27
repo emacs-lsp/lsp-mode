@@ -626,8 +626,6 @@ See `-let' for a description of the destructuring mechanism."
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
  (CompletionOptions nil (:resolveProvider :triggerCharacters :allCommitCharacters))
- (InlineCompletionItem (:insertText) (:filterText :range :command))
- (InlineCompletionList (:items) nil)
  (ConfigurationItem nil (:scopeUri :section))
  (CreateFileOptions nil (:ignoreIfExists :overwrite))
  (DeclarationCapabilities nil (:dynamicRegistration :linkSupport))
@@ -823,7 +821,10 @@ See `-let' for a description of the destructuring mechanism."
  ;; 3.17
  (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
  (InlayHintLabelPart (:value) (:tooltip :location :command))
- (InlayHintsParams (:textDocument) (:range)))
+ (InlayHintsParams (:textDocument) (:range))
+ ;; 3.18
+ (InlineCompletionItem (:insertText) (:filterText :range :command))
+ (InlineCompletionList (:items) nil))
 
 ;; 3.17
 (defconst lsp/inlay-hint-kind-type-hint 1)
