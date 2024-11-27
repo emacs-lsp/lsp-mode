@@ -437,7 +437,7 @@ lsp-inline-completion-mode is active"
 (declare-function company--active-p "ext:company")
 (declare-function company-cancel "ext:company" (&optional result))
 (declare-function company-manual-begin "ext:company")
-
+(defvar company--begin-inhibit-commands)
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
   "If the inline completion mode should avoid calling completions when company is active"
   :type 'boolean
