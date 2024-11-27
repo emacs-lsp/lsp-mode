@@ -59,7 +59,7 @@ InlineCompletionItem objects"
 
     ;; A sequence means multiple server may have responded. Iterate over them and normalize
     ((pred sequencep)
-     (let ((item-seq (map 'list #'lsp-inline-completion--parse-items response)))
+     (let ((item-seq (cl-map 'list #'lsp-inline-completion--parse-items response)))
        (apply 'seq-concatenate `(list ,@item-seq))))))
 
 ;;;;;; Default UI -- overlay
