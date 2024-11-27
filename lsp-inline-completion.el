@@ -36,12 +36,15 @@
 (declare-function company-cancel "ext:company" (&optional result))
 (declare-function company-manual-begin "ext:company")
 
-(defun lsp-inline-completion--trigger-kind (implicit)
-  (plist-put (lsp--text-document-position-params)
-             :context (ht ("triggerKind"
-                           (if implicit
-                               lsp/inline-completion-trigger-automatic
-                             lsp/inline-completion-trigger-invoked)))))
+(defun lsp-inline-completion--params (implicit &optional identifier position)
+  "Returns a InlineCompletionParams instance"
+  (lsp-make-inline-completion-params
+   :textDocument (or identifier (lsp--text-document-identifier))
+   :position (or position (lsp--cur-position))
+   :context (lsp-make-inline-completion-context
+             :triggerKind (if implicit
+                              lsp/inline-completion-trigger-automatic
+                            lsp/inline-completion-trigger-invoked))))
 
 ;;;###autoload
 (defun lsp-inline-completion-parse-items (response)
@@ -348,7 +351,7 @@
   (lsp--spinner-start)
   (unwind-protect
       (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
-                                                  (lsp-inline-completion--trigger-kind implicit)))
+                                                  (lsp-inline-completion--params implicit)))
                 (items (lsp-inline-completion-parse-items resp)))
 
           (progn

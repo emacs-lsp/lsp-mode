@@ -823,6 +823,8 @@ See `-let' for a description of the destructuring mechanism."
  (InlayHintLabelPart (:value) (:tooltip :location :command))
  (InlayHintsParams (:textDocument) (:range))
  ;; 3.18
+ (InlineCompletionParams (:textDocument :position :context))
+ (InlineCompletionContext (:triggerKind))
  (InlineCompletionItem (:insertText) (:filterText :range :command))
  (InlineCompletionList (:items) nil))
 
