@@ -57,6 +57,7 @@
 (require 'minibuffer)
 (require 'help-mode)
 (require 'lsp-protocol)
+(require 'lsp-inline-completion)
 
 (defgroup lsp-mode nil
   "Language Server Protocol client."
@@ -68,8 +69,6 @@
 (declare-function yas-expand-snippet "ext:yasnippet")
 (declare-function dap-mode "ext:dap-mode")
 (declare-function dap-auto-configure-mode "ext:dap-mode")
-(declare-function lsp-inline-completion-display "lsp-inline-completion" (&optional implicit))
-(declare-function lsp-inline-completion-cancel "lsp-inline-completion")
 
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
@@ -3694,19 +3693,6 @@ and expand the capabilities section"
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "9.0.0"))
-
-(defcustom lsp-inline-completion-enable t
-  "If non-nil it will enable inline completions on idle."
-  :type 'boolean
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "9.0.1"))
-
-(defcustom lsp-inline-completion-idle-delay 2
-  "The number of seconds before trying to fetch inline completions, when
-lsp-inline-completion-mode is active"
-  :type 'number
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "9.0.1"))
 
 (defun lsp--uninitialize-workspace ()
   "Cleanup buffer state.
@@ -9956,43 +9942,6 @@ string."
     (remove-hook 'lsp-on-idle-hook #'lsp--update-inlay-hints t)
     (setf window-scroll-functions
           (delete #'lsp--update-inlay-hints-scroll-function window-scroll-functions)))))
-
-
-;; Inline Completions
-(defvar-local lsp-inline-completion--idle-timer nil
-  "The idle timer used by lsp-inline-completion-mode")
-
-(define-minor-mode lsp-inline-completion-mode
-  "Mode automatically displaying inline completions."
-  :lighter nil
-  (cond
-   ((and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
-   (t
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
-
-    (lsp-inline-completion-cancel)
-
-    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
-
-(defcustom lsp-inline-completion-inhibit-predicates nil
-  "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion"
-  :type '(repeat function)
-  :group 'lsp-mode)
-
-(defun lsp-inline-completion--maybe-display ()
-  (unless (--any (funcall it) lsp-inline-completion-inhibit-predicates)
-    (lsp-inline-completion-display 'implicit)))
-
-(defun lsp-inline-completion--after-change (&rest _)
-  (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
-    (setq lsp-inline-completion--idle-timer
-          (run-with-timer lsp-inline-completion-idle-delay
-                          nil
-                          #'lsp-inline-completion--maybe-display))))
 
 
 
