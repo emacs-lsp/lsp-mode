@@ -390,9 +390,22 @@ lsp-inline-completion-mode is active"
   :type '(repeat function)
   :group 'lsp-mode)
 
-
 (defvar-local lsp-inline-completion--idle-timer nil
   "The idle timer used by lsp-inline-completion-mode")
+
+(define-minor-mode lsp-inline-completion-mode
+  "Mode automatically displaying inline completions."
+  :lighter nil
+  (cond
+   ((and lsp-inline-completion-mode lsp--buffer-workspaces)
+    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+   (t
+    (when lsp-inline-completion--idle-timer
+      (cancel-timer lsp-inline-completion--idle-timer))
+
+    (lsp-inline-completion-cancel)
+
+    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
 (defun lsp-inline-completion--maybe-display (buffer)
   (when (and (buffer-live-p buffer)
@@ -412,21 +425,6 @@ lsp-inline-completion-mode is active"
                             nil
                             #'lsp-inline-completion--maybe-display
                             buffer)))))
-
-(define-minor-mode lsp-inline-completion-mode
-  "Mode automatically displaying inline completions."
-  :lighter nil
-  (cond
-   ((and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
-   (t
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
-
-    (lsp-inline-completion-cancel)
-
-    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
-
 
 ;;;###autoload
 (add-hook 'lsp-configure-hook (lambda ()
