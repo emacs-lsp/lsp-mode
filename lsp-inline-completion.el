@@ -440,6 +440,7 @@ lsp-inline-completion-mode is active"
 
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
   "If the inline completion mode should avoid calling completions when company is active"
+  :type 'boolean
   :group 'lsp-mode)
 
 (defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown")
