@@ -470,17 +470,19 @@ lsp-inline-completion-mode is active"
     (add-hook 'lsp-inline-completion-before-show-hook #'lsp-inline-completion--company-save-state-and-hide nil t)
     (add-hook 'lsp-inline-completion-cancelled-hook #'lsp-inline-completion--company-restore-state nil t)
     (unless (memq #'lsp-inline-completion-display company--begin-inhibit-commands)
+      (make-variable-buffer-local 'company--begin-inhibit-commands)
       (push #'lsp-inline-completion-display company--begin-inhibit-commands))
     (when (and lsp-inline-completion-mode-inhibit-when-company-active
                (not (memq  #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))
+      (make-variable-buffer-local 'lsp-inline-completion-inhibit-predicates)
       (push #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))
 
    (t
     (remove-hook 'lsp-inline-completion-before-show-hook #'lsp-inline-completion--company-save-state-and-hide t)
     (remove-hook 'lsp-inline-completion-cancelled-hook #'lsp-inline-completion--company-save-state-and-hide t)
     (when (boundp 'company--begin-inhibit-commands)
-      (setq company--begin-inhibit-commands (delq #'lsp-inline-completion-display company--begin-inhibit-commands)))
-    (setq lsp-inline-completion-inhibit-predicates
+      (setq-local company--begin-inhibit-commands (delq #'lsp-inline-completion-display company--begin-inhibit-commands)))
+    (setq-local lsp-inline-completion-inhibit-predicates
           (delq #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))))
 
 (provide 'lsp-inline-completion)
