@@ -46,28 +46,25 @@
                               lsp/inline-completion-trigger-automatic
                             lsp/inline-completion-trigger-invoked))))
 
-;;;###autoload
-(defun lsp-inline-completion-parse-items (response)
-  "Calls textDocument_inlineCompletion and returns a list of InlineCompletionItem's"
+(defun lsp-inline-completion--parse-items (response)
+  "Parses the reponse from the server and returns a list of
+InlineCompletionItem objects"
 
-  (-some-->
-      response
-    ;; Kludge to workaround multiple backends responding -- it may
-    ;; come as a list (multiple servers) or as a single ht (single
-    ;; server). Promote it to list and move on
-    (if (ht-p it) (list it) it)
+  (pcase response
+    ;; Server responded with a completion list
+    ((lsp-interface InlineCompletionList :items)
+     (seq-into items 'list))
 
-    ;; Response may or may not come inside an :items. Parse each
-    ;; response to ensure compatibility.
-    (cl-map 'list (lambda (elt)
-                    (if (lsp-inline-completion-list? elt)
-                        (lsp:inline-completion-list-items elt)
-                      elt))
-            it)
+    ;; Server responded with a sequence of completion items
+    ((pred (lambda (i)
+             (and (sequencep i)
+                  (lsp-inline-completion-item? (elt i 0)))))
+     (seq-into i 'list))
 
-    ;; Join everything into a single list
-    (apply 'seq-concatenate `(list ,@it))))
-
+    ;; A sequence means multiple server may have responded. Iterate over them and normalize
+    ((pred sequencep)
+     (let ((item-seq (map 'list #'lsp-inline-completion--parse-items response)))
+       (apply 'seq-concatenate `(list ,@item-seq))))))
 
 ;;;;;; Default UI -- overlay
 
@@ -352,7 +349,7 @@
   (unwind-protect
       (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
                                                   (lsp-inline-completion--params implicit)))
-                (items (lsp-inline-completion-parse-items resp)))
+                (items (lsp-inline-completion--parse-items resp)))
 
           (progn
             (lsp-inline-completion--clear-overlay)
