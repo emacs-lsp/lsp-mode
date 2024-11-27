@@ -55,7 +55,7 @@ InlineCompletionItem objects"
     ((pred (lambda (i)
              (and (sequencep i)
                   (lsp-inline-completion-item? (elt i 0)))))
-     (seq-into i 'list))
+     (seq-into response 'list))
 
     ;; A sequence means multiple server may have responded. Iterate over them and normalize
     ((pred sequencep)
