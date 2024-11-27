@@ -394,8 +394,10 @@ lsp-inline-completion-mode is active"
 (defvar-local lsp-inline-completion--idle-timer nil
   "The idle timer used by lsp-inline-completion-mode")
 
-(defun lsp-inline-completion--maybe-display ()
-  (unless (--any (funcall it) lsp-inline-completion-inhibit-predicates)
+(defun lsp-inline-completion--maybe-display (buffer)
+  (when (and (buffer-live-p buffer)
+             (eq (current-buffer) buffer)
+             (--none? (funcall it) lsp-inline-completion-inhibit-predicates))
     (setq last-command this-command)
     (setq this-command 'lsp-inline-completion-display)
     (lsp-inline-completion-display 'implicit)))
@@ -404,10 +406,12 @@ lsp-inline-completion-mode is active"
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
     (when lsp-inline-completion--idle-timer
       (cancel-timer lsp-inline-completion--idle-timer))
-    (setq lsp-inline-completion--idle-timer
-          (run-with-timer lsp-inline-completion-idle-delay
-                          nil
-                          #'lsp-inline-completion--maybe-display))))
+    (let ((buffer (current-buffer)))
+      (setq lsp-inline-completion--idle-timer
+            (run-with-timer lsp-inline-completion-idle-delay
+                            nil
+                            #'lsp-inline-completion--maybe-display
+                            buffer)))))
 
 (define-minor-mode lsp-inline-completion-mode
   "Mode automatically displaying inline completions."
