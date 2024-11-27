@@ -32,10 +32,6 @@
 (require 'dash)
 (require 'cl-lib)
 
-(declare-function company--active-p "ext:company")
-(declare-function company-cancel "ext:company" (&optional result))
-(declare-function company-manual-begin "ext:company")
-
 (defun lsp-inline-completion--params (implicit &optional identifier position)
   "Returns a InlineCompletionParams instance"
   (lsp-make-inline-completion-params
@@ -103,7 +99,6 @@ InlineCompletionItem objects"
 (defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed")
 (defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions")
 (defvar-local lsp-inline-completion--start-point nil "The point where the completion started")
-(defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown")
 
 (defcustom lsp-before-inline-completion-hook nil
   "Hooks run before starting code suggestions"
@@ -115,15 +110,35 @@ InlineCompletionItem objects"
   :type 'hook
   :group 'lsp-mode)
 
-;; TODO: Add parameters to the hooks!
 (defcustom lsp-inline-completion-accepted-hook nil
-  "Hooks executed after accepting a code suggestion."
+  "Hooks executed after accepting a code suggestion. The hooks receive the
+text range that was updated by the completion"
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-inline-completion-cancelled-hook nil
+  "Hooks executed after cancelling the completion UI"
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-inline-completion-before-show-hook nil
+  "Hooks executed before showing a suggestion."
   :type 'hook
   :group 'lsp-mode)
 
 (defcustom lsp-inline-completion-shown-hook nil
   "Hooks executed after showing a suggestion."
   :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-inline-completion-overlay-priority (cons nil 100)
+  "The priority of the overlay."
+  :type '(choice (const :tag "No Priority" nil)
+                 (integer :tag "Simple, Overriding Priority")
+                 (cons :tag "Composite"
+                       (choice (integer :tag "Primary")
+                               (const :tag "Primary Unset" nil))
+                       (integer :tag "Secondary")))
   :group 'lsp-mode)
 
 (defsubst lsp-inline-completion--overlay-visible ()
@@ -145,12 +160,11 @@ InlineCompletionItem objects"
 
   (setq lsp-inline-completion--overlay (make-overlay beg end nil nil t))
   (overlay-put lsp-inline-completion--overlay 'keymap lsp-inline-completion-active-map)
-  (overlay-put lsp-inline-completion--overlay 'priority 9000)
+  (overlay-put lsp-inline-completion--overlay 'priority lsp-inline-completion-overlay-priority)
 
   lsp-inline-completion--overlay)
 
 
-;;;###autoload
 (defun lsp-inline-completion-show-keys ()
   "Shows active keymap hints in the minibuffer"
 
@@ -186,12 +200,7 @@ InlineCompletionItem objects"
 
   (lsp-inline-completion--clear-overlay)
 
-  (setq lsp-inline-completion--showing-company
-        (and (bound-and-true-p company-mode)
-             (company--active-p)))
-
-  (when lsp-inline-completion--showing-company
-    (company-cancel))
+  (run-hooks 'lsp-inline-completion-before-show-hook)
 
   (-let* ((suggestion
            (elt lsp-inline-completion--items
@@ -292,7 +301,6 @@ InlineCompletionItem objects"
     ;; hooks
     (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
 
-;;;###autoload
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay"
   (interactive)
@@ -303,8 +311,8 @@ InlineCompletionItem objects"
     (when lsp-inline-completion--start-point
       (goto-char lsp-inline-completion--start-point))
 
-    (when lsp-inline-completion--showing-company
-      (company-manual-begin))))
+    (run-hooks 'lsp-inline-completion-cancelled-hook)
+    ))
 
 (defun lsp-inline-completion-cancel-with-input (event &optional arg)
   "Cancel the inline completion and executes whatever event was received"
@@ -414,5 +422,56 @@ lsp-inline-completion-mode is active"
     (lsp-inline-completion-cancel)
 
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
+
+
+
+;; Company default integration
+
+(declare-function company--active-p "ext:company")
+(declare-function company-cancel "ext:company" (&optional result))
+(declare-function company-manual-begin "ext:company")
+
+(defcustom lsp-inline-completion-mode-inhibit-when-company-active t
+  "If the inline completion mode should avoid calling completions when company is active"
+  :group 'lsp-mode)
+
+(defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown")
+
+(defun lsp-inline-completion--company-save-state-and-hide ()
+  (setq lsp-inline-completion--showing-company
+        (and (bound-and-true-p company-mode)
+             (company--active-p)))
+
+  (when lsp-inline-completion--showing-company
+    (company-cancel)))
+
+(defun lsp-inline-completion--company-restore-state ()
+  (when lsp-inline-completion--showing-company
+      (company-manual-begin))
+  (setq lsp-inline-completion--showing-company nil))
+
+(defun lsp-inline-completion--company-active-p ()
+  (and (bound-and-true-p company-mode) (company--active-p)))
+
+(define-minor-mode lsp-inline-completion-company-integration-mode
+  "Minor mode to be used when company mode is active with lsp-inline-completion-mode"
+  :lighter nil
+  (cond
+   ((and lsp-inline-completion-company-integration-mode lsp--buffer-workspaces (bound-and-true-p company-mode))
+    (add-hook 'lsp-inline-completion-before-show-hook #'lsp-inline-completion--company-save-state-and-hide nil t)
+    (add-hook 'lsp-inline-completion-cancelled-hook #'lsp-inline-completion--company-restore-state nil t)
+    (unless (memq #'lsp-inline-completion-display company--begin-inhibit-commands)
+      (push #'lsp-inline-completion-display company--begin-inhibit-commands))
+    (when (and lsp-inline-completion-mode-inhibit-when-company-active
+               (not (memq  #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))
+      (push #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))
+
+   (t
+    (remove-hook 'lsp-inline-completion-before-show-hook #'lsp-inline-completion--company-save-state-and-hide t)
+    (remove-hook 'lsp-inline-completion-cancelled-hook #'lsp-inline-completion--company-save-state-and-hide t)
+    (when (boundp 'company--begin-inhibit-commands)
+      (setq company--begin-inhibit-commands (delq #'lsp-inline-completion-display company--begin-inhibit-commands)))
+    (setq lsp-inline-completion-inhibit-predicates
+          (delq #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))))
 
 (provide 'lsp-inline-completion)
