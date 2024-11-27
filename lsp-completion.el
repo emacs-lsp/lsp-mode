@@ -458,52 +458,63 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
-  (-let* ((resolved (get-text-property 0 'lsp-completion-resolved item))
-          (item (get-text-property
-                 0
-                 (if resolved
-                     'lsp-completion-item
-                   'lsp-completion-unresolved-item)
-                 item))
-          ((&CompletionItem :detail?
-                            :documentation?)
-           item))
+  (or (get-text-property 0 'lsp-completion-item-doc item)
+      (-let* ((unresolved-item (get-text-property 0 'lsp-completion-unresolved-item item))
+              (has-unresolved-detail (lsp:completion-item-detail? unresolved-item))
+              (resolved (get-text-property 0 'lsp-completion-resolved item))
+              (completion-item (if resolved
+                                   (get-text-property 0 'lsp-completion-item item)
+                                 unresolved-item))
+              ((&CompletionItem :detail?
+                                :documentation?)
+               completion-item))
 
-    (unless (or resolved (and detail? documentation?))
-      (setq item (lsp-completion--resolve item)
-            resolved t))
+        (unless (or resolved (and detail? documentation?))
+          (setq completion-item (get-text-property 0 'lsp-completion-item (lsp-completion--resolve item))
+                resolved t))
 
-    (setq detail? (lsp:completion-item-detail? item)
-          documentation? (lsp:completion-item-documentation? item))
+        (setq detail? (lsp:completion-item-detail? completion-item)
+              documentation? (lsp:completion-item-documentation? completion-item))
 
-    (when (and detail? documentation?)
-      (cond ((lsp-markup-content? documentation?)
-             (-let (((&MarkupContent :kind :value) documentation?))
-               (cond ((and (equal kind "plaintext")
-                           (not (string-match-p (regexp-quote detail?) value)))
-                      (lsp:set-markup-content-value
-                       documentation?
-                       (concat detail?
-                               (if (bound-and-true-p page-break-lines-mode)
-                                   "\n\n"
-                                 "\n\n")
-                               value)))
-                     ((and (equal kind "markdown")
-                           (not (string-match-p (regexp-quote detail?) value)))
-                      (lsp:set-markup-content-value
-                       documentation?
-                       (concat "```\n" detail? "\n```\n---\n" value))))))
+        (let ((doc
+               (if (and (null has-unresolved-detail) detail? documentation?)
+                   ;; detail was resolved, that means the candidate list has no
+                   ;; detail, so we may need to prepend it to the documentation
+                   (cond ((lsp-markup-content? documentation?)
+                          (-let (((&MarkupContent :kind :value) documentation?))
+                            (cond ((and (equal kind "plaintext")
+                                        (not (string-match-p (regexp-quote detail?) value)))
 
-            ((and (stringp documentation?)
-                  (not (string-match-p (regexp-quote detail?) documentation?)))
-             (setq documentation?
-                   (concat detail?
-                           (if (bound-and-true-p page-break-lines-mode)
-                               "\n\n"
-                             "\n\n")
-                           documentation?)))))
+                                   (lsp--render-string
+                                    (concat detail?
+                                            (if (bound-and-true-p page-break-lines-mode)
+                                                "\n\n"
+                                              "\n\n")
+                                            value)
+                                    kind))
 
-    (lsp--render-element documentation?)))
+                                  ((and (equal kind "markdown")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (lsp--render-string
+                                    (concat "```\n" detail? "\n```\n---\n" value)
+                                    kind)))))
+
+                         ((and (stringp documentation?)
+                               (not (string-match-p (regexp-quote detail?) documentation?)))
+
+                          (lsp--render-string
+                           (concat detail?
+                                   (if (bound-and-true-p page-break-lines-mode)
+                                       "\n\n"
+                                     "\n\n")
+                                   documentation?)
+                           "plaintext")))
+
+                 (lsp--render-element documentation?))))
+
+          (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
+          doc))))
 
 (defun lsp-completion--get-context (trigger-characters same-session?)
   "Get completion context with provided TRIGGER-CHARACTERS and SAME-SESSION?."
