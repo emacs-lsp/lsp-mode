@@ -131,7 +131,7 @@ text range that was updated by the completion"
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-inline-completion-overlay-priority (cons nil 100)
+(defcustom lsp-inline-completion-overlay-priority 9000
   "The priority of the overlay."
   :type '(choice (const :tag "No Priority" nil)
                  (integer :tag "Simple, Overriding Priority")
@@ -424,6 +424,11 @@ lsp-inline-completion-mode is active"
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
 
+;;;###autoload
+(add-hook 'lsp-configure-hook (lambda ()
+                                (when (and lsp-inline-completion-enable
+                                           (lsp-feature? "textDocument/inlineCompletion"))
+                                  (lsp-inline-completion-mode))))
 
 ;; Company default integration
 

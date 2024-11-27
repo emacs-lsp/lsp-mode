@@ -57,7 +57,6 @@
 (require 'minibuffer)
 (require 'help-mode)
 (require 'lsp-protocol)
-(require 'lsp-inline-completion)
 
 (defgroup lsp-mode nil
   "Language Server Protocol client."
@@ -4274,10 +4273,6 @@ yet."
       (when (and lsp-inlay-hint-enable
                  (lsp-feature? "textDocument/inlayHint"))
         (lsp-inlay-hints-mode))
-
-      (when (and lsp-inline-completion-enable
-                 (lsp-feature? "textDocument/inlineCompletion"))
-        (lsp-inline-completion-mode))
 
       (when (and lsp-enable-dap-auto-configure
                  (functionp 'dap-mode))
