@@ -166,7 +166,7 @@ text range that was updated by the completion"
   lsp-inline-completion--overlay)
 
 
-(defun lsp-inline-completion-show-keys ()
+(defun lsp-inline-completion--show-keys ()
   "Shows active keymap hints in the minibuffer"
 
   (unless (and lsp-inline-completion--items
@@ -247,7 +247,7 @@ text range that was updated by the completion"
 
     (goto-char target-position)
 
-    (lsp-inline-completion-show-keys)
+    (lsp-inline-completion--show-keys)
     (run-hooks 'lsp-inline-completion-shown-hook)))
 
 (defun lsp-inline-completion-accept ()
