@@ -353,7 +353,9 @@ text range that was updated by the completion"
   "Displays the inline completions overlay"
   (interactive)
 
-  (lsp--spinner-start)
+  (unless implicit
+    (lsp--spinner-start) )
+
   (unwind-protect
       (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
                                                   (lsp-inline-completion--params implicit)))
@@ -368,7 +370,8 @@ text range that was updated by the completion"
         (unless implicit
           (message "No Suggestions!")))
     ;; Clean up
-    (lsp--spinner-stop)))
+    (unless implicit
+      (lsp--spinner-stop))))
 
 
 ;; Inline Completion Mode
