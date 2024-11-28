@@ -5439,9 +5439,9 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
               (lsp-help-mode)
               (with-help-window lsp-help-buf-name
                 (insert
-         (mapconcat 'string-trim-right
-                (split-string (lsp--render-on-hover-content contents t) "\n")
-                "\n"))))
+                 (mapconcat 'string-trim-right
+                            (split-string (lsp--render-on-hover-content contents t) "\n")
+                            "\n"))))
             (run-mode-hooks)))
       (lsp--info "No content at point."))))
 
