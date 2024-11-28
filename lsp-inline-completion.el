@@ -64,6 +64,7 @@ InlineCompletionItem objects"
 
 ;;;;;; Default UI -- overlay
 
+;;;###autoload
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<tab>") #'lsp-inline-completion-next)
