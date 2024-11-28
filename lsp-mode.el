@@ -524,7 +524,7 @@ supported by the language server."
   :group 'lsp-mode)
 
 (defcustom lsp-eldoc-render-all nil
-  "Display all of the info returned by document/onHover.
+  "Display all of the info returned by textDocument/hover.
 If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
@@ -5693,7 +5693,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (car (s-lines (s-trim (lsp--render-element contents)))))
 
 (defun lsp--render-on-hover-content (contents render-all)
-  "Render the content received from `document/onHover' request.
+  "Render the content received from `textDocument/hover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
   (cond
