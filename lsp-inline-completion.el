@@ -398,6 +398,7 @@ lsp-inline-completion-mode is active"
 (defvar-local lsp-inline-completion--idle-timer nil
   "The idle timer used by lsp-inline-completion-mode")
 
+;;;###autoload
 (define-minor-mode lsp-inline-completion-mode
   "Mode automatically displaying inline completions."
   :lighter nil
@@ -477,6 +478,7 @@ lsp-inline-completion-mode is active"
 (defun lsp-inline-completion--company-active-p ()
   (and (bound-and-true-p company-mode) (company--active-p)))
 
+;;;###autoload
 (define-minor-mode lsp-inline-completion-company-integration-mode
   "Minor mode to be used when company mode is active with lsp-inline-completion-mode"
   :lighter nil
