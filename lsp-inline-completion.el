@@ -31,6 +31,7 @@
 (require 'lsp-protocol)
 (require 'dash)
 (require 'cl-lib)
+(require 'fringe)
 
 (defun lsp-inline-completion--params (implicit &optional identifier position)
   "Returns a InlineCompletionParams instance"
@@ -69,7 +70,7 @@ InlineCompletionItem objects"
   (let ((map (make-sparse-keymap)))
     ;; accept
     (define-key map (kbd "C-<return>") #'lsp-inline-completion-accept)
-    (define-key map [mouse-1] #'lsp-inline-completion-accept)
+    (define-key map [mouse-1] #'lsp-inline-completion-accept-on-click)
     ;; navigate
     (define-key map (kbd "C-n") #'lsp-inline-completion-next)
     (define-key map (kbd "C-p") #'lsp-inline-completion-prev)
@@ -302,6 +303,18 @@ text range that was updated by the completion"
 
     ;; hooks
     (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
+
+(defun lsp-inline-completion-accept-on-click (event)
+  (interactive "e")
+
+  (lsp-inline-completion-accept)
+  (-let (((col . row) (posn-actual-col-row (event-end event))))
+    (move-to-window-line row)
+    (beginning-of-line)
+    (forward-char (- col
+                     (if (bound-and-true-p display-line-numbers-mode)
+                         (+ 2 (line-number-display-width))
+                       0)))))
 
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay"
