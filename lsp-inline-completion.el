@@ -67,23 +67,23 @@ InlineCompletionItem objects"
 ;;;###autoload
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "<tab>") #'lsp-inline-completion-next)
-    (define-key map (kbd "C-n") #'lsp-inline-completion-next)
-    (define-key map (kbd "M-n") #'lsp-inline-completion-next)
-    (define-key map (kbd "C-p") #'lsp-inline-completion-prev)
-    (define-key map (kbd "M-p") #'lsp-inline-completion-prev)
-    (define-key map (kbd "<return>") #'lsp-inline-completion-accept)
-    (define-key map [down-mouse-1] #'ignore)
-    (define-key map [down-mouse-3] #'ignore)
-    (define-key map [up-mouse-1] #'ignore)
-    (define-key map [up-mouse-3] #'ignore)
+    ;; accept
+    (define-key map (kbd "C-<return>") #'lsp-inline-completion-accept)
     (define-key map [mouse-1] #'lsp-inline-completion-accept)
-    (define-key map [mouse-3] #'lsp-inline-completion-accept)
-    (define-key map (kbd "C-l") #'recenter-top-bottom)
+    ;; navigate
+    (define-key map (kbd "C-n") #'lsp-inline-completion-next)
+    (define-key map (kbd "C-p") #'lsp-inline-completion-prev)
+    ;; cancel
     (define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
     (define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
     (define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
+    ;; useful -- recenter without loosing the completion
+    (define-key map (kbd "C-l") #'recenter-top-bottom)
+    ;; ignore
+     (define-key map [down-mouse-1] #'ignore)
+    (define-key map [up-mouse-1] #'ignore)
     (define-key map [mouse-movement] #'ignore)
+    ;; Any event outside of the map, cancel and use it
     (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
   "Keymap active when showing inline code suggestions")
@@ -313,8 +313,7 @@ text range that was updated by the completion"
     (when lsp-inline-completion--start-point
       (goto-char lsp-inline-completion--start-point))
 
-    (run-hooks 'lsp-inline-completion-cancelled-hook)
-    ))
+    (run-hooks 'lsp-inline-completion-cancelled-hook)))
 
 (defun lsp-inline-completion-cancel-with-input (event &optional arg)
   "Cancel the inline completion and executes whatever event was received"
