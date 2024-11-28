@@ -426,9 +426,11 @@ lsp-inline-completion-mode is active"
   ;; lsp-on-change. Do not assume that the buffer/window state has not been
   ;; modified in the meantime! Use the values in lsp--after-change-vals to
   ;; ensure this.
+
+  (when lsp-inline-completion--idle-timer
+    (cancel-timer lsp-inline-completion--idle-timer))
+
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
     (let ((original-buffer (plist-get lsp--after-change-vals :buffer))
           (original-point (plist-get lsp--after-change-vals :point)))
       (setq lsp-inline-completion--idle-timer
