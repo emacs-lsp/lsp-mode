@@ -247,6 +247,7 @@ text range that was updated by the completion"
 
     (goto-char target-position)
 
+    (lsp-inline-completion-show-keys)
     (run-hooks 'lsp-inline-completion-shown-hook)))
 
 (defun lsp-inline-completion-accept ()
