@@ -407,24 +407,33 @@ lsp-inline-completion-mode is active"
 
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
-(defun lsp-inline-completion--maybe-display (buffer)
-  (when (and (buffer-live-p buffer)
-             (eq (current-buffer) buffer)
+(defun lsp-inline-completion--maybe-display (original-buffer original-point)
+  ;; This is executed on an idle timer -- ensure state did not change before
+  ;; displaying
+  (when (and (buffer-live-p original-buffer)
+             (eq (current-buffer) original-buffer)
+             (eq (point) original-point)
              (--none? (funcall it) lsp-inline-completion-inhibit-predicates))
     (setq last-command this-command)
     (setq this-command 'lsp-inline-completion-display)
     (lsp-inline-completion-display 'implicit)))
 
 (defun lsp-inline-completion--after-change (&rest _)
+  ;; This function is in lsp-on-change-hooks, which is executed on a timer by
+  ;; lsp-on-change. Do not assume that the buffer/window state has not been
+  ;; modified in the meantime! Use the values in lsp--after-change-vals to
+  ;; ensure this.
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
     (when lsp-inline-completion--idle-timer
       (cancel-timer lsp-inline-completion--idle-timer))
-    (let ((buffer (current-buffer)))
+    (let ((original-buffer (plist-get lsp--after-change-vals :buffer))
+          (original-point (plist-get lsp--after-change-vals :point)))
       (setq lsp-inline-completion--idle-timer
-            (run-with-timer lsp-inline-completion-idle-delay
-                            nil
-                            #'lsp-inline-completion--maybe-display
-                            buffer)))))
+            (run-with-idle-timer lsp-inline-completion-idle-delay
+                                 nil
+                                 #'lsp-inline-completion--maybe-display
+                                 original-buffer
+                                 original-point)))))
 
 ;;;###autoload
 (add-hook 'lsp-configure-hook (lambda ()
