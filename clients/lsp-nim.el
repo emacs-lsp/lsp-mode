@@ -95,6 +95,8 @@
                                    (lambda () lsp-nim-langserver))
                   :synchronize-sections '("nim")
                   :activation-fn (lsp-activate-on "nim")
+                  :notification-handlers
+                  (ht ("extension/statusUpdate" #'ignore))
                   :server-id 'nimlangserver))
 
 (lsp-consistency-check lsp-nim)
