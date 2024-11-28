@@ -370,7 +370,7 @@ text range that was updated by the completion"
             (setq lsp-inline-completion--start-point (point))
             (lsp-inline-completion-show-overlay))
         (unless implicit
-          (message "No Suggestions!")))
+          (lsp--info "No Suggestions!")))
     ;; Clean up
     (unless implicit
       (lsp--spinner-stop))))
