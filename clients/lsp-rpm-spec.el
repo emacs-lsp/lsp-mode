@@ -50,7 +50,7 @@ If UPDATE? is true, then pip will update the server."
 
 (defun lsp-rpm-spec-server-start-fun (port)
   "Command to start the language server in TCP mode, requires PORT."
-  `(append lsp-rpm-spec-server-command (list "--port" (number-to-string port))))
+  (append lsp-rpm-spec-server-command (list "--port" (number-to-string port))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-tcp-connection 'lsp-rpm-spec-server-start-fun)
