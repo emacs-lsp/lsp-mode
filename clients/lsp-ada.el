@@ -143,7 +143,7 @@ environment."
  'ada-ls
  '(:download :url lsp-ada--als-latest-release-url
              :store-path lsp-ada--als-store-path
-             :decompress :zip
+             :decompress nil
              :binary-path lsp-ada--als-downloaded-executable
              :set-executable? t)
  '(:system lsp-ada-als-executable))
