@@ -33,6 +33,32 @@
 (require 'cl-lib)
 (require 'fringe)
 
+(if (version< emacs-version "29.1")
+    ;; Undo macro probably introduced in 29.1
+    (defmacro lsp-inline-completion--with-undo-amalgamate (&rest body)
+      "Like `progn' but perform BODY with amalgamated undo barriers.
+
+This allows multiple operations to be undone in a single step.
+When undo is disabled this behaves like `progn'."
+      (declare (indent 0) (debug t))
+      (let ((handle (make-symbol "--change-group-handle--")))
+        `(let ((,handle (prepare-change-group))
+               ;; Don't truncate any undo data in the middle of this,
+               ;; otherwise Emacs might truncate part of the resulting
+               ;; undo step: we want to mimic the behavior we'd get if the
+               ;; undo-boundaries were never added in the first place.
+               (undo-outer-limit nil)
+               (undo-limit most-positive-fixnum)
+               (undo-strong-limit most-positive-fixnum))
+           (unwind-protect
+               (progn
+                 (activate-change-group ,handle)
+                 ,@body)
+             (progn
+               (accept-change-group ,handle)
+               (undo-amalgamate-change-group ,handle))))))
+  (defalias 'lsp-inline-completion--with-undo-amalgamate 'with-undo-amalgamate))
+
 (defun lsp-inline-completion--params (implicit &optional identifier position)
   "Returns a InlineCompletionParams instance"
   (lsp-make-inline-completion-params
@@ -251,27 +277,12 @@ text range that was updated by the completion"
     (lsp-inline-completion--show-keys)
     (run-hooks 'lsp-inline-completion-shown-hook)))
 
-(defun lsp-inline-completion-accept ()
-  "Accepts the current suggestion"
-  (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
-    (error "Not showing suggestions"))
-
-  (lsp-inline-completion--clear-overlay)
-  (-let* ((suggestion (elt lsp-inline-completion--items lsp-inline-completion--current))
-          ((&InlineCompletionItem? :insert-text :range? :command?) suggestion)
-          ((kind . text) (cond
-                          ((lsp-markup-content? insert-text)
-                           (cons 'snippet (lsp:markup-content-value insert-text) ))
-                          (t (cons 'text insert-text))))
-          ((start . end) (when range?
-                           (-let (((&RangeToPoint :start :end) range?)) (cons start end))))
-          (text-insert-start (or start lsp-inline-completion--start-point))
-          text-insert-end
-          (completion-is-substr (string-equal
-                                 (buffer-substring text-insert-start lsp-inline-completion--start-point)
-                                 (substring text 0 (- lsp-inline-completion--start-point text-insert-start)))))
-
+(defun lsp-inline-completion--insert-sugestion (text kind start end command?)
+  (let* ((text-insert-start (or start lsp-inline-completion--start-point))
+         text-insert-end
+         (completion-is-substr (string-equal
+                                (buffer-substring text-insert-start lsp-inline-completion--start-point)
+                                (substring text 0 (- lsp-inline-completion--start-point text-insert-start)))))
     (when text-insert-start
       (goto-char text-insert-start))
 
@@ -282,6 +293,7 @@ text range that was updated by the completion"
 
     ;; Insert suggestion, keeping the cursor at the start point
     (insert text)
+
     (setq text-insert-end (point))
 
     ;; If a template, format it -- keep track of the end position!
@@ -303,6 +315,27 @@ text range that was updated by the completion"
 
     ;; hooks
     (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
+
+(defun lsp-inline-completion-accept ()
+  "Accepts the current suggestion"
+  (interactive)
+  (unless (lsp-inline-completion--overlay-visible)
+    (error "Not showing suggestions"))
+
+  (lsp-inline-completion--clear-overlay)
+  (-let* ((suggestion (elt lsp-inline-completion--items lsp-inline-completion--current))
+          ((&InlineCompletionItem? :insert-text :range? :command?) suggestion)
+          ((kind . text) (cond
+                          ((lsp-markup-content? insert-text)
+                           (cons 'snippet (lsp:markup-content-value insert-text) ))
+                          (t (cons 'text insert-text))))
+          ((start . end) (when range?
+                           (-let (((&RangeToPoint :start :end) range?)) (cons start end)))))
+
+    (with-no-warnings
+      ;; Compiler does not believes this macro is defined
+      (lsp-inline-completion--with-undo-amalgamate
+        (lsp-inline-completion--insert-sugestion text kind start end command?)))))
 
 (defun lsp-inline-completion-accept-on-click (event)
   (interactive "e")
