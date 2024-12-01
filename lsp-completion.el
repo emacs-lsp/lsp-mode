@@ -45,6 +45,7 @@
 (define-obsolete-variable-alias 'lsp-enable-completion-at-point
   'lsp-completion-enable "lsp-mode 7.0.1")
 
+;;;###autoload
 (defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
