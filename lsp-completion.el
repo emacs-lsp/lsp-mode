@@ -486,9 +486,13 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                   ((and (equal kind "markdown")
                                         (not (string-match-p (regexp-quote detail?) value)))
 
-                                   (lsp--render-string
-                                    (concat "```\n" detail? "\n```\n---\n" value)
-                                    kind)))))
+                                   (concat
+                                    (propertize detail? 'face 'fixed-pitch)
+                                    (lsp--render-string
+                                     (concat
+                                      "\n---\n"
+                                      value)
+                                     kind))))))
 
                          ((and (stringp documentation?)
                                (not (string-match-p (regexp-quote detail?) documentation?)))
