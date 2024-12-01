@@ -463,25 +463,11 @@ The MARKERS and PREFIX value will be attached to each candidate."
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
   (or (get-text-property 0 'lsp-completion-item-doc item)
-      (-let* ((unresolved-item (get-text-property 0 'lsp-completion-unresolved-item item))
-              (has-unresolved-detail (lsp:completion-item-detail? unresolved-item))
-              (resolved (get-text-property 0 'lsp-completion-resolved item))
-              (completion-item (if resolved
-                                   (get-text-property 0 'lsp-completion-item item)
-                                 unresolved-item))
-              ((&CompletionItem :detail?
+      (-let* (((&CompletionItem :detail?
                                 :documentation?)
-               completion-item))
-
-        (unless (or resolved (and detail? documentation?))
-          (setq completion-item (get-text-property 0 'lsp-completion-item (lsp-completion-resolve item))
-                resolved t))
-
-        (setq detail? (lsp:completion-item-detail? completion-item)
-              documentation? (lsp:completion-item-documentation? completion-item))
-
-        (let ((doc
-               (if (and (null has-unresolved-detail) detail? documentation?)
+               (get-text-property 0 'lsp-completion-item (lsp-completion-resolve item)))
+              (doc
+               (if (and detail? documentation?)
                    ;; detail was resolved, that means the candidate list has no
                    ;; detail, so we may need to prepend it to the documentation
                    (cond ((lsp-markup-content? documentation?)
@@ -517,8 +503,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
                  (lsp--render-element documentation?))))
 
-          (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
-          doc))))
+        (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
+        doc)))
 
 (defun lsp-completion--get-context (trigger-characters same-session?)
   "Get completion context with provided TRIGGER-CHARACTERS and SAME-SESSION?."
