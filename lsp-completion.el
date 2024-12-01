@@ -806,7 +806,9 @@ The return is nil or in range of (0, inf)."
         (after-completion-fn (lambda (result)
                                (when (stringp result)
                                  (lsp-completion--clear-cache))
-                               (setq-local lsp-inhibit-lsp-hooks nil))))
+                               (setq-local lsp-inhibit-lsp-hooks nil)))
+        (lsp-capf-in-capfs-p
+         (memq #'lsp-completion-at-point completion-at-point-functions)))
     (cond
      (lsp-completion-mode
       (make-local-variable 'completion-at-point-functions)
@@ -842,7 +844,8 @@ The return is nil or in range of (0, inf)."
                   t))
       (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t))
      (t
-      (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
+      (unless lsp-capf-in-capfs-p
+        (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
       (setq-local completion-category-defaults
                   (cl-remove 'lsp-capf completion-category-defaults :key #'cl-first))
       (setq-local completion-styles-alist
