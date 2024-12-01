@@ -1010,6 +1010,7 @@ directory")
                       (with-lsp-workspace wk
                         (lsp:completion-options-resolve-provider?
                          (lsp--capability-for-method "textDocument/completion")))))
+    ("textDocument/inlineCompletion" :capability :inlineCompletionProvider)
     ("textDocument/declaration" :capability :declarationProvider)
     ("textDocument/definition" :capability :definitionProvider)
     ("textDocument/documentColor" :capability :colorProvider)
@@ -4949,6 +4950,12 @@ Added to `after-change-functions'."
              lsp-managed-mode)
     (run-hooks 'lsp-on-change-hook)))
 
+
+(defvar-local lsp--after-change-vals nil
+  "plist that stores the buffer state when `lsp--after-change' has ben activated. Since the
+functions in `lsp-on-change-hook' are called with a timer, mouse
+movements may have changed the position")
+
 (defun lsp--after-change (buffer)
   "Called after most textDocument/didChange events."
   (setq lsp--signature-last-index nil
@@ -4964,6 +4971,9 @@ Added to `after-change-functions'."
     (lsp--semantic-tokens-refresh-if-enabled buffer))
   (when lsp--on-change-timer
     (cancel-timer lsp--on-change-timer))
+
+  (setq lsp--after-change-vals (list :point (point)
+                                     :buffer (current-buffer)))
   (setq lsp--on-change-timer (run-with-idle-timer
                               lsp-idle-delay
                               nil
@@ -5429,9 +5439,9 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
               (lsp-help-mode)
               (with-help-window lsp-help-buf-name
                 (insert
-		 (mapconcat 'string-trim-right
-			    (split-string (lsp--render-on-hover-content contents t) "\n")
-			    "\n"))))
+                 (mapconcat 'string-trim-right
+                            (split-string (lsp--render-on-hover-content contents t) "\n")
+                            "\n"))))
             (run-mode-hooks)))
       (lsp--info "No content at point."))))
 
@@ -6287,7 +6297,10 @@ A reference is highlighted only if it is visible in a window."
 
   (let* ((wins-visible-pos (-map (lambda (win)
                                    (cons (1- (line-number-at-pos (window-start win) t))
-                                         (1+ (line-number-at-pos (window-end win) t))))
+                                         (1+ (line-number-at-pos (min (window-end win)
+                                                                      (with-current-buffer (window-buffer win)
+                                                                        (buffer-end +1)))
+                                                                 t))))
                                  (get-buffer-window-list nil nil 'visible))))
     (setq lsp--have-document-highlights t)
     (-map
