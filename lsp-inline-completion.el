@@ -28,36 +28,7 @@
 
 ;;; Code:
 
-(require 'lsp-protocol)
-(require 'dash)
-(require 'cl-lib)
-(require 'fringe)
-
-(if (version< emacs-version "29.1")
-    ;; Undo macro probably introduced in 29.1
-    (defmacro lsp-inline-completion--with-undo-amalgamate (&rest body)
-      "Like `progn' but perform BODY with amalgamated undo barriers.
-
-This allows multiple operations to be undone in a single step.
-When undo is disabled this behaves like `progn'."
-      (declare (indent 0) (debug t))
-      (let ((handle (make-symbol "--change-group-handle--")))
-        `(let ((,handle (prepare-change-group))
-               ;; Don't truncate any undo data in the middle of this,
-               ;; otherwise Emacs might truncate part of the resulting
-               ;; undo step: we want to mimic the behavior we'd get if the
-               ;; undo-boundaries were never added in the first place.
-               (undo-outer-limit nil)
-               (undo-limit most-positive-fixnum)
-               (undo-strong-limit most-positive-fixnum))
-           (unwind-protect
-               (progn
-                 (activate-change-group ,handle)
-                 ,@body)
-             (progn
-               (accept-change-group ,handle)
-               (undo-amalgamate-change-group ,handle))))))
-  (defalias 'lsp-inline-completion--with-undo-amalgamate 'with-undo-amalgamate))
+(require 'lsp-mode)
 
 (defun lsp-inline-completion--params (implicit &optional identifier position)
   "Returns a InlineCompletionParams instance"
@@ -91,7 +62,6 @@ InlineCompletionItem objects"
 
 ;;;;;; Default UI -- overlay
 
-;;;###autoload
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
     ;; accept
@@ -115,7 +85,6 @@ InlineCompletionItem objects"
     map)
   "Keymap active when showing inline code suggestions")
 
-;;;###autoload
 (defface lsp-inline-completion-overlay-face
   '((t :inherit shadow))
   "Face for the inline code suggestions overlay."
@@ -334,7 +303,7 @@ text range that was updated by the completion"
 
     (with-no-warnings
       ;; Compiler does not believes this macro is defined
-      (lsp-inline-completion--with-undo-amalgamate
+      (lsp-with-undo-amalgamate
         (lsp-inline-completion--insert-sugestion text kind start end command?)))))
 
 (defun lsp-inline-completion-accept-on-click (event)
@@ -422,6 +391,7 @@ text range that was updated by the completion"
 
 
 ;; Inline Completion Mode
+;;;###autoload
 (defcustom lsp-inline-completion-enable t
   "If non-nil it will enable inline completions on idle."
   :type 'boolean
