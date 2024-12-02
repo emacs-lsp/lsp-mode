@@ -172,6 +172,7 @@ This will help minimize popup flickering issue in `company-mode'."
                            :_emacsStartPoint start-point)
           item))
     (propertize label
+                'lsp-completion-unresolved-item item
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
@@ -186,7 +187,7 @@ See #2675"
       (unless (lsp-get data :import_for_trait_assoc_item)
         (lsp-put data :import_for_trait_assoc_item :json-false)))))
 
-(defun lsp-completion--resolve (item)
+(defun lsp-completion-resolve (item)
   "Resolve completion ITEM.
 ITEM can be string or a CompletionItem"
   (cl-assert item nil "Completion item must not be nil")
@@ -211,7 +212,9 @@ ITEM can be string or a CompletionItem"
            item))
         (_ completion-item)))))
 
-(defun lsp-completion--resolve-async (item callback &optional cleanup-fn)
+(defalias 'lsp-completion--resolve 'lsp-completion-resolve)
+
+(defun lsp-completion-resolve-async (item callback &optional cleanup-fn)
   "Resolve completion ITEM asynchronously with CALLBACK.
 The CLEANUP-FN will be called to cleanup."
   (cl-assert item nil "Completion item must not be nil")
@@ -242,12 +245,12 @@ The CLEANUP-FN will be called to cleanup."
         (funcall callback completion-item)
         (when cleanup-fn (funcall cleanup-fn))))))
 
+(defalias 'lsp-completion--resolve-async 'lsp-completion-resolve-async)
+
 (defun lsp-completion--annotate (item)
   "Annotate ITEM detail."
   (-let (((completion-item &as &CompletionItem :detail? :kind? :label-details?)
-          (get-text-property 0 'lsp-completion-item item)))
-    (lsp-completion--resolve-async item #'ignore)
-
+          (get-text-property 0 'lsp-completion-unresolved-item item)))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
@@ -456,11 +459,53 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
-  (-some->> item
-    (lsp-completion--resolve)
-    (get-text-property 0 'lsp-completion-item)
-    (lsp:completion-item-documentation?)
-    (lsp--render-element)))
+  (or (get-text-property 0 'lsp-completion-item-doc item)
+      (-let* (((&CompletionItem :detail?
+                                :documentation?)
+               (get-text-property 0 'lsp-completion-item (lsp-completion-resolve item)))
+              (doc
+               (if (and detail? documentation?)
+                   ;; detail was resolved, that means the candidate list has no
+                   ;; detail, so we may need to prepend it to the documentation
+                   (cond ((lsp-markup-content? documentation?)
+                          (-let (((&MarkupContent :kind :value) documentation?))
+                            (cond ((and (equal kind "plaintext")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (lsp--render-string
+                                    (concat detail?
+                                            (if (bound-and-true-p page-break-lines-mode)
+                                                "\n\n"
+                                              "\n\n")
+                                            value)
+                                    kind))
+
+                                  ((and (equal kind "markdown")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (concat
+                                    (propertize detail? 'face 'fixed-pitch)
+                                    (lsp--render-string
+                                     (concat
+                                      "\n---\n"
+                                      value)
+                                     kind))))))
+
+                         ((and (stringp documentation?)
+                               (not (string-match-p (regexp-quote detail?) documentation?)))
+
+                          (lsp--render-string
+                           (concat detail?
+                                   (if (bound-and-true-p page-break-lines-mode)
+                                       "\n\n"
+                                     "\n\n")
+                                   documentation?)
+                           "plaintext")))
+
+                 (lsp--render-element documentation?))))
+
+        (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
+        doc)))
 
 (defun lsp-completion--get-context (trigger-characters same-session?)
   "Get completion context with provided TRIGGER-CHARACTERS and SAME-SESSION?."
@@ -621,7 +666,7 @@ Others: CANDIDATES"
                ;; see #3498 typescript-language-server does not provide the
                ;; proper insertText without resolving.
                (if (lsp-completion--find-workspace 'ts-ls)
-                   (lsp-completion--resolve candidate)
+                   (lsp-completion-resolve candidate)
                  candidate))
               ((&plist 'lsp-completion-item item
                        'lsp-completion-start-point start-point
@@ -663,14 +708,14 @@ Others: CANDIDATES"
                   (not (seq-empty-p additional-text-edits?)))
               (lsp--apply-text-edits additional-text-edits? 'completion)
             (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
-              (lsp-completion--resolve-async
+              (lsp-completion-resolve-async
                item
                (-compose callback #'lsp:completion-item-additional-text-edits?)
                cleanup-fn))))
 
         (if (or resolved command?)
             (when command? (lsp--execute-command command?))
-          (lsp-completion--resolve-async
+          (lsp-completion-resolve-async
            item
            (-lambda ((&CompletionItem? :command?))
              (when command? (lsp--execute-command command?)))))
