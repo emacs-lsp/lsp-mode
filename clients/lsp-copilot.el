@@ -91,11 +91,6 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'boolean
   :group 'lsp-copilot)
 
-(lsp-interface
- (CopilotSignInInitiateResponse (:status :userCode :verificationUri :expiresIn :interval :user) nil)
- (CopilotSignInConfirmResponse (:status :user))
- (CopilotCheckStatusResponse (:status :user)))
-
 (lsp-dependency 'lsp-copilot
                 `(:system ,lsp-copilot-executable)
                 '(:npm :package "copilot-node-server"
@@ -110,15 +105,15 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   (-some->> (lsp-session)
     (lsp--session-workspaces)
     (--filter (member (lsp--client-server-id (lsp--workspace-client it))
-                      '(lsp-copilot lsp-copilot-remote)))))
+                      '(copilot-ls copilot-ls-remote)))))
 
 (defun lsp-copilot--authenticated-as ()
   "Returns nil when not authorized; otherwise, the user name"
   (-if-let (workspace (--some (lsp-find-workspace it (buffer-file-name))
-                              '(lsp-copilot lsp-copilot-remote)))
+                              '(copilot-ls copilot-ls-remote)))
       (-if-let (checkStatusResponse (with-lsp-workspace workspace
                                       (lsp-request "checkStatus" '(:dummy "dummy"))))
-          (-let* (((&CopilotCheckStatusResponse? :status :user) checkStatusResponse))
+          (-let* (((&copilot-ls:CheckStatusResponse? :status :user) checkStatusResponse))
             (unless (s-present-p status)
               (error "No status in response %S" checkStatusResponse))
             ;; Result:
@@ -151,7 +146,7 @@ This function is automatically called during the client initialization if needed
   (-when-let (workspace (--some (lsp-find-workspace it) '(lsp-copilot lsp-copilot-remote)))
     (with-lsp-workspace workspace
       (-when-let* ((response (lsp-request "signInInitiate" '(:dummy "dummy"))))
-        (-let (((&CopilotSignInInitiateResponse? :status :user-code :verification-uri :expires-in :interval :user) response))
+        (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :expires-in :interval :user) response))
 
           ;; Bail if already signed in
           (when (s-equals-p status "AlreadySignedIn")
@@ -171,14 +166,14 @@ automatically, browse to %s." user-code verification-uri))
 
           (lsp-message "Verifying...")
           (-let* ((confirmResponse (lsp-request "signInConfirm" (list :userCode user-code)))
-                  ((&CopilotSignInConfirmResponse? :status :user) confirmResponse))
+                  ((&copilot-ls:SignInConfirmResponse? :status :user) confirmResponse))
             (when (s-equals-p status "NotAuthorized")
               (user-error "User %s is not authorized" user))
             (lsp-message "User %s is authorized: %s" user status))
 
           ;; Do we need to confirm?
           (-let* ((checkStatusResponse (lsp-request "checkStatus" '(:dummy "dummy")))
-                  ((&CopilotCheckStatusResponse? :status :user) checkStatusResponse))
+                  ((&copilot-ls:CheckStatusResponse? :status :user) checkStatusResponse))
             (when (s-equals-p status "NotAuthorized")
               (user-error "User %s is not authorized" user))
 
