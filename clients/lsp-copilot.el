@@ -91,7 +91,7 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'boolean
   :group 'lsp-copilot)
 
-(lsp-dependency 'lsp-copilot
+(lsp-dependency 'copilot-ls
                 `(:system ,lsp-copilot-executable)
                 '(:npm :package "copilot-node-server"
                        :path "language-server.js"))
@@ -143,7 +143,7 @@ lsp-install-server to fetch an emacs-local version of the LSP."
 This function is automatically called during the client initialization if needed"
   (interactive)
 
-  (-when-let (workspace (--some (lsp-find-workspace it) '(lsp-copilot lsp-copilot-remote)))
+  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-remote)))
     (with-lsp-workspace workspace
       (-when-let* ((response (lsp-request "signInInitiate" '(:dummy "dummy"))))
         (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :expires-in :interval :user) response))
@@ -203,7 +203,7 @@ automatically, browse to %s." user-code verification-uri))
 ;; Server installed by emacs
 (lsp-register-client
  (make-lsp-client
-  :server-id 'lsp-copilot
+  :server-id 'copilot-ls
   :new-connection (lsp-stdio-connection #'lsp-copilot--cmdline)
   :activation-fn #'lsp-copilot--client-active-for-mode-p
   :multi-root lsp-copilot-server-multi-root
@@ -223,12 +223,12 @@ automatically, browse to %s." user-code verification-uri))
 
 (lsp-register-client
  (make-lsp-client
-  :server-id 'lsp-copilot-remote
+  :server-id 'copilot-ls-remote
   :new-connection (lsp-stdio-connection (lambda ()
-                                          `(,lsp-copilot-executable ,@lsp-copilot-langserver-command-args)))
+                                          `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args)))
   :activation-fn #'lsp-copilot--client-active-for-mode-p
   :multi-root lsp-copilot-server-multi-root
-  :priority -2
+  :priority -1
   :add-on? t
   :completion-in-comments? t
   :initialization-options #'lsp-copilot--server-initialization-options
