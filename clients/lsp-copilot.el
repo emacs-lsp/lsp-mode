@@ -146,7 +146,7 @@ This function is automatically called during the client initialization if needed
   (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-remote)))
     (with-lsp-workspace workspace
       (-when-let* ((response (lsp-request "signInInitiate" '(:dummy "dummy"))))
-        (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :expires-in :interval :user) response))
+        (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :user) response))
 
           ;; Bail if already signed in
           (when (s-equals-p status "AlreadySignedIn")
@@ -189,7 +189,7 @@ automatically, browse to %s." user-code verification-uri))
         :name "emacs"
         :version "0.1.0"))
 
-(defun lsp-copilot--server-initialized-fn (workspace)
+(defun lsp-copilot--server-initialized-fn (_)
   (unless (lsp-copilot--authenticated-as)
     (lsp-copilot-login)))
 
