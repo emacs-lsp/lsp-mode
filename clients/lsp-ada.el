@@ -290,6 +290,7 @@ must return a list of Ada library folders, or nil if none."
 (defvar lsp-ada--als-downloaded-executable
   (f-join lsp-server-install-dir
           "ada-ls"
+          "integration" "vscode" "ada"
           (symbol-name (lsp-resolve-value lsp--system-arch))
           (pcase system-type
             ('gnu/linux  "linux")
@@ -306,22 +307,25 @@ must return a list of Ada library folders, or nil if none."
   (setq lsp-ada--als-download-url-cache
         (lsp--find-latest-gh-release-url
          "https://api.github.com/repos/AdaCore/ada_language_server/releases/latest"
-         (format "%s.zip"
+         (format "%s.tar.gz"
                  (pcase (list system-type (lsp-resolve-value lsp--system-arch))
-                   ('(gnu/linux  x64)   "Linux_amd64")
-                   ('(gnu/linux  arm64) "Linux_aarch64")
-                   ('(darwin     x64)   "macOS_amd64")
-                   ('(darwin     arm64) "macOS_aarch64")
-                   ('(windows-nt x64)   "Windows_amd64")
-                   (`(,_         x64)   "Linux_amd64"))))))
+                   ('(gnu/linux  x64)   "linux-x64")
+                   ('(gnu/linux  arm64) "linux-arm64")
+                   ('(darwin     x64)   "darwin-x64")
+                   ('(darwin     arm64) "darwin-arm64")
+                   ('(windows-nt x64)   "win32-x64")
+                   (`(,_         x64)   "linux-x64"))))))
 
 (defun lsp-ada--als-store-path ()
   "Store Path for the downloaded Ada Language Server."
   (f-join lsp-server-install-dir
           "ada-ls"
-          (file-name-base (or lsp-ada--als-download-url-cache
-                              (lsp-ada--als-latest-release-url)
-                              "ada-ls"))))
+          (string-remove-suffix
+           ".tar.gz"
+           (file-name-nondirectory
+            (or lsp-ada--als-download-url-cache
+                (lsp-ada--als-latest-release-url)
+                "ada-ls")))))
 
 (defun lsp-ada--default-library-folders (_workspace)
   "Determine the set of Ada library folders."
@@ -332,7 +336,7 @@ must return a list of Ada library folders, or nil if none."
  'ada-ls
  '(:download :url lsp-ada--als-latest-release-url
              :store-path lsp-ada--als-store-path
-             :decompress :zip
+             :decompress :targz
              :binary-path lsp-ada--als-downloaded-executable
              :set-executable? t)
  '(:system lsp-ada-als-executable))
