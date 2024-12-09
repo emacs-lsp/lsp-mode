@@ -55,6 +55,169 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   :group 'lsp-erlang
   :package-version '(lsp-mode . "6.2"))
 
+;; ---------------------------------------------------------------------
+;; ELP config settings.  Auto-generated using scripts/lsp-generate-settings.el
+;; And the process in https://github.com/emacs-lsp/lsp-haskell/blob/master/CONTIBUTING.md
+
+(lsp-defcustom lsp-elp-buck-query-use-bxl-enable nil
+  "Use BXL to query for buck project model."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.buck.query.useBxl.enable")
+
+(lsp-defcustom lsp-elp-diagnostics-disabled nil
+  "List of ELP diagnostics to disable."
+  :type 'lsp-string-vector
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.disabled")
+
+(lsp-defcustom lsp-elp-diagnostics-enable-experimental nil
+  "Whether to show experimental ELP diagnostics that might
+have more false positives than usual."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.enableExperimental")
+
+(lsp-defcustom lsp-elp-diagnostics-enable-otp nil
+  "Whether to report diagnostics for OTP files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.enableOtp")
+
+(lsp-defcustom lsp-elp-diagnostics-on-save-enable nil
+  "Update native diagnostics only when the file is saved."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.onSave.enable")
+
+(lsp-defcustom lsp-elp-eqwalizer-all nil
+  "Whether to report Eqwalizer diagnostics for the whole project and not only for opened files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.all")
+
+(lsp-defcustom lsp-elp-eqwalizer-chunk-size 100
+  "Chunk size to use for project-wide eqwalization."
+  :type 'number
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.chunkSize")
+
+(lsp-defcustom lsp-elp-eqwalizer-max-tasks 32
+  "Maximum number of tasks to run in parallel for project-wide eqwalization."
+  :type 'number
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.maxTasks")
+
+(lsp-defcustom lsp-elp-highlight-dynamic-enable nil
+  "If enabled, highlight variables with type `dynamic()` when Eqwalizer results are available."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.highlightDynamic.enable")
+
+(lsp-defcustom lsp-elp-hover-actions-doc-links-enable nil
+  "Whether to show Hover Actions of type 'docs'. Only applies when
+`#elp.hoverActions.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.hoverActions.docLinks.enable")
+
+(lsp-defcustom lsp-elp-hover-actions-enable nil
+  "Whether to show Hover Actions."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.hoverActions.enable")
+
+(lsp-defcustom lsp-elp-inlay-hints-parameter-hints-enable t
+  "Whether to show function parameter name inlay hints at the call
+site."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.inlayHints.parameterHints.enable")
+
+(lsp-defcustom lsp-elp-lens-debug-enable nil
+  "Whether to show the `Debug` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.debug.enable")
+
+(lsp-defcustom lsp-elp-lens-enable nil
+  "Whether to show Code Lenses in Erlang files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.enable")
+
+(lsp-defcustom lsp-elp-lens-links-enable nil
+  "Whether to show the `Link` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.links.enable")
+
+(lsp-defcustom lsp-elp-lens-run-coverage-enable nil
+  "Display code coverage information when running tests via the
+Code Lenses. Only applies when `#elp.lens.enabled` and
+`#elp.lens.run.enable#` are set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.coverage.enable")
+
+(lsp-defcustom lsp-elp-lens-run-enable nil
+  "Whether to show the `Run` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.enable")
+
+(lsp-defcustom lsp-elp-lens-run-interactive-enable nil
+  "Whether to show the `Run Interactive` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.interactive.enable")
+
+(lsp-defcustom lsp-elp-log "error"
+  "Configure LSP-based logging using env_logger syntax."
+  :type 'string
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.log")
+
+(lsp-defcustom lsp-elp-signature-help-enable t
+  "Whether to show Signature Help."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.signatureHelp.enable")
+
+(lsp-defcustom lsp-elp-types-on-hover-enable nil
+  "Display types when hovering over expressions."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.typesOnHover.enable")
+
+;; ---------------------------------------------------------------------
+
+
 ;; erlang-ls
 
 (defcustom lsp-erlang-ls-server-path
