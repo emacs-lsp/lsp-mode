@@ -94,7 +94,7 @@ lsp-install-server to fetch an emacs-local version of the LSP."
 (lsp-dependency 'copilot-ls
                 `(:system ,lsp-copilot-executable)
                 '(:npm :package "copilot-node-server"
-                       :path "language-server.js"))
+                       :path "copilot-node-server"))
 
 
 (defun lsp-copilot--client-active-for-mode-p (_ mode)
@@ -193,18 +193,12 @@ automatically, browse to %s." user-code verification-uri))
   (unless (lsp-copilot--authenticated-as)
     (lsp-copilot-login)))
 
-(defun lsp-copilot--cmdline ()
-  (-if-let (candidates (directory-files-recursively
-                        (f-join lsp-server-install-dir "npm" "copilot-node-server")
-                        "^language-server.js$"))
-      `("node" ,(car candidates) ,@lsp-copilot-langserver-command-args)
-    (error "language-server.js not found")))
-
 ;; Server installed by emacs
 (lsp-register-client
  (make-lsp-client
   :server-id 'copilot-ls
-  :new-connection (lsp-stdio-connection #'lsp-copilot--cmdline)
+  :new-connection (lsp-stdio-connection (lambda ()
+                                          `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args)))
   :activation-fn #'lsp-copilot--client-active-for-mode-p
   :multi-root lsp-copilot-server-multi-root
   :priority -2
@@ -214,25 +208,6 @@ automatically, browse to %s." user-code verification-uri))
   :initialized-fn #'lsp-copilot--server-initialized-fn
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'lsp-copilot callback error-callback))
-  :notification-handlers (lsp-ht
-                          ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
-                          ("featureFlagsNotification" #'ignore)
-                          ("statusNotification" #'ignore)
-                          ("window/logMessage" #'lsp--window-log-message)
-                          ("conversation/preconditionsNotification" #'ignore))))
-
-(lsp-register-client
- (make-lsp-client
-  :server-id 'copilot-ls-remote
-  :new-connection (lsp-stdio-connection (lambda ()
-                                          `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args)))
-  :activation-fn #'lsp-copilot--client-active-for-mode-p
-  :multi-root lsp-copilot-server-multi-root
-  :priority -1
-  :add-on? t
-  :completion-in-comments? t
-  :initialization-options #'lsp-copilot--server-initialization-options
-  :initialized-fn #'lsp-copilot--server-initialized-fn
   :notification-handlers (lsp-ht
                           ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
                           ("featureFlagsNotification" #'ignore)
