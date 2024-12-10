@@ -73,7 +73,8 @@ The input are the file name and the major mode of the buffer."
 
 (defcustom lsp-copilot-version "1.41.0"
   "Copilot version."
-  :type 'string
+  :type '(choice (const :tag "Latest" nil)
+                 (string :tag "Specific Version"))
   :group 'lsp-copilot)
 
 (lsp-dependency 'copilot-ls
