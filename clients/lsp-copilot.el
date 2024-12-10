@@ -172,7 +172,7 @@ automatically, browse to %s." user-code verification-uri))
 (defun lsp-copilot--server-initialization-options ()
   ;; Trying to replicate Copilot.vim initialization here ...
   (list :editorInfo (list :name "emacs" :version emacs-version)
-        :editorPluginInfo (list :name "lsp-copilot" :version lsp-copilot-version)
+        :editorPluginInfo (list :name "lsp-copilot" :version (lsp-package-version))
         :editorConfig (list :enableAutoCompletions lsp-copilot-enabled
                             :disabledLanguages lsp-copilot-server-disabled-languages)
         :name "emacs"

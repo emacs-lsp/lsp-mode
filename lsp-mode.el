@@ -9608,15 +9608,19 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package-desc-version "ext:package")
 (declare-function package--alist "ext:package")
 
+(defun lsp-package-version ()
+  "Returns a string with the version of the lsp-mode package"
+  (package-version-join
+   (package-desc-version
+    (car (alist-get 'lsp-mode (package--alist))))))
+
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
   (interactive)
   (unless (featurep 'package)
     (require 'package))
   (let ((ver (format "lsp-mode %s, Emacs %s, %s"
-                     (package-version-join
-                      (package-desc-version
-                       (car (alist-get 'lsp-mode (package--alist)))))
+                     (lsp-package-version)
                      emacs-version
                      system-type)))
     (if (called-interactively-p 'interactive)
