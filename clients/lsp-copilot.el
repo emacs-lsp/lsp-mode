@@ -88,12 +88,12 @@ The input are the file name and the major mode of the buffer."
   (-some->> (lsp-session)
     (lsp--session-workspaces)
     (--filter (member (lsp--client-server-id (lsp--workspace-client it))
-                      '(copilot-ls copilot-ls-remote)))))
+                      '(copilot-ls copilot-ls-tramp)))))
 
 (defun lsp-copilot--authenticated-as ()
   "Returns nil when not authorized; otherwise, the user name"
   (-if-let (workspace (--some (lsp-find-workspace it (buffer-file-name))
-                              '(copilot-ls copilot-ls-remote)))
+                              '(copilot-ls copilot-ls-tramp)))
       (-if-let (checkStatusResponse (with-lsp-workspace workspace
                                       (lsp-request "checkStatus" '(:dummy "dummy"))))
           (-let* (((&copilot-ls:CheckStatusResponse? :status :user) checkStatusResponse))
@@ -126,7 +126,7 @@ The input are the file name and the major mode of the buffer."
 This function is automatically called during the client initialization if needed"
   (interactive)
 
-  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-remote)))
+  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-tramp)))
     (with-lsp-workspace workspace
       (-when-let* ((response (lsp-request "signInInitiate" '(:dummy "dummy"))))
         (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :user) response))
@@ -165,7 +165,7 @@ automatically, browse to %s." user-code verification-uri))
 (defun lsp-copilot-logout ()
   "Logout from Copilot."
   (interactive)
-  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-remote)))
+  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-tramp)))
     (with-lsp-workspace workspace
       (lsp-request "signOut" '(:dummy "dummy"))
       (lsp--info "Logged out."))))
@@ -188,7 +188,6 @@ automatically, browse to %s." user-code verification-uri))
  (make-lsp-client
   :server-id 'copilot-ls
   :new-connection (lsp-stdio-connection
-                   ;; #'lsp-copilot--cmdline
                    (lambda () `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args))
                    )
   :activation-fn lsp-copilot-applicable-fn
