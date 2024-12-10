@@ -55,50 +55,32 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'string
   :group 'lsp-copilot)
 
-
-(defcustom lsp-copilot-major-modes '(python-mode
-                                     python-ts-mode
-                                     go-mode
-                                     go-ts-mode
-                                     js-mode
-                                     js-ts-mode
-                                     java-mode
-                                     java-ts-mode
-                                     kotlin-mode
-                                     kotlin-ts-mode
-                                     ruby-mode
-                                     ruby-ts-mode
-                                     rust-mode
-                                     rust-ts-mode
-                                     tsx-ts-mode
-                                     typescript-mode
-                                     typescript-ts-mode
-                                     vue-mode
-                                     yaml-mode
-                                     yaml-ts-mode)
-
-  "The major modes for which lsp-copilot should be used"
-  :type '(repeat symbol)
+(defcustom lsp-copilot-applicable-fn (-const t)
+  "A function which returns whether the copilot is applicable for the buffer.
+The input are the file name and the major mode of the buffer."
+  :type 'function
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-server-disabled-languages nil
-  "The lanuages for which the server must not be enabled (initialization setup for copilot)"
+  "The languages for which the server must not be enabled (initialization setup for copilot)"
   :type '(repeat string)
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-server-multi-root t
-  "Whether the copilot server is started with multi-root"
+  "Whether the copilot server is started with multi-root."
   :type 'boolean
+  :group 'lsp-copilot)
+
+(defcustom lsp-copilot-version "1.41.0"
+  "Copilot version."
+  :type 'string
   :group 'lsp-copilot)
 
 (lsp-dependency 'copilot-ls
                 `(:system ,lsp-copilot-executable)
                 '(:npm :package "copilot-node-server"
-                       :path "copilot-node-server"))
-
-
-(defun lsp-copilot--client-active-for-mode-p (_ mode)
-  (and lsp-copilot-enabled (member mode lsp-copilot-major-modes)))
+                       :path "copilot-node-server"
+                       :version lsp-copilot-version))
 
 (defun lsp-copilot--find-active-workspaces ()
   "Returns a list of lsp-copilot workspaces"
@@ -179,11 +161,18 @@ automatically, browse to %s." user-code verification-uri))
 
             (lsp-message "Authenticated as %s" user)))))))
 
+(defun lsp-copilot-logout ()
+  "Logout from Copilot."
+  (interactive)
+  (-when-let (workspace (--some (lsp-find-workspace it) '(copilot-ls copilot-ls-remote)))
+    (with-lsp-workspace workspace
+      (lsp-request "signOut" '(:dummy "dummy"))
+      (lsp--info "Logged out."))))
 
 (defun lsp-copilot--server-initialization-options ()
   ;; Trying to replicate Copilot.vim initialization here ...
-  (list :editorInfo (list :name "emacs" :version (symbol-value 'emacs-version))
-        :editorPluginInfo (list :name "lsp-copilot" :version "1.38.0")
+  (list :editorInfo (list :name "emacs" :version emacs-version)
+        :editorPluginInfo (list :name "lsp-copilot" :version lsp-copilot-version)
         :editorConfig (list :enableAutoCompletions lsp-copilot-enabled
                             :disabledLanguages lsp-copilot-server-disabled-languages)
         :name "emacs"
@@ -197,9 +186,11 @@ automatically, browse to %s." user-code verification-uri))
 (lsp-register-client
  (make-lsp-client
   :server-id 'copilot-ls
-  :new-connection (lsp-stdio-connection (lambda ()
-                                          `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args)))
-  :activation-fn #'lsp-copilot--client-active-for-mode-p
+  :new-connection (lsp-stdio-connection
+                   ;; #'lsp-copilot--cmdline
+                   (lambda () `(,(lsp-package-path 'copilot-ls) ,@lsp-copilot-langserver-command-args))
+                   )
+  :activation-fn lsp-copilot-applicable-fn
   :multi-root lsp-copilot-server-multi-root
   :priority -2
   :add-on? t
@@ -207,7 +198,7 @@ automatically, browse to %s." user-code verification-uri))
   :initialization-options #'lsp-copilot--server-initialization-options
   :initialized-fn #'lsp-copilot--server-initialized-fn
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'lsp-copilot callback error-callback))
+                        (lsp-package-ensure 'copilot-ls callback error-callback))
   :notification-handlers (lsp-ht
                           ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
                           ("featureFlagsNotification" #'ignore)

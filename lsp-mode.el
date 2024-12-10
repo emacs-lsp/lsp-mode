@@ -3824,7 +3824,8 @@ disappearing, unset all the variables related to it."
                                              (versionSupport . t)))
                       (diagnostic . ((dynamicRegistration . :json-false)
                                      (relatedDocumentSupport . :json-false)))
-                      (linkedEditingRange . ((dynamicRegistration . t)))))
+                      (linkedEditingRange . ((dynamicRegistration . t)))
+                      (inlineCompletion . ())))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
    custom-capabilities))
@@ -5105,6 +5106,7 @@ Applies on type formatting."
         (-lambda ((mode-or-pattern . language))
           (cond
            ((and (stringp mode-or-pattern)
+                 (buffer-file-name)
                  (s-matches? mode-or-pattern (buffer-file-name)))
             language)
            ((eq mode-or-pattern major-mode) language))))
@@ -7950,12 +7952,17 @@ SESSION is the active session."
                (apply 'vector)
                (list :workspaceFolders))))
        (-lambda ((&InitializeResult :capabilities))
-         ;; we know that Rust Analyzer will send {} which will be parsed as null
-         ;; when using plists
-         (when (equal 'rust-analyzer server-id)
-           (-> capabilities
-               (lsp:server-capabilities-text-document-sync?)
-               (lsp:set-text-document-sync-options-save? t)))
+         (pcase server-id
+           ;; we know that Rust Analyzer will send {} which will be parsed as null
+           ;; when using plists
+           ('rust-analyzer
+            (-> capabilities
+                (lsp:server-capabilities-text-document-sync?)
+                (lsp:set-text-document-sync-options-save? t)))
+           ;; for copilot-ls, the inlineCompletionProvider will be sent as {}
+           ('copilot-ls
+            (-> capabilities
+                (lsp:set-server-capabilities-inline-completion-provider? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
@@ -8365,7 +8372,7 @@ nil."
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
-(cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
+(cl-defun lsp--npm-dependency-install (callback error-callback &key package version &allow-other-keys)
   (if-let* ((npm-binary (executable-find "npm")))
       (progn
         ;; Explicitly `make-directory' to work around NPM bug in
@@ -8391,7 +8398,9 @@ nil."
                                  "--prefix"
                                  (f-join lsp-server-install-dir "npm" package)
                                  "install"
-                                 package))
+                                 (if-let* ((version (lsp-resolve-value version)))
+                                     (format "%s@%s" package version)
+                                   package)))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
 
