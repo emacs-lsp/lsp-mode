@@ -84,6 +84,7 @@ nav:
     - Fortran: page/lsp-fortran.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
+    - Github Copilot: page/lsp-copilot.md
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
     - GNAT Project: page/lsp-gpr.md

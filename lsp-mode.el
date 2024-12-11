@@ -176,7 +176,7 @@ As defined by the Language Server Protocol 3.16."
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
-     lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
+     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
      lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
      lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
@@ -3824,7 +3824,8 @@ disappearing, unset all the variables related to it."
                                              (versionSupport . t)))
                       (diagnostic . ((dynamicRegistration . :json-false)
                                      (relatedDocumentSupport . :json-false)))
-                      (linkedEditingRange . ((dynamicRegistration . t)))))
+                      (linkedEditingRange . ((dynamicRegistration . t)))
+                      (inlineCompletion . ())))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
    custom-capabilities))
@@ -5105,6 +5106,7 @@ Applies on type formatting."
         (-lambda ((mode-or-pattern . language))
           (cond
            ((and (stringp mode-or-pattern)
+                 (buffer-file-name)
                  (s-matches? mode-or-pattern (buffer-file-name)))
             language)
            ((eq mode-or-pattern major-mode) language))))
@@ -7950,12 +7952,13 @@ SESSION is the active session."
                (apply 'vector)
                (list :workspaceFolders))))
        (-lambda ((&InitializeResult :capabilities))
-         ;; we know that Rust Analyzer will send {} which will be parsed as null
-         ;; when using plists
-         (when (equal 'rust-analyzer server-id)
-           (-> capabilities
-               (lsp:server-capabilities-text-document-sync?)
-               (lsp:set-text-document-sync-options-save? t)))
+         (pcase server-id
+           ;; we know that Rust Analyzer will send {} which will be parsed as null
+           ;; when using plists
+           ('rust-analyzer
+            (-> capabilities
+                (lsp:server-capabilities-text-document-sync?)
+                (lsp:set-text-document-sync-options-save? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
@@ -8365,7 +8368,7 @@ nil."
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
-(cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
+(cl-defun lsp--npm-dependency-install (callback error-callback &key package version &allow-other-keys)
   (if-let* ((npm-binary (executable-find "npm")))
       (progn
         ;; Explicitly `make-directory' to work around NPM bug in
@@ -8391,7 +8394,9 @@ nil."
                                  "--prefix"
                                  (f-join lsp-server-install-dir "npm" package)
                                  "install"
-                                 package))
+                                 (if-let* ((version (lsp-resolve-value version)))
+                                     (format "%s@%s" package version)
+                                   package)))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
 
@@ -9599,15 +9604,19 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package-desc-version "ext:package")
 (declare-function package--alist "ext:package")
 
+(defun lsp-package-version ()
+  "Returns a string with the version of the lsp-mode package"
+  (package-version-join
+   (package-desc-version
+    (car (alist-get 'lsp-mode (package--alist))))))
+
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
   (interactive)
   (unless (featurep 'package)
     (require 'package))
   (let ((ver (format "lsp-mode %s, Emacs %s, %s"
-                     (package-version-join
-                      (package-desc-version
-                       (car (alist-get 'lsp-mode (package--alist)))))
+                     (lsp-package-version)
                      emacs-version
                      system-type)))
     (if (called-interactively-p 'interactive)

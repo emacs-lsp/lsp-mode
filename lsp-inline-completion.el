@@ -372,22 +372,24 @@ text range that was updated by the completion"
   (unless implicit
     (lsp--spinner-start) )
 
-  (unwind-protect
-      (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
-                                                  (lsp-inline-completion--params implicit)))
-                (items (lsp-inline-completion--parse-items resp)))
+  (condition-case err
+      (unwind-protect
+          (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
+                                                      (lsp-inline-completion--params implicit)))
+                    (items (lsp-inline-completion--parse-items resp)))
 
-          (progn
-            (lsp-inline-completion--clear-overlay)
-            (setq lsp-inline-completion--items items)
-            (setq lsp-inline-completion--current 0)
-            (setq lsp-inline-completion--start-point (point))
-            (lsp-inline-completion-show-overlay))
+              (progn
+                (lsp-inline-completion--clear-overlay)
+                (setq lsp-inline-completion--items items)
+                (setq lsp-inline-completion--current 0)
+                (setq lsp-inline-completion--start-point (point))
+                (lsp-inline-completion-show-overlay))
+            (unless implicit
+              (lsp--info "No Suggestions!")))
+        ;; Clean up
         (unless implicit
-          (lsp--info "No Suggestions!")))
-    ;; Clean up
-    (unless implicit
-      (lsp--spinner-stop))))
+          (lsp--spinner-stop)))
+    (t (lsp--error "Couldnot fetch completions: %s" err))))
 
 
 ;; Inline Completion Mode
