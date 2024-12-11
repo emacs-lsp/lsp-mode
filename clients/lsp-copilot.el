@@ -179,7 +179,12 @@ automatically, browse to %s." user-code verification-uri))
         :name "emacs"
         :version "0.1.0"))
 
-(defun lsp-copilot--server-initialized-fn (_)
+(defun lsp-copilot--server-initialized-fn (workspace)
+  ;; Patch capabilities -- server may respond with an empty dict. In plist,
+  ;; this would become nil
+  (let ((caps (lsp--workspace-server-capabilities workspace)))
+    (lsp:set-server-capabilities-inline-completion-provider? caps t))
+
   (unless (lsp-copilot--authenticated-as)
     (lsp-copilot-login)))
 

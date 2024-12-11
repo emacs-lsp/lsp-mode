@@ -7958,11 +7958,7 @@ SESSION is the active session."
            ('rust-analyzer
             (-> capabilities
                 (lsp:server-capabilities-text-document-sync?)
-                (lsp:set-text-document-sync-options-save? t)))
-           ;; for copilot-ls, the inlineCompletionProvider will be sent as {}
-           ('copilot-ls
-            (-> capabilities
-                (lsp:set-server-capabilities-inline-completion-provider? t))))
+                (lsp:set-text-document-sync-options-save? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
