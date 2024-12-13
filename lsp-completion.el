@@ -190,7 +190,7 @@ See #2675"
       (unless (lsp-get data :for_ref)
          (lsp-put data :for_ref :json-false)))))
 
-(defun lsp-completion-resolve (item)
+(defun lsp-completion--resolve (item)
   "Resolve completion ITEM.
 ITEM can be string or a CompletionItem"
   (cl-assert item nil "Completion item must not be nil")
@@ -215,9 +215,7 @@ ITEM can be string or a CompletionItem"
            item))
         (_ completion-item)))))
 
-(defalias 'lsp-completion--resolve 'lsp-completion-resolve)
-
-(defun lsp-completion-resolve-async (item callback &optional cleanup-fn)
+(defun lsp-completion--resolve-async (item callback &optional cleanup-fn)
   "Resolve completion ITEM asynchronously with CALLBACK.
 The CLEANUP-FN will be called to cleanup."
   (cl-assert item nil "Completion item must not be nil")
@@ -248,12 +246,10 @@ The CLEANUP-FN will be called to cleanup."
         (funcall callback completion-item)
         (when cleanup-fn (funcall cleanup-fn))))))
 
-(defalias 'lsp-completion--resolve-async 'lsp-completion-resolve-async)
-
-(defun lsp-completion--annotate (item)
-  "Annotate ITEM detail."
+(defun lsp-completion--get-label-detail (item)
+  "Construct label detail from completion item ITEM."
   (-let (((completion-item &as &CompletionItem :detail? :kind? :label-details?)
-          (get-text-property 0 'lsp-completion-unresolved-item item)))
+          item))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
@@ -262,6 +258,12 @@ The CLEANUP-FN will be called to cleanup."
             (when lsp-completion-show-kind
               (when-let* ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
+
+(defun lsp-completion--annotate (cand)
+  "Annotation function for completion candidate CAND.
+
+Returns unresolved completion item detail."
+  (lsp-completion--get-label-detail (get-text-property 0 'lsp-completion-unresolved-item cand)))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
   "Return character if text before point match any of the TRIGGER-CHARACTERS."
@@ -460,12 +462,19 @@ The MARKERS and PREFIX value will be attached to each candidate."
           (setq label-pos 0)))
       matches)))
 
+(defun lsp-completion--company-docsig (cand)
+  "Signature for completion candidate CAND.
+
+Returns resolved completion item details."
+  (and (lsp-completion--resolve cand)
+       (lsp-completion--get-label-detail (get-text-property 0 'lsp-completion-item cand))))
+
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
   (or (get-text-property 0 'lsp-completion-item-doc item)
       (-let* (((&CompletionItem :detail?
                                 :documentation?)
-               (get-text-property 0 'lsp-completion-item (lsp-completion-resolve item)))
+               (get-text-property 0 'lsp-completion-item (lsp-completion--resolve item)))
               (doc
                (if (and detail? documentation?)
                    ;; detail was resolved, that means the candidate list has no
@@ -647,6 +656,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
              (goto-char (1- (point))))
            (and triggered-by-char? t)))
        :company-match #'lsp-completion--company-match
+       :company-docsig #'lsp-completion--company-docsig
        :company-doc-buffer (-compose #'lsp-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
@@ -669,7 +679,7 @@ Others: CANDIDATES"
                ;; see #3498 typescript-language-server does not provide the
                ;; proper insertText without resolving.
                (if (lsp-completion--find-workspace 'ts-ls)
-                   (lsp-completion-resolve candidate)
+                   (lsp-completion--resolve candidate)
                  candidate))
               ((&plist 'lsp-completion-item item
                        'lsp-completion-start-point start-point
@@ -711,14 +721,14 @@ Others: CANDIDATES"
                   (not (seq-empty-p additional-text-edits?)))
               (lsp--apply-text-edits additional-text-edits? 'completion)
             (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
-              (lsp-completion-resolve-async
+              (lsp-completion--resolve-async
                item
                (-compose callback #'lsp:completion-item-additional-text-edits?)
                cleanup-fn))))
 
         (if (or resolved command?)
             (when command? (lsp--execute-command command?))
-          (lsp-completion-resolve-async
+          (lsp-completion--resolve-async
            item
            (-lambda ((&CompletionItem? :command?))
              (when command? (lsp--execute-command command?)))))
