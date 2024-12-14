@@ -172,6 +172,7 @@ This will help minimize popup flickering issue in `company-mode'."
                            :_emacsStartPoint start-point)
           item))
     (propertize label
+                'lsp-completion-unresolved-item item
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
@@ -242,12 +243,10 @@ The CLEANUP-FN will be called to cleanup."
         (funcall callback completion-item)
         (when cleanup-fn (funcall cleanup-fn))))))
 
-(defun lsp-completion--annotate (item)
-  "Annotate ITEM detail."
+(defun lsp-completion--get-label-detail (item)
+  "Construct label detail from completion item ITEM."
   (-let (((completion-item &as &CompletionItem :detail? :kind? :label-details?)
-          (get-text-property 0 'lsp-completion-item item)))
-    (lsp-completion--resolve-async item #'ignore)
-
+          item))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
@@ -256,6 +255,12 @@ The CLEANUP-FN will be called to cleanup."
             (when lsp-completion-show-kind
               (when-let* ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
+
+(defun lsp-completion--annotate (cand)
+  "Annotation function for completion candidate CAND.
+
+Returns unresolved completion item detail."
+  (lsp-completion--get-label-detail (get-text-property 0 'lsp-completion-unresolved-item cand)))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
   "Return character if text before point match any of the TRIGGER-CHARACTERS."
@@ -454,13 +459,62 @@ The MARKERS and PREFIX value will be attached to each candidate."
           (setq label-pos 0)))
       matches)))
 
+(defun lsp-completion--company-docsig (cand)
+  "Signature for completion candidate CAND.
+
+Returns resolved completion item details."
+  (and (lsp-completion--resolve cand)
+       (lsp-completion--get-label-detail (get-text-property 0 'lsp-completion-item cand))))
+
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
-  (-some->> item
-    (lsp-completion--resolve)
-    (get-text-property 0 'lsp-completion-item)
-    (lsp:completion-item-documentation?)
-    (lsp--render-element)))
+  (or (get-text-property 0 'lsp-completion-item-doc item)
+      (-let* (((&CompletionItem :detail?
+                                :documentation?)
+               (get-text-property 0 'lsp-completion-item (lsp-completion--resolve item)))
+              (doc
+               (if (and detail? documentation?)
+                   ;; detail was resolved, that means the candidate list has no
+                   ;; detail, so we may need to prepend it to the documentation
+                   (cond ((lsp-markup-content? documentation?)
+                          (-let (((&MarkupContent :kind :value) documentation?))
+                            (cond ((and (equal kind "plaintext")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (lsp--render-string
+                                    (concat detail?
+                                            (if (bound-and-true-p page-break-lines-mode)
+                                                "\n\n"
+                                              "\n\n")
+                                            value)
+                                    kind))
+
+                                  ((and (equal kind "markdown")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (concat
+                                    (propertize detail? 'face 'fixed-pitch)
+                                    (lsp--render-string
+                                     (concat
+                                      "\n---\n"
+                                      value)
+                                     kind))))))
+
+                         ((and (stringp documentation?)
+                               (not (string-match-p (regexp-quote detail?) documentation?)))
+
+                          (lsp--render-string
+                           (concat detail?
+                                   (if (bound-and-true-p page-break-lines-mode)
+                                       "\n\n"
+                                     "\n\n")
+                                   documentation?)
+                           "plaintext")))
+
+                 (lsp--render-element documentation?))))
+
+        (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
+        doc)))
 
 (defun lsp-completion--get-context (trigger-characters same-session?)
   "Get completion context with provided TRIGGER-CHARACTERS and SAME-SESSION?."
@@ -599,6 +653,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
              (goto-char (1- (point))))
            (and triggered-by-char? t)))
        :company-match #'lsp-completion--company-match
+       :company-docsig #'lsp-completion--company-docsig
        :company-doc-buffer (-compose #'lsp-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
