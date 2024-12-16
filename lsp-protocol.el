@@ -695,7 +695,7 @@ See `-let' for a description of the destructuring mechanism."
  (SignatureHelpCapabilities nil (:contextSupport :dynamicRegistration :signatureInformation))
  (SignatureHelpContext (:triggerKind :isRetrigger) (:activeSignatureHelp :triggerCharacter))
  (SignatureHelpOptions nil (:retriggerCharacters :triggerCharacters))
- (SignatureInformation (:label) (:documentation :parameters))
+ (SignatureInformation (:label) (:documentation :parameters :activeParameter))
  (SignatureInformationCapabilities nil (:documentationFormat :parameterInformation))
  (StaticRegistrationOptions nil (:documentSelector :id))
  (SymbolCapabilities nil (:dynamicRegistration :symbolKind))

@@ -3804,7 +3804,8 @@ disappearing, unset all the variables related to it."
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
-                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))
+                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))
+                                                                 (activeParameterSupport . t)))
                                         (dynamicRegistration . t)))
                       (documentLink . ((dynamicRegistration . t)
                                        (tooltipSupport . t)))
@@ -5912,6 +5913,8 @@ It will show up only if current point has signature help."
             (active-signature? (or lsp--signature-last-index active-signature? 0))
             (_ (setq lsp--signature-last-index active-signature?))
             ((signature &as &SignatureInformation? :label :parameters?) (seq-elt signatures active-signature?))
+            (active-parameter? (or (lsp:signature-information-active-parameter? signature)
+                                   active-parameter?))
             (prefix (if (= (length signatures) 1)
                         ""
                       (concat (propertize (format " %s/%s"
