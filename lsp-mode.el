@@ -3801,7 +3801,8 @@ disappearing, unset all the variables related to it."
                                                                            "command"
                                                                            "insertTextFormat"
                                                                            "insertTextMode"])))
-                                                        (insertTextModeSupport . ((valueSet . [1 2])))))
+                                                        (insertTextModeSupport . ((valueSet . [1 2])))
+                                                        (labelDetailsSupport . t)))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))
