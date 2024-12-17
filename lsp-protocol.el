@@ -627,7 +627,7 @@ See `-let' for a description of the destructuring mechanism."
  (CompletionCapabilities nil (:completionItem :completionItemKind :contextSupport :dynamicRegistration))
  (CompletionContext (:triggerKind) (:triggerCharacter))
  (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :insertTextMode :kind :preselect :sortText :tags :textEdit :score :labelDetails))
- (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport :insertReplaceSupport :resolveSupport))
+ (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport :insertReplaceSupport :resolveSupport :labelDetailsSupport))
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
  (CompletionOptions nil (:resolveProvider :triggerCharacters :allCommitCharacters))
