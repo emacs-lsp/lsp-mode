@@ -117,6 +117,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "copilot",
+    "full-name": "Github Copilot",
+    "server-name": "copilot-node-server",
+    "server-url": "https://www.npmjs.com/package/copilot-node-server",
+    "installation-url": "https://www.npmjs.com/package/copilot-node-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "credo",
     "full-name": "Credo",
     "server-name": "credo-ls",
