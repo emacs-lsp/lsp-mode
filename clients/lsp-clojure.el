@@ -94,7 +94,8 @@
                                           (expand-file-name "~/.gitlibs/libs"))
   "LSP clojure dirs that should be considered library folders."
   :group 'lsp-clojure
-  :type 'list)
+  :type '(repeat directory)
+)
 
 (defcustom lsp-clojure-test-tree-position-params nil
   "The optional test tree position params.

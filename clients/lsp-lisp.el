@@ -34,7 +34,7 @@
 (defcustom lsp-lisp-active-modes
   '( lisp-mode)
   "List of major mode that work with lisp."
-  :type 'list
+  :type '(repeat function)
   :group 'lsp-lisp)
 
 (defcustom lsp-lisp-alive-port 8006

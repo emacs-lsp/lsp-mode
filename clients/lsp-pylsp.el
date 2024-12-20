@@ -178,7 +178,8 @@ opening bracket's line."
 (defcustom lsp-pylsp-plugins-pydocstyle-convention nil
   "Choose the basic list of checked errors by specifying an
 existing convention."
-  :type '(choice (:tag "pep257" "numpy"))
+  :type '(choice (const "pep257")
+                 (const "numpy"))
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pydocstyle-add-ignore nil

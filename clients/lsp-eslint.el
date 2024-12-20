@@ -172,7 +172,7 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface)."
 
 (defcustom lsp-eslint-code-action-disable-rule-comment t
   "Controls whether code actions to add a rule-disabling comment should be shown."
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-code-action-disable-rule-comment-location "separateLine"
@@ -189,12 +189,12 @@ Accepts the following values:
 (defcustom lsp-eslint-code-action-show-documentation t
   "Controls whether code actions to show documentation for an ESLint rule should
 be shown."
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-warn-on-ignored-files nil
   "Controls whether a warning should be emitted when a file is ignored."
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-rules-customizations []

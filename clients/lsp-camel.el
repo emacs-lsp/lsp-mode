@@ -20,9 +20,8 @@
 ;; Directory in which the servers will be installed. Lsp Server Install Dir: ~/.emacs.d/.cache/camells
 (defcustom lsp-camel-jar-file (f-join lsp-server-install-dir "camells" lsp-camel-jar-name)
   "Camel Language server jar command."
-  :type 'string
   :group 'lsp-camel
-  :type 'file
+  :type 'directory
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-camel-jar-download-url

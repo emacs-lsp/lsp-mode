@@ -137,13 +137,18 @@
 
 (defcustom lsp-lua-color-mode "Semantic"
   "Color mode."
-  :type '(choice (:tag "Grammar" "Semantic"))
+  :type '(choice (const "Grammar")
+                 (const "Semantic"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-call-snippet "Disable"
   "Shows function call snippets."
-  :type '(choice (:tag "Disable" "Both" "Replace"))
+  :type '(choice
+          (const "Disable")
+          (const "Both")
+          (const "Replace")
+          )
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -165,7 +170,9 @@ fragment.  If it is set to `0`, this feature can be disabled."
 
 (defcustom lsp-lua-completion-keyword-snippet "Replace"
   "Shows keyword syntax snippets."
-  :type '(choice (:tag "Disable" "Both" "Replace"))
+  :type '(choice (const "Disable")
+                 (const "Both")
+                 (const "Replace"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -339,7 +346,8 @@ tolerance for this setting. Please adjust it to the appropriate value."
 (defcustom lsp-lua-runtime-file-encoding "utf8"
   "File encoding.  The `ansi' option is only available under the `Windows'
 platform."
-  :type '(choice (:tag "utf8" "ansi"))
+  :type '(choice (const "utf8")
+                 (const "ansi"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -383,7 +391,13 @@ and the language server will provide special support.
 
 (defcustom lsp-lua-runtime-version "Lua 5.4"
   "Lua runtime version."
-  :type '(choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))
+  :type '(choice
+                  (const "Lua 5.1")
+                  (const "Lua 5.2")
+                  (const "Lua 5.3")
+                  (const "Lua 5.4")
+                  (const "LuaJIT")
+                  )
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 

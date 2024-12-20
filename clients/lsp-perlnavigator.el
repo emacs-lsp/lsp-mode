@@ -63,33 +63,40 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
+(defconst lsp-perlnavigator--log-level-type
+  '(choice  (const "error")
+    (const "warning")
+    (const "info")
+    (const "hint")
+    (const "none")
+    ))
 (defcustom lsp-perlnavigator-severity5 "warning"
   "Editor Diagnostic severity level for Critic severity 5."
-  :type '(choice (:tag "error" "warning" "info" "hint" "none"))
+  :type lsp-perlnavigator--log-level-type
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-perlnavigator-severity4 "info"
   "Editor Diagnostic severity level for Critic severity 4."
-  :type '(choice (:tag "error" "warning" "info" "hint" "none"))
+  :type lsp-perlnavigator--log-level-type
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-perlnavigator-severity3 "hint"
   "Editor Diagnostic severity level for Critic severity 3."
-  :type '(choice (:tag "error" "warning" "info" "hint" "none"))
+  :type lsp-perlnavigator--log-level-type
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-perlnavigator-severity2 "hint"
   "Editor Diagnostic severity level for Critic severity 2."
-  :type '(choice (:tag "error" "warning" "info" "hint" "none"))
+  :type lsp-perlnavigator--log-level-type
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-perlnavigator-severity1 "hint"
   "Editor Diagnostic severity level for Critic severity 1."
-  :type '(choice (:tag "error" "warning" "info" "hint" "none"))
+  :type lsp-perlnavigator--log-level-type
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -107,7 +114,11 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
 
 (defcustom lsp-perlnavigator-trace-server "messages"
   "Traces the communication between VS Code and the language server."
-  :type '(choice (:tag "off" "messages" "verbose"))
+  :type '(choice
+           (const "off")
+           (const "messages")
+           (const "verbose")
+          )
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
