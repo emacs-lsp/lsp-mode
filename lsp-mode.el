@@ -3800,9 +3800,7 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "detail"
                                                                            "additionalTextEdits"
-                                                                           "command"
-                                                                           "insertTextFormat"
-                                                                           "insertTextMode"])))
+                                                                           "command"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))
                                                         (labelDetailsSupport . t)))
                                      (contextSupport . t)
