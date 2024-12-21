@@ -135,6 +135,7 @@ Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuG
          :name process-name
          :remote lsp-roslyn--pipe-name
          :sentinel sentinel
+         :service lsp--tcp-server-port
          :filter filter
          :noquery t)))))
 
