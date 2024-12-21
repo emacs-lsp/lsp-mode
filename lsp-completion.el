@@ -67,11 +67,6 @@ ignored."
   :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
-(defcustom lsp-completion-show-detail nil
-  "Whether or not to show detail of completion candidates."
-  :type 'boolean
-  :group 'lsp-completion)
-
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."
   :type 'boolean
@@ -248,18 +243,15 @@ The CLEANUP-FN will be called to cleanup."
                     (lsp:label-details-description? label-details?)))
            (-let (((&LabelDetails :detail? :description?) label-details?))
              (concat
-              (unless (and lsp-completion-show-detail
-                           detail?
-                           (string-prefix-p " " detail?))
+              (unless (and detail? (string-prefix-p " " detail?))
                 " ")
-              (when lsp-completion-show-detail
-                (s-replace "\r" "" detail?))
+              (s-replace "\r" "" detail?)
               (unless (or omit-description
                           (and description? (string-prefix-p " " description?)))
                 " ")
               (unless omit-description
                 description?))))
-          (lsp-completion-show-detail
+          (detail?
            (concat (unless (and detail? (string-prefix-p " " detail?))
                      " ")
                    (s-replace "\r" "" detail?))))))
