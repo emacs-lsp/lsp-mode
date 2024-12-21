@@ -93,14 +93,14 @@ Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
 
 (defun parse-rf-language-server-include-path-regex (vector)
   "Creates regexp to select files from workspace directory."
-  (let ((globs (if (eq vector [])
+  (let ((globs (if (equal vector [])
                         ["*.robot" "*.resource"]
                       vector)))
     (parse-rf-language-server-globs-to-regex globs)))
 
 (defun parse-rf-language-server-exclude-paths (seq)
   "Creates regexp to select files from workspace directory."
-  (if (eq lsp-rf-language-server-exclude-paths [])
+  (if (equal lsp-rf-language-server-exclude-paths [])
       seq
   (cl-delete-if (lambda (x) (string-match-p
                              (parse-rf-language-server-globs-to-regex
