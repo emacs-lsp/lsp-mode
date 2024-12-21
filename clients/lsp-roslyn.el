@@ -155,7 +155,7 @@ creates another process connecting to the named pipe it specifies."
                            :noquery t)))
     (accept-process-output command-process lsp-roslyn-server-timeout-seconds) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
-      (error "Failed to receieve pipe name from Roslyn server process"))
+      (error "Failed to receive pipe name from Roslyn server process"))
     (let* ((process-name (generate-new-buffer-name (format "%s-pipe" name)))
            (stderr-buf (format "*%s::stderr*" process-name))
            (communication-process
