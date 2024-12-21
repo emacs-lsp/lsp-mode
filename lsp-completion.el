@@ -245,7 +245,8 @@ The CLEANUP-FN will be called to cleanup."
              (concat
               (unless (and detail? (string-prefix-p " " detail?))
                 " ")
-              (s-replace "\r" "" detail?)
+              (when detail?
+                (s-replace "\r" "" detail?))
               (unless (or omit-description
                           (and description? (string-prefix-p " " description?)))
                 " ")
