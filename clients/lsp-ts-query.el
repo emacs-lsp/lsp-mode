@@ -66,7 +66,7 @@ name. Ordered from highest to lowest precedence."
   :group 'lsp-ts-query)
 
 (defconst lsp-ts-query--download-url-format
-  "https://github.com/ribru17/ts_query_ls/releases/latest/download/ts_query_ls-x86_64-pc-windows-msvc.zip"
+  "https://github.com/ribru17/ts_query_ls/releases/latest/download/ts_query_ls-%s-%s.%s"
   "Format to the download url link.")
 
 (defun lsp-ts-query--url ()
