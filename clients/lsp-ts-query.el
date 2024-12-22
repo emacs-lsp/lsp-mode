@@ -41,7 +41,7 @@ executable with variable `exec-path'."
 
 (defcustom lsp-ts-query-parser-install-directories
   (cl-remove-if #'nil
-                (vector (locate-user-emacs-file "tree-sitter")
+                (vector (expand-file-name (locate-user-emacs-file "tree-sitter"))
                         (and (featurep 'tree-sitter-langs)
                              (tree-sitter-langs--bin-dir))))
   "Where to look for parsers, of the form <lang>.(so|dll|dylib) or
@@ -90,8 +90,8 @@ and not the global storage."
           (pcase system-type ('windows-nt "ts_query_ls.exe") (_ "ts_query_ls"))))
 
 (lsp-register-custom-settings
- '(("ts_query_ls.parser_install_directories" lsp-ts-query-parser-install-directories)
-   ("ts_query_ls.language_retrieval_patterns" lsp-ts-query-language-retrieval-patterns)))
+ '(("ts_query_ls.settings.parser_install_directories" lsp-ts-query-parser-install-directories)
+   ("ts_query_ls.settings.language_retrieval_patterns" lsp-ts-query-language-retrieval-patterns)))
 
 (lsp-dependency
  'ts-query-ls
