@@ -1189,6 +1189,13 @@
     "debugger": "Not available"
   },
   {
+    "name": "ts-query",
+    "full-name": "Tree-sitter Query",
+    "server-name": "ts-query-lsp",
+    "server-url": "https://github.com/ribru17/ts_query_ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "typeprof",
     "full-name": "Ruby (TypeProf)",
     "server-name": "typeprof",
