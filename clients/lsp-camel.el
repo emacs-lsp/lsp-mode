@@ -21,7 +21,7 @@
 (defcustom lsp-camel-jar-file (f-join lsp-server-install-dir "camells" lsp-camel-jar-name)
   "Camel Language server jar command."
   :group 'lsp-camel
-  :type 'directory
+  :type 'file
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-camel-jar-download-url
