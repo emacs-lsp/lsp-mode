@@ -24,6 +24,7 @@
   * Add fennel support
   * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
   * Add TypeSpec support
+  * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
