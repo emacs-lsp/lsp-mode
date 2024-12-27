@@ -108,13 +108,14 @@ causing hangs."
 ;;        the embedded MATLAB Command Window. Currently, Emacs ignores these.
 ;;   - "matlab/connection/update/server”
 ;;        This message indicates a change in connection between the language server and MATLAB
-;;        (connecting, connected, or disconnected). In our case, VS Code updates its UI affordance to
-;;        show the active state of MATLAB.
+;;        (connecting, connected, or disconnected). In our case, VS Code updates its UI affordance
+;;        to show the active state of MATLAB.
 
 (lsp-register-custom-settings
  `(("MATLAB.indexWorkspace" nil t)
    ("MATLAB.installPath" (lambda () lsp-clients-matlab-install-path))
    ("MATLAB.matlabConnectionTiming" ,lsp-clients-matlab-connection-timing)
+   ("MATLAB.maxFileSizeForAnalysis" 0)
    ("MATLAB.telemetry" nil t)))
 
 (lsp-register-client
