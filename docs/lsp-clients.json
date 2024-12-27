@@ -647,6 +647,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "matlab",
+    "full-name": "MATLAB",
+    "server-name": "MATLAB language server",
+    "server-url": "https://github.com/mathworks/MATLAB-language-server",
+    "installation-url": "https://github.com/mathworks/MATLAB-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "meson",
     "full-name": "Meson",
     "server-name": "mesonlsp",
