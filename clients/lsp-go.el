@@ -412,7 +412,7 @@ flake.nix file with:
 
   (use-package nix-sandbox)
   (defun my/nix--lsp-go-wrapper (args)
-    (if-let ((sandbox (nix-current-sandbox)))
+    (if-let* ((sandbox (nix-current-sandbox)))
         (apply `nix-shell-command sandbox args)
       args))
   (setq lsp-go-server-path \"gopls\"
@@ -428,6 +428,16 @@ These are assembled from the customizable variables `lsp-go-server-path'
 and `lsp-go-server-wrapper-function'."
   (funcall lsp-go-server-wrapper-function (append (list lsp-go-gopls-server-path) lsp-go-gopls-server-args)))
 
+(defun lsp-go--cls-download-server (_client callback error-callback _update?)
+  "Install/update shader-ls language server using `go install'.
+
+Will invoke CALLBACK or ERROR-CALLBACK based on result.
+Will update if UPDATE? is t"
+  (lsp-async-start-process
+   callback
+   error-callback
+   "go" "install" "golang.org/x/tools/gopls@latest"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-go--server-command)
                   :activation-fn (lsp-activate-on "go" "go.mod")
@@ -438,7 +448,8 @@ and `lsp-go-server-wrapper-function'."
                   :library-folders-fn #'lsp-go--library-default-directories
                   :after-open-fn (lambda ()
                                    ;; https://github.com/golang/tools/commit/b2d8b0336
-                                   (setq-local lsp-completion-filter-on-incomplete nil))))
+                                   (setq-local lsp-completion-filter-on-incomplete nil))
+                  :download-server-fn #'lsp-go--cls-download-server))
 
 (lsp-consistency-check lsp-go)
 

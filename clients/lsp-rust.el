@@ -1446,7 +1446,7 @@ such as imports and dyn traits."
   :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-rust-analyzer-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-rust-analyzer-expand-macro ()

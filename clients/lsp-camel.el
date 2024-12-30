@@ -35,7 +35,7 @@
  'camells
  '(:system lsp-camel-jar-file)
  `(:download :url lsp-camel-jar-download-url
-	     :store-path lsp-camel-jar-file))
+             :store-path lsp-camel-jar-file))
 
 (defcustom lsp-camel-server-command `("java" "-jar" , lsp-camel-jar-file)
   "Camel server command."
@@ -50,16 +50,16 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-camel--create-connection)
-		  :activation-fn (lsp-activate-on "xml" "java")
-		  :priority 0
-		  :server-id 'camells
-		  :add-on? t
-		  :multi-root t
-		  :initialized-fn (lambda (workspace)
-				    (with-lsp-workspace workspace
-				      (lsp--set-configuration (lsp-configuration-section "camel"))))
-		  :download-server-fn (lambda (_client callback error-callback _update?)
-					(lsp-package-ensure 'camells callback error-callback))))
+                  :activation-fn (lsp-activate-on "xml" "java")
+                  :priority 0
+                  :server-id 'camells
+                  :add-on? t
+                  :multi-root t
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration (lsp-configuration-section "camel"))))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'camells callback error-callback))))
 
 (lsp-consistency-check lsp-camel)
 

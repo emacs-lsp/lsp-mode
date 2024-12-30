@@ -273,7 +273,7 @@ PATH is the current folder to be checked."
   "Build the file-segment string for the breadcrumb."
   (let* ((file-path (or (buffer-file-name) ""))
          (filename (f-filename file-path)))
-    (if-let ((file-ext (f-ext file-path)))
+    (if-let* ((file-ext (f-ext file-path)))
         (concat (lsp-icons-get-by-file-ext file-ext 'headerline-breadcrumb)
                 " "
                 (propertize filename
@@ -284,7 +284,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--face-for-path (dir)
   "Calculate the face for DIR."
-  (if-let ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
+  (if-let* ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
       (cl-labels ((check-severity
                    (severity)
                    (not (zerop (aref diags severity)))))
@@ -313,7 +313,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
-  (if-let ((root (lsp-headerline--workspace-root)))
+  (if-let* ((root (lsp-headerline--workspace-root)))
       (let ((segments (or
                        lsp-headerline--path-up-to-project-segments
                        (setq lsp-headerline--path-up-to-project-segments

@@ -49,7 +49,7 @@
 (defun lsp-lisp-alive-start-ls ()
   "Start the alive-lsp."
   (interactive)
-  (when-let ((exe (executable-find "sbcl"))
+  (when-let* ((exe (executable-find "sbcl"))
              ((lsp--port-available "localhost" lsp-lisp-alive-port)))
     (lsp-async-start-process #'ignore #'ignore
                              exe

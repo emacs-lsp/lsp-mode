@@ -45,6 +45,7 @@
 (define-obsolete-variable-alias 'lsp-enable-completion-at-point
   'lsp-completion-enable "lsp-mode 7.0.1")
 
+;;;###autoload
 (defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
@@ -183,7 +184,10 @@ See #2675"
   (let ((data (lsp:completion-item-data? item)))
     (when (lsp-member? data :import_for_trait_assoc_item)
       (unless (lsp-get data :import_for_trait_assoc_item)
-        (lsp-put data :import_for_trait_assoc_item :json-false)))))
+        (lsp-put data :import_for_trait_assoc_item :json-false)))
+    (when (lsp-member? data :for_ref)
+      (unless (lsp-get data :for_ref)
+         (lsp-put data :for_ref :json-false)))))
 
 (defun lsp-completion--resolve (item)
   "Resolve completion ITEM.
@@ -250,10 +254,10 @@ The CLEANUP-FN will be called to cleanup."
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
-              (when-let ((description (and label-details? (lsp:label-details-description label-details?))))
+              (when-let* ((description (and label-details? (lsp:label-details-description label-details?))))
                 (format " %s" description)))
             (when lsp-completion-show-kind
-              (when-let ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
+              (when-let* ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
@@ -350,7 +354,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                                  (setq fuz-queries
                                                        (plist-put fuz-queries start-point s))
                                                  s)))
-                                (label-len (length label)))
+                                (label-len (length label))
+                                (case-fold-search completion-ignore-case))
                            (when (string-match fuz-query label)
                              (put-text-property 0 label-len 'match-data (match-data) label)
                              (plist-put cand
@@ -412,7 +417,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
-  (if-let ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
+  (if-let* ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
       (let (matches start end)
         (while (progn (setq start (pop md) end (pop md))
                       (and start end))
@@ -701,7 +706,8 @@ Others: CANDIDATES"
   "Calculate fuzzy score for STR with query QUERY.
 The return is nil or in range of (0, inf)."
   (-when-let* ((md (cddr (or (get-text-property 0 'match-data str)
-                             (let ((re (lsp-completion--regex-fuz query)))
+                             (let ((re (lsp-completion--regex-fuz query))
+                                   (case-fold-search completion-ignore-case))
                                (when (string-match re str)
                                  (match-data))))))
                (start (pop md))
@@ -776,19 +782,9 @@ The return is nil or in range of (0, inf)."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
-(defun lsp-completion-passthrough-try-completion (string table pred point)
-  (let* ((completion-ignore-case t)
-         (try (completion-basic-try-completion string table pred point))
-         (newstr (car try))
-         (newpoint (cdr try))
-         (beforepoint (and try (substring newstr 0 newpoint))))
-    (if (and beforepoint
-             (string-prefix-p
-              beforepoint
-              (try-completion "" table pred)
-              t))
-        try
-      (cons string point))))
+(defun lsp-completion-passthrough-try-completion (string _table _pred point)
+  "Passthrough try function, always return the passed STRING and POINT."
+  (cons string point))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
   "Passthrough all completions from TABLE with PRED."
