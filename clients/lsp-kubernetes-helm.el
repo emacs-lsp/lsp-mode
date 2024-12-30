@@ -321,7 +321,7 @@ Remove buffer from all other schema associations."
                                        `(,(or (executable-find lsp-kubernetes-helm-ls-server-path)
                                             (lsp-package-path 'kubernetes-helm-language-server))
                                           ,@lsp-kubernetes-helm-server-arguments)))
-    :major-modes '(kubernetes-helm-mode)
+    :activation-fn (lsp-activate-on "helm-ls")
     :priority -1
     :server-id 'helm-ls
     :initialized-fn (lambda (workspace)
