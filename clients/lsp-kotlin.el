@@ -52,8 +52,7 @@ executable with `exec-path'."
   "Traces the communication between VSCode and the Kotlin language server."
   :type '(choice (const "off")
                  (const "messages")
-                 (const "verbose")
-         )
+                 (const "verbose"))
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
@@ -240,9 +239,9 @@ Requires lsp-inlay-hints-mode."
       (progn
         (require 'helm-source)
         (helm :sources (helm-make-source
-                           message 'helm-source-sync :candidates items
-                           :action '(("Identity" lambda (_)
-                                      (setq lsp-kotlin--helm-result (helm-marked-candidates)))))
+                        message 'helm-source-sync :candidates items
+                        :action '(("Identity" lambda (_)
+                                   (setq lsp-kotlin--helm-result (helm-marked-candidates)))))
               :buffer "*lsp-kotlin select*"
               :prompt message)
         lsp-kotlin--helm-result)
@@ -279,7 +278,7 @@ Requires lsp-inlay-hints-mode."
      (-if-let* ((option-items (-map (lambda (x)
                                       (list (lsp-get x :title)
                                             (lsp-get (lsp-get (lsp-get x :edit)
-                                                             :changes)
+                                                              :changes)
                                                      (intern (concat ":" (lsp--buffer-uri))))))
                                     member-options))
                 (selected-members (lsp-kotlin--completing-read-multiple "Select overrides" option-items nil)))

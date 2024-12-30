@@ -65,11 +65,11 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
 
 (defconst lsp-perlnavigator--log-level-type
   '(choice  (const "error")
-    (const "warning")
-    (const "info")
-    (const "hint")
-    (const "none")
-    ))
+            (const "warning")
+            (const "info")
+            (const "hint")
+            (const "none")))
+
 (defcustom lsp-perlnavigator-severity5 "warning"
   "Editor Diagnostic severity level for Critic severity 5."
   :type lsp-perlnavigator--log-level-type
@@ -114,11 +114,9 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
 
 (defcustom lsp-perlnavigator-trace-server "messages"
   "Traces the communication between VS Code and the language server."
-  :type '(choice
-           (const "off")
-           (const "messages")
-           (const "verbose")
-          )
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose"))
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -177,9 +175,9 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
 
 
 (defvar lsp-perlnavigator--autoinstall-binary-path
-    (let ((exe-name (if (eq system-type 'windows-nt) "perlnavigator.exe" "perlnavigator")))
-      (f-join lsp-perlnavigator-autoinstall-dir "latest" (concat "perlnavigator" lsp-perlnavigator--os-suffix) exe-name))
-    "The path to the automatically installed language server executable.")
+  (let ((exe-name (if (eq system-type 'windows-nt) "perlnavigator.exe" "perlnavigator")))
+    (f-join lsp-perlnavigator-autoinstall-dir "latest" (concat "perlnavigator" lsp-perlnavigator--os-suffix) exe-name))
+  "The path to the automatically installed language server executable.")
 
 (lsp-dependency
  'perlnavigator

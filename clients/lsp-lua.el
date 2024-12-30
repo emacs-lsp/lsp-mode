@@ -41,7 +41,8 @@
   :risky t
   :type 'file)
 
-(defcustom lsp-clients-emmy-lua-jar-path (f-join lsp-server-install-dir "EmmyLua-LS-all.jar")
+(defcustom lsp-clients-emmy-lua-jar-path
+  (f-join lsp-server-install-dir "EmmyLua-LS-all.jar")
   "Emmy Lua language server jar file."
   :group 'lsp-emmy-lua
   :version "8.0.0"
@@ -147,8 +148,7 @@
   :type '(choice
           (const "Disable")
           (const "Both")
-          (const "Replace")
-          )
+          (const "Replace"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -391,13 +391,11 @@ and the language server will provide special support.
 
 (defcustom lsp-lua-runtime-version "Lua 5.4"
   "Lua runtime version."
-  :type '(choice
-                  (const "Lua 5.1")
-                  (const "Lua 5.2")
-                  (const "Lua 5.3")
-                  (const "Lua 5.4")
-                  (const "LuaJIT")
-                  )
+  :type '(choice (const "Lua 5.1")
+                 (const "Lua 5.2")
+                 (const "Lua 5.3")
+                 (const "Lua 5.4")
+                 (const "LuaJIT"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -690,13 +688,13 @@ and `../lib` ,exclude `../lib/temp`.
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-roblox-language-server-download-url'."
   (lsp-download-install
-    (lambda (&rest _)
+   (lambda (&rest _)
      (set-file-modes lsp-lua-roblox-language-server-bin #o0700)
      (funcall callback))
-     error-callback
-     :url lsp-lua-roblox-server-download-url
-     :store-path lsp-lua-roblox-server-store-path
-     :decompress :zip))
+   error-callback
+   :url lsp-lua-roblox-server-download-url
+   :store-path lsp-lua-roblox-server-store-path
+   :decompress :zip))
 
 (lsp-register-client
  (make-lsp-client

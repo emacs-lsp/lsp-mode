@@ -43,11 +43,9 @@
 Set the generated help style with \='BlockComment\=' or \='LineComment\='.
 Disable the feature with \='Disabled\='."
   :type
-  '(choice
-    (const "Disabled")
-    (const "BlockComment")
-    (const "LineComment")
-   )
+  '(choice (const "Disabled")
+           (const "BlockComment")
+           (const "LineComment"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -87,12 +85,10 @@ When disabled, the entire folded region is hidden."
 Sets in a way that is compatible with PowerShell syntax.
 For more information about the brace styles please refer to https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81."
   :type
-  '(choice
-    (const "Custom")
-    (const "Allman")
-    (const "OTBS")
-    (const "Stroustrup")
-    )
+  '(choice (const "Custom")
+           (const "Allman")
+           (const "OTBS")
+           (const "Stroustrup"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -117,11 +113,9 @@ For more information about the brace styles please refer to https://github.com/P
 (defcustom lsp-pwsh-code-formatting-pipeline-indentation-style "NoIndentation"
   "Multi-line pipeline style settings."
   :type
-  '(choice
-    (const "IncreaseIndentationForFirstPipeline")
-    (const "IncreaseIndentationAfterEveryPipeline")
-    (const "NoIndentation")
-    )
+  '(choice (const "IncreaseIndentationForFirstPipeline")
+           (const "IncreaseIndentationAfterEveryPipeline")
+           (const "NoIndentation"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -186,13 +180,11 @@ associated conditional expression."
 Valid values are \='Diagnostic\=', \='Verbose\=', \='Normal\=',
  \='Warning\=', and \='Error\='"
   :type
-  '(choice
-    (const "Diagnostic")
-    (const "Verbose")
-    (const "Normal")
-    (const "Warning")
-    (const "Error")
-    )
+  '(choice (const "Diagnostic")
+           (const "Verbose")
+           (const "Normal")
+           (const "Warning")
+           (const "Error"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 

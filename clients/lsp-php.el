@@ -219,11 +219,9 @@ definitions are found in excluded files/folders."
 (lsp-defcustom lsp-intelephense-trace-server "off"
   "Traces the communication between VSCode and the intelephense
 language server."
-  :type '(choice
-          (const "off")
-          (const "messages")
-          (const "verbose")
-          )
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose"))
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1")
   :lsp-path "intelephense.trace.server")
