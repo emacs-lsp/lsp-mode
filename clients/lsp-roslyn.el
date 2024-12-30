@@ -59,7 +59,14 @@ Unused on other platforms.")
 
 (defcustom lsp-roslyn-server-log-level "Information"
   "Log level for the Roslyn language server."
-  :type '(choice (:tag "None" "Trace" "Debug" "Information" "Warning" "Error" "Critical"))
+  :type '(choice (const "None")
+          (const "Trace")
+          (const "Debug")
+          (const "Information")
+          (const "Warning")
+          (const "Error")
+          (const "Critical")
+           )
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
@@ -129,6 +136,7 @@ Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuG
          :name process-name
          :remote lsp-roslyn--pipe-name
          :sentinel sentinel
+         :service lsp--tcp-server-port
          :filter filter
          :noquery t)))))
 

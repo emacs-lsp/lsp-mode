@@ -172,6 +172,13 @@ Limited for performance reasons."
                                         (lsp-package-ensure 'yaml-language-server
                                                             callback error-callback))))
 
+(defconst lsp--yaml-schema-extension-type
+      '(list
+       (cons 'name  string)
+       (cons 'description string)
+       (cons 'url string)
+       (cons 'fileMatch (repeat string))))
+
 (defcustom lsp-yaml-schema-extensions '(((name . "Kubernetes v1.30.3")
                                           (description . "Kubernetes v1.30.3 manifest schema definition")
                                           (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
@@ -179,7 +186,7 @@ Limited for performance reasons."
   "User defined schemas that extend default schema store.
 Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
 `lsp-yaml-schema-store-uri'."
-  :type  '(list alist)
+  :type  '(repeat lsp--yaml-schema-extension-type)
   :group 'lsp-yaml
   :package-version '(lsp-mode . "9.0.1"))
 

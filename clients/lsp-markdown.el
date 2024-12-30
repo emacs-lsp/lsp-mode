@@ -59,8 +59,9 @@ For a complete list of plugins, check:
 
 For a complete list of plugins, check:
  https://github.com/unifiedjs/unified-language-server/blob/main/CONFIGURATION.md#re-using-settings"
-  :type '(choice (const "retext-english")
-                 (const "remark-parse"))
+  :type '(choice
+                  (const "retext-english")
+                  (const "remark-parse"))
   :group 'lsp-markdown
   :package-version '(lsp-mode . "8.0.0"))
 

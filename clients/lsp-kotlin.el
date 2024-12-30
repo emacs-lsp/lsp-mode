@@ -50,7 +50,10 @@ executable with `exec-path'."
 
 (defcustom lsp-kotlin-trace-server "off"
   "Traces the communication between VSCode and the Kotlin language server."
-  :type '(choice (:tag "off" "messages" "verbose"))
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose")
+         )
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
