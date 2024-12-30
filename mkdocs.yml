@@ -106,6 +106,7 @@ nav:
     - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
+    - Kubernetes Helm: page/lsp-kubernetes-helm.md
     - LanguageTool (LTEX): page/lsp-ltex.md
     - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
