@@ -26,6 +26,8 @@
 
 (require 'lsp-mode)
 
+(declare-function tree-sitter-langs--bin-dir "ext:tree-sitter-langs-build.el")
+
 (defgroup lsp-ts-query nil
   "LSP client for tree-sitter query."
   :group 'lsp-mode
