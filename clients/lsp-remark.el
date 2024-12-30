@@ -41,7 +41,7 @@
 
 (defcustom lsp-remark-server-command-args '("--stdio")
   "Command-line arguments for the markdown lsp server."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-remark
   :package-version '(lsp-mode . "9.0.0"))
 

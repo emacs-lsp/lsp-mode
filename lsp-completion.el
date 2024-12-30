@@ -184,7 +184,10 @@ See #2675"
   (let ((data (lsp:completion-item-data? item)))
     (when (lsp-member? data :import_for_trait_assoc_item)
       (unless (lsp-get data :import_for_trait_assoc_item)
-        (lsp-put data :import_for_trait_assoc_item :json-false)))))
+        (lsp-put data :import_for_trait_assoc_item :json-false)))
+    (when (lsp-member? data :for_ref)
+      (unless (lsp-get data :for_ref)
+         (lsp-put data :for_ref :json-false)))))
 
 (defun lsp-completion--resolve (item)
   "Resolve completion ITEM.

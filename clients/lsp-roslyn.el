@@ -59,7 +59,13 @@ Unused on other platforms.")
 
 (defcustom lsp-roslyn-server-log-level "Information"
   "Log level for the Roslyn language server."
-  :type '(choice (:tag "None" "Trace" "Debug" "Information" "Warning" "Error" "Critical"))
+  :type '(choice (const "None")
+                 (const "Trace")
+                 (const "Debug")
+                 (const "Information")
+                 (const "Warning")
+                 (const "Error")
+                 (const "Critical"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
@@ -129,6 +135,7 @@ Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuG
          :name process-name
          :remote lsp-roslyn--pipe-name
          :sentinel sentinel
+         :service lsp--tcp-server-port
          :filter filter
          :noquery t)))))
 
@@ -264,13 +271,13 @@ Assumes it was installed with the server install function."
          (is-arm64 (string-match-p "aarch64" system-configuration))
          (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64))))
     (if-let* ((platform-name (cond
-                             ((eq system-type 'gnu/linux) "linux")
-                             ((eq system-type 'darwin) "osx")
-                             ((eq system-type 'windows-nt) "win")))
-             (arch-name (cond
-                         (is-x64 "x64")
-                         (is-arm64 "arm64")
-                         (is-x86 "x86"))))
+                              ((eq system-type 'gnu/linux) "linux")
+                              ((eq system-type 'darwin) "osx")
+                              ((eq system-type 'windows-nt) "win")))
+              (arch-name (cond
+                          (is-x64 "x64")
+                          (is-arm64 "arm64")
+                          (is-x86 "x86"))))
         (format "%s-%s" platform-name arch-name)
       (error "Unsupported platform: %s (%s)" system-type system-configuration))))
 
