@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-magik/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-ts-query/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Magik - LSP Mode - LSP support for Emacs</title>
+        <title>Tree-sitter Query - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ge-smallworld-magik" class="md-skip">
+        <a href="#tree-sitter-query" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Magik
+              Tree-sitter Query
             
           </span>
         </div>
@@ -2018,190 +2018,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Magik
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-magik/" class="md-nav__link">
         Magik
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-yes" class="md-nav__link">
-    Debugger: Yes
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-download-url-lsp" class="md-nav__link">
-    lsp-magik-download-url-lsp
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-java-path" class="md-nav__link">
-    lsp-magik-java-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-lint-override-config-file" class="md-nav__link">
-    lsp-magik-lint-override-config-file
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-ls-path" class="md-nav__link">
-    lsp-magik-ls-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-product-dirs" class="md-nav__link">
-    lsp-magik-product-dirs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-cache-indexed-definitions-method-usages" class="md-nav__link">
-    lsp-magik-typing-cache-indexed-definitions-method-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
-    lsp-magik-typing-enable-checks
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-condition-usages" class="md-nav__link">
-    lsp-magik-typing-index-condition-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-global-usages" class="md-nav__link">
-    lsp-magik-typing-index-global-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-method-usages" class="md-nav__link">
-    lsp-magik-typing-index-method-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-slot-usages" class="md-nav__link">
-    lsp-magik-typing-index-slot-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-show-argument-inlay-hints" class="md-nav__link">
-    lsp-magik-typing-show-argument-inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-show-typing-inlay-hints" class="md-nav__link">
-    lsp-magik-typing-show-typing-inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-type-database-paths" class="md-nav__link">
-    lsp-magik-typing-type-database-paths
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-version" class="md-nav__link">
-    lsp-magik-version
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3051,11 +2872,113 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-ts-query/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tree-sitter Query
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Tree-sitter Query
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ts-query-executable" class="md-nav__link">
+    lsp-ts-query-executable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ts-query-language-retrieval-patterns" class="md-nav__link">
+    lsp-ts-query-language-retrieval-patterns
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ts-query-parser-install-directories" class="md-nav__link">
+    lsp-ts-query-parser-install-directories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ts-query-server-store-path" class="md-nav__link">
+    lsp-ts-query-server-store-path
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3766,8 +3689,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes" class="md-nav__link">
-    Debugger: Yes
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -3786,106 +3709,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-download-url-lsp" class="md-nav__link">
-    lsp-magik-download-url-lsp
+  <a href="#lsp-ts-query-executable" class="md-nav__link">
+    lsp-ts-query-executable
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-java-path" class="md-nav__link">
-    lsp-magik-java-path
+  <a href="#lsp-ts-query-language-retrieval-patterns" class="md-nav__link">
+    lsp-ts-query-language-retrieval-patterns
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-lint-override-config-file" class="md-nav__link">
-    lsp-magik-lint-override-config-file
+  <a href="#lsp-ts-query-parser-install-directories" class="md-nav__link">
+    lsp-ts-query-parser-install-directories
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-ls-path" class="md-nav__link">
-    lsp-magik-ls-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-product-dirs" class="md-nav__link">
-    lsp-magik-product-dirs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-cache-indexed-definitions-method-usages" class="md-nav__link">
-    lsp-magik-typing-cache-indexed-definitions-method-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
-    lsp-magik-typing-enable-checks
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-condition-usages" class="md-nav__link">
-    lsp-magik-typing-index-condition-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-global-usages" class="md-nav__link">
-    lsp-magik-typing-index-global-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-method-usages" class="md-nav__link">
-    lsp-magik-typing-index-method-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-index-slot-usages" class="md-nav__link">
-    lsp-magik-typing-index-slot-usages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-show-argument-inlay-hints" class="md-nav__link">
-    lsp-magik-typing-show-argument-inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-show-typing-inlay-hints" class="md-nav__link">
-    lsp-magik-typing-show-typing-inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-typing-type-database-paths" class="md-nav__link">
-    lsp-magik-typing-type-database-paths
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-magik-version" class="md-nav__link">
-    lsp-magik-version
+  <a href="#lsp-ts-query-server-store-path" class="md-nav__link">
+    lsp-ts-query-server-store-path
   </a>
   
 </li>
@@ -3931,7 +3777,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-magik.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-ts-query.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3950,89 +3796,36 @@
 
 
 <!-- Markdown content -->
-<h1 id="ge-smallworld-magik">GE Smallworld Magik<a class="headerlink" href="#ge-smallworld-magik" title="Permanent link">#</a></h1>
+<h1 id="tree-sitter-query">Tree-sitter Query<a class="headerlink" href="#tree-sitter-query" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/StevenLooman/magik-tools">magik-language-server</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/ribru17/ts_query_ls">ts-query-lsp</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>magik-ls</code><kbd>RET</kbd>.</p>
-<p><code>Automatic by lsp-mode with</code>lsp-install-server``</p>
-<h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-magik-download-url-lsp"><code>lsp-magik-download-url-lsp</code><a class="headerlink" href="#lsp-magik-download-url-lsp" title="Permanent link">#</a></h3>
+<h3 id="lsp-ts-query-executable"><code>lsp-ts-query-executable</code><a class="headerlink" href="#lsp-ts-query-executable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/StevenLooman/magik-tools/releases/download/0.10.1/magik-language-server-0.10.1.jar</code></p>
-<p>URL of LSP server to download.</p>
+<p><em>Default:</em> <code>ts_query_ls</code></p>
+<p>The ts-query-ls executable to use.</p>
+<p>Leave as just the executable name to use the default behavior of finding the
+executable with variable <code>exec-path</code>.</p>
 <hr />
-<h3 id="lsp-magik-java-path"><code>lsp-magik-java-path</code><a class="headerlink" href="#lsp-magik-java-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (t) nil (cond ((eq system-type 'windows-nt) (or (lsp-resolve-value (executable-find (expand-file-name bin/java (getenv JAVA_HOME)))) (lsp-resolve-value (executable-find java)))) (t java)))</code></p>
-<p>Path to Java Runtime, Java 11 minimum.</p>
-<hr />
-<h3 id="lsp-magik-lint-override-config-file"><code>lsp-magik-lint-override-config-file</code><a class="headerlink" href="#lsp-magik-lint-override-config-file" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
+<h3 id="lsp-ts-query-language-retrieval-patterns"><code>lsp-ts-query-language-retrieval-patterns</code><a class="headerlink" href="#lsp-ts-query-language-retrieval-patterns" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(vector string)</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Override path to magiklintrc.properties.</p>
+<p>A list of patterns to aid the LSP in finding a language, given a file
+path. Patterns must have one capture group which represents the language
+name. Ordered from highest to lowest precedence.</p>
 <hr />
-<h3 id="lsp-magik-ls-path"><code>lsp-magik-ls-path</code><a class="headerlink" href="#lsp-magik-ls-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>/home/runner/.emacs.d/.cache/lsp/magik-ls/magik-language-server-0.10.1.jar</code></p>
-<p>Path of the language server.</p>
+<h3 id="lsp-ts-query-parser-install-directories"><code>lsp-ts-query-parser-install-directories</code><a class="headerlink" href="#lsp-ts-query-parser-install-directories" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(vector string)</code></p>
+<p><em>Default:</em> <code>[/home/runner/.emacs.d/tree-sitter]</code></p>
+<p>Where to look for parsers, of the form <lang>.(so|dll|dylib) or
+tree-sitter-<lang>.wasm.</p>
 <hr />
-<h3 id="lsp-magik-product-dirs"><code>lsp-magik-product-dirs</code><a class="headerlink" href="#lsp-magik-product-dirs" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-string-vector</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>Paths to (compiled, containing a libs/ directory) products.</p>
-<hr />
-<h3 id="lsp-magik-typing-cache-indexed-definitions-method-usages"><code>lsp-magik-typing-cache-indexed-definitions-method-usages</code><a class="headerlink" href="#lsp-magik-typing-cache-indexed-definitions-method-usages" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Store and load the indexed definitions in the workspace folders.</p>
-<hr />
-<h3 id="lsp-magik-typing-enable-checks"><code>lsp-magik-typing-enable-checks</code><a class="headerlink" href="#lsp-magik-typing-enable-checks" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable typing checks.</p>
-<hr />
-<h3 id="lsp-magik-typing-index-condition-usages"><code>lsp-magik-typing-index-condition-usages</code><a class="headerlink" href="#lsp-magik-typing-index-condition-usages" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable indexing of usages of conditions by methods.</p>
-<hr />
-<h3 id="lsp-magik-typing-index-global-usages"><code>lsp-magik-typing-index-global-usages</code><a class="headerlink" href="#lsp-magik-typing-index-global-usages" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable indexing of usages of globals by methods.</p>
-<hr />
-<h3 id="lsp-magik-typing-index-method-usages"><code>lsp-magik-typing-index-method-usages</code><a class="headerlink" href="#lsp-magik-typing-index-method-usages" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable indexing of usages of methods by methods.</p>
-<hr />
-<h3 id="lsp-magik-typing-index-slot-usages"><code>lsp-magik-typing-index-slot-usages</code><a class="headerlink" href="#lsp-magik-typing-index-slot-usages" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable indexing of usages of slots by methods.</p>
-<hr />
-<h3 id="lsp-magik-typing-show-argument-inlay-hints"><code>lsp-magik-typing-show-argument-inlay-hints</code><a class="headerlink" href="#lsp-magik-typing-show-argument-inlay-hints" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Show (certain) argument name inlay hints.</p>
-<hr />
-<h3 id="lsp-magik-typing-show-typing-inlay-hints"><code>lsp-magik-typing-show-typing-inlay-hints</code><a class="headerlink" href="#lsp-magik-typing-show-typing-inlay-hints" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Show typing inlay hints.</p>
-<hr />
-<h3 id="lsp-magik-typing-type-database-paths"><code>lsp-magik-typing-type-database-paths</code><a class="headerlink" href="#lsp-magik-typing-type-database-paths" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-string-vector</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>Paths to type databases.</p>
-<hr />
-<h3 id="lsp-magik-version"><code>lsp-magik-version</code><a class="headerlink" href="#lsp-magik-version" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>0.10.1</code></p>
-<p>Version of LSP server.</p>
+<h3 id="lsp-ts-query-server-store-path"><code>lsp-ts-query-server-store-path</code><a class="headerlink" href="#lsp-ts-query-server-store-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/ts-query/</code></p>
+<p>The path to the file in which ts-query will be stored.</p>
 <hr />
 
 <!-- Source file information -->
@@ -4060,7 +3853,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-fennel/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Fennel" rel="prev">
+        <a href="../lsp-toml/" class="md-footer__link md-footer__link--prev" aria-label="Previous: TOML" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -4069,20 +3862,20 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
               <span class="md-footer__direction">
                 Previous
               </span>
-              Fennel
+              TOML
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-markdown/" class="md-footer__link md-footer__link--next" aria-label="Next: Markdown" rel="next">
+        <a href="../lsp-trunk/" class="md-footer__link md-footer__link--next" aria-label="Next: Trunk" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Markdown
+              Trunk
             </div>
           </div>
           <div class="md-footer__button md-icon">

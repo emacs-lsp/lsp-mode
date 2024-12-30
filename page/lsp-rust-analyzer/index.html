@@ -3583,6 +3583,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -5384,7 +5398,7 @@ context while the cursor is on any <code>async</code> or <code>await</code> keyw
  If set to nil rust-analyzer will try to keep import styles consistent per file.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-import-granularity"><code>lsp-rust-analyzer-import-granularity</code><a class="headerlink" href="#lsp-rust-analyzer-import-granularity" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const crate :doc Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.) (const module :doc Merge imports from the same module into a single use statement.) (const item :doc Don’t merge imports at all, creating one import per item.) (const preserve :doc Do not change the granularity of any imports. For auto-import this has the same effect as</code>"item"'))`</p>
+<p><em>Type:</em> <code>(choice (const :tag Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24. crate) (const :tag Merge imports from the same module into a single use statement. module) (const :tag Don’t merge imports at all, creating one import per item. item) (const :tag Do not change the granularity of any imports. For auto-import this has the same effect as</code>"item"' preserve))`</p>
 <p><em>Default:</em> <code>crate</code></p>
 <p>How imports should be grouped into use statements.</p>
 <hr />

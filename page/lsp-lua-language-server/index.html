@@ -3312,6 +3312,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -4487,12 +4501,12 @@
 <p>Location of Lua Language Server main.lua.</p>
 <hr />
 <h3 id="lsp-lua-color-mode"><code>lsp-lua-color-mode</code><a class="headerlink" href="#lsp-lua-color-mode" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Grammar Semantic))</code></p>
+<p><em>Type:</em> <code>(choice (const Grammar) (const Semantic))</code></p>
 <p><em>Default:</em> <code>Semantic</code></p>
 <p>Color mode.</p>
 <hr />
 <h3 id="lsp-lua-completion-call-snippet"><code>lsp-lua-completion-call-snippet</code><a class="headerlink" href="#lsp-lua-completion-call-snippet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Disable Both Replace))</code></p>
+<p><em>Type:</em> <code>(choice (const Disable) (const Both) (const Replace))</code></p>
 <p><em>Default:</em> <code>Disable</code></p>
 <p>Shows function call snippets.</p>
 <hr />
@@ -4510,7 +4524,7 @@ fragment.  If it is set to <code>0</code>, this feature can be disabled.</p>
 <p>Enable completion.</p>
 <hr />
 <h3 id="lsp-lua-completion-keyword-snippet"><code>lsp-lua-completion-keyword-snippet</code><a class="headerlink" href="#lsp-lua-completion-keyword-snippet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Disable Both Replace))</code></p>
+<p><em>Type:</em> <code>(choice (const Disable) (const Both) (const Replace))</code></p>
 <p><em>Default:</em> <code>Replace</code></p>
 <p>Shows keyword syntax snippets.</p>
 <hr />
@@ -4671,7 +4685,7 @@ tolerance for this setting. Please adjust it to the appropriate value.</p>
 <p>Whether or not to download the musl-compiled server.</p>
 <hr />
 <h3 id="lsp-lua-runtime-file-encoding"><code>lsp-lua-runtime-file-encoding</code><a class="headerlink" href="#lsp-lua-runtime-file-encoding" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag utf8 ansi))</code></p>
+<p><em>Type:</em> <code>(choice (const utf8) (const ansi))</code></p>
 <p><em>Default:</em> <code>utf8</code></p>
 <p>File encoding.  The <code>ansi</code> option is only available under the <code>Windows</code>
 platform.</p>
@@ -4708,7 +4722,7 @@ and the language server will provide special support.
 <p>Allows Unicode characters in name.</p>
 <hr />
 <h3 id="lsp-lua-runtime-version"><code>lsp-lua-runtime-version</code><a class="headerlink" href="#lsp-lua-runtime-version" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Lua 5.1 Lua 5.2 Lua 5.3 Lua 5.4 LuaJIT))</code></p>
+<p><em>Type:</em> <code>(choice (const Lua 5.1) (const Lua 5.2) (const Lua 5.3) (const Lua 5.4) (const LuaJIT))</code></p>
 <p><em>Default:</em> <code>Lua 5.4</code></p>
 <p>Lua runtime version.</p>
 <hr />

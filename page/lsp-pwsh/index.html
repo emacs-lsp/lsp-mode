@@ -3130,6 +3130,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -4139,12 +4153,12 @@ When disabled, the entire folded region is hidden.</p>
 <p>Places open brace on the same line as its associated statement.</p>
 <hr />
 <h3 id="lsp-pwsh-code-formatting-pipeline-indentation-style"><code>lsp-pwsh-code-formatting-pipeline-indentation-style</code><a class="headerlink" href="#lsp-pwsh-code-formatting-pipeline-indentation-style" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag IncreaseIndentationForFirstPipeline IncreaseIndentationAfterEveryPipeline NoIndentation))</code></p>
+<p><em>Type:</em> <code>(choice (const IncreaseIndentationForFirstPipeline) (const IncreaseIndentationAfterEveryPipeline) (const NoIndentation))</code></p>
 <p><em>Default:</em> <code>NoIndentation</code></p>
 <p>Multi-line pipeline style settings.</p>
 <hr />
 <h3 id="lsp-pwsh-code-formatting-preset"><code>lsp-pwsh-code-formatting-preset</code><a class="headerlink" href="#lsp-pwsh-code-formatting-preset" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Custom Allman OTBS Stroustrup))</code></p>
+<p><em>Type:</em> <code>(choice (const Custom) (const Allman) (const OTBS) (const Stroustrup))</code></p>
 <p><em>Default:</em> <code>Custom</code></p>
 <p>Sets the codeformatting options to follow the given indent style.
 Sets in a way that is compatible with PowerShell syntax.
@@ -4187,10 +4201,11 @@ associated conditional expression.</p>
 <p>Adds a space after an opening brace (<code>{</code>) and before a closing brace (<code>}</code>).</p>
 <hr />
 <h3 id="lsp-pwsh-developer-editor-services-log-level"><code>lsp-pwsh-developer-editor-services-log-level</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-log-level" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Diagnostic Verbose Normal Warning Error))</code></p>
+<p><em>Type:</em> <code>(choice (const Diagnostic) (const Verbose) (const Normal) (const Warning) (const Error))</code></p>
 <p><em>Default:</em> <code>Normal</code></p>
 <p>Sets the log level for the PowerShell Editor Services host executable.
-Valid values are <code>Diagnostic</code>, <code>Verbose</code>, <code>Normal</code>, <code>Warning</code>, and <code>Error</code></p>
+Valid values are =<code>Diagnostic=</code>, =<code>Verbose=</code>, =<code>Normal=</code>,
+ =<code>Warning=</code>, and =<code>Error=</code></p>
 <hr />
 <h3 id="lsp-pwsh-developer-editor-services-wait-for-debugger"><code>lsp-pwsh-developer-editor-services-wait-for-debugger</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-wait-for-debugger" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4225,11 +4240,11 @@ extension.</p>
 <p>GitHub latest asset template url.</p>
 <hr />
 <h3 id="lsp-pwsh-help-completion"><code>lsp-pwsh-help-completion</code><a class="headerlink" href="#lsp-pwsh-help-completion" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag Disabled BlockComment LineComment))</code></p>
+<p><em>Type:</em> <code>(choice (const Disabled) (const BlockComment) (const LineComment))</code></p>
 <p><em>Default:</em> <code>BlockComment</code></p>
 <p>Controls the comment-based help completion behavior triggered by typing <code>##</code>.
-Set the generated help style with <code>BlockComment</code> or <code>LineComment</code>.
-Disable the feature with <code>Disabled</code>.</p>
+Set the generated help style with =<code>BlockComment=</code> or =<code>LineComment=</code>.
+Disable the feature with =<code>Disabled=</code>.</p>
 <hr />
 <h3 id="lsp-pwsh-script-analysis-enable"><code>lsp-pwsh-script-analysis-enable</code><a class="headerlink" href="#lsp-pwsh-script-analysis-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>

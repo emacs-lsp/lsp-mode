@@ -2983,6 +2983,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -3818,7 +3832,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 Passed to the IDE server for source locations.</p>
 <hr />
 <h3 id="lsp-purescript-formatter"><code>lsp-purescript-formatter</code><a class="headerlink" href="#lsp-purescript-formatter" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag none purty purs-tidy pose))</code></p>
+<p><em>Type:</em> <code>(choice (const none) (const purty) (const purs-tidy) (const pose))</code></p>
 <p><em>Default:</em> <code>purty</code></p>
 <p>Tool to use to for formatting.
 Must be installed and on PATH (or npm installed with addNpmPath set)</p>

@@ -766,6 +766,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ts-query/</loc>
+         <lastmod>2024-12-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ttcn3/</loc>
          <lastmod>2024-12-30</lastmod>
          <changefreq>daily</changefreq>

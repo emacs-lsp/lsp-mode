@@ -3060,6 +3060,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -4009,32 +4023,32 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/).</p>
 <p>Path to perl tidy profile (no aliases, .bat files or ~/).</p>
 <hr />
 <h3 id="lsp-perlnavigator-severity1"><code>lsp-perlnavigator-severity1</code><a class="headerlink" href="#lsp-perlnavigator-severity1" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
+<p><em>Type:</em> <code>(choice (const error) (const warning) (const info) (const hint) (const none))</code></p>
 <p><em>Default:</em> <code>hint</code></p>
 <p>Editor Diagnostic severity level for Critic severity 1.</p>
 <hr />
 <h3 id="lsp-perlnavigator-severity2"><code>lsp-perlnavigator-severity2</code><a class="headerlink" href="#lsp-perlnavigator-severity2" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
+<p><em>Type:</em> <code>(choice (const error) (const warning) (const info) (const hint) (const none))</code></p>
 <p><em>Default:</em> <code>hint</code></p>
 <p>Editor Diagnostic severity level for Critic severity 2.</p>
 <hr />
 <h3 id="lsp-perlnavigator-severity3"><code>lsp-perlnavigator-severity3</code><a class="headerlink" href="#lsp-perlnavigator-severity3" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
+<p><em>Type:</em> <code>(choice (const error) (const warning) (const info) (const hint) (const none))</code></p>
 <p><em>Default:</em> <code>hint</code></p>
 <p>Editor Diagnostic severity level for Critic severity 3.</p>
 <hr />
 <h3 id="lsp-perlnavigator-severity4"><code>lsp-perlnavigator-severity4</code><a class="headerlink" href="#lsp-perlnavigator-severity4" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
+<p><em>Type:</em> <code>(choice (const error) (const warning) (const info) (const hint) (const none))</code></p>
 <p><em>Default:</em> <code>info</code></p>
 <p>Editor Diagnostic severity level for Critic severity 4.</p>
 <hr />
 <h3 id="lsp-perlnavigator-severity5"><code>lsp-perlnavigator-severity5</code><a class="headerlink" href="#lsp-perlnavigator-severity5" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
+<p><em>Type:</em> <code>(choice (const error) (const warning) (const info) (const hint) (const none))</code></p>
 <p><em>Default:</em> <code>warning</code></p>
 <p>Editor Diagnostic severity level for Critic severity 5.</p>
 <hr />
 <h3 id="lsp-perlnavigator-trace-server"><code>lsp-perlnavigator-trace-server</code><a class="headerlink" href="#lsp-perlnavigator-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag off messages verbose))</code></p>
+<p><em>Type:</em> <code>(choice (const off) (const messages) (const verbose))</code></p>
 <p><em>Default:</em> <code>messages</code></p>
 <p>Traces the communication between VS Code and the language server.</p>
 <hr />

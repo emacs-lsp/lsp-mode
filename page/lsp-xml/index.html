@@ -2874,6 +2874,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../lsp-ts-query/" class="md-nav__link">
+        Tree-sitter Query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lsp-trunk/" class="md-nav__link">
         Trunk
       </a>
@@ -4422,7 +4436,7 @@ Example: <tag/> -&gt; <tag /></p>
 <p>Enable/disable all validation.</p>
 <hr />
 <h3 id="lsp-xml-validation-no-grammar"><code>lsp-xml-validation-no-grammar</code><a class="headerlink" href="#lsp-xml-validation-no-grammar" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag ignore hint info warning error))</code></p>
+<p><em>Type:</em> <code>(choice (const ignore) (const hint) (const info) (const warning) (const error))</code></p>
 <p><em>Default:</em> <code>hint</code></p>
 <p>The message severity when a document has no associated
   grammar.</p>
