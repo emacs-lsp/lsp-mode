@@ -229,19 +229,19 @@ Limited for performance reasons."
 Set FORCE-DOWNLOAD to non-nil to force re-download the database.
 FORCE-DOWNLOADING is set to t by default"
   (interactive "P")
-  (let (local-db-directory (file-name-directory lsp-kubernetes-helm-yaml-schema-store-local-db))
+  (let (local-db-directory (file-name-directory lsp-kubernetes-helm-yaml-ls-schema-store-local-db))
     (force-download (or force-download t))
-    (when (not (file-exists-p lsp-kubernetes-helm-yaml-schema-store-local-db))
+    (when (not (file-exists-p lsp-kubernetes-helm-yaml-ls-schema-store-local-db))
       (unless (file-directory-p local-db-directory)
         (mkdir local-db-directory t))
-      (url-copy-file lsp-yaml-schema-store-uri lsp-kubernetes-helm-yaml-schema-store-local-db force-download))))
+      (url-copy-file lsp-kubernetes-helm-yaml-ls-schema-store-uri lsp-kubernetes-helm-yaml-ls-schema-store-local-db force-download))))
 
 (defun lsp-kubernetes-helm--get-available-schemas ()
   "Get list of supported schemas."
   (when (and lsp-kubernetes-helm-yaml-ls-schema-store-enable
-          (not lsp-kubernetes-helm--schema-store-schemas))
+          (not lsp-kubernetes-helm-yaml-ls--schema-store))
     (lsp-kubernetes-helm-download-or-refresh-schema-store-db nil)
-    (setq lsp-kubernetes-helm--schema-store-schemas
+    (setq lsp-kubernetes-helm-yaml-ls--schema-store
           (alist-get 'schemas (json-read-file lsp-kubernetes-helm-yaml-schema-store-local-db))))
   (seq-concatenate 'list lsp-kubernetes-helm-yaml-ls-schema-store-extensions lsp-kubernetes-helm-yaml-ls--schema-store))
 
