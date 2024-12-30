@@ -106,7 +106,6 @@ nav:
     - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
-    - Kubernetes Helm: page/lsp-kubernetes-helm.md
     - LanguageTool (LTEX): page/lsp-ltex.md
     - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
@@ -189,6 +188,7 @@ nav:
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
+    - YAML (helm-ls): page/lsp-kubernetes-helm.md
     - YANG: page/lsp-yang.md
     - Zig: page/lsp-zig.md
   - Debugging:
