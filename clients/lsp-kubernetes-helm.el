@@ -229,8 +229,8 @@ Limited for performance reasons."
 Set FORCE-DOWNLOAD to non-nil to force re-download the database.
 FORCE-DOWNLOADING is set to t by default"
   (interactive "P")
-  (let (local-db-directory (file-name-directory lsp-kubernetes-helm-yaml-ls-schema-store-local-db))
-    (force-download (or force-download t))
+  (let ((local-db-directory (file-name-directory lsp-kubernetes-helm-yaml-ls-schema-store-local-db))
+         (force-download (or force-download t)))
     (when (not (file-exists-p lsp-kubernetes-helm-yaml-ls-schema-store-local-db))
       (unless (file-directory-p local-db-directory)
         (mkdir local-db-directory t))
@@ -242,7 +242,7 @@ FORCE-DOWNLOADING is set to t by default"
           (not lsp-kubernetes-helm-yaml-ls--schema-store))
     (lsp-kubernetes-helm-download-or-refresh-schema-store-db nil)
     (setq lsp-kubernetes-helm-yaml-ls--schema-store
-          (alist-get 'schemas (json-read-file lsp-kubernetes-helm-yaml-schema-store-local-db))))
+          (alist-get 'schemas (json-read-file lsp-kubernetes-helm-yaml-ls-schema-store-local-db))))
   (seq-concatenate 'list lsp-kubernetes-helm-yaml-ls-schema-store-extensions lsp-kubernetes-helm-yaml-ls--schema-store))
 
 (defun lsp-kubernetes-helm-set-buffer-schema (schema-uri-string)
