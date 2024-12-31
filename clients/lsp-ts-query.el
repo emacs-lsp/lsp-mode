@@ -91,10 +91,6 @@ and not the global storage."
   (f-join lsp-ts-query-server-store-path
           (pcase system-type ('windows-nt "ts_query_ls.exe") (_ "ts_query_ls"))))
 
-(lsp-register-custom-settings
- '(("ts_query_ls.settings.parser_install_directories" lsp-ts-query-parser-install-directories)
-   ("ts_query_ls.settings.language_retrieval_patterns" lsp-ts-query-language-retrieval-patterns)))
-
 (lsp-dependency
  'ts-query-ls
  '(:system "ts_query_ls")
@@ -112,6 +108,14 @@ or FILE-NAME."
                (equal "scm" ext))
       t)))
 
+;; (lsp-register-custom-settings
+;;  '(("ts_query_ls.parser_install_directories" lsp-ts-query-parser-install-directories)
+;;    ("ts_query_ls.language_retrieval_patterns" lsp-ts-query-language-retrieval-patterns)))
+
+(defun lsp-ts-query--make-init-options ()
+  "Init options for ts-query server."
+  `( :parser_install_directories ,lsp-ts-query-parser-install-directories))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -123,6 +127,7 @@ or FILE-NAME."
   :activation-fn #'lsp-ts-query--check-enabled
   :priority -1
   :add-on? t
+  :initialization-options #'lsp-ts-query--make-init-options
   :server-id 'ts-query-ls
   :download-server-fn
   (lambda (_client callback error-callback _update?)
