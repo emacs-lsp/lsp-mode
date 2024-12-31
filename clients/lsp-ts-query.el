@@ -108,13 +108,10 @@ or FILE-NAME."
                (equal "scm" ext))
       t)))
 
-;; (lsp-register-custom-settings
-;;  '(("ts_query_ls.parser_install_directories" lsp-ts-query-parser-install-directories)
-;;    ("ts_query_ls.language_retrieval_patterns" lsp-ts-query-language-retrieval-patterns)))
-
 (defun lsp-ts-query--make-init-options ()
   "Init options for ts-query server."
-  `( :parser_install_directories ,lsp-ts-query-parser-install-directories))
+  `( :parser_install_directories ,lsp-ts-query-parser-install-directories
+     :language_retrieval_patterns ,lsp-ts-query-language-retrieval-patterns))
 
 (lsp-register-client
  (make-lsp-client
