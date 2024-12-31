@@ -249,7 +249,6 @@ The CLEANUP-FN will be called to cleanup."
   "Annotate ITEM detail."
   (-let (((completion-item &as &CompletionItem :detail? :kind? :label-details?)
           (get-text-property 0 'lsp-completion-item item)))
-    (lsp-completion--resolve-async item #'ignore)
 
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
