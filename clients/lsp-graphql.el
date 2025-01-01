@@ -50,8 +50,8 @@
 
 (defun lsp-graphql-activate-p (filename &optional _)
   "Check if the GraphQL language server should be enabled based on FILENAME."
-  (let ((target-extensions (mapconcat 'identity lsp-graphql-target-file-extensions "\\|")))
-    (or (string-match-p (format "\\.%s\\'" target-extensions) filename)
+  (let ((target-extensions (mapconcat (lambda (e) (format "\\.%s\\'" e)) lsp-graphql-target-file-extensions "\\|")))
+    (or (string-match-p target-extensions filename)
         (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode)
              (not (derived-mode-p 'json-mode))))))
 
