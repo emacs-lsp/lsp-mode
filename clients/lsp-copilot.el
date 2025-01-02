@@ -132,35 +132,34 @@ This function is automatically called during the client initialization if needed
         (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :user) response))
 
           ;; Bail if already signed in
-          (when (s-equals-p status "AlreadySignedIn")
-            (lsp-message "Copilot :: Already signed in as %s" user))
-
-          (if (display-graphic-p)
-              (progn
-                (gui-set-selection 'CLIPBOARD user-code)
-                (read-from-minibuffer (format "Your one-time code %s is copied. Press \
+          (if (s-equals-p status "AlreadySignedIn")
+              (lsp--info "Copilot :: Already signed in as %s" user)
+            (if (display-graphic-p)
+                (progn
+                  (gui-set-selection 'CLIPBOARD user-code)
+                  (read-from-minibuffer (format "Your one-time code %s is copied. Press \
 ENTER to open GitHub in your browser. If your browser does not open \
 automatically, browse to %s." user-code verification-uri))
-                (browse-url verification-uri)
-                (read-from-minibuffer "Press ENTER if you finish authorizing."))
-            ;; Console:
-            (read-from-minibuffer (format "First copy your one-time code: %s. Press ENTER to continue." user-code))
-            (read-from-minibuffer (format "Please open %s in your browser. Press ENTER if you finish authorizing." verification-uri)))
+                  (browse-url verification-uri)
+                  (read-from-minibuffer "Press ENTER if you finish authorizing."))
+              ;; Console:
+              (read-from-minibuffer (format "First copy your one-time code: %s. Press ENTER to continue." user-code))
+              (read-from-minibuffer (format "Please open %s in your browser. Press ENTER if you finish authorizing." verification-uri)))
 
-          (lsp-message "Verifying...")
-          (-let* ((confirmResponse (lsp-request "signInConfirm" (list :userCode user-code)))
-                  ((&copilot-ls:SignInConfirmResponse? :status :user) confirmResponse))
-            (when (s-equals-p status "NotAuthorized")
-              (user-error "User %s is not authorized" user))
-            (lsp-message "User %s is authorized: %s" user status))
+            (lsp--info "Verifying...")
+            (-let* ((confirmResponse (lsp-request "signInConfirm" (list :userCode user-code)))
+                    ((&copilot-ls:SignInConfirmResponse? :status :user) confirmResponse))
+              (when (s-equals-p status "NotAuthorized")
+                (user-error "User %s is not authorized" user))
+              (lsp--info "User %s is authorized: %s" user status))
 
-          ;; Do we need to confirm?
-          (-let* ((checkStatusResponse (lsp-request "checkStatus" '(:dummy "dummy")))
-                  ((&copilot-ls:CheckStatusResponse? :status :user) checkStatusResponse))
-            (when (s-equals-p status "NotAuthorized")
-              (user-error "User %s is not authorized" user))
+            ;; Do we need to confirm?
+            (-let* ((checkStatusResponse (lsp-request "checkStatus" '(:dummy "dummy")))
+                    ((&copilot-ls:CheckStatusResponse? :status :user) checkStatusResponse))
+              (when (s-equals-p status "NotAuthorized")
+                (user-error "User %s is not authorized" user))
 
-            (lsp-message "Authenticated as %s" user)))))))
+              (lsp--info "Authenticated as %s" user))))))))
 
 (defun lsp-copilot-logout ()
   "Logout from Copilot."
