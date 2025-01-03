@@ -1307,6 +1307,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "helm",
+    "full-name": "YAML (helm-ls)",
+    "server-name": "helm-ls",
+    "server-url": "https://github.com/mrjosh/helm-ls",
+    "installation-url": "https://github.com/mrjosh/helm-ls?tab=readme-ov-file#installation-with-a-package-manager",
+    "debugger": "Not available"
+  },
+  {
     "name": "yang",
     "full-name": "YANG",
     "server-name": "yang-lsp",
