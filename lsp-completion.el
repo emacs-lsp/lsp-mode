@@ -168,10 +168,13 @@ This will help minimize popup flickering issue in `company-mode'."
 (cl-defun lsp-completion--make-item (item &key markers prefix)
   "Make completion item from lsp ITEM and with MARKERS and PREFIX."
   (-let (((&CompletionItem :label
+                           :insert-text?
                            :sort-text?
                            :_emacsStartPoint start-point)
           item))
-    (propertize label
+    (propertize (if insert-text?
+                    (concat label "~")
+                  label)
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
