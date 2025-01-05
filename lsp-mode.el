@@ -9610,10 +9610,12 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package--alist "ext:package")
 
 (defun lsp-package-version ()
-  "Returns a string with the version of the lsp-mode package"
-  (package-version-join
-   (package-desc-version
-    (car (alist-get 'lsp-mode (package--alist))))))
+  "Returns a string with the version of the lsp-mode package."
+  (condition-case nil
+      (package-version-join
+       (package-desc-version
+        (car (alist-get 'lsp-mode (package--alist)))))
+    (error "9.0.1")))
 
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
