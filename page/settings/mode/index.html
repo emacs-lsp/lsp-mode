@@ -1226,8 +1226,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lsp-inline-completion-accepted-hook" class="md-nav__link">
-    lsp-inline-completion-accepted-hook
+  <a href="#lsp-inline-completion-accepted-functions" class="md-nav__link">
+    lsp-inline-completion-accepted-functions
   </a>
   
 </li>
@@ -4854,8 +4854,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lsp-inline-completion-accepted-hook" class="md-nav__link">
-    lsp-inline-completion-accepted-hook
+  <a href="#lsp-inline-completion-accepted-functions" class="md-nav__link">
+    lsp-inline-completion-accepted-functions
   </a>
   
 </li>
@@ -5396,7 +5396,7 @@ for a new workspace.</p>
 <h3 id="lsp-before-inline-completion-hook"><code>lsp-before-inline-completion-hook</code><a class="headerlink" href="#lsp-before-inline-completion-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Hooks run before starting code suggestions</p>
+<p>Hooks run before starting code suggestions.</p>
 <hr />
 <h3 id="lsp-before-open-hook"><code>lsp-before-open-hook</code><a class="headerlink" href="#lsp-before-open-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
@@ -5661,11 +5661,11 @@ call-site).</p>
 <p><em>Default:</em> <code>%s</code></p>
 <p>Format string for variable inlays (part of the inlay face).</p>
 <hr />
-<h3 id="lsp-inline-completion-accepted-hook"><code>lsp-inline-completion-accepted-hook</code><a class="headerlink" href="#lsp-inline-completion-accepted-hook" title="Permanent link">#</a></h3>
+<h3 id="lsp-inline-completion-accepted-functions"><code>lsp-inline-completion-accepted-functions</code><a class="headerlink" href="#lsp-inline-completion-accepted-functions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Hooks executed after accepting a code suggestion. The hooks receive the
-text range that was updated by the completion</p>
+<p>Functions executed after accepting a code suggestion.
+The functions receive the text range that was updated by the completion.</p>
 <hr />
 <h3 id="lsp-inline-completion-before-show-hook"><code>lsp-inline-completion-before-show-hook</code><a class="headerlink" href="#lsp-inline-completion-before-show-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
@@ -5675,7 +5675,7 @@ text range that was updated by the completion</p>
 <h3 id="lsp-inline-completion-cancelled-hook"><code>lsp-inline-completion-cancelled-hook</code><a class="headerlink" href="#lsp-inline-completion-cancelled-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Hooks executed after cancelling the completion UI</p>
+<p>Hooks executed after cancelling the completion UI.</p>
 <hr />
 <h3 id="lsp-inline-completion-enable"><code>lsp-inline-completion-enable</code><a class="headerlink" href="#lsp-inline-completion-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -5686,17 +5686,17 @@ text range that was updated by the completion</p>
 <p><em>Type:</em> <code>number</code></p>
 <p><em>Default:</em> <code>2</code></p>
 <p>The number of seconds before trying to fetch inline completions, when
-lsp-inline-completion-mode is active</p>
+lsp-inline-completion-mode is active.</p>
 <hr />
 <h3 id="lsp-inline-completion-inhibit-predicates"><code>lsp-inline-completion-inhibit-predicates</code><a class="headerlink" href="#lsp-inline-completion-inhibit-predicates" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat function)</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion</p>
+<p>When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion.</p>
 <hr />
 <h3 id="lsp-inline-completion-mode-inhibit-when-company-active"><code>lsp-inline-completion-mode-inhibit-when-company-active</code><a class="headerlink" href="#lsp-inline-completion-mode-inhibit-when-company-active" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>If the inline completion mode should avoid calling completions when company is active</p>
+<p>If the inline completion mode should avoid calling completions when company is active.</p>
 <hr />
 <h3 id="lsp-inline-completion-overlay-face"><code>lsp-inline-completion-overlay-face</code><a class="headerlink" href="#lsp-inline-completion-overlay-face" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
