@@ -124,7 +124,7 @@ have more false positives than usual."
   :lsp-path "elp.highlightDynamic.enable")
 
 (lsp-defcustom lsp-elp-hover-actions-doc-links-enable nil
-  "Whether to show Hover Actions of type 'docs'. Only applies when
+  "Whether to show Hover Actions of type `docs'. Only applies when
 `#elp.hoverActions.enable#` is set."
   :type 'boolean
   :group 'lsp-erlang-elp
@@ -216,7 +216,6 @@ Code Lenses. Only applies when `#elp.lens.enabled` and
   :lsp-path "elp.typesOnHover.enable")
 
 ;; ---------------------------------------------------------------------
-
 
 ;; erlang-ls
 
