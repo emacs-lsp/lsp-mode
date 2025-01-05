@@ -26,6 +26,8 @@
   * Add TypeSpec support
   * Add Tree-sitter query support
   * Add [[https://github.com/mrjosh/helm-ls][helm-ls]] (YAML Kubernetes Helm) support.
+  * Add ~lsp-bash-allowed-shells~ to configure supported ~sh-shell~ values.
+  * Add hint about ~activation-fn~ for unsupported buffers.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
