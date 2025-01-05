@@ -616,6 +616,12 @@ which overrides any value that would otherwise be inherited from
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-rust-analyzer-cfg-set-test t
+  "force rust-analyzer to set `#[cfg(test)]` for the current crate / workspace."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-rust-analyzer-use-client-watching t
   "Use client watching"
   :type 'boolean
@@ -754,10 +760,10 @@ them with `crate' or the crate name they refer to."
 (defcustom lsp-rust-analyzer-import-granularity "crate"
   "How imports should be grouped into use statements."
   :type '(choice
-          (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
-          (const "module" :doc "Merge imports from the same module into a single use statement.")
-          (const "item" :doc "Don’t merge imports at all, creating one import per item.")
-          (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+          (const :tag "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24." "crate" )
+          (const :tag "Merge imports from the same module into a single use statement." "module" )
+          (const :tag "Don’t merge imports at all, creating one import per item." "item" )
+          (const :tag "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'" "preserve" ))
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -1440,7 +1446,7 @@ such as imports and dyn traits."
   :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-rust-analyzer-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-rust-analyzer-expand-macro ()
@@ -1698,6 +1704,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :files ( :exclude ,lsp-rust-analyzer-exclude-globs
              :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
              :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
+    :cfg ( :setTest ,(lsp-json-bool lsp-rust-analyzer-cfg-set-test) )
     :cargo ( :allFeatures ,(lsp-json-bool lsp-rust-all-features)
              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
              :features ,lsp-rust-features

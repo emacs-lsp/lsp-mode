@@ -266,7 +266,7 @@ TEST-BODY can interact with the mock server."
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
   (let ((initial-serv-count (lsp-test-total-folder-count)))
-    (when-let ((buffer (get-buffer "*mock-server::stderr*")))
+    (when-let* ((buffer (get-buffer "*mock-server::stderr*")))
       (kill-buffer buffer))
     (lsp-mock-run-with-mock-server
      (should (eq (lsp-test-total-folder-count) (1+ initial-serv-count)))

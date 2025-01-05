@@ -31,7 +31,7 @@
     (run-with-timer
      0.001 nil
      (lambda ()
-       (if-let ((result (eval form)))
+       (if-let* ((result (eval form)))
            (deferred:callback-post it result)
          (lsp-test--wait-for form it))))))
 

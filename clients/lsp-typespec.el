@@ -48,7 +48,7 @@
 (defun lsp-typespec--server-executable-path ()
   "Return the typespec-lsp server command."
   (or
-   (when-let ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
+   (when-let* ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
      (let ((tsp-server-local-path (f-join workspace-folder "node_modules" ".bin"
                                       (if (eq system-type 'windows-nt) "tsp-server.cmd" "tsp-server"))))
        (when (f-exists? tsp-server-local-path)
@@ -70,7 +70,7 @@
 
 (defun lsp-typespec-semantic-tokens-refresh (&rest _)
   "Force refresh semantic tokens."
-  (when-let ((workspace (and lsp-semantic-tokens-enable
+  (when-let* ((workspace (and lsp-semantic-tokens-enable
                              (lsp-find-workspace 'typespec-lsp (buffer-file-name)))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)

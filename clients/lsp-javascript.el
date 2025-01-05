@@ -157,7 +157,7 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing tsserver and lib*.d.ts files to use."
   :type '(repeat string)
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-disable-automatic-type-acquisition nil
@@ -165,7 +165,7 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
 Automatic type acquisition fetches `@types` packages from npm to improve
 IntelliSense for external libraries."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-npm nil
@@ -173,32 +173,32 @@ IntelliSense for external libraries."
 Requires using TypeScript 2.3.4 or newer in the
 workspace."
   :type '(repeat string)
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-check-npm-is-installed t
   "Check if NPM is installed for Automatic Type Acquisition."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in JavaScript files."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in TypeScript files."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-implementations-code-lens-enabled nil
   "Enable/disable implementations CodeLens.
 This CodeLens shows the implementers of an interface."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-log "off"
@@ -211,7 +211,7 @@ from your project."
           (const "terse")
           (const "normal")
           (const "verbose"))
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-plugin-paths nil
@@ -787,7 +787,7 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
 (defun lsp-javascript-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-clients-typescript-require-resolve (&optional dir)
@@ -891,7 +891,7 @@ finding the executable with variable `exec-path'."
 (defun lsp-clients-flow-tag-file-present-p (file-name)
   "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
-  (if-let ((buffer (find-buffer-visiting file-name)))
+  (if-let* ((buffer (find-buffer-visiting file-name)))
       (with-current-buffer buffer
         (lsp-clients-flow-tag-string-present-p))
     (with-temp-buffer

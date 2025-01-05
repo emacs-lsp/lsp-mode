@@ -59,7 +59,13 @@ Unused on other platforms.")
 
 (defcustom lsp-roslyn-server-log-level "Information"
   "Log level for the Roslyn language server."
-  :type '(choice (:tag "None" "Trace" "Debug" "Information" "Warning" "Error" "Critical"))
+  :type '(choice (const "None")
+                 (const "Trace")
+                 (const "Debug")
+                 (const "Information")
+                 (const "Warning")
+                 (const "Error")
+                 (const "Critical"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
@@ -81,7 +87,7 @@ Unused on other platforms.")
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
-(defcustom lsp-roslyn-package-version "4.12.0-3.24470.11"
+(defcustom lsp-roslyn-package-version "4.13.0-2.24564.12"
   "Version of the Roslyn package to install.
 Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuGet/Microsoft.CodeAnalysis.LanguageServer.win-x64"
   :type 'string
@@ -125,9 +131,11 @@ Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuG
                    ,lsp-roslyn--stdpipe-path "."
                    ,lsp-roslyn--pipe-name))))
      (t (make-network-process
+         :service "roslyn"
          :name process-name
          :remote lsp-roslyn--pipe-name
          :sentinel sentinel
+         :service lsp--tcp-server-port
          :filter filter
          :noquery t)))))
 
@@ -154,14 +162,14 @@ creates another process connecting to the named pipe it specifies."
                            :noquery t)))
     (accept-process-output command-process lsp-roslyn-server-timeout-seconds) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
-      (error "Failed to receieve pipe name from Roslyn server process"))
+      (error "Failed to receive pipe name from Roslyn server process"))
     (let* ((process-name (generate-new-buffer-name (format "%s-pipe" name)))
            (stderr-buf (format "*%s::stderr*" process-name))
            (communication-process
             (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn process-name stderr-buf)))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
-      (when-let ((stderr-buffer (get-buffer stderr-buf)))
+      (when-let* ((stderr-buffer (get-buffer stderr-buf)))
         (with-current-buffer stderr-buffer
           ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
           (special-mode))
@@ -186,7 +194,7 @@ creates another process connecting to the named pipe it specifies."
                                    uri)))
                     (concat "#" target))))
          (file-name (if (and type (not (string= type "file")))
-                        (if-let ((handler (lsp--get-uri-handler type)))
+                        (if-let* ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
                           uri)
                       ;; `url-generic-parse-url' is buggy on windows:
@@ -202,15 +210,6 @@ creates another process connecting to the named pipe it specifies."
 (defun lsp-roslyn--path-to-uri (path)
   "Convert PATH to a URI, without hexifying."
   (url-unhex-string (lsp--path-to-uri-1 path)))
-
-(lsp-defun lsp-roslyn--log-message (_workspace params)
-  (let ((type (gethash "type" params))
-        (mes (gethash "message" params)))
-    (cl-case type
-      (1 (lsp--error "%s" mes))   ; Error
-      (2 (lsp--warn "%s" mes))    ; Warning
-      (3 (lsp--info "%s" mes))    ; Info
-      (t (lsp--info "%s" mes))))) ; Log
 
 (lsp-defun lsp-roslyn--on-project-initialization-complete (workspace _params)
   (lsp--info "%s: Project initialized successfully."
@@ -268,17 +267,17 @@ Assumes it was installed with the server install function."
 
 (defun lsp-roslyn--get-rid ()
   "Retrieves the .NET Runtime Identifier (RID) for the current system."
-  (let* ((is-x64 (string-match-p (rx (or "x86_64" "aarch64")) system-configuration))
-         (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64)))
-         (is-arm (string-match-p (rx (or "arm" "aarch")) system-configuration)))
-    (if-let ((platform-name (cond
-                             ((eq system-type 'gnu/linux) "linux")
-                             ((eq system-type 'darwin) "osx")
-                             ((eq system-type 'windows-nt) "win")))
-             (arch-name (cond
-                         (is-x64 "x64")
-                         (is-x86 "x86")
-                         (is-arm "arm64"))))
+  (let* ((is-x64 (string-match-p "x86_64" system-configuration))
+         (is-arm64 (string-match-p "aarch64" system-configuration))
+         (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64))))
+    (if-let* ((platform-name (cond
+                              ((eq system-type 'gnu/linux) "linux")
+                              ((eq system-type 'darwin) "osx")
+                              ((eq system-type 'windows-nt) "win")))
+              (arch-name (cond
+                          (is-x64 "x64")
+                          (is-arm64 "arm64")
+                          (is-x86 "x86"))))
         (format "%s-%s" platform-name arch-name)
       (error "Unsupported platform: %s (%s)" system-type system-configuration))))
 
@@ -345,8 +344,7 @@ FORCED if specified with prefix argument."
                   :priority 0
                   :server-id 'csharp-roslyn
                   :activation-fn (lsp-activate-on "csharp")
-                  :notification-handlers (ht ("window/logMessage" 'lsp-roslyn--log-message)
-                                             ("workspace/projectInitializationComplete" 'lsp-roslyn--on-project-initialization-complete))
+                  :notification-handlers (ht ("workspace/projectInitializationComplete" 'lsp-roslyn--on-project-initialization-complete))
 
                   ;; These two functions are the same as lsp-mode's except they do not
                   ;; (un)hexify URIs.

@@ -24,6 +24,10 @@
   * Add fennel support
   * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
   * Add TypeSpec support
+  * Add Tree-sitter query support
+  * Add [[https://github.com/mrjosh/helm-ls][helm-ls]] (YAML Kubernetes Helm) support.
+  * Add ~lsp-bash-allowed-shells~ to configure supported ~sh-shell~ values.
+  * Add hint about ~activation-fn~ for unsupported buffers.
   * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
 
 ** 9.0.0

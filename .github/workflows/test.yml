@@ -60,7 +60,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         pip3 install python-language-server
-        sudo apt-get install clangd-11
+        sudo apt-get install clangd-15
 
     - name: Install depedencies on macOS
       if: runner.os == 'macOS'
@@ -69,7 +69,7 @@ jobs:
 
     - name: Check clangd
       if: runner.os == 'Linux'
-      run: "clangd-11 --version"
+      run: "clangd-15 --version"
 
     - uses: actions/checkout@v4
 

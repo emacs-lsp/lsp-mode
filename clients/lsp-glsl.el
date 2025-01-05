@@ -36,7 +36,7 @@
   "Command to run the GLSL language server."
   :group 'lsp-glsl
   :risky t
-  :type 'list)
+  :type '(repeat string))
 
 (lsp-register-client
  (make-lsp-client

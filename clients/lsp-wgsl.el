@@ -105,7 +105,7 @@
 
 (defcustom lsp-wgsl-shaderdefs []
   "Defines that should be valid for preprocessor operations like ifdef,
-e.g, ['USE_TYPES', 'DEBUG']"
+  e.g, [\='USE_TYPES\=',\='DEBUG\=']"
   :type 'lsp-string-vector
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "9.0.0"))

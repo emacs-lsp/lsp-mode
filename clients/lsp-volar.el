@@ -63,7 +63,7 @@
 (defconst lsp-volar--is-windows (memq system-type '(cygwin windows-nt ms-dos)))
 (defun lsp-volar-get-typescript-tsdk-path ()
   "Get tsserver lib*.d.ts directory path."
-  (if-let ((package-path (lsp-package-path 'typescript))
+  (if-let* ((package-path (lsp-package-path 'typescript))
            (system-tsdk-path (f-join (file-truename package-path)
                                      (if lsp-volar--is-windows
                                          "../node_modules/typescript/lib"
@@ -85,7 +85,7 @@
 (lsp-register-custom-settings
  '(("typescript.tsdk"
     (lambda ()
-      (if-let ((project-root (lsp-workspace-root))
+      (if-let* ((project-root (lsp-workspace-root))
                (tsdk-path (f-join project-root "node_modules/typescript/lib"))
                ((file-exists-p tsdk-path)))
           tsdk-path
@@ -98,7 +98,7 @@
 (defun lsp-volar--vue-project-p (workspace-root)
   "Check if the `Vue' package is present in the package.json file
 in the WORKSPACE-ROOT."
-  (if-let ((package-json (f-join workspace-root "package.json"))
+  (if-let* ((package-json (f-join workspace-root "package.json"))
            (exist (f-file-p package-json))
            (config (json-read-file package-json))
            (dependencies (alist-get 'dependencies config)))
