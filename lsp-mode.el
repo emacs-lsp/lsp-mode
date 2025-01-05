@@ -176,11 +176,11 @@ As defined by the Language Server Protocol 3.16."
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
-     lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
+     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
      lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
      lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
-     lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
+     lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
      lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
      lsp-mojo lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
      lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
@@ -189,7 +189,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
+     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
      lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl
      lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
@@ -356,6 +356,7 @@ the server has requested that."
     "[/\\\\]\\.eunit\\'"
     "[/\\\\]node_modules"
     "[/\\\\]\\.yarn\\'"
+    "[/\\\\]\\.turbo\\'"
     "[/\\\\]\\.fslckout\\'"
     "[/\\\\]\\.tox\\'"
     "[/\\\\]\\.nox\\'"
@@ -363,6 +364,7 @@ the server has requested that."
     "[/\\\\]dist-newstyle\\'"
     "[/\\\\]\\.stack-work\\'"
     "[/\\\\]\\.bloop\\'"
+    "[/\\\\]\\.bsp\\'"
     "[/\\\\]\\.metals\\'"
     "[/\\\\]target\\'"
     "[/\\\\]\\.ccls-cache\\'"
@@ -524,18 +526,10 @@ supported by the language server."
   :group 'lsp-mode)
 
 (defcustom lsp-eldoc-render-all nil
-  "Display all of the info returned by document/onHover.
+  "Display all of the info returned by textDocument/hover.
 If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
-
-(define-obsolete-variable-alias 'lsp-enable-completion-at-point
-  'lsp-completion-enable "lsp-mode 7.0.1")
-
-(defcustom lsp-completion-enable t
-  "Enable `completion-at-point' integration."
-  :type 'boolean
-  :group 'lsp-completion)
 
 (defcustom lsp-enable-symbol-highlighting t
   "Highlight references of the symbol at point."
@@ -1010,6 +1004,7 @@ directory")
                       (with-lsp-workspace wk
                         (lsp:completion-options-resolve-provider?
                          (lsp--capability-for-method "textDocument/completion")))))
+    ("textDocument/inlineCompletion" :capability :inlineCompletionProvider)
     ("textDocument/declaration" :capability :declarationProvider)
     ("textDocument/definition" :capability :definitionProvider)
     ("textDocument/documentColor" :capability :colorProvider)
@@ -1406,6 +1401,33 @@ Symlinks are not followed."
   (unless (lsp-f-same? path-a path-b)
     (s-prefix? (concat (lsp-f-canonical path-a) (f-path-separator))
                (lsp-f-canonical path-b))))
+
+;; compat
+(if (version< emacs-version "29.1")
+    ;; Undo macro probably introduced in 29.1
+    (defmacro lsp-with-undo-amalgamate (&rest body)
+      "Like `progn' but perform BODY with amalgamated undo barriers.
+
+This allows multiple operations to be undone in a single step.
+When undo is disabled this behaves like `progn'."
+      (declare (indent 0) (debug t))
+      (let ((handle (make-symbol "--change-group-handle--")))
+        `(let ((,handle (prepare-change-group))
+               ;; Don't truncate any undo data in the middle of this,
+               ;; otherwise Emacs might truncate part of the resulting
+               ;; undo step: we want to mimic the behavior we'd get if the
+               ;; undo-boundaries were never added in the first place.
+               (undo-outer-limit nil)
+               (undo-limit most-positive-fixnum)
+               (undo-strong-limit most-positive-fixnum))
+           (unwind-protect
+               (progn
+                 (activate-change-group ,handle)
+                 ,@body)
+             (progn
+               (accept-change-group ,handle)
+               (undo-amalgamate-change-group ,handle))))))
+  (defalias 'lsp-with-undo-amalgamate 'with-undo-amalgamate))
 
 (defun lsp--merge-results (results method)
   "Merge RESULTS by filtering the empty hash-tables and merging
@@ -3781,7 +3803,8 @@ disappearing, unset all the variables related to it."
                                                                            "command"
                                                                            "insertTextFormat"
                                                                            "insertTextMode"])))
-                                                        (insertTextModeSupport . ((valueSet . [1 2])))))
+                                                        (insertTextModeSupport . ((valueSet . [1 2])))
+                                                        (labelDetailsSupport . t)))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))
@@ -3804,7 +3827,9 @@ disappearing, unset all the variables related to it."
                                              (versionSupport . t)))
                       (diagnostic . ((dynamicRegistration . :json-false)
                                      (relatedDocumentSupport . :json-false)))
-                      (linkedEditingRange . ((dynamicRegistration . t)))))
+                      (linkedEditingRange . ((dynamicRegistration . t)))
+                      (inlineCompletion . ())
+                      ,@(when lsp-inlay-hint-enable '((inlayHint . ((dynamicRegistration . :json-false)))))))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
    custom-capabilities))
@@ -4949,6 +4974,12 @@ Added to `after-change-functions'."
              lsp-managed-mode)
     (run-hooks 'lsp-on-change-hook)))
 
+
+(defvar-local lsp--after-change-vals nil
+  "plist that stores the buffer state when `lsp--after-change' has ben activated. Since the
+functions in `lsp-on-change-hook' are called with a timer, mouse
+movements may have changed the position")
+
 (defun lsp--after-change (buffer)
   "Called after most textDocument/didChange events."
   (setq lsp--signature-last-index nil
@@ -4964,6 +4995,9 @@ Added to `after-change-functions'."
     (lsp--semantic-tokens-refresh-if-enabled buffer))
   (when lsp--on-change-timer
     (cancel-timer lsp--on-change-timer))
+
+  (setq lsp--after-change-vals (list :point (point)
+                                     :buffer (current-buffer)))
   (setq lsp--on-change-timer (run-with-idle-timer
                               lsp-idle-delay
                               nil
@@ -5076,6 +5110,7 @@ Applies on type formatting."
         (-lambda ((mode-or-pattern . language))
           (cond
            ((and (stringp mode-or-pattern)
+                 (buffer-file-name)
                  (s-matches? mode-or-pattern (buffer-file-name)))
             language)
            ((eq mode-or-pattern major-mode) language))))
@@ -5429,9 +5464,9 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
               (lsp-help-mode)
               (with-help-window lsp-help-buf-name
                 (insert
-		 (mapconcat 'string-trim-right
-			    (split-string (lsp--render-on-hover-content contents t) "\n")
-			    "\n"))))
+                 (mapconcat 'string-trim-right
+                            (split-string (lsp--render-on-hover-content contents t) "\n")
+                            "\n"))))
             (run-mode-hooks)))
       (lsp--info "No content at point."))))
 
@@ -5693,7 +5728,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (car (s-lines (s-trim (lsp--render-element contents)))))
 
 (defun lsp--render-on-hover-content (contents render-all)
-  "Render the content received from `document/onHover' request.
+  "Render the content received from `textDocument/hover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
   (cond
@@ -6287,7 +6322,10 @@ A reference is highlighted only if it is visible in a window."
 
   (let* ((wins-visible-pos (-map (lambda (win)
                                    (cons (1- (line-number-at-pos (window-start win) t))
-                                         (1+ (line-number-at-pos (window-end win) t))))
+                                         (1+ (line-number-at-pos (min (window-end win)
+                                                                      (with-current-buffer (window-buffer win)
+                                                                        (buffer-end +1)))
+                                                                 t))))
                                  (get-buffer-window-list nil nil 'visible))))
     (setq lsp--have-document-highlights t)
     (-map
@@ -7918,12 +7956,13 @@ SESSION is the active session."
                (apply 'vector)
                (list :workspaceFolders))))
        (-lambda ((&InitializeResult :capabilities))
-         ;; we know that Rust Analyzer will send {} which will be parsed as null
-         ;; when using plists
-         (when (equal 'rust-analyzer server-id)
-           (-> capabilities
-               (lsp:server-capabilities-text-document-sync?)
-               (lsp:set-text-document-sync-options-save? t)))
+         (pcase server-id
+           ;; we know that Rust Analyzer will send {} which will be parsed as null
+           ;; when using plists
+           ('rust-analyzer
+            (-> capabilities
+                (lsp:server-capabilities-text-document-sync?)
+                (lsp:set-text-document-sync-options-save? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
@@ -8333,7 +8372,7 @@ nil."
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
-(cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
+(cl-defun lsp--npm-dependency-install (callback error-callback &key package version &allow-other-keys)
   (if-let* ((npm-binary (executable-find "npm")))
       (progn
         ;; Explicitly `make-directory' to work around NPM bug in
@@ -8359,7 +8398,9 @@ nil."
                                  "--prefix"
                                  (f-join lsp-server-install-dir "npm" package)
                                  "install"
-                                 package))
+                                 (if-let* ((version (lsp-resolve-value version)))
+                                     (format "%s@%s" package version)
+                                   package)))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
 
@@ -9568,15 +9609,19 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package-desc-version "ext:package")
 (declare-function package--alist "ext:package")
 
+(defun lsp-package-version ()
+  "Returns a string with the version of the lsp-mode package"
+  (package-version-join
+   (package-desc-version
+    (car (alist-get 'lsp-mode (package--alist))))))
+
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
   (interactive)
   (unless (featurep 'package)
     (require 'package))
   (let ((ver (format "lsp-mode %s, Emacs %s, %s"
-                     (package-version-join
-                      (package-desc-version
-                       (car (alist-get 'lsp-mode (package--alist)))))
+                     (lsp-package-version)
                      emacs-version
                      system-type)))
     (if (called-interactively-p 'interactive)

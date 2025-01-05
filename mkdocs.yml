@@ -84,6 +84,7 @@ nav:
     - Fortran: page/lsp-fortran.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
+    - Github Copilot: page/lsp-copilot.md
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
     - GNAT Project: page/lsp-gpr.md
@@ -172,6 +173,7 @@ nav:
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Tilt: page/lsp-tilt.md
     - TOML: page/lsp-toml.md
+    - Tree-sitter Query: page/lsp-ts-query.md
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
     - TypeSpec: page/lsp-typespec.md
@@ -187,6 +189,7 @@ nav:
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
+    - YAML (helm-ls): page/lsp-kubernetes-helm.md
     - YANG: page/lsp-yang.md
     - Zig: page/lsp-zig.md
   - Debugging:

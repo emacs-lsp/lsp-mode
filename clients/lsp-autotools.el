@@ -41,7 +41,7 @@
      makefile-bsdmake-mode
      makefile-imake-mode)
   "List of major mode that work with Autotools."
-  :type '(list symbol)
+  :type '(repeat function)
   :group 'lsp-autotools)
 
 (defun lsp-autotools--download-server (_client callback error-callback update?)

@@ -41,7 +41,7 @@
 
 (defcustom lsp-marksman-server-command-args '()
   "Command-line arguments for the marksman lsp server. Not normally Needed."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-marksman
   :package-version '(lsp-mode . "8.0.0"))
 

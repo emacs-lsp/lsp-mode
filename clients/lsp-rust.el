@@ -760,10 +760,10 @@ them with `crate' or the crate name they refer to."
 (defcustom lsp-rust-analyzer-import-granularity "crate"
   "How imports should be grouped into use statements."
   :type '(choice
-          (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
-          (const "module" :doc "Merge imports from the same module into a single use statement.")
-          (const "item" :doc "Don’t merge imports at all, creating one import per item.")
-          (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+          (const :tag "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24." "crate" )
+          (const :tag "Merge imports from the same module into a single use statement." "module" )
+          (const :tag "Don’t merge imports at all, creating one import per item." "item" )
+          (const :tag "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'" "preserve" ))
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
