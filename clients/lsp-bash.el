@@ -74,7 +74,7 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   "Check whether `sh-shell' is supported.
 
 This prevents the Bash server from being turned on for unsupported dialects, e.g. `zsh`."
-  (and (boundp 'sh-shell)
+  (and (local-variable-p 'sh-shell)
        (memq sh-shell lsp-bash-allowed-shells)))
 
 (lsp-register-client
