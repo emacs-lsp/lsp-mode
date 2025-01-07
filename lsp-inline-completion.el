@@ -397,7 +397,9 @@ This is called in pre-command-hook, so we must keep the completion active when a
   (interactive)
 
   (unless implicit
-    (lsp--spinner-start) )
+    (lsp--spinner-start))
+
+  (run-hooks 'lsp-before-inline-completion-hook)
 
   (condition-case err
       (unwind-protect
