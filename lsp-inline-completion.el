@@ -345,18 +345,6 @@ The functions receive the text range that was updated by the completion."
   ;; No longer in an active completion
   (lsp-inline-completion--make-inactive))
 
-(defun lsp-inline-completion-cancel-with-input (event &optional arg)
-  "Cancel the inline completion and executes whatever event was received."
-  (interactive (list last-input-event current-prefix-arg))
-
-  (lsp-inline-completion-cancel)
-
-  (let ((command (lookup-key (current-active-maps) (vector event)))
-        (current-prefix-arg arg))
-
-    (when (commandp command)
-      (call-interactively command))))
-
 (defun lsp-inline-completion-next ()
   "Display the next inline completion."
   (interactive)
