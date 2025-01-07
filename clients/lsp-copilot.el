@@ -178,6 +178,21 @@ automatically, browse to %s." user-code verification-uri))
         :name "emacs"
         :version "0.1.0"))
 
+
+(defcustom lsp-copilot-progress-handlers nil
+  "Handler functions for the $/progress callback. These handlers must
+expect two parameters: the current workspace and notification
+parameters."
+  :type 'hook
+  :group 'lsp-copilot)
+
+
+(defun lsp-copilot--progress-callback (workspace params)
+  (when lsp-progress-function
+    (funcall lsp-progress-function workspace params))
+
+  (run-hook-with-args lsp-copilot-progress-handlers workspace params))
+
 (defun lsp-copilot--server-initialized-fn (workspace)
   ;; Patch capabilities -- server may respond with an empty dict. In plist,
   ;; this would become nil
@@ -204,7 +219,7 @@ automatically, browse to %s." user-code verification-uri))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'copilot-ls callback error-callback))
   :notification-handlers (lsp-ht
-                          ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
+                          ("$/progress" #'lsp-copilot--progress-callback)
                           ("featureFlagsNotification" #'ignore)
                           ("statusNotification" #'ignore)
                           ("window/logMessage" #'lsp--window-log-message)
