@@ -55,7 +55,7 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'string
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-applicable-fn (-const t)
+(defcustom lsp-copilot-applicable-fn (lambda (&rest _) lsp-copilot-enabled)
   "A function which returns whether the copilot is applicable for the buffer.
 The input are the file name and the major mode of the buffer."
   :type 'function
