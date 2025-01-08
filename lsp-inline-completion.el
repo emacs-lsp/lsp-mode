@@ -99,6 +99,7 @@ InlineCompletionItem objects"
 ;; Local Buffer State
 
 (defvar-local lsp-inline-completion--is-active nil "Flag to indicate if we are currently showing an inline completion.")
+(defvar-local lsp-inline-completion--inhibit-timer nil "Flag to indicate we do not want the timer to show inline completions. Reset on change.")
 (defvar-local lsp-inline-completion--items nil "The completions provided by the server.")
 (defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed.")
 (defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions.")
@@ -447,25 +448,38 @@ lsp-inline-completion-mode is active."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t)
+    (add-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change t))
+
    (t
     (when lsp-inline-completion--idle-timer
       (cancel-timer lsp-inline-completion--idle-timer))
 
     (lsp-inline-completion-cancel)
 
-    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
+    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t)
+    (remove-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change t))))
 
 (defun lsp-inline-completion--maybe-display (original-buffer original-point)
   ;; This is executed on an idle timer -- ensure state did not change before
   ;; displaying
-  (when (and (buffer-live-p original-buffer)
+  (when (and (not lsp-inline-completion--inhibit-timer)
+             (buffer-live-p original-buffer)
              (eq (current-buffer) original-buffer)
              (eq (point) original-point)
              (--none? (funcall it) lsp-inline-completion-inhibit-predicates))
     (setq last-command this-command)
     (setq this-command 'lsp-inline-completion-display)
     (lsp-inline-completion-display 'implicit)))
+
+(defun lsp-inline-completion--uninhibit-on-change (&rest _)
+  "Resets the uninhibit flag. "
+
+  ;; Must be done in after-change-functions instead of lsp-on-change-hook,
+  ;; because LSP's hook happens after lsp-idle-delay. If the user calls some
+  ;; function that sets the inhibit flag to t *before* the idle delay, we may
+  ;; end up overriding the flag."
+  (setq lsp-inline-completion--inhibit-timer nil))
 
 (defun lsp-inline-completion--after-change (&rest _)
   ;; This function is in lsp-on-change-hooks, which is executed on a timer by
