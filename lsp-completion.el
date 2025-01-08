@@ -67,6 +67,11 @@ ignored."
   :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-completion-show-detail t
+  "Whether or not to show detail of completion candidates."
+  :type 'boolean
+  :group 'lsp-completion)
+
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."
   :type 'boolean
@@ -263,7 +268,8 @@ The CLEANUP-FN will be called to cleanup."
 Returns unresolved completion item detail."
   (when-let ((lsp-completion-item (get-text-property 0 'lsp-completion-unresolved-item cand)))
     (concat
-     (lsp-completion--get-label-detail lsp-completion-item)
+     (when lsp-completion-show-detail
+       (lsp-completion--get-label-detail lsp-completion-item))
      (when lsp-completion-show-kind
        (when-let* ((kind? (lsp:completion-item-kind? lsp-completion-item))
                    (kind-name (and kind? (aref lsp-completion--item-kind kind?))))
