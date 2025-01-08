@@ -191,7 +191,7 @@ parameters."
   (when lsp-progress-function
     (funcall lsp-progress-function workspace params))
 
-  (run-hook-with-args lsp-copilot-progress-handlers workspace params))
+  (run-hook-with-args 'lsp-copilot-progress-handlers workspace params))
 
 ;;; Panel Completion
 
