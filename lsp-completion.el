@@ -501,13 +501,14 @@ Returns resolved completion item details."
                                   ((and (equal kind "markdown")
                                         (not (string-match-p (regexp-quote detail?) value)))
 
-                                   (concat
-                                    (propertize detail? 'face 'fixed-pitch)
-                                    (lsp--render-string
-                                     (concat
-                                      "\n---\n"
-                                      value)
-                                     kind))))))
+                                   (lsp--render-string
+                                    (concat
+                                     "```\n"
+                                     detail?
+                                     "\n```"
+                                     "\n---\n"
+                                     value)
+                                    kind)))))
 
                          ((and (stringp documentation?)
                                (not (string-match-p (regexp-quote detail?) documentation?)))
