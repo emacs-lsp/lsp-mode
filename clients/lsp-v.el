@@ -1,10 +1,10 @@
 ;;; lsp-v.el --- lsp-mode V integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 niontrix
 ;; Copyright (C) 2021 remimimimi
+;; Copyright (C) 2024 niontrix
 
-;; Author: niontrix
 ;; Author: remimimimi
+;;         niontrix
 ;; Keywords: languages,tools
 
 ;; This program is free software; you can redistribute it and/or modify
