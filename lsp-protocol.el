@@ -667,7 +667,6 @@ See `-let' for a description of the destructuring mechanism."
  (FormattingOptions (:tabSize :insertSpaces) (:trimTrailingWhitespace :insertFinalNewline :trimFinalNewlines))
  (HoverCapabilities nil (:contentFormat :dynamicRegistration))
  (ImplementationCapabilities nil (:dynamicRegistration :linkSupport))
- (LabelDetails (:detail :description) nil)
  (LinkedEditingRanges (:ranges) (:wordPattern))
  (Location (:range :uri) nil)
  (MarkedString (:language :value) nil)
@@ -824,6 +823,7 @@ See `-let' for a description of the destructuring mechanism."
  (WillSaveTextDocumentParams (:reason :textDocument) nil)
  (WorkspaceSymbolParams (:query) nil)
  ;; 3.17
+ (LabelDetails nil (:detail :description))
  (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
  (InlayHintLabelPart (:value) (:tooltip :location :command))
  (InlayHintsParams (:textDocument) (:range))
