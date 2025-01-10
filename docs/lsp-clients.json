@@ -985,6 +985,15 @@
     "debugger": "Yes"
   },
   {
+    "name": "roc",
+    "full-name": "Roc",
+    "server-name": "roc_language_server",
+    "server-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation": "Along with the compiler",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruby-lsp",
     "full-name": "Ruby (ruby-lsp)",
     "server-name": "ruby-lsp",

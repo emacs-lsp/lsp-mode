@@ -8,17 +8,17 @@ nav:
   - Home:
     - Overview: README.md
     - Setup:
-        - Installation: page/installation.md
-        - Performance: page/performance.md
+	- Installation: page/installation.md
+	- Performance: page/performance.md
     - Main features: page/main-features.md
     - Keybindings: page/keybindings.md
     - Extensions:
-        - UI: https://emacs-lsp.github.io/lsp-ui
-        - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
-        - Helm: https://github.com/emacs-lsp/helm-lsp
-        - Ivy: https://github.com/emacs-lsp/lsp-ivy
-        - Iedit: page/integration/iedit.md
-        - Ido: page/integration/ido.md
+	- UI: https://emacs-lsp.github.io/lsp-ui
+	- Treemacs: https://github.com/emacs-lsp/lsp-treemacs
+	- Helm: https://github.com/emacs-lsp/helm-lsp
+	- Ivy: https://github.com/emacs-lsp/lsp-ivy
+	- Iedit: page/integration/iedit.md
+	- Ido: page/integration/ido.md
     - File watchers: page/file-watchers.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
@@ -149,6 +149,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - Roc: page/lsp-roc.md
     - RPM Spec: page/lsp-rpm-spec.md
     - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
@@ -209,7 +210,7 @@ nav:
       - 'Configuring Emacs as a Crystal IDE': tutorials/crystal-guide.md
   - Blog:
       - 2020:
-          - '7.0 Release': blog/2020/7.0-release.md
+	  - '7.0 Release': blog/2020/7.0-release.md
   - Support us:
       - https://github.com/sponsors/emacs-lsp
 
