@@ -1,6 +1,6 @@
 ;;; lsp-completion.el --- LSP completion -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2025 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ The CLEANUP-FN will be called to cleanup."
   "Annotation function for completion candidate CAND.
 
 Returns unresolved completion item detail."
-  (when-let ((lsp-completion-item (get-text-property 0 'lsp-completion-unresolved-item cand)))
+  (when-let* ((lsp-completion-item (get-text-property 0 'lsp-completion-unresolved-item cand)))
     (concat
      (when lsp-completion-show-detail
        (lsp-completion--get-label-detail lsp-completion-item))
