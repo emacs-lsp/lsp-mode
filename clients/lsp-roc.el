@@ -1,6 +1,6 @@
 ;;; lsp-roc.el --- lsp-mode roc integration    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 lsp-mode maintainers
+;; Copyright (C) 2025 lsp-mode maintainers
 
 ;; Keywords: languages
 
