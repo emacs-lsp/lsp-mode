@@ -77,13 +77,19 @@ InlineCompletionItem objects"
     ;; useful -- recenter without loosing the completion
     (define-key map (kbd "C-l") #'recenter-top-bottom)
     ;; ignore
-     (define-key map [down-mouse-1] #'ignore)
+    (define-key map [down-mouse-1] #'ignore)
     (define-key map [up-mouse-1] #'ignore)
     (define-key map [mouse-movement] #'ignore)
-    ;; Any event outside of the map, cancel and use it
-    (define-key map [t] #'lsp-inline-completion-cancel-with-input)
+
     map)
   "Keymap active when showing inline code suggestions.")
+
+(defcustom lsp-inline-completion-continue-commands '(lsp-inline-completion-next
+                                                     lsp-inline-completion-prev
+                                                     recenter-top-bottom)
+  "A list of commands that should not deactivate the inline overlay."
+  :type '(repeat function)
+  :group 'lsp-mode)
 
 (defface lsp-inline-completion-overlay-face
   '((t :inherit shadow))
@@ -92,6 +98,8 @@ InlineCompletionItem objects"
 
 ;; Local Buffer State
 
+(defvar-local lsp-inline-completion--is-active nil "Flag to indicate if we are currently showing an inline completion.")
+(defvar-local lsp-inline-completion--inhibit-timer nil "Flag to indicate we do not want the timer to show inline completions. Reset on change.")
 (defvar-local lsp-inline-completion--items nil "The completions provided by the server.")
 (defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed.")
 (defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions.")
@@ -138,29 +146,43 @@ The functions receive the text range that was updated by the completion."
                        (integer :tag "Secondary")))
   :group 'lsp-mode)
 
-(defsubst lsp-inline-completion--overlay-visible ()
-  "Return whether the `overlay' is avaiable."
+(defsubst lsp-inline-completion--active-p ()
+  "Returns whether we are in an active completion"
+  (and lsp-inline-completion--is-active
+       (numberp lsp-inline-completion--start-point)
+       (numberp lsp-inline-completion--current)
+       (listp lsp-inline-completion--items)))
+
+
+(defsubst lsp-inline-completion--active-and-visible-p ()
+  "Return whether we have an active completion and it is being displayed"
   (and (overlayp lsp-inline-completion--overlay)
-       (overlay-buffer lsp-inline-completion--overlay)))
+       (overlay-buffer lsp-inline-completion--overlay)
+       (lsp-inline-completion--active-p)))
+
 
 (defun lsp-inline-completion--clear-overlay ()
   "Hide the suggestion overlay."
-  (when (lsp-inline-completion--overlay-visible)
+  (when (overlayp lsp-inline-completion--overlay )
     (delete-overlay lsp-inline-completion--overlay))
   (setq lsp-inline-completion--overlay nil))
 
 
 (defun lsp-inline-completion--get-overlay (beg end)
   "Build the suggestions overlay."
-  (when (overlayp lsp-inline-completion--overlay)
-    (lsp-inline-completion--clear-overlay))
+  (lsp-inline-completion--clear-overlay)
 
   (setq lsp-inline-completion--overlay (make-overlay beg end nil nil t))
-  (overlay-put lsp-inline-completion--overlay 'keymap lsp-inline-completion-active-map)
   (overlay-put lsp-inline-completion--overlay 'priority lsp-inline-completion-overlay-priority)
 
   lsp-inline-completion--overlay)
 
+(defsubst lsp-inline-completion--make-active ()
+  (setq lsp-inline-completion--is-active t))
+
+(defsubst lsp-inline-completion--make-inactive ()
+  (setq lsp-inline-completion--is-active nil)
+  (lsp-inline-completion--clear-overlay))
 
 (defun lsp-inline-completion--show-keys ()
   "Shows active keymap hints in the minibuffer."
@@ -239,8 +261,9 @@ The functions receive the text range that was updated by the completion."
 
     (goto-char target-position)
 
-    (lsp-inline-completion--show-keys)
-    (run-hooks 'lsp-inline-completion-shown-hook)))
+    (run-hooks 'lsp-inline-completion-shown-hook)
+
+    (lsp-inline-completion--show-keys)))
 
 (defun lsp-inline-completion--insert-sugestion (text kind start end command?)
   (let* ((text-insert-start (or start lsp-inline-completion--start-point))
@@ -272,13 +295,14 @@ The functions receive the text range that was updated by the completion."
       (lsp--execute-command command?))
 
     ;; hooks
-    (run-hook-with-args 'lsp-inline-completion-accepted-functions text text-insert-start text-insert-end)))
+    (run-hook-with-args 'lsp-inline-completion-accepted-functions text text-insert-start text-insert-end))
+    (lsp-inline-completion--make-inactive))
 
 (defun lsp-inline-completion-accept ()
   "Accepts the current suggestion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
-    (error "Not showing suggestions"))
+  (unless (lsp-inline-completion--active-p)
+     (error "Not showing suggestions"))
 
   (lsp-inline-completion--clear-overlay)
   (-let* ((suggestion (elt lsp-inline-completion--items lsp-inline-completion--current))
@@ -293,7 +317,10 @@ The functions receive the text range that was updated by the completion."
     (with-no-warnings
       ;; Compiler does not believes this macro is defined
       (lsp-with-undo-amalgamate
-        (lsp-inline-completion--insert-sugestion text kind start end command?)))))
+        (lsp-inline-completion--insert-sugestion text kind start end command?))))
+
+  ;; No longer in an active completion
+  (lsp-inline-completion--make-inactive))
 
 (defun lsp-inline-completion-accept-on-click (event)
   (interactive "e")
@@ -310,32 +337,21 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay."
   (interactive)
-  (when (lsp-inline-completion--overlay-visible)
+  (lsp-inline-completion--clear-overlay)
 
-    (lsp-inline-completion--clear-overlay)
+  (when (lsp-inline-completion--active-p)
+    (goto-char lsp-inline-completion--start-point)
+    (run-hooks 'lsp-inline-completion-cancelled-hook))
 
-    (when lsp-inline-completion--start-point
-      (goto-char lsp-inline-completion--start-point))
-
-    (run-hooks 'lsp-inline-completion-cancelled-hook)))
-
-(defun lsp-inline-completion-cancel-with-input (event &optional arg)
-  "Cancel the inline completion and executes whatever event was received."
-  (interactive (list last-input-event current-prefix-arg))
-
-  (lsp-inline-completion-cancel)
-
-  (let ((command (lookup-key (current-active-maps) (vector event)))
-        (current-prefix-arg arg))
-
-    (when (commandp command)
-      (call-interactively command))))
+  ;; No longer in an active completion
+  (lsp-inline-completion--make-inactive))
 
 (defun lsp-inline-completion-next ()
   "Display the next inline completion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
+  (unless (lsp-inline-completion--active-p)
     (error "Not showing suggestions"))
+
   (setq lsp-inline-completion--current
         (mod (1+ lsp-inline-completion--current)
              (length lsp-inline-completion--items)))
@@ -345,13 +361,24 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-prev ()
   "Display the previous inline completion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
+
+  (unless (lsp-inline-completion--active-p)
     (error "Not showing suggestions"))
+
   (setq lsp-inline-completion--current
         (mod (1- lsp-inline-completion--current)
              (length lsp-inline-completion--items)))
 
   (lsp-inline-completion-show-overlay))
+
+(defun lsp-inline-completion--inactivate-keymap ()
+  "Called when the keymap is being deactivated.
+
+This is called in pre-command-hook, so we must keep the completion active when accepting and cancel it otherwise
+"
+
+  (unless (memq this-command '(lsp-inline-completion-accept))
+    (lsp-inline-completion-cancel)))
 
 ;;;###autoload
 (defun lsp-inline-completion-display (&optional implicit)
@@ -359,7 +386,9 @@ The functions receive the text range that was updated by the completion."
   (interactive)
 
   (unless implicit
-    (lsp--spinner-start) )
+    (lsp--spinner-start))
+
+  (run-hooks 'lsp-before-inline-completion-hook)
 
   (condition-case err
       (unwind-protect
@@ -372,7 +401,16 @@ The functions receive the text range that was updated by the completion."
                 (setq lsp-inline-completion--items items)
                 (setq lsp-inline-completion--current 0)
                 (setq lsp-inline-completion--start-point (point))
-                (lsp-inline-completion-show-overlay))
+                (lsp-inline-completion-show-overlay)
+                (lsp-inline-completion--make-active)
+
+                ;; Push a temporary keymap, so we do not need to worry about
+                ;; other overlays stealing the keymap. Any key outside of the
+                ;; active map will call cancel
+                (set-transient-map
+                 lsp-inline-completion-active-map
+                 (lambda () (memq this-command lsp-inline-completion-continue-commands))
+                 #'lsp-inline-completion--inactivate-keymap))
             (unless implicit
               (lsp--info "No Suggestions!")))
         ;; Clean up
@@ -410,25 +448,38 @@ lsp-inline-completion-mode is active."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+    (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t)
+    (add-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change t))
+
    (t
     (when lsp-inline-completion--idle-timer
       (cancel-timer lsp-inline-completion--idle-timer))
 
     (lsp-inline-completion-cancel)
 
-    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
+    (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t)
+    (remove-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change t))))
 
 (defun lsp-inline-completion--maybe-display (original-buffer original-point)
   ;; This is executed on an idle timer -- ensure state did not change before
   ;; displaying
-  (when (and (buffer-live-p original-buffer)
+  (when (and (not lsp-inline-completion--inhibit-timer)
+             (buffer-live-p original-buffer)
              (eq (current-buffer) original-buffer)
              (eq (point) original-point)
              (--none? (funcall it) lsp-inline-completion-inhibit-predicates))
     (setq last-command this-command)
     (setq this-command 'lsp-inline-completion-display)
     (lsp-inline-completion-display 'implicit)))
+
+(defun lsp-inline-completion--uninhibit-on-change (&rest _)
+  "Resets the uninhibit flag. "
+
+  ;; Must be done in after-change-functions instead of lsp-on-change-hook,
+  ;; because LSP's hook happens after lsp-idle-delay. If the user calls some
+  ;; function that sets the inhibit flag to t *before* the idle delay, we may
+  ;; end up overriding the flag."
+  (setq lsp-inline-completion--inhibit-timer nil))
 
 (defun lsp-inline-completion--after-change (&rest _)
   ;; This function is in lsp-on-change-hooks, which is executed on a timer by
