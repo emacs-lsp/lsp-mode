@@ -850,9 +850,10 @@ The return is nil or in range of (0, inf)."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
-(defun lsp-completion-passthrough-try-completion (string _table _pred point)
+(defun lsp-completion-passthrough-try-completion (string table _pred point)
   "Passthrough try function, always return the passed STRING and POINT."
-  (cons string point))
+  (when table
+    (cons string point)))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
   "Passthrough all completions from TABLE with PRED."
