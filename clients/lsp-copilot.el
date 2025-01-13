@@ -55,7 +55,7 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'string
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-applicable-fn (-const t)
+(defcustom lsp-copilot-applicable-fn (lambda (&rest _) lsp-copilot-enabled)
   "A function which returns whether the copilot is applicable for the buffer.
 The input are the file name and the major mode of the buffer."
   :type 'function
@@ -132,8 +132,10 @@ This function is automatically called during the client initialization if needed
         (-let (((&copilot-ls:SignInInitiateResponse? :status :user-code :verification-uri :user) response))
 
           ;; Bail if already signed in
-          (if (s-equals-p status "AlreadySignedIn")
-              (lsp--info "Copilot :: Already signed in as %s" user)
+          (cond
+           ((s-equals-p status "AlreadySignedIn")
+            (lsp--info "Copilot :: Already signed in as %s" user))
+           ((yes-or-no-p "Copilot requires you to log into your Github account. Proceed now?")
             (if (display-graphic-p)
                 (progn
                   (gui-set-selection 'CLIPBOARD user-code)
@@ -159,7 +161,9 @@ automatically, browse to %s." user-code verification-uri))
               (when (s-equals-p status "NotAuthorized")
                 (user-error "User %s is not authorized" user))
 
-              (lsp--info "Authenticated as %s" user))))))))
+              (lsp--info "Authenticated as %s" user)))
+           (t
+            (message "Aborting Copilot login. To avoid being asked again, customize `lsp-copilot-enabled'"))))))))
 
 (defun lsp-copilot-logout ()
   "Logout from Copilot."
