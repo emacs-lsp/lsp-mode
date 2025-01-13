@@ -3901,7 +3901,7 @@
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>[/.+Test.php$/]</code></p>
 <p>One or more expressions of paths to ignore.
-This uses Symfony`s Finder in the background, so this means you
+This uses Symfony's Finder in the background, so this means you
 can configure anything here that can also be passed to the name
 function, which includes plain strings, globs, as well as regular
 expressions.  Note that for existing projects, modifying these
@@ -3913,7 +3913,7 @@ already present.</p>
 <p><em>Default:</em> <code>[php]</code></p>
 <p>List of file extensions (without dot) to process.
 Files that do not match this whitelist will be ignored during
-indexing.  Usually you`ll want to set this to at least include
+indexing.  Usually you'll want to set this to at least include
 php, as it is the most common PHP extension.  phpt is not
 included by default as it is often used to contain test code that
 is not directly part of the code.  Note that for existing
@@ -3930,7 +3930,7 @@ Note that, as the index database uses SQLite and WAL mode,
 additional files (usually two) may be generated and used in the
 same folder.  Note also that Serenata relies on the Doctrine DBAL
 library as well as the SQLite backends in PHP, which may not
-support non-file URI`s, which may prevent you from using these.</p>
+support non-file URI's, which may prevent you from using these.</p>
 <hr />
 <h3 id="lsp-serenata-php-version"><code>lsp-serenata-php-version</code><a class="headerlink" href="#lsp-serenata-php-version" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>number</code></p>
@@ -3955,7 +3955,7 @@ This does not have to include the root of the project itself, in
 case you have need of an exotic configuration where the root of
 the project is at some location but your actual PHP code is
 somewhere else.  Note that if you are running Serenata in a
-container, you will have to ensure that these URI`s are mapped
+container, you will have to ensure that these URI's are mapped
 inside it.  Avoid using file paths containing spaces. This is
 currently broken due to apparent PHP quirks.  By default, the
 value is taken from the lsp workspace location.</p>
@@ -3968,7 +3968,7 @@ value is taken from the lsp workspace location.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 11, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 13, 2025</span>
       
     
   </small>

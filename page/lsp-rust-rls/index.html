@@ -4260,25 +4260,25 @@ I.e., check all targets and integration tests too.</p>
 <h3 id="lsp-rust-build-bin"><code>lsp-rust-build-bin</code><a class="headerlink" href="#lsp-rust-build-bin" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag None nil) (string :tag Binary))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>If non-nil, checks the project as if you passed <code>-- bin &lt;build_bin&gt;</code>
+<p>If non-nil, checks the project as if you passed `-- bin <build_bin>'
 argument to cargo.</p>
-<p>Mutually exclusive with <code>lsp-rust-build-lib</code>. (Unstable)</p>
+<p>Mutually exclusive with `lsp-rust-build-lib'. (Unstable)</p>
 <hr />
 <h3 id="lsp-rust-build-command"><code>lsp-rust-build-command</code><a class="headerlink" href="#lsp-rust-build-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag None nil) (string :tag Command))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>EXPERIMENTAL (requires <code>rust.unstable_features</code>)
+<p>EXPERIMENTAL (requires `rust.unstable_features')
 If set, executes a given program responsible for rebuilding save-analysis to be
 loaded by the RLS. The program given should output a list of resulting .json
 files on stdout.</p>
-<p>Implies <code>rust.build_on_save</code>: true.</p>
+<p>Implies `rust.build_on_save': true.</p>
 <hr />
 <h3 id="lsp-rust-build-lib"><code>lsp-rust-build-lib</code><a class="headerlink" href="#lsp-rust-build-lib" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>If non-nil, checks the project as if you passed the <code>--lib</code> argument to
+<p>If non-nil, checks the project as if you passed the `--lib' argument to
 cargo.</p>
-<p>Mutually exclusive with, and preferred over, <code>lsp-rust-build-bin</code>. (Unstable)</p>
+<p>Mutually exclusive with, and preferred over, `lsp-rust-build-bin'. (Unstable)</p>
 <hr />
 <h3 id="lsp-rust-build-on-save"><code>lsp-rust-build-on-save</code><a class="headerlink" href="#lsp-rust-build-on-save" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4288,7 +4288,7 @@ cargo.</p>
 <h3 id="lsp-rust-cfg-test"><code>lsp-rust-cfg-test</code><a class="headerlink" href="#lsp-rust-cfg-test" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>If non-nil, checks the project as if you were running <code>cargo test</code> rather
+<p>If non-nil, checks the project as if you were running `cargo test' rather
 than cargo build.</p>
 <p>I.e., compiles (but does not run) test code.</p>
 <hr />
@@ -4303,9 +4303,9 @@ than cargo build.</p>
 <p>Controls eagerness of clippy diagnostics when available.
 Valid values are (case-insensitive):
  - "off": Disable clippy lints.
- - "opt-in": Clippy lints are shown when crates specify <code>#![warn(clippy)]</code>.
+ - "opt-in": Clippy lints are shown when crates specify `#![warn(clippy)]'.
  - "on": Clippy lints enabled for all crates in workspace.</p>
-<p>You need to install clippy via rustup if you haven`t already.</p>
+<p>You need to install clippy via rustup if you haven't already.</p>
 <hr />
 <h3 id="lsp-rust-crate-blocklist"><code>lsp-rust-crate-blocklist</code><a class="headerlink" href="#lsp-rust-crate-blocklist" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
@@ -4410,7 +4410,7 @@ the latest build duration.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 11, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 13, 2025</span>
       
     
   </small>

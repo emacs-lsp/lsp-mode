@@ -5143,7 +5143,7 @@ modifying the signature that is displayed by eldoc.</p>
 <h3 id="lsp-rust-analyzer-cargo-auto-reload"><code>lsp-rust-analyzer-cargo-auto-reload</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-auto-reload" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Automatically refresh project info via <code>cargo metadata</code> on <code>Cargo.toml</code> changes.</p>
+<p>Automatically refresh project info via <code>cargo metadata' on</code>Cargo.toml' changes.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-cargo-extra-args"><code>lsp-rust-analyzer-cargo-extra-args</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-extra-args" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
@@ -5243,7 +5243,7 @@ belongs to.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Toggles the additional completions that automatically add imports when
-completed. <code>lsp-completion-enable-additional-text-edit</code> must be non-nil
+completed. `lsp-completion-enable-additional-text-edit' must be non-nil
  for this feature to be fully enabled.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-completion-auto-self-enable"><code>lsp-rust-analyzer-completion-auto-self-enable</code><a class="headerlink" href="#lsp-rust-analyzer-completion-auto-self-enable" title="Permanent link">#</a></h3>
@@ -5443,10 +5443,11 @@ https://rust-analyzer.github.io/manual.html#auto-import.
 <p>The path structure for newly inserted paths to use.
 Valid values are:
  - "plain": Insert import paths relative to the current module, using up to
-one <code>super</code> prefix if the parent module contains the requested item.
- - "by_self": Prefix all import paths with <code>self</code> if they don<code>t begin with</code>self<code>,</code>super<code>,</code>crate<code>or a crate name.
+one <code>super' prefix if the parent module contains the requested item.
+ - "by_self": Prefix all import paths with</code>self' if they don't begin with
+<code>self',</code>super', <code>crate' or a crate name.
  - "by_crate": Force import paths to be absolute by always starting
-them with</code>crate` or the crate name they refer to.</p>
+them with</code>crate' or the crate name they refer to.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-imports-merge-glob"><code>lsp-rust-analyzer-imports-merge-glob</code><a class="headerlink" href="#lsp-rust-analyzer-imports-merge-glob" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -5486,7 +5487,7 @@ syntax highlighting.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enable Proc macro support.
-Implies <code>lsp-rust-analyzer-cargo-run-build-scripts</code></p>
+Implies `lsp-rust-analyzer-cargo-run-build-scripts'</p>
 <hr />
 <h3 id="lsp-rust-analyzer-rustc-source"><code>lsp-rust-analyzer-rustc-source</code><a class="headerlink" href="#lsp-rust-analyzer-rustc-source" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (file :tag Path) (const :tag None nil))</code></p>
@@ -5507,7 +5508,8 @@ for formatting.</p>
 <h3 id="lsp-rust-analyzer-rustfmt-rangeformatting-enable"><code>lsp-rust-analyzer-rustfmt-rangeformatting-enable</code><a class="headerlink" href="#lsp-rust-analyzer-rustfmt-rangeformatting-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Enables the use of rustfmt<code>s unstable range formatting command for the</code>textDocument/rangeFormatting` request. The rustfmt option is unstable and only
+<p>Enables the use of rustfmt's unstable range formatting command for the
+<code>textDocument/rangeFormatting</code> request. The rustfmt option is unstable and only
 available on a nightly build.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-server-command"><code>lsp-rust-analyzer-server-command</code><a class="headerlink" href="#lsp-rust-analyzer-server-command" title="Permanent link">#</a></h3>
@@ -5524,7 +5526,7 @@ active, the various inlay format settings are not used.</p>
 <h3 id="lsp-rust-analyzer-store-path"><code>lsp-rust-analyzer-store-path</code><a class="headerlink" href="#lsp-rust-analyzer-store-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
 <p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/rust/rust-analyzer</code></p>
-<p>The path to the file in which <code>rust-analyzer</code> will be stored.</p>
+<p>The path to the file in which `rust-analyzer' will be stored.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-use-client-watching"><code>lsp-rust-analyzer-use-client-watching</code><a class="headerlink" href="#lsp-rust-analyzer-use-client-watching" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -5534,7 +5536,7 @@ active, the various inlay format settings are not used.</p>
 <h3 id="lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts"><code>lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts</code><a class="headerlink" href="#lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Use <code>RUSTC_WRAPPER=rust-analyzer</code> when running build scripts to avoid
+<p>Use `RUSTC_WRAPPER=rust-analyzer' when running build scripts to avoid
 compiling unnecessary things.</p>
 <hr />
 
@@ -5545,7 +5547,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 11, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 13, 2025</span>
       
     
   </small>
