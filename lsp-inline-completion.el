@@ -77,7 +77,7 @@ InlineCompletionItem objects"
     ;; useful -- recenter without loosing the completion
     (define-key map (kbd "C-l") #'recenter-top-bottom)
     ;; ignore
-     (define-key map [down-mouse-1] #'ignore)
+    (define-key map [down-mouse-1] #'ignore)
     (define-key map [up-mouse-1] #'ignore)
     (define-key map [mouse-movement] #'ignore)
     ;; Any event outside of the map, cancel and use it
@@ -109,9 +109,10 @@ InlineCompletionItem objects"
 
 (defcustom lsp-inline-completion-accepted-functions nil
   "Functions executed after accepting a code suggestion.
-The functions receive the text range that was updated by the completion."
+The functions receive the inserted text and the range that was updated by the completion."
   :type 'hook
   :group 'lsp-mode)
+
 
 (defcustom lsp-inline-completion-cancelled-hook nil
   "Hooks executed after cancelling the completion UI."
@@ -138,28 +139,16 @@ The functions receive the text range that was updated by the completion."
                        (integer :tag "Secondary")))
   :group 'lsp-mode)
 
-(defsubst lsp-inline-completion--overlay-visible ()
-  "Return whether the `overlay' is avaiable."
-  (and (overlayp lsp-inline-completion--overlay)
-       (overlay-buffer lsp-inline-completion--overlay)))
+(defsubst lsp-inline-completion--active-p ()
+  "Returns whether we are in an active completion"
+  (overlayp lsp-inline-completion--overlay))
 
 (defun lsp-inline-completion--clear-overlay ()
   "Hide the suggestion overlay."
-  (when (lsp-inline-completion--overlay-visible)
-    (delete-overlay lsp-inline-completion--overlay))
-  (setq lsp-inline-completion--overlay nil))
-
-
-(defun lsp-inline-completion--get-overlay (beg end)
-  "Build the suggestions overlay."
   (when (overlayp lsp-inline-completion--overlay)
-    (lsp-inline-completion--clear-overlay))
-
-  (setq lsp-inline-completion--overlay (make-overlay beg end nil nil t))
-  (overlay-put lsp-inline-completion--overlay 'keymap lsp-inline-completion-active-map)
-  (overlay-put lsp-inline-completion--overlay 'priority lsp-inline-completion-overlay-priority)
-
-  lsp-inline-completion--overlay)
+    (delete-overlay lsp-inline-completion--overlay))
+  (setq lsp-inline-completion--overlay nil)
+  (internal-pop-keymap lsp-inline-completion-active-map 'overriding-terminal-local-map))
 
 
 (defun lsp-inline-completion--show-keys ()
@@ -188,6 +177,19 @@ The functions receive the text range that was updated by the completion."
                                        (string-join (--map (propertize (key-description it) 'face 'help-key-binding)
                                                            keys)
                                                     "/"))))))))
+
+
+(defun lsp-inline-completion--get-overlay (beg end)
+  "Build the suggestions overlay."
+  (lsp-inline-completion--clear-overlay)
+
+  (setq lsp-inline-completion--overlay (make-overlay beg end nil nil t))
+  (overlay-put lsp-inline-completion--overlay 'priority lsp-inline-completion-overlay-priority)
+  (internal-push-keymap lsp-inline-completion-active-map 'overriding-terminal-local-map)
+  (lsp-inline-completion--show-keys)
+
+  lsp-inline-completion--overlay)
+
 
 (defun lsp-inline-completion-show-overlay ()
   "Makes the suggestion overlay visible."
@@ -239,7 +241,6 @@ The functions receive the text range that was updated by the completion."
 
     (goto-char target-position)
 
-    (lsp-inline-completion--show-keys)
     (run-hooks 'lsp-inline-completion-shown-hook)))
 
 (defun lsp-inline-completion--insert-sugestion (text kind start end command?)
@@ -277,10 +278,11 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-accept ()
   "Accepts the current suggestion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
-    (error "Not showing suggestions"))
+  (unless (lsp-inline-completion--active-p)
+     (error "Not showing suggestions"))
 
   (lsp-inline-completion--clear-overlay)
+
   (-let* ((suggestion (elt lsp-inline-completion--items lsp-inline-completion--current))
           ((&InlineCompletionItem? :insert-text :range? :command?) suggestion)
           ((kind . text) (cond
@@ -310,14 +312,13 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay."
   (interactive)
-  (when (lsp-inline-completion--overlay-visible)
-
+  (let ((was-active (lsp-inline-completion--active-p)))
     (lsp-inline-completion--clear-overlay)
 
-    (when lsp-inline-completion--start-point
-      (goto-char lsp-inline-completion--start-point))
+    (when was-active
+      (goto-char lsp-inline-completion--start-point)
+      (run-hooks 'lsp-inline-completion-cancelled-hook))))
 
-    (run-hooks 'lsp-inline-completion-cancelled-hook)))
 
 (defun lsp-inline-completion-cancel-with-input (event &optional arg)
   "Cancel the inline completion and executes whatever event was received."
@@ -334,8 +335,9 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-next ()
   "Display the next inline completion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
+  (unless (lsp-inline-completion--active-p)
     (error "Not showing suggestions"))
+
   (setq lsp-inline-completion--current
         (mod (1+ lsp-inline-completion--current)
              (length lsp-inline-completion--items)))
@@ -345,8 +347,10 @@ The functions receive the text range that was updated by the completion."
 (defun lsp-inline-completion-prev ()
   "Display the previous inline completion."
   (interactive)
-  (unless (lsp-inline-completion--overlay-visible)
+
+  (unless (lsp-inline-completion--active-p)
     (error "Not showing suggestions"))
+
   (setq lsp-inline-completion--current
         (mod (1- lsp-inline-completion--current)
              (length lsp-inline-completion--items)))
@@ -359,7 +363,9 @@ The functions receive the text range that was updated by the completion."
   (interactive)
 
   (unless implicit
-    (lsp--spinner-start) )
+    (lsp--spinner-start))
+
+  (run-hooks 'lsp-before-inline-completion-hook)
 
   (condition-case err
       (unwind-protect
