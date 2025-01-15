@@ -51,8 +51,8 @@ finding the executable with variable `exec-path'. "
   "Path to `v-analyzer'
 Leave as just the executable name to use the default behavior of
 finding the executable with variable `exec-path'. "
-  :type 'number
-  :group 'lsp-nim
+  :type 'string
+  :group 'lsp-v
   :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-client
