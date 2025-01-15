@@ -857,9 +857,12 @@ If TABLE is a function, it is called with STRING, PRED and nil to get
 the candidates, otherwise it is treated as the candidates.
 
 If the candidates is non-empty, return the passed STRING and POINT."
-  (when (cond ((functionp table)
-               (funcall table string pred nil))
-              (t table))
+  (when (pcase table
+          ((pred functionp)
+           (funcall table string pred nil))
+          ((pred hash-table-p)
+           (not (hash-table-empty-p table)))
+          (_ table))
     (cons string point)))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
