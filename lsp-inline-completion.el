@@ -312,6 +312,7 @@ The functions receive the inserted text and the range that was updated by the co
 (defun lsp-inline-completion-cancel ()
   "Close the suggestion overlay."
   (interactive)
+  (message nil) ;; clear echo
   (let ((was-active (lsp-inline-completion--active-p)))
     (lsp-inline-completion--clear-overlay)
 
@@ -320,17 +321,13 @@ The functions receive the inserted text and the range that was updated by the co
       (run-hooks 'lsp-inline-completion-cancelled-hook))))
 
 
-(defun lsp-inline-completion-cancel-with-input (event &optional arg)
+(defun lsp-inline-completion-cancel-with-input (event)
   "Cancel the inline completion and executes whatever event was received."
-  (interactive (list last-input-event current-prefix-arg))
+  (interactive (list last-input-event))
 
   (lsp-inline-completion-cancel)
 
-  (let ((command (lookup-key (current-active-maps) (vector event)))
-        (current-prefix-arg arg))
-
-    (when (commandp command)
-      (call-interactively command))))
+  (setq unread-command-events (nconc unread-command-events (list event))))
 
 (defun lsp-inline-completion-next ()
   "Display the next inline completion."
