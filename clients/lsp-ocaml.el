@@ -98,7 +98,7 @@
   :group 'lsp-ocaml
   :type 'boolean)
 
-(defcustom lsp-ocaml-trace-server '("off")
+(defcustom lsp-ocaml-trace-server "off"
   "Enable tracing of the server communication."
   :group 'lsp-ocaml
   :type '(choice
@@ -126,6 +126,7 @@
 
 ;; TODO most of these need some sort of command implementation
 (defun lsp-ocaml--make-custom-settings ()
+  "Return custom settings for ocaml-language-server."
   (list
    :extendedHover (list :enable lsp-ocaml-extended-hover)
    :codelens (list :enable lsp-ocaml-codelens)
