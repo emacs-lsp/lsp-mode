@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-html/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-ltex-plus/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>HTML - LSP Mode - LSP support for Emacs</title>
+        <title>LanguageTool (LTEX+) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#html" class="md-skip">
+        <a href="#languagetool" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HTML
+              LanguageTool (LTEX+)
             
           </span>
         </div>
@@ -1752,225 +1752,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          HTML
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-html/" class="md-nav__link">
         HTML
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-auto-closing-tags" class="md-nav__link">
-    lsp-html-auto-closing-tags
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-custom-data" class="md-nav__link">
-    lsp-html-custom-data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-content-unformatted" class="md-nav__link">
-    lsp-html-format-content-unformatted
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-enable" class="md-nav__link">
-    lsp-html-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-end-with-newline" class="md-nav__link">
-    lsp-html-format-end-with-newline
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-extra-liners" class="md-nav__link">
-    lsp-html-format-extra-liners
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-indent-handlebars" class="md-nav__link">
-    lsp-html-format-indent-handlebars
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-indent-inner-html" class="md-nav__link">
-    lsp-html-format-indent-inner-html
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-max-preserve-new-lines" class="md-nav__link">
-    lsp-html-format-max-preserve-new-lines
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-preserve-new-lines" class="md-nav__link">
-    lsp-html-format-preserve-new-lines
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-unformatted" class="md-nav__link">
-    lsp-html-format-unformatted
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-wrap-attributes" class="md-nav__link">
-    lsp-html-format-wrap-attributes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-wrap-line-length" class="md-nav__link">
-    lsp-html-format-wrap-line-length
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-hover-documentation" class="md-nav__link">
-    lsp-html-hover-documentation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-hover-references" class="md-nav__link">
-    lsp-html-hover-references
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-server-command-args" class="md-nav__link">
-    lsp-html-server-command-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-suggest-html5" class="md-nav__link">
-    lsp-html-suggest-html5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-trace-server" class="md-nav__link">
-    lsp-html-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-validate-scripts" class="md-nav__link">
-    lsp-html-validate-scripts
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-validate-styles" class="md-nav__link">
-    lsp-html-validate-styles
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2162,11 +1948,79 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-ltex-plus/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          LanguageTool (LTEX+)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         LanguageTool (LTEX+)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3859,152 +3713,6 @@
     Available configurations
   </a>
   
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-auto-closing-tags" class="md-nav__link">
-    lsp-html-auto-closing-tags
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-custom-data" class="md-nav__link">
-    lsp-html-custom-data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-content-unformatted" class="md-nav__link">
-    lsp-html-format-content-unformatted
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-enable" class="md-nav__link">
-    lsp-html-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-end-with-newline" class="md-nav__link">
-    lsp-html-format-end-with-newline
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-extra-liners" class="md-nav__link">
-    lsp-html-format-extra-liners
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-indent-handlebars" class="md-nav__link">
-    lsp-html-format-indent-handlebars
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-indent-inner-html" class="md-nav__link">
-    lsp-html-format-indent-inner-html
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-max-preserve-new-lines" class="md-nav__link">
-    lsp-html-format-max-preserve-new-lines
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-preserve-new-lines" class="md-nav__link">
-    lsp-html-format-preserve-new-lines
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-unformatted" class="md-nav__link">
-    lsp-html-format-unformatted
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-wrap-attributes" class="md-nav__link">
-    lsp-html-format-wrap-attributes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-format-wrap-line-length" class="md-nav__link">
-    lsp-html-format-wrap-line-length
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-hover-documentation" class="md-nav__link">
-    lsp-html-hover-documentation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-hover-references" class="md-nav__link">
-    lsp-html-hover-references
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-server-command-args" class="md-nav__link">
-    lsp-html-server-command-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-suggest-html5" class="md-nav__link">
-    lsp-html-suggest-html5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-trace-server" class="md-nav__link">
-    lsp-html-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-validate-scripts" class="md-nav__link">
-    lsp-html-validate-scripts
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-html-validate-styles" class="md-nav__link">
-    lsp-html-validate-styles
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -4043,7 +3751,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-html.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-ltex-plus.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -4062,115 +3770,13 @@
 
 
 <!-- Markdown content -->
-<h1 id="html">HTML<a class="headerlink" href="#html" title="Permanent link">#</a></h1>
+<h1 id="languagetool">LanguageTool<a class="headerlink" href="#languagetool" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/microsoft/vscode/tree/main/extensions/html-language-features/server">html</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/ltex-plus/ltex-ls-plus">LTEX+</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>html-ls</code><kbd>RET</kbd>.</p>
-<p><code>npm install -g vscode-langservers-extracted</code></p>
+<p>For more instructions on how to install manually, check <a href="https://ltex-plus.github.io/ltex-plus/installation-usage.html">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-html-auto-closing-tags"><code>lsp-html-auto-closing-tags</code><a class="headerlink" href="#lsp-html-auto-closing-tags" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable autoclosing of HTML tags.</p>
-<hr />
-<h3 id="lsp-html-custom-data"><code>lsp-html-custom-data</code><a class="headerlink" href="#lsp-html-custom-data" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-repeatable-vector</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>A list of JSON file paths that define custom tags, properties and other HTML
-syntax constructs. Only workspace folder setting will be read.
-All json file paths should be relative to your workspace folder.</p>
-<hr />
-<h3 id="lsp-html-format-content-unformatted"><code>lsp-html-format-content-unformatted</code><a class="headerlink" href="#lsp-html-format-content-unformatted" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
-<p><em>Default:</em> <code>pre,code,textarea</code></p>
-<hr />
-<h3 id="lsp-html-format-enable"><code>lsp-html-format-enable</code><a class="headerlink" href="#lsp-html-format-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable default HTML formatter.</p>
-<hr />
-<h3 id="lsp-html-format-end-with-newline"><code>lsp-html-format-end-with-newline</code><a class="headerlink" href="#lsp-html-format-end-with-newline" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>End with a newline.</p>
-<hr />
-<h3 id="lsp-html-format-extra-liners"><code>lsp-html-format-extra-liners</code><a class="headerlink" href="#lsp-html-format-extra-liners" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
-<p><em>Default:</em> <code>head, body, /html</code></p>
-<hr />
-<h3 id="lsp-html-format-indent-handlebars"><code>lsp-html-format-indent-handlebars</code><a class="headerlink" href="#lsp-html-format-indent-handlebars" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<hr />
-<h3 id="lsp-html-format-indent-inner-html"><code>lsp-html-format-indent-inner-html</code><a class="headerlink" href="#lsp-html-format-indent-inner-html" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<hr />
-<h3 id="lsp-html-format-max-preserve-new-lines"><code>lsp-html-format-max-preserve-new-lines</code><a class="headerlink" href="#lsp-html-format-max-preserve-new-lines" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const nil) integer)</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<hr />
-<h3 id="lsp-html-format-preserve-new-lines"><code>lsp-html-format-preserve-new-lines</code><a class="headerlink" href="#lsp-html-format-preserve-new-lines" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Controls whether existing line breaks before elements should be preserved.
-Only works before elements, not inside tags or for text.</p>
-<hr />
-<h3 id="lsp-html-format-unformatted"><code>lsp-html-format-unformatted</code><a class="headerlink" href="#lsp-html-format-unformatted" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
-<p><em>Default:</em> <code>wbr</code></p>
-<hr />
-<h3 id="lsp-html-format-wrap-attributes"><code>lsp-html-format-wrap-attributes</code><a class="headerlink" href="#lsp-html-format-wrap-attributes" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const auto) (const force) (const force-aligned) (const force-expand-multiline) (const aligned-multiple) (const preserve) (const preserve-aligned))</code></p>
-<p><em>Default:</em> <code>auto</code></p>
-<p>Wrap attributes.</p>
-<hr />
-<h3 id="lsp-html-format-wrap-line-length"><code>lsp-html-format-wrap-line-length</code><a class="headerlink" href="#lsp-html-format-wrap-line-length" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>number</code></p>
-<p><em>Default:</em> <code>120</code></p>
-<p>Maximum amount of characters per line (0 = disable).</p>
-<hr />
-<h3 id="lsp-html-hover-documentation"><code>lsp-html-hover-documentation</code><a class="headerlink" href="#lsp-html-hover-documentation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Whether to show documentation strings on hover or not.</p>
-<hr />
-<h3 id="lsp-html-hover-references"><code>lsp-html-hover-references</code><a class="headerlink" href="#lsp-html-hover-references" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Whether to show MDN references in documentation popups.</p>
-<hr />
-<h3 id="lsp-html-server-command-args"><code>lsp-html-server-command-args</code><a class="headerlink" href="#lsp-html-server-command-args" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>(--stdio)</code></p>
-<p>Command to start html-languageserver.</p>
-<hr />
-<h3 id="lsp-html-suggest-html5"><code>lsp-html-suggest-html5</code><a class="headerlink" href="#lsp-html-suggest-html5" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Controls whether the built-in HTML language support suggests HTML5 tags,
-properties and values.</p>
-<hr />
-<h3 id="lsp-html-trace-server"><code>lsp-html-trace-server</code><a class="headerlink" href="#lsp-html-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const off) (const messages) (const verbose))</code></p>
-<p><em>Default:</em> <code>off</code></p>
-<p>Traces the communication between VS Code and the HTML language server.</p>
-<hr />
-<h3 id="lsp-html-validate-scripts"><code>lsp-html-validate-scripts</code><a class="headerlink" href="#lsp-html-validate-scripts" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Controls whether the built-in HTML language support validates embedded
-scripts.</p>
-<hr />
-<h3 id="lsp-html-validate-styles"><code>lsp-html-validate-styles</code><a class="headerlink" href="#lsp-html-validate-styles" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Controls whether the built-in HTML language support validates embedded
-styles.</p>
-<hr />
 
 <!-- Source file information -->
 
@@ -4197,7 +3803,7 @@ styles.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-hack/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Hack" rel="prev">
+        <a href="../lsp-ltex/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LanguageTool (LTEX)" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -4206,20 +3812,20 @@ styles.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Hack
+              LanguageTool (LTEX)
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-idris/" class="md-footer__link md-footer__link--next" aria-label="Next: Idris" rel="next">
+        <a href="../lsp-lisp/" class="md-footer__link md-footer__link--next" aria-label="Next: Lisp" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Idris
+              Lisp
             </div>
           </div>
           <div class="md-footer__button md-icon">

@@ -583,6 +583,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ltex-plus",
+    "full-name": "LanguageTool",
+    "server-name": "LTEX+",
+    "server-url": "https://github.com/ltex-plus/ltex-ls-plus",
+    "installation-url": "https://ltex-plus.github.io/ltex-plus/installation-usage.html",
+    "debugger": "Not available"
+  },
+  {
     "name": "emmy-lua",
     "common-group-name": "lua",
     "full-name": "Lua",
