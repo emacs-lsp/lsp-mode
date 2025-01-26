@@ -902,6 +902,7 @@ Changes take effect only when a new session is started."
     (tuareg-mode . "ocaml")
     (futhark-mode . "futhark")
     (swift-mode . "swift")
+    (swift-ts-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
     (heex-ts-mode . "elixir")
