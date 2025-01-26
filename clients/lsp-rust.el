@@ -1505,18 +1505,24 @@ such as imports and dyn traits."
 Extract the arguments, prepare the minor mode (cargo-process-mode if possible)
 and run a compilation"
   (-let* (((&rust-analyzer:Runnable :kind :label :args) runnable)
-          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test?) args)
+          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test? :environment?) args)
           (default-directory (or workspace-root? default-directory)))
     (if (not (string-equal kind "cargo"))
         (lsp--error "'%s' runnable is not supported" kind)
       (compilation-start
        (string-join (append (when expect-test? '("env" "UPDATE_EXPECT=1"))
+                            (when environment? (lsp-rust-analyzer--to-bash-env environment?))
                             (list "cargo") cargo-args
                             (when executable-args '("--")) executable-args '()) " ")
 
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*"))))))
+
+(defun lsp-rust-analyzer--to-bash-env (env-vars)
+  "Extract the environment variables from plist ENV-VARS."
+  (cl-loop for (key value) on env-vars by 'cddr
+           collect (format "%s=%s" (substring (symbol-name key) 1) value)))
 
 (defun lsp-rust-analyzer-run (runnable)
   "Select and run a RUNNABLE action."
