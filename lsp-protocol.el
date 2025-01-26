@@ -449,7 +449,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
                (rust-analyzer:RunnablesParams (:textDocument) (:position))
                (rust-analyzer:Runnable (:label :kind :args) (:location))
-               (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest))
+               (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest :environment))
                (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
                (rust-analyzer:RelatedTests (:runnable) nil)
                (rust-analyzer:SsrParams (:query :parseOnly) nil)
