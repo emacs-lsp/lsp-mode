@@ -176,22 +176,24 @@ As defined by the Language Server Protocol 3.16."
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
-     lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
-     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
-     lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
-     lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
-     lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
-     lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
-     lsp-mojo lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
-     lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
-     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
-     lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roslyn lsp-rubocop lsp-ruby-lsp
+     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker
+     lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
+     lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
+     lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy
+     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-jq
+     lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
+     lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
+     lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
+     lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-openscad
+     lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-purescript
+     lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-qml lsp-r
+     lsp-racket lsp-remark lsp-rf lsp-roc lsp-roslyn lsp-rubocop lsp-ruby-lsp
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
-     lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl
-     lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
+     lsp-typespec lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
+     lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -356,6 +358,7 @@ the server has requested that."
     "[/\\\\]\\.eunit\\'"
     "[/\\\\]node_modules"
     "[/\\\\]\\.yarn\\'"
+    "[/\\\\]\\.turbo\\'"
     "[/\\\\]\\.fslckout\\'"
     "[/\\\\]\\.tox\\'"
     "[/\\\\]\\.nox\\'"
@@ -363,6 +366,7 @@ the server has requested that."
     "[/\\\\]dist-newstyle\\'"
     "[/\\\\]\\.stack-work\\'"
     "[/\\\\]\\.bloop\\'"
+    "[/\\\\]\\.bsp\\'"
     "[/\\\\]\\.metals\\'"
     "[/\\\\]target\\'"
     "[/\\\\]\\.ccls-cache\\'"
@@ -898,6 +902,7 @@ Changes take effect only when a new session is started."
     (tuareg-mode . "ocaml")
     (futhark-mode . "futhark")
     (swift-mode . "swift")
+    (swift-ts-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
     (heex-ts-mode . "elixir")
@@ -941,6 +946,7 @@ Changes take effect only when a new session is started."
     (perl-mode . "perl")
     (cperl-mode . "perl")
     (robot-mode . "robot")
+    (roc-ts-mode . "roc")
     (racket-mode . "racket")
     (nix-mode . "nix")
     (nix-ts-mode . "nix")
@@ -3798,10 +3804,9 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "detail"
                                                                            "additionalTextEdits"
-                                                                           "command"
-                                                                           "insertTextFormat"
-                                                                           "insertTextMode"])))
-                                                        (insertTextModeSupport . ((valueSet . [1 2])))))
+                                                                           "command"])))
+                                                        (insertTextModeSupport . ((valueSet . [1 2])))
+                                                        (labelDetailsSupport . t)))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))
@@ -3824,7 +3829,9 @@ disappearing, unset all the variables related to it."
                                              (versionSupport . t)))
                       (diagnostic . ((dynamicRegistration . :json-false)
                                      (relatedDocumentSupport . :json-false)))
-                      (linkedEditingRange . ((dynamicRegistration . t)))))
+                      (linkedEditingRange . ((dynamicRegistration . t)))
+                      (inlineCompletion . ())
+                      ,@(when lsp-inlay-hint-enable '((inlayHint . ((dynamicRegistration . :json-false)))))))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
    custom-capabilities))
@@ -5105,6 +5112,7 @@ Applies on type formatting."
         (-lambda ((mode-or-pattern . language))
           (cond
            ((and (stringp mode-or-pattern)
+                 (buffer-file-name)
                  (s-matches? mode-or-pattern (buffer-file-name)))
             language)
            ((eq mode-or-pattern major-mode) language))))
@@ -7950,12 +7958,13 @@ SESSION is the active session."
                (apply 'vector)
                (list :workspaceFolders))))
        (-lambda ((&InitializeResult :capabilities))
-         ;; we know that Rust Analyzer will send {} which will be parsed as null
-         ;; when using plists
-         (when (equal 'rust-analyzer server-id)
-           (-> capabilities
-               (lsp:server-capabilities-text-document-sync?)
-               (lsp:set-text-document-sync-options-save? t)))
+         (pcase server-id
+           ;; we know that Rust Analyzer will send {} which will be parsed as null
+           ;; when using plists
+           ('rust-analyzer
+            (-> capabilities
+                (lsp:server-capabilities-text-document-sync?)
+                (lsp:set-text-document-sync-options-save? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
@@ -8365,7 +8374,7 @@ nil."
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
-(cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
+(cl-defun lsp--npm-dependency-install (callback error-callback &key package version &allow-other-keys)
   (if-let* ((npm-binary (executable-find "npm")))
       (progn
         ;; Explicitly `make-directory' to work around NPM bug in
@@ -8391,7 +8400,9 @@ nil."
                                  "--prefix"
                                  (f-join lsp-server-install-dir "npm" package)
                                  "install"
-                                 package))
+                                 (if-let* ((version (lsp-resolve-value version)))
+                                     (format "%s@%s" package version)
+                                   package)))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
 
@@ -9486,9 +9497,10 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
 This issue might be caused by:
 1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
 2. The language server that you expect to run is not configured to run for major mode `%s'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
-3. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
-4. You are over `tramp'. In this case follow https://emacs-lsp.github.io/lsp-mode/page/remote/.
-5. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
+3. The language server that you expect to run has an `:activation-fn` passed to `lsp-register-client` that prevents it supporting this buffer.
+4. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
+5. You are over `tramp'. In this case follow https://emacs-lsp.github.io/lsp-mode/page/remote/.
+6. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
 You can customize `lsp-warn-no-matched-clients' to disable this message."
                     major-mode major-mode major-mode))))))
 
@@ -9599,15 +9611,21 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package-desc-version "ext:package")
 (declare-function package--alist "ext:package")
 
+(defun lsp-package-version ()
+  "Returns a string with the version of the lsp-mode package."
+  (condition-case nil
+      (package-version-join
+       (package-desc-version
+        (car (alist-get 'lsp-mode (package--alist)))))
+    (error "9.0.1")))
+
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
   (interactive)
   (unless (featurep 'package)
     (require 'package))
   (let ((ver (format "lsp-mode %s, Emacs %s, %s"
-                     (package-version-join
-                      (package-desc-version
-                       (car (alist-get 'lsp-mode (package--alist)))))
+                     (lsp-package-version)
                      emacs-version
                      system-type)))
     (if (called-interactively-p 'interactive)

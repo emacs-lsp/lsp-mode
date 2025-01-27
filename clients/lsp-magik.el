@@ -58,13 +58,6 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-defcustom lsp-magik-java-home nil
-  "Path to Java Runtime, Java 17 minimum."
-  :type `string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "9.0.0")
-  :lsp-path "magik.javaHome")
-
 (lsp-defcustom lsp-magik-product-dirs []
   "Paths to (compiled, containing a libs/ directory) products."
   :type `lsp-string-vector

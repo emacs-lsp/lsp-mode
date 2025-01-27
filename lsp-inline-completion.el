@@ -83,7 +83,7 @@ InlineCompletionItem objects"
     ;; Any event outside of the map, cancel and use it
     (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
-  "Keymap active when showing inline code suggestions")
+  "Keymap active when showing inline code suggestions.")
 
 (defface lsp-inline-completion-overlay-face
   '((t :inherit shadow))
@@ -92,13 +92,13 @@ InlineCompletionItem objects"
 
 ;; Local Buffer State
 
-(defvar-local lsp-inline-completion--items nil "The completions provided by the server")
-(defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed")
-(defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions")
-(defvar-local lsp-inline-completion--start-point nil "The point where the completion started")
+(defvar-local lsp-inline-completion--items nil "The completions provided by the server.")
+(defvar-local lsp-inline-completion--current nil "The current suggestion to be displayed.")
+(defvar-local lsp-inline-completion--overlay nil "The overlay displaying code suggestions.")
+(defvar-local lsp-inline-completion--start-point nil "The point where the completion started.")
 
 (defcustom lsp-before-inline-completion-hook nil
-  "Hooks run before starting code suggestions"
+  "Hooks run before starting code suggestions."
   :type 'hook
   :group 'lsp-mode)
 
@@ -107,14 +107,14 @@ InlineCompletionItem objects"
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-inline-completion-accepted-hook nil
-  "Hooks executed after accepting a code suggestion. The hooks receive the
-text range that was updated by the completion"
+(defcustom lsp-inline-completion-accepted-functions nil
+  "Functions executed after accepting a code suggestion.
+The functions receive the text range that was updated by the completion."
   :type 'hook
   :group 'lsp-mode)
 
 (defcustom lsp-inline-completion-cancelled-hook nil
-  "Hooks executed after cancelling the completion UI"
+  "Hooks executed after cancelling the completion UI."
   :type 'hook
   :group 'lsp-mode)
 
@@ -144,14 +144,14 @@ text range that was updated by the completion"
        (overlay-buffer lsp-inline-completion--overlay)))
 
 (defun lsp-inline-completion--clear-overlay ()
-  "Hide the suggestion overlay"
+  "Hide the suggestion overlay."
   (when (lsp-inline-completion--overlay-visible)
     (delete-overlay lsp-inline-completion--overlay))
   (setq lsp-inline-completion--overlay nil))
 
 
 (defun lsp-inline-completion--get-overlay (beg end)
-  "Build the suggestions overlay"
+  "Build the suggestions overlay."
   (when (overlayp lsp-inline-completion--overlay)
     (lsp-inline-completion--clear-overlay))
 
@@ -163,7 +163,7 @@ text range that was updated by the completion"
 
 
 (defun lsp-inline-completion--show-keys ()
-  "Shows active keymap hints in the minibuffer"
+  "Shows active keymap hints in the minibuffer."
 
   (unless (and lsp-inline-completion--items
                (numberp lsp-inline-completion--current))
@@ -190,7 +190,7 @@ text range that was updated by the completion"
                                                     "/"))))))))
 
 (defun lsp-inline-completion-show-overlay ()
-  "Makes the suggestion overlay visible"
+  "Makes the suggestion overlay visible."
   (unless (and lsp-inline-completion--items
                (numberp lsp-inline-completion--current))
     (error "No completions to show"))
@@ -202,40 +202,36 @@ text range that was updated by the completion"
   (-let* ((suggestion
            (elt lsp-inline-completion--items
                 lsp-inline-completion--current))
-          ((&InlineCompletionItem? :insert-text :range?) suggestion)
-          ((&RangeToPoint :start :end) range?)
+          ((&InlineCompletionItem? :insert-text :range? (&RangeToPoint :start :end)) suggestion)
           (start-point (or start (point)))
           (showing-at-eol (save-excursion
                             (goto-char start-point)
-                            (eolp)))
+                            (and (not (bolp)) (eolp))))
           (beg (if showing-at-eol (1- start-point) start-point))
           (end-point  (or end (1+ beg)))
           (text (cond
                  ((lsp-markup-content? insert-text) (lsp:markup-content-value insert-text))
                  (t insert-text)))
-          (propertizedText (concat
-                            (buffer-substring beg start-point)
-                            (propertize text 'face 'lsp-inline-completion-overlay-face)))
+          (propertized-text (concat
+                             (buffer-substring beg start-point)
+                             (propertize text 'face 'lsp-inline-completion-overlay-face)))
           (ov (lsp-inline-completion--get-overlay beg end-point))
-          (completion-is-substr (string-equal
-                                 (buffer-substring beg lsp-inline-completion--start-point)
-                                 (substring propertizedText 0 (- lsp-inline-completion--start-point beg))))
           display-str after-str target-position)
 
     (goto-char beg)
 
-    (put-text-property 0 (length propertizedText) 'cursor t propertizedText)
+    (put-text-property 0 (length propertized-text) 'cursor t propertized-text)
 
-    (if completion-is-substr
+    (if (string-prefix-p
+         (buffer-substring-no-properties beg lsp-inline-completion--start-point)
+         text)
         (progn
           ;; Show the prefix as `display'
-          (setq display-str (substring propertizedText 0 (- lsp-inline-completion--start-point beg)))
-          (setq after-str (substring propertizedText (- lsp-inline-completion--start-point beg) nil))
+          (setq display-str (substring propertized-text 0 (- lsp-inline-completion--start-point beg)))
+          (setq after-str (substring propertized-text (- lsp-inline-completion--start-point beg) nil))
           (setq target-position lsp-inline-completion--start-point))
-
-
-      (setq display-str (substring propertizedText 0 1))
-      (setq after-str (substring propertizedText 1))
+      (setq display-str (substring propertized-text 0 1))
+      (setq after-str (substring propertized-text 1))
       (setq target-position beg))
 
     (overlay-put ov 'display display-str)
@@ -248,10 +244,7 @@ text range that was updated by the completion"
 
 (defun lsp-inline-completion--insert-sugestion (text kind start end command?)
   (let* ((text-insert-start (or start lsp-inline-completion--start-point))
-         text-insert-end
-         (completion-is-substr (string-equal
-                                (buffer-substring text-insert-start lsp-inline-completion--start-point)
-                                (substring text 0 (- lsp-inline-completion--start-point text-insert-start)))))
+         text-insert-end)
     (when text-insert-start
       (goto-char text-insert-start))
 
@@ -278,15 +271,11 @@ text range that was updated by the completion"
     (when command?
       (lsp--execute-command command?))
 
-    (if completion-is-substr
-        (goto-char lsp-inline-completion--start-point)
-      (goto-char text-insert-start))
-
     ;; hooks
-    (run-hook-with-args-until-failure 'lsp-inline-completion-accepted-hook text text-insert-start text-insert-end)))
+    (run-hook-with-args 'lsp-inline-completion-accepted-functions text text-insert-start text-insert-end)))
 
 (defun lsp-inline-completion-accept ()
-  "Accepts the current suggestion"
+  "Accepts the current suggestion."
   (interactive)
   (unless (lsp-inline-completion--overlay-visible)
     (error "Not showing suggestions"))
@@ -319,7 +308,7 @@ text range that was updated by the completion"
                        0)))))
 
 (defun lsp-inline-completion-cancel ()
-  "Close the suggestion overlay"
+  "Close the suggestion overlay."
   (interactive)
   (when (lsp-inline-completion--overlay-visible)
 
@@ -331,7 +320,7 @@ text range that was updated by the completion"
     (run-hooks 'lsp-inline-completion-cancelled-hook)))
 
 (defun lsp-inline-completion-cancel-with-input (event &optional arg)
-  "Cancel the inline completion and executes whatever event was received"
+  "Cancel the inline completion and executes whatever event was received."
   (interactive (list last-input-event current-prefix-arg))
 
   (lsp-inline-completion-cancel)
@@ -343,7 +332,7 @@ text range that was updated by the completion"
       (call-interactively command))))
 
 (defun lsp-inline-completion-next ()
-  "Display the next inline completion"
+  "Display the next inline completion."
   (interactive)
   (unless (lsp-inline-completion--overlay-visible)
     (error "Not showing suggestions"))
@@ -354,7 +343,7 @@ text range that was updated by the completion"
   (lsp-inline-completion-show-overlay))
 
 (defun lsp-inline-completion-prev ()
-  "Display the previous inline completion"
+  "Display the previous inline completion."
   (interactive)
   (unless (lsp-inline-completion--overlay-visible)
     (error "Not showing suggestions"))
@@ -366,28 +355,30 @@ text range that was updated by the completion"
 
 ;;;###autoload
 (defun lsp-inline-completion-display (&optional implicit)
-  "Displays the inline completions overlay"
+  "Displays the inline completions overlay."
   (interactive)
 
   (unless implicit
     (lsp--spinner-start) )
 
-  (unwind-protect
-      (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
-                                                  (lsp-inline-completion--params implicit)))
-                (items (lsp-inline-completion--parse-items resp)))
+  (condition-case err
+      (unwind-protect
+          (if-let* ((resp (lsp-request-while-no-input "textDocument/inlineCompletion"
+                                                      (lsp-inline-completion--params implicit)))
+                    (items (lsp-inline-completion--parse-items resp)))
 
-          (progn
-            (lsp-inline-completion--clear-overlay)
-            (setq lsp-inline-completion--items items)
-            (setq lsp-inline-completion--current 0)
-            (setq lsp-inline-completion--start-point (point))
-            (lsp-inline-completion-show-overlay))
+              (progn
+                (lsp-inline-completion--clear-overlay)
+                (setq lsp-inline-completion--items items)
+                (setq lsp-inline-completion--current 0)
+                (setq lsp-inline-completion--start-point (point))
+                (lsp-inline-completion-show-overlay))
+            (unless implicit
+              (lsp--info "No Suggestions!")))
+        ;; Clean up
         (unless implicit
-          (lsp--info "No Suggestions!")))
-    ;; Clean up
-    (unless implicit
-      (lsp--spinner-stop))))
+          (lsp--spinner-stop)))
+    (t (lsp--error "Could not fetch completions: %s" err))))
 
 
 ;; Inline Completion Mode
@@ -400,18 +391,18 @@ text range that was updated by the completion"
 
 (defcustom lsp-inline-completion-idle-delay 2
   "The number of seconds before trying to fetch inline completions, when
-lsp-inline-completion-mode is active"
+lsp-inline-completion-mode is active."
   :type 'number
   :group 'lsp-mode
   :package-version '(lsp-mode . "9.0.1"))
 
 (defcustom lsp-inline-completion-inhibit-predicates nil
-  "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion"
+  "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion."
   :type '(repeat function)
   :group 'lsp-mode)
 
 (defvar-local lsp-inline-completion--idle-timer nil
-  "The idle timer used by lsp-inline-completion-mode")
+  "The idle timer used by lsp-inline-completion-mode.")
 
 ;;;###autoload
 (define-minor-mode lsp-inline-completion-mode
@@ -471,11 +462,11 @@ lsp-inline-completion-mode is active"
 (declare-function company-manual-begin "ext:company")
 (defvar company--begin-inhibit-commands)
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
-  "If the inline completion mode should avoid calling completions when company is active"
+  "If the inline completion mode should avoid calling completions when company is active."
   :type 'boolean
   :group 'lsp-mode)
 
-(defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown")
+(defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown.")
 
 (defun lsp-inline-completion--company-save-state-and-hide ()
   (setq lsp-inline-completion--showing-company
@@ -495,7 +486,7 @@ lsp-inline-completion-mode is active"
 
 ;;;###autoload
 (define-minor-mode lsp-inline-completion-company-integration-mode
-  "Minor mode to be used when company mode is active with lsp-inline-completion-mode"
+  "Minor mode to be used when company mode is active with lsp-inline-completion-mode."
   :lighter nil
   (cond
    ((and lsp-inline-completion-company-integration-mode lsp--buffer-workspaces (bound-and-true-p company-mode))
@@ -518,3 +509,4 @@ lsp-inline-completion-mode is active"
           (delq #'lsp-inline-completion--company-active-p lsp-inline-completion-inhibit-predicates)))))
 
 (provide 'lsp-inline-completion)
+;;; lsp-inline-completion.el ends here

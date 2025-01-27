@@ -84,6 +84,7 @@ nav:
     - Fortran: page/lsp-fortran.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
+    - Github Copilot: page/lsp-copilot.md
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
     - GNAT Project: page/lsp-gpr.md
@@ -106,6 +107,7 @@ nav:
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
+    - LanguageTool (LTEX+): page/lsp-ltex-plus.md
     - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
     - Lua (Lua Language Server): page/lsp-lua-language-server.md
@@ -148,6 +150,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - Roc: page/lsp-roc.md
     - RPM Spec: page/lsp-rpm-spec.md
     - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
@@ -172,6 +175,7 @@ nav:
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Tilt: page/lsp-tilt.md
     - TOML: page/lsp-toml.md
+    - Tree-sitter Query: page/lsp-ts-query.md
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
     - TypeSpec: page/lsp-typespec.md
@@ -187,6 +191,7 @@ nav:
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
+    - YAML (helm-ls): page/lsp-kubernetes-helm.md
     - YANG: page/lsp-yang.md
     - Zig: page/lsp-zig.md
   - Debugging:

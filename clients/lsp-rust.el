@@ -760,10 +760,10 @@ them with `crate' or the crate name they refer to."
 (defcustom lsp-rust-analyzer-import-granularity "crate"
   "How imports should be grouped into use statements."
   :type '(choice
-          (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
-          (const "module" :doc "Merge imports from the same module into a single use statement.")
-          (const "item" :doc "Don’t merge imports at all, creating one import per item.")
-          (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+          (const :tag "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24." "crate" )
+          (const :tag "Merge imports from the same module into a single use statement." "module" )
+          (const :tag "Don’t merge imports at all, creating one import per item." "item" )
+          (const :tag "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'" "preserve" ))
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -1505,18 +1505,24 @@ such as imports and dyn traits."
 Extract the arguments, prepare the minor mode (cargo-process-mode if possible)
 and run a compilation"
   (-let* (((&rust-analyzer:Runnable :kind :label :args) runnable)
-          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test?) args)
+          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test? :environment?) args)
           (default-directory (or workspace-root? default-directory)))
     (if (not (string-equal kind "cargo"))
         (lsp--error "'%s' runnable is not supported" kind)
       (compilation-start
        (string-join (append (when expect-test? '("env" "UPDATE_EXPECT=1"))
+                            (when environment? (lsp-rust-analyzer--to-bash-env environment?))
                             (list "cargo") cargo-args
                             (when executable-args '("--")) executable-args '()) " ")
 
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*"))))))
+
+(defun lsp-rust-analyzer--to-bash-env (env-vars)
+  "Extract the environment variables from plist ENV-VARS."
+  (cl-loop for (key value) on env-vars by 'cddr
+           collect (format "%s=%s" (substring (symbol-name key) 1) value)))
 
 (defun lsp-rust-analyzer-run (runnable)
   "Select and run a RUNNABLE action."
