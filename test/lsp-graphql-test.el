@@ -39,6 +39,7 @@
   (should-not (lsp-graphql-activate-p "abc.tsxx"))
   (should-not (lsp-graphql-activate-p "abc.jss"))
   (should-not (lsp-graphql-activate-p "abc.tsp"))
-  (should-not (lsp-graphql-activate-p "js.hs")))
+  (should-not (lsp-graphql-activate-p "js.hs"))
+  (should-not (lsp-graphql-activate-p "/path/to/graphql/test.go")))
 
 ;;; lsp-graphql-test.el ends here
