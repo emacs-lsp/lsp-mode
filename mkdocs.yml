@@ -116,6 +116,7 @@ nav:
     - Magik: page/lsp-magik.md
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
+    - MATLAB: page/lsp-matlab.md
     - Meson: page/lsp-meson.md
     - Move: page/lsp-move.md
     - MDX: page/lsp-mdx.md

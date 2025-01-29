@@ -30,6 +30,7 @@
   * Add hint about ~activation-fn~ for unsupported buffers.
   * Add Roc support
   * Add support for environment variables in rust analyzer runnables. Allowing the new ~Update Tests (Expect)~ code lens to work as expected.
+  * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
