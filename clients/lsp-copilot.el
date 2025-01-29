@@ -38,7 +38,7 @@
   :tag "Copilot LSP"
   :link '(url-link "https://www.npmjs.com/package/copilot-node-server"))
 
-(defcustom lsp-copilot-enabled t
+(defcustom lsp-copilot-enabled nil
   "Whether the server should be started to provide completions."
   :type 'boolean
   :group 'lsp-copilot)
