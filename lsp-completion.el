@@ -1,6 +1,6 @@
 ;;; lsp-completion.el --- LSP completion -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2025 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -71,12 +71,6 @@ ignored."
   "Whether or not to show detail of completion candidates."
   :type 'boolean
   :group 'lsp-completion)
-
-(defcustom lsp-completion-show-label-description t
-  "Whether or not to show description of completion candidates."
-  :type 'boolean
-  :group 'lsp-completion
-  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."
@@ -172,6 +166,7 @@ This will help minimize popup flickering issue in `company-mode'."
                            :_emacsStartPoint start-point)
           item))
     (propertize label
+                'lsp-completion-unresolved-item item
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
@@ -245,20 +240,40 @@ The CLEANUP-FN will be called to cleanup."
         (funcall callback completion-item)
         (when cleanup-fn (funcall cleanup-fn))))))
 
-(defun lsp-completion--annotate (item)
-  "Annotate ITEM detail."
-  (-let (((completion-item &as &CompletionItem :detail? :kind? :label-details?)
-          (get-text-property 0 'lsp-completion-item item)))
-    (lsp-completion--resolve-async item #'ignore)
+(defun lsp-completion--get-label-detail (item &optional omit-description)
+  "Construct label detail from completion item ITEM."
+  (-let (((&CompletionItem :detail? :label-details?) item))
+    (cond ((and label-details?
+                (or (lsp:label-details-detail? label-details?)
+                    (lsp:label-details-description? label-details?)))
+           (-let (((&LabelDetails :detail? :description?) label-details?))
+             (concat
+              (unless (and detail? (string-prefix-p " " detail?))
+                " ")
+              (when detail?
+                (s-replace "\r" "" detail?))
+              (unless (or omit-description
+                          (and description? (string-prefix-p " " description?)))
+                " ")
+              (unless omit-description
+                description?))))
+          (detail?
+           (concat (unless (and detail? (string-prefix-p " " detail?))
+                     " ")
+                   (s-replace "\r" "" detail?))))))
 
-    (concat (when (and lsp-completion-show-detail detail?)
-              (concat " " (s-replace "\r" "" detail?)))
-            (when (and lsp-completion-show-label-description label-details?)
-              (when-let* ((description (and label-details? (lsp:label-details-description label-details?))))
-                (format " %s" description)))
-            (when lsp-completion-show-kind
-              (when-let* ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
-                (format " (%s)" kind-name))))))
+(defun lsp-completion--annotate (cand)
+  "Annotation function for completion candidate CAND.
+
+Returns unresolved completion item detail."
+  (when-let* ((lsp-completion-item (get-text-property 0 'lsp-completion-unresolved-item cand)))
+    (concat
+     (when lsp-completion-show-detail
+       (lsp-completion--get-label-detail lsp-completion-item))
+     (when lsp-completion-show-kind
+       (when-let* ((kind? (lsp:completion-item-kind? lsp-completion-item))
+                   (kind-name (and kind? (aref lsp-completion--item-kind kind?))))
+         (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
   "Return character if text before point match any of the TRIGGER-CHARACTERS."
@@ -457,13 +472,65 @@ The MARKERS and PREFIX value will be attached to each candidate."
           (setq label-pos 0)))
       matches)))
 
+(defun lsp-completion--company-docsig (cand)
+  "Signature for completion candidate CAND.
+
+Returns resolved completion item details."
+  (and (lsp-completion--resolve cand)
+       (lsp-completion--get-label-detail
+        (get-text-property 0 'lsp-completion-item cand)
+        t)))
+
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
-  (-some->> item
-    (lsp-completion--resolve)
-    (get-text-property 0 'lsp-completion-item)
-    (lsp:completion-item-documentation?)
-    (lsp--render-element)))
+  (or (get-text-property 0 'lsp-completion-item-doc item)
+      (-let* (((&CompletionItem :detail?
+                                :documentation?)
+               (get-text-property 0 'lsp-completion-item (lsp-completion--resolve item)))
+              (doc
+               (if (and detail? documentation?)
+                   ;; detail was resolved, that means the candidate list has no
+                   ;; detail, so we may need to prepend it to the documentation
+                   (cond ((lsp-markup-content? documentation?)
+                          (-let (((&MarkupContent :kind :value) documentation?))
+                            (cond ((and (equal kind "plaintext")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (lsp--render-string
+                                    (concat detail?
+                                            (if (bound-and-true-p page-break-lines-mode)
+                                                "\n\n"
+                                              "\n\n")
+                                            value)
+                                    kind))
+
+                                  ((and (equal kind "markdown")
+                                        (not (string-match-p (regexp-quote detail?) value)))
+
+                                   (lsp--render-string
+                                    (concat
+                                     "```\n"
+                                     detail?
+                                     "\n```"
+                                     "\n---\n"
+                                     value)
+                                    kind)))))
+
+                         ((and (stringp documentation?)
+                               (not (string-match-p (regexp-quote detail?) documentation?)))
+
+                          (lsp--render-string
+                           (concat detail?
+                                   (if (bound-and-true-p page-break-lines-mode)
+                                       "\n\n"
+                                     "\n\n")
+                                   documentation?)
+                           "plaintext")))
+
+                 (lsp--render-element documentation?))))
+
+        (put-text-property 0 (length item) 'lsp-completion-item-doc doc item)
+        doc)))
 
 (defun lsp-completion--get-context (trigger-characters same-session?)
   "Get completion context with provided TRIGGER-CHARACTERS and SAME-SESSION?."
@@ -602,6 +669,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
              (goto-char (1- (point))))
            (and triggered-by-char? t)))
        :company-match #'lsp-completion--company-match
+       :company-docsig #'lsp-completion--company-docsig
        :company-doc-buffer (-compose #'lsp-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
@@ -782,9 +850,20 @@ The return is nil or in range of (0, inf)."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
-(defun lsp-completion-passthrough-try-completion (string _table _pred point)
-  "Passthrough try function, always return the passed STRING and POINT."
-  (cons string point))
+(defun lsp-completion-passthrough-try-completion (string table pred point)
+  "Passthrough try function.
+
+If TABLE is a function, it is called with STRING, PRED and nil to get
+the candidates, otherwise it is treated as the candidates.
+
+If the candidates is non-empty, return the passed STRING and POINT."
+  (when (pcase table
+          ((pred functionp)
+           (funcall table string pred nil))
+          ((pred hash-table-p)
+           (not (hash-table-empty-p table)))
+          (_ table))
+    (cons string point)))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
   "Passthrough all completions from TABLE with PRED."

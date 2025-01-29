@@ -107,6 +107,7 @@ nav:
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
+    - LanguageTool (LTEX+): page/lsp-ltex-plus.md
     - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
     - Lua (Lua Language Server): page/lsp-lua-language-server.md
@@ -150,6 +151,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - Roc: page/lsp-roc.md
     - RPM Spec: page/lsp-rpm-spec.md
     - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md

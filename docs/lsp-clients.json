@@ -583,6 +583,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ltex-plus",
+    "full-name": "LanguageTool",
+    "server-name": "LTEX+",
+    "server-url": "https://github.com/ltex-plus/ltex-ls-plus",
+    "installation-url": "https://ltex-plus.github.io/ltex-plus/installation-usage.html",
+    "debugger": "Not available"
+  },
+  {
     "name": "emmy-lua",
     "common-group-name": "lua",
     "full-name": "Lua",
@@ -991,6 +999,15 @@
     "installation-url": "https://github.com/tomi/vscode-rf-language-server/tree/master/client",
     "installation": "pip install robotframework --user",
     "debugger": "Yes"
+  },
+  {
+    "name": "roc",
+    "full-name": "Roc",
+    "server-name": "roc_language_server",
+    "server-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation": "Along with the compiler",
+    "debugger": "Not available"
   },
   {
     "name": "ruby-lsp",

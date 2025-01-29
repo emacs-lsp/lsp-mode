@@ -176,22 +176,24 @@ As defined by the Language Server Protocol 3.16."
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
-     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
-     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
-     lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
-     lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
-     lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
-     lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint
-     lsp-mojo lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
-     lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
-     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
-     lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roslyn lsp-rubocop lsp-ruby-lsp
+     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker
+     lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
+     lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
+     lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy
+     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-jq
+     lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
+     lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
+     lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
+     lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-openscad
+     lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-purescript
+     lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-qml lsp-r
+     lsp-racket lsp-remark lsp-rf lsp-roc lsp-roslyn lsp-rubocop lsp-ruby-lsp
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
-     lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl
-     lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
+     lsp-typespec lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
+     lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -900,6 +902,7 @@ Changes take effect only when a new session is started."
     (tuareg-mode . "ocaml")
     (futhark-mode . "futhark")
     (swift-mode . "swift")
+    (swift-ts-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
     (heex-ts-mode . "elixir")
@@ -943,6 +946,7 @@ Changes take effect only when a new session is started."
     (perl-mode . "perl")
     (cperl-mode . "perl")
     (robot-mode . "robot")
+    (roc-ts-mode . "roc")
     (racket-mode . "racket")
     (nix-mode . "nix")
     (nix-ts-mode . "nix")
@@ -3801,9 +3805,7 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "detail"
                                                                            "additionalTextEdits"
-                                                                           "command"
-                                                                           "insertTextFormat"
-                                                                           "insertTextMode"])))
+                                                                           "command"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))
                                                         (labelDetailsSupport . t)))
                                      (contextSupport . t)
@@ -9611,10 +9613,12 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package--alist "ext:package")
 
 (defun lsp-package-version ()
-  "Returns a string with the version of the lsp-mode package"
-  (package-version-join
-   (package-desc-version
-    (car (alist-get 'lsp-mode (package--alist))))))
+  "Returns a string with the version of the lsp-mode package."
+  (condition-case nil
+      (package-version-join
+       (package-desc-version
+        (car (alist-get 'lsp-mode (package--alist)))))
+    (error "9.0.1")))
 
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
