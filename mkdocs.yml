@@ -77,6 +77,8 @@ nav:
     - Earthfile: page/lsp-earthly.md
     - Elixir: page/lsp-elixir.md
     - Elm: page/lsp-elm.md
+    - Emacs Lisp (Ellsp): https://github.com/elisp-lsp/ellsp
+    - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
     - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
     - ESLint: page/lsp-eslint.md
