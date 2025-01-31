@@ -894,6 +894,7 @@ Changes take effect only when a new session is started."
     (typescript-mode . "typescript")
     (typescript-ts-mode . "typescript")
     (typespec-mode . "typespec")
+    (typespec-ts-mode . "typespec")
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
