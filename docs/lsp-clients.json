@@ -164,7 +164,7 @@
   },
   {
     "name": "lsp-c3",
-    "full-name": "c23 language server",
+    "full-name": "c3 language server",
     "server-name": "c3lsp",
     "server-url": "https://github.com/pherrymason/c3-lsp",
     "installation-url": "https://github.com/pherrymason/c3-lsp",
