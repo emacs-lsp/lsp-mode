@@ -163,7 +163,7 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
-    "name": "lsp-c3",
+    "name": "c3-lsp",
     "full-name": "c3 language server",
     "server-name": "c3lsp",
     "server-url": "https://github.com/pherrymason/c3-lsp",
