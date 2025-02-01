@@ -163,6 +163,14 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
+    "name": "lsp-c3",
+    "full-name": "c23 language server",
+    "server-name": "c3lsp",
+    "server-url": "https://github.com/pherrymason/c3-lsp",
+    "installation-url": "https://github.com/pherrymason/c3-lsp",
+    "debugger": "Yes (gdb or lldb)"
+  },
+  {
     "name": "ccls",
     "full-name": "C++",
     "server-name": "ccls",

@@ -63,6 +63,7 @@ nav:
     - C# (omnisharp-roslyn): page/lsp-csharp-omnisharp.md
     - C# (csharp-roslyn): page/lsp-csharp-roslyn.md
     - C# (csharp-ls): page/lsp-csharp-ls.md
+    - C3 (c3-lsp): page/lsp-c3.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
