@@ -1776,10 +1776,12 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      `(,(or (executable-find
-                             (cl-first lsp-rust-analyzer-server-command))
+                             (cl-first lsp-rust-analyzer-server-command)
+                             t)
                             (lsp-package-path 'rust-analyzer)
                             "rust-analyzer")
-                       ,@(cl-rest lsp-rust-analyzer-server-command))))
+                       ,@(cl-rest lsp-rust-analyzer-server-command)))
+                   (lambda () t))
   :activation-fn (lsp-activate-on "rust")
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
