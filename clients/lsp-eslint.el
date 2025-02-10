@@ -64,9 +64,9 @@
 (defcustom lsp-eslint-package-manager "npm"
   "The package manager you use to install node modules."
   :type '(choice (const :tag "npm" "npm")
-                 (const :tag "yarn" "yarn")
-                 (const :tag "pnpm" "pnpm")
-                 (string :tag "other"))
+          (const :tag "yarn" "yarn")
+          (const :tag "pnpm" "pnpm")
+          (string :tag "other"))
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-format t
@@ -110,7 +110,7 @@
 (defcustom lsp-eslint-run "onType"
   "Run the linter on save (onSave) or on type (onType)"
   :type '(choice (const :tag "onSave" "onSave")
-                 (const :tag "onType" "onType"))
+          (const :tag "onType" "onType"))
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-auto-fix-on-save nil
@@ -264,7 +264,7 @@ stored."
               (-filter (lambda (dir)
                          (-none?
                           (lambda (file) (f-exists? (f-join dir file)))
-                          '(".eslintrc.js" ".eslintrc.yaml" ".eslintrc.yml" ".eslintrc" ".eslintrc.json")))))
+                          '(".eslintrc.js" ".eslintrc.cjs" ".eslintrc.yaml" ".eslintrc.yml" ".eslintrc" ".eslintrc.json")))))
     (`nil (user-error "All workspace folders contain ESLint configuration"))
     (folders (let ((default-directory (completing-read "Select project folder: " folders nil t)))
                (async-shell-command (format "%s --init" (lsp--find-eslint)))))))
@@ -362,7 +362,7 @@ contains the current file"
       lsp-eslint-server-command
     `(,lsp-eslint-node ,(f-join lsp-eslint-unzipped-path
                                 "extension/server/out/eslintServer.js")
-                       "--stdio")))
+      "--stdio")))
 
 (defun lsp-eslint-server-exists? (eslint-server-command)
   (let* ((command-name (f-base (f-filename (cl-first eslint-server-command))))
@@ -384,10 +384,10 @@ to allow or deny it.")
 
 (lsp-defun lsp-eslint--confirm-local (_workspace (&eslint:ConfirmExecutionParams :library-path) callback)
   (if-let* ((option-alist '(("Always" 4 . t)
-                           ("Yes" 4 . nil)
-                           ("No" 1 . nil)
-                           ("Never" 1 . t)))
-           (remembered-answer (gethash library-path lsp-eslint--stored-libraries)))
+                            ("Yes" 4 . nil)
+                            ("No" 1 . nil)
+                            ("Never" 1 . t)))
+            (remembered-answer (gethash library-path lsp-eslint--stored-libraries)))
       (funcall callback remembered-answer)
     (lsp-ask-question
      (format
@@ -418,7 +418,7 @@ to allow or deny it.")
                                              (or "ts" "js" "jsx" "tsx" "html" "vue" "svelte")eos)
                                          filename)
                          (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode 'html-mode 'svelte-mode)
-                           (not (string-match-p "\\.json\\'" filename))))))
+                              (not (string-match-p "\\.json\\'" filename))))))
   :priority -1
   :completion-in-comments? t
   :add-on? t
