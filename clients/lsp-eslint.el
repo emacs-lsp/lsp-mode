@@ -264,7 +264,7 @@ stored."
               (-filter (lambda (dir)
                          (-none?
                           (lambda (file) (f-exists? (f-join dir file)))
-                          '(".eslintrc.js" ".eslintrc.yaml" ".eslintrc.yml" ".eslintrc" ".eslintrc.json")))))
+                          '(".eslintrc.js" ".eslintrc.cjs" ".eslintrc.yaml" ".eslintrc.yml" ".eslintrc" ".eslintrc.json")))))
     (`nil (user-error "All workspace folders contain ESLint configuration"))
     (folders (let ((default-directory (completing-read "Select project folder: " folders nil t)))
                (async-shell-command (format "%s --init" (lsp--find-eslint)))))))
