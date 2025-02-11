@@ -27,11 +27,23 @@
 (require 'lsp-mode)
 (require 'ht)
 
+(defcustom lsp-elixir-auto-build t
+  "Trigger ElixirLS build when code is saved."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-elixir-dialyzer-enabled t
   "Run ElixirLS's rapid Dialyzer when code is saved."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
+
+(defcustom lsp-elixir-incremental-dialyzer nil
+  "Use OTP incremental dialyzer."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-elixir-dialyzer-warn-opts '()
   "Dialyzer options to enable or disable warnings.
@@ -81,6 +93,12 @@ This requires Dialyzer."
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-elixir-auto-insert-required-alias t
+  "Enable auto-insert required alias."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-elixir-signature-after-complete t
   "Show signature help after confirming autocomplete."
   :type 'boolean
@@ -120,7 +138,6 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
   :type 'string
   :group 'lsp-elixir
   :package-version '(lsp-mode . "9.0.0"))
-
 
 (defconst lsp-elixir-ls-server-dir
   (f-join lsp-server-install-dir "elixir-ls")
@@ -170,7 +187,9 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
              :set-executable? t))
 
 (lsp-register-custom-settings
- '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
+ '(("elixirLS.autoBuild" lsp-elixir-auto-build t)
+   ("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
+   ("elixirLS.incrementalDialyzer" lsp-elixir-incremental-dialyzer)
    ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-opts)
    ("elixirLS.dialyzerFormat" lsp-elixir-dialyzer-format)
    ("elixirLS.mixEnv" lsp-elixir-mix-env)
@@ -178,6 +197,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
    ("elixirLS.projectDir" lsp-elixir-project-dir)
    ("elixirLS.fetchDeps" lsp-elixir-fetch-deps t)
    ("elixirLS.suggestSpecs" lsp-elixir-suggest-specs t)
+   ("elixirLS.autoInsertRequiredAlias" lsp-elixir-auto-insert-required-alias t)
    ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
    ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)))
 
