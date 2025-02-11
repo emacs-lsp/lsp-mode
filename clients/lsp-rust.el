@@ -354,7 +354,7 @@ PARAMS progress report notification data."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-rust-analyzer-library-directories
-  '("~/.cargo/registry/src" "~/.rustup/toolchains")
+  '("~/.cargo/git" "~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
