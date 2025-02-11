@@ -195,7 +195,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
    ("elixirLS.mixEnv" lsp-elixir-mix-env)
    ("elixirLS.mixTarget" lsp-elixir-mix-target)
    ("elixirLS.projectDir" lsp-elixir-project-dir)
-   ("elixirLS.fetchDeps" lsp-elixir-fetch-deps t)
+   ("elixirLS.fetchDeps" lsp-elixir-fetch-deps)
    ("elixirLS.suggestSpecs" lsp-elixir-suggest-specs t)
    ("elixirLS.autoInsertRequiredAlias" lsp-elixir-auto-insert-required-alias t)
    ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
