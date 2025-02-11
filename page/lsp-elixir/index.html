@@ -1585,6 +1585,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-auto-build" class="md-nav__link">
+    lsp-elixir-auto-build
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-auto-insert-required-alias" class="md-nav__link">
+    lsp-elixir-auto-insert-required-alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-dialyzer-enabled" class="md-nav__link">
     lsp-elixir-dialyzer-enabled
   </a>
@@ -1615,6 +1629,13 @@
           <li class="md-nav__item">
   <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
     lsp-elixir-fetch-deps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-incremental-dialyzer" class="md-nav__link">
+    lsp-elixir-incremental-dialyzer
   </a>
   
 </li>
@@ -3877,6 +3898,20 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-auto-build" class="md-nav__link">
+    lsp-elixir-auto-build
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-auto-insert-required-alias" class="md-nav__link">
+    lsp-elixir-auto-insert-required-alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-dialyzer-enabled" class="md-nav__link">
     lsp-elixir-dialyzer-enabled
   </a>
@@ -3907,6 +3942,13 @@
           <li class="md-nav__item">
   <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
     lsp-elixir-fetch-deps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-incremental-dialyzer" class="md-nav__link">
+    lsp-elixir-incremental-dialyzer
   </a>
   
 </li>
@@ -4041,6 +4083,16 @@
 <p>For more instructions on how to install manually, check <a href="https://github.com/elixir-lsp/elixir-ls#building-and-running">here</a>.</p>
 <h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-elixir-auto-build"><code>lsp-elixir-auto-build</code><a class="headerlink" href="#lsp-elixir-auto-build" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Trigger ElixirLS build when code is saved.</p>
+<hr />
+<h3 id="lsp-elixir-auto-insert-required-alias"><code>lsp-elixir-auto-insert-required-alias</code><a class="headerlink" href="#lsp-elixir-auto-insert-required-alias" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable auto-insert required alias.</p>
+<hr />
 <h3 id="lsp-elixir-dialyzer-enabled"><code>lsp-elixir-dialyzer-enabled</code><a class="headerlink" href="#lsp-elixir-dialyzer-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -4068,6 +4120,11 @@ option is unsupported</p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Automatically fetch project dependencies when compiling.</p>
 <hr />
+<h3 id="lsp-elixir-incremental-dialyzer"><code>lsp-elixir-incremental-dialyzer</code><a class="headerlink" href="#lsp-elixir-incremental-dialyzer" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Use OTP incremental dialyzer.</p>
+<hr />
 <h3 id="lsp-elixir-local-server-command"><code>lsp-elixir-local-server-command</code><a class="headerlink" href="#lsp-elixir-local-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>/home/runner/.emacs.d/.cache/lsp/elixir-ls/language_server.sh</code></p>
@@ -4075,12 +4132,12 @@ option is unsupported</p>
 <hr />
 <h3 id="lsp-elixir-ls-download-url"><code>lsp-elixir-ls-download-url</code><a class="headerlink" href="#lsp-elixir-ls-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/elixir-lsp/elixir-ls/releases/download/v0.25.0/elixir-ls-v0.25.0.zip</code></p>
+<p><em>Default:</em> <code>https://github.com/elixir-lsp/elixir-ls/releases/download/v0.26.4/elixir-ls-v0.26.4.zip</code></p>
 <p>Automatic download url for elixir-ls.</p>
 <hr />
 <h3 id="lsp-elixir-ls-version"><code>lsp-elixir-ls-version</code><a class="headerlink" href="#lsp-elixir-ls-version" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>v0.25.0</code></p>
+<p><em>Default:</em> <code>v0.26.4</code></p>
 <p>Elixir-Ls version to download.
 It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/</p>
@@ -4126,7 +4183,7 @@ This requires Dialyzer.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 10, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 11, 2025</span>
       
     
   </small>
