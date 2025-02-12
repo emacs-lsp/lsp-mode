@@ -43,6 +43,13 @@
   :type 'boolean
   :group 'lsp-copilot)
 
+(defcustom lsp-copilot-auth-check-delay 5
+  "How much time to wait before checking if the server is properly authenticated.
+
+Set this value to nil if you do not with for the check to be made."
+  :type '(choice (const :tag "Do not check" nil)
+                 (integer :tag "Seconds" 5)))
+
 (defcustom lsp-copilot-langserver-command-args '("--stdio")
   "Command to start copilot-langserver."
   :type '(repeat string)
@@ -188,8 +195,16 @@ automatically, browse to %s." user-code verification-uri))
   (let ((caps (lsp--workspace-server-capabilities workspace)))
     (lsp:set-server-capabilities-inline-completion-provider? caps t))
 
-  (unless (lsp-copilot--authenticated-as)
-    (lsp-copilot-login)))
+
+  (when lsp-copilot-auth-check-delay
+    (run-at-time lsp-copilot-auth-check-delay
+                 nil
+                 (lambda ()
+                   (condition-case err
+                       (unless (lsp-copilot--authenticated-as)
+                         (lsp-copilot-login))
+                     (t (lsp--error "Could not authenticate with copilot: %s" (error-message-string err)))))))
+  t)
 
 ;; Server installed by emacs
 (lsp-register-client
