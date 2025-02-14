@@ -36,7 +36,7 @@
   "Copilot LSP configuration"
   :group 'lsp-mode
   :tag "Copilot LSP"
-  :link '(url-link "https://www.npmjs.com/package/copilot-node-server"))
+  :link '(url-link "https://www.npmjs.com/package/@github/copilot-language-server"))
 
 (defcustom lsp-copilot-enabled nil
   "Whether the server should be started to provide completions."
@@ -48,7 +48,7 @@
   :type '(repeat string)
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-executable "copilot-lsp"
+(defcustom lsp-copilot-executable "copilot-language-server"
   "The system-wise executable of lsp-copilot.
 When this executable is not found, you can stil use
 lsp-install-server to fetch an emacs-local version of the LSP."
@@ -71,7 +71,7 @@ The input are the file name and the major mode of the buffer."
   :type 'boolean
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-version "1.41.0"
+(defcustom lsp-copilot-version "1.270.0"
   "Copilot version."
   :type '(choice (const :tag "Latest" nil)
                  (string :tag "Specific Version"))
@@ -79,8 +79,8 @@ The input are the file name and the major mode of the buffer."
 
 (lsp-dependency 'copilot-ls
                 `(:system ,lsp-copilot-executable)
-                '(:npm :package "copilot-node-server"
-                       :path "copilot-node-server"
+                '(:npm :package "@github/copilot-language-server"
+                       :path "copilot-language-server"
                        :version lsp-copilot-version))
 
 (defun lsp-copilot--find-active-workspaces ()
@@ -211,6 +211,7 @@ automatically, browse to %s." user-code verification-uri))
                           ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
                           ("featureFlagsNotification" #'ignore)
                           ("statusNotification" #'ignore)
+                          ("didChangeStatus" #'ignore)
                           ("window/logMessage" #'lsp--window-log-message)
                           ("conversation/preconditionsNotification" #'ignore))))
 
