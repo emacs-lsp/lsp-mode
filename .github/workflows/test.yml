@@ -41,23 +41,29 @@ jobs:
       with:
         version: ${{ matrix.emacs-version }}
 
-    - uses: emacs-eask/setup-eask@master
+    - name: Setup Eask
+      uses: emacs-eask/setup-eask@master
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
         version: 'snapshot'
         architecture: 'x64'
 
-    - uses: emacs-eask/setup-eask@master
+    - name: Setup Eask for linux-aarch64
+      uses: emacs-eask/setup-eask@master
       if: matrix.os == 'ubuntu-24.04-arm'
       with:
         version: 'snapshot'
         architecture: 'arm64'
 
     - name: Setup cmake
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       uses: jwlawson/actions-setup-cmake@v1.4
       with:
         cmake-version: '3.18.x'
+
+    - name: Setup cmake for linux-aarch64
+      if: matrix.os == 'ubuntu-24.04-arm'
+      uses: lukka/get-cmake@latest
 
     - name: Check cmake
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
