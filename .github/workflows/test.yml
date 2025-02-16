@@ -41,14 +41,14 @@ jobs:
       with:
         version: ${{ matrix.emacs-version }}
 
-    - name: Setup Eask
+    - name: Setup Eask (x64)
       uses: emacs-eask/setup-eask@master
       if: matrix.os != 'ubuntu-24.04-arm'
       with:
         version: 'snapshot'
         architecture: 'x64'
 
-    - name: Setup Eask for linux-aarch64
+    - name: Setup Eask (ARM64)
       uses: emacs-eask/setup-eask@master
       if: matrix.os == 'ubuntu-24.04-arm'
       with:
