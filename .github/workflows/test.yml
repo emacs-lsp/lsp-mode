@@ -43,7 +43,7 @@ jobs:
 
     - name: Setup Eask
       uses: emacs-eask/setup-eask@master
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      if: matrix.os != 'ubuntu-24.04-arm'
       with:
         version: 'snapshot'
         architecture: 'x64'
