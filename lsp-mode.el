@@ -4042,8 +4042,7 @@ If any filters, checks if it applies for PATH."
        (if (fboundp 'project-root)
            (project-root project)
          (car (with-no-warnings
-                (project-roots project))))))
-   default-directory))
+                (project-roots project))))))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
