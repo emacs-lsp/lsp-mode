@@ -987,7 +987,8 @@ Changes take effect only when a new session is started."
     (nushell-ts-mode . "nushell")
     (meson-mode . "meson")
     (yang-mode . "yang")
-    (matlab-mode . "matlab"))
+    (matlab-mode . "matlab")
+    (mu4e-compose-mode . "plaintext"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
