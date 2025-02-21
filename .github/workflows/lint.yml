@@ -14,7 +14,7 @@ jobs:
 
       - uses: purcell/setup-emacs@master
         with:
-          version: 27.1
+          version: 29.4
 
       - uses: emacs-eask/setup-eask@master
         with:

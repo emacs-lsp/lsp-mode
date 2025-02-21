@@ -175,7 +175,7 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
-     lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
+     lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-c3 lsp-css
      lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker
      lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
      lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
@@ -894,6 +894,7 @@ Changes take effect only when a new session is started."
     (typescript-mode . "typescript")
     (typescript-ts-mode . "typescript")
     (typespec-mode . "typespec")
+    (typespec-ts-mode . "typespec")
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
@@ -986,7 +987,8 @@ Changes take effect only when a new session is started."
     (nushell-ts-mode . "nushell")
     (meson-mode . "meson")
     (yang-mode . "yang")
-    (matlab-mode . "matlab"))
+    (matlab-mode . "matlab")
+    (mu4e-compose-mode . "plaintext"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -8394,7 +8396,7 @@ nil."
                                          (lsp-async-start-process callback
                                                                   error-callback
                                                                   (executable-find "npx")
-                                                                  "npm-install-peers")))))
+                                                                  "i-peers")))))
                                  error-callback
                                  npm-binary
                                  "-g"

@@ -36,19 +36,26 @@
   "Copilot LSP configuration"
   :group 'lsp-mode
   :tag "Copilot LSP"
-  :link '(url-link "https://www.npmjs.com/package/copilot-node-server"))
+  :link '(url-link "https://www.npmjs.com/package/@github/copilot-language-server"))
 
 (defcustom lsp-copilot-enabled nil
   "Whether the server should be started to provide completions."
   :type 'boolean
   :group 'lsp-copilot)
 
+(defcustom lsp-copilot-auth-check-delay 5
+  "How much time to wait before checking if the server is properly authenticated.
+
+Set this value to nil if you do not with for the check to be made."
+  :type '(choice (const :tag "Do not check" nil)
+                 (integer :tag "Seconds" 5)))
+
 (defcustom lsp-copilot-langserver-command-args '("--stdio")
   "Command to start copilot-langserver."
   :type '(repeat string)
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-executable "copilot-lsp"
+(defcustom lsp-copilot-executable "copilot-language-server"
   "The system-wise executable of lsp-copilot.
 When this executable is not found, you can stil use
 lsp-install-server to fetch an emacs-local version of the LSP."
@@ -71,7 +78,7 @@ The input are the file name and the major mode of the buffer."
   :type 'boolean
   :group 'lsp-copilot)
 
-(defcustom lsp-copilot-version "1.41.0"
+(defcustom lsp-copilot-version "1.270.0"
   "Copilot version."
   :type '(choice (const :tag "Latest" nil)
                  (string :tag "Specific Version"))
@@ -79,8 +86,8 @@ The input are the file name and the major mode of the buffer."
 
 (lsp-dependency 'copilot-ls
                 `(:system ,lsp-copilot-executable)
-                '(:npm :package "copilot-node-server"
-                       :path "copilot-node-server"
+                '(:npm :package "@github/copilot-language-server"
+                       :path "copilot-language-server"
                        :version lsp-copilot-version))
 
 (defun lsp-copilot--find-active-workspaces ()
@@ -188,8 +195,16 @@ automatically, browse to %s." user-code verification-uri))
   (let ((caps (lsp--workspace-server-capabilities workspace)))
     (lsp:set-server-capabilities-inline-completion-provider? caps t))
 
-  (unless (lsp-copilot--authenticated-as)
-    (lsp-copilot-login)))
+
+  (when lsp-copilot-auth-check-delay
+    (run-at-time lsp-copilot-auth-check-delay
+                 nil
+                 (lambda ()
+                   (condition-case err
+                       (unless (lsp-copilot--authenticated-as)
+                         (lsp-copilot-login))
+                     (t (lsp--error "Could not authenticate with copilot: %s" (error-message-string err)))))))
+  t)
 
 ;; Server installed by emacs
 (lsp-register-client
@@ -211,6 +226,7 @@ automatically, browse to %s." user-code verification-uri))
                           ("$/progress" (lambda (&rest args) (lsp-message "$/progress with %S" args)))
                           ("featureFlagsNotification" #'ignore)
                           ("statusNotification" #'ignore)
+                          ("didChangeStatus" #'ignore)
                           ("window/logMessage" #'lsp--window-log-message)
                           ("conversation/preconditionsNotification" #'ignore))))
 

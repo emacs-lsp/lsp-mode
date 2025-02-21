@@ -63,6 +63,7 @@ nav:
     - C# (omnisharp-roslyn): page/lsp-csharp-omnisharp.md
     - C# (csharp-roslyn): page/lsp-csharp-roslyn.md
     - C# (csharp-ls): page/lsp-csharp-ls.md
+    - C3 (c3-lsp): page/lsp-c3-lsp.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
@@ -77,6 +78,8 @@ nav:
     - Earthfile: page/lsp-earthly.md
     - Elixir: page/lsp-elixir.md
     - Elm: page/lsp-elm.md
+    - Emacs Lisp (Ellsp): https://github.com/elisp-lsp/ellsp
+    - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
     - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
     - ESLint: page/lsp-eslint.md

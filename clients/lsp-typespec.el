@@ -41,8 +41,9 @@
 
 (lsp-dependency
  'typespec-lsp
- '(:npm :package "@typespec/compiler"
-        :path "tsp-server")
+ '(:npm
+   :package "@typespec/compiler"
+   :path "tsp-server")
  '(:system "tsp-server"))
 
 (defun lsp-typespec--server-executable-path ()
@@ -50,7 +51,7 @@
   (or
    (when-let* ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
      (let ((tsp-server-local-path (f-join workspace-folder "node_modules" ".bin"
-                                      (if (eq system-type 'windows-nt) "tsp-server.cmd" "tsp-server"))))
+                                          (if (eq system-type 'windows-nt) "tsp-server.cmd" "tsp-server"))))
        (when (f-exists? tsp-server-local-path)
          tsp-server-local-path)))
    (executable-find "tsp-server")
@@ -63,7 +64,7 @@
                                              ("event" . default)))
   :new-connection (lsp-stdio-connection `(,(lsp-typespec--server-executable-path) "--stdio"))
   :activation-fn (lsp-activate-on "typespec")
-  :major-modes '(typespec-mode)
+  :major-modes '(typespec-mode typespec-ts-mode)
   :server-id 'typespec-lsp))
 
 (lsp-consistency-check lsp-typespec)
@@ -71,7 +72,7 @@
 (defun lsp-typespec-semantic-tokens-refresh (&rest _)
   "Force refresh semantic tokens."
   (when-let* ((workspace (and lsp-semantic-tokens-enable
-                             (lsp-find-workspace 'typespec-lsp (buffer-file-name)))))
+                              (lsp-find-workspace 'typespec-lsp (buffer-file-name)))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)
         (lsp-with-current-buffer it
@@ -80,7 +81,8 @@
 (with-eval-after-load 'typespec
   (when lsp-semantic-tokens-enable
     ;; refresh tokens
-    (add-hook 'typespec-mode-hook #'lsp-typespec-semantic-tokens-refresh)))
+    (dolist (hook '(typespec-mode-hook typespec-ts-mode-hook))
+      (add-hook hook #'lsp-typespec-semantic-tokens-refresh))))
 
 (provide 'lsp-typespec)
 ;;; lsp-typespec.el ends here
