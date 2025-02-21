@@ -1746,6 +1746,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-copilot-auth-check-delay" class="md-nav__link">
+    lsp-copilot-auth-check-delay
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-copilot-enabled" class="md-nav__link">
     lsp-copilot-enabled
   </a>
@@ -3835,6 +3842,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-copilot-auth-check-delay" class="md-nav__link">
+    lsp-copilot-auth-check-delay
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-copilot-enabled" class="md-nav__link">
     lsp-copilot-enabled
   </a>
@@ -3948,6 +3962,12 @@
 <p><em>Default:</em> <code>(closure (t) (&amp;rest _) lsp-copilot-enabled)</code></p>
 <p>A function which returns whether the copilot is applicable for the buffer.
 The input are the file name and the major mode of the buffer.</p>
+<hr />
+<h3 id="lsp-copilot-auth-check-delay"><code>lsp-copilot-auth-check-delay</code><a class="headerlink" href="#lsp-copilot-auth-check-delay" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const :tag Do not check nil) (integer :tag Seconds 5))</code></p>
+<p><em>Default:</em> <code>5</code></p>
+<p>How much time to wait before checking if the server is properly authenticated.</p>
+<p>Set this value to nil if you do not with for the check to be made.</p>
 <hr />
 <h3 id="lsp-copilot-enabled"><code>lsp-copilot-enabled</code><a class="headerlink" href="#lsp-copilot-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
