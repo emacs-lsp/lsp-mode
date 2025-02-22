@@ -988,6 +988,7 @@ Changes take effect only when a new session is started."
     (meson-mode . "meson")
     (yang-mode . "yang")
     (matlab-mode . "matlab")
+    (message-mode . "plaintext")
     (mu4e-compose-mode . "plaintext"))
   "Language id configuration.")
 
