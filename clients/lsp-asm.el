@@ -61,7 +61,7 @@ Will update if UPDATE? is t."
   (lsp-async-start-process
    callback
    error-callback
-   "cargo" "install" "--git" lsp-asm-home-url "--root" lsp-asm-store-path))
+   "cargo" "install" "--git" lsp-asm-home-url "--root" lsp-asm-store-path "asm-lsp"))
 
 (defun lsp-asm--executable ()
   "Return asm-lsp executable."
