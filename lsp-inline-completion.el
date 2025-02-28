@@ -1,10 +1,10 @@
 ;;; lsp-inline-completion.el --- LSP mode                              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020-2024 emacs-lsp maintainers
+;; Copyright (C) 2020-2025 emacs-lsp maintainers
 
 ;; Author: Rodrigo Kassick
 ;; Keywords: languages
-;; Package-Requires: ((emacs "27.1") (dash "2.18.0") (spinner "1.7.3"))
+;; Package-Requires: ((emacs "28.1") (dash "2.18.0") (spinner "1.7.3"))
 ;; Version: 9.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
