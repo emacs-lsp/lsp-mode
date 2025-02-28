@@ -19,7 +19,7 @@ jobs:
 
       - uses: purcell/setup-emacs@master
         with:
-          version: 27.1
+          version: 28.1
 
       - uses: conao3/setup-cask@master
         with:
