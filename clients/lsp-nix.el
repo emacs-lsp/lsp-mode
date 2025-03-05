@@ -54,6 +54,12 @@
   :type 'string
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-nix-nixd-server-arguments '()
+  "Extra arguments for the server."
+  :group 'lsp-nix-nixd
+  :type '(repeat string)
+  :package-version '(lsp-mode . "9.0.1"))
+
 (lsp-defcustom lsp-nix-nixd-formatting-command nil
   "External formatter command with arguments.
 
@@ -98,7 +104,7 @@
   :package-version '(lsp-mode . "9.0.1"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nixd-server-path))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () (push lsp-nix-nixd-server-path lsp-nix-nixd-server-arguments)))
                   :major-modes '(nix-mode nix-ts-mode)
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
