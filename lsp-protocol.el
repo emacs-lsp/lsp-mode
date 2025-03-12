@@ -270,7 +270,7 @@ Otherwise, PROPERTY is let-bound to the field's value.
   (cl-check-type interface symbol)
   (let ((lsp-pcase-macroexpander
          (intern (format "lsp--pcase-macroexpander-%s" interface))))
-    (cl-assert (fboundp lsp-pcase-macroexpander) "not a known LSP interface: %s" interface)
+    (cl-assert (fboundp lsp-pcase-macroexpander) nil "not a known LSP interface: %s" interface)
     (apply lsp-pcase-macroexpander property-bindings)))
 
 (if lsp-use-plists
