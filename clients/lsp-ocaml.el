@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'find-file)
 
 (defgroup lsp-ocaml nil
   "LSP support for OCaml, using ocaml-language-server."
@@ -128,6 +129,68 @@ An example of function using STORABLE is:
                 (concat (substring ntype 0 (- (frame-width) 4)) "...")
               ntype)))
       type)))
+
+;;; OCaml-lsp extensions interface
+;;;
+;;; The following functions are used to create an interface between custom OCaml-lsp requests and lsp-mode
+
+(defun lsp-ocaml--switch-impl-intf ()
+  "Switch to the file(s) that the current file can switch to.
+
+OCaml-lsp LSP protocol documented here
+https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/switchImplIntf-spec.md"
+  (-if-let* ((params (lsp-make-ocaml-lsp-switch-impl-intf-params
+                      :uri (lsp--buffer-uri)))
+             (uris (lsp-request "ocamllsp/switchImplIntf" params)))
+      uris
+    (lsp--warn "Your version of ocaml-lsp doesn't support the switchImplIntf extension")))
+
+;;; OCaml-lsp utilities
+
+(defun lsp-ocaml--has-one-element-p (lst)
+  "Returns t if LST contains only one element."
+  (and lst (= (length lst) 1)))
+
+(defun lsp-ocaml--load-uri (uri &optional other-window)
+  "Check if URI exists and opens its buffer or create a new one.
+
+If OTHER-WINDOW is not nil, opens the buffer in an other window."
+  (let ((path (lsp--uri-to-path uri)))
+    (cond
+
+     ;; A buffer already exists with PATH
+     ((bufferp (get-file-buffer path))
+      (ff-switch-to-buffer (get-file-buffer path) other-window)
+      path)
+
+     ;; PATH is an existing file
+     ((file-exists-p path)
+      (ff-find-file path other-window nil)
+      path)
+
+     ;; PATH is not an existing file
+     (t
+      nil))))
+
+(defun lsp-ocaml--find-alternate-uri ()
+  "Returns the URI corresponding to the alternate file if there's only one or prompt for a choice."
+  (let ((uris (lsp-ocaml--switch-impl-intf)))
+    (if (lsp-ocaml--has-one-element-p uris)
+        (car uris)
+      (let* ((filenames (mapcar #'f-filename uris))
+             (selected-file (completing-read "Choose an alternate file " filenames)))
+        (nth (cl-position selected-file filenames :test #'string=) uris)))))
+
+;;; OCaml-lsp extensions
+;;;
+;;; The following functions are interactive implementations of the custom OCaml-lsp requests
+
+(defun lsp-ocaml-find-alternate-file ()
+  "Returns the URI corresponding to the alternate file if there's only one or prompt for a choice."
+  (interactive)
+  (let ((uri (lsp-ocaml--find-alternate-uri)))
+    (unless (lsp-ocaml--load-uri uri nil)
+      (message "No alternate file %s could be found for %s" (f-filename uri) (buffer-name)))))
 
 (lsp-consistency-check lsp-ocaml)
 
