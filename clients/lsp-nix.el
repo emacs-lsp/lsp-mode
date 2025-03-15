@@ -104,7 +104,7 @@
   :package-version '(lsp-mode . "9.0.1"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () (push lsp-nix-nixd-server-path lsp-nix-nixd-server-arguments)))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () (cons lsp-nix-nixd-server-path lsp-nix-nixd-server-arguments)))
                   :major-modes '(nix-mode nix-ts-mode)
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
