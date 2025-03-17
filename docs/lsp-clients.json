@@ -119,9 +119,9 @@
   {
     "name": "copilot",
     "full-name": "Github Copilot",
-    "server-name": "copilot-node-server",
-    "server-url": "https://www.npmjs.com/package/copilot-node-server",
-    "installation-url": "https://www.npmjs.com/package/copilot-node-server",
+    "server-name": "copilot-language-server",
+    "server-url": "https://www.npmjs.com/package/@github/copilot-language-server",
+    "installation-url": "https://www.npmjs.com/package/@github/copilot-language-server",
     "debugger": "Not available"
   },
   {
