@@ -5457,6 +5457,21 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (define-derived-mode lsp-help-mode help-mode "LspHelp"
   "Major mode for displaying lsp help.")
 
+(defun lsp--display-contents (contents)
+  "Display CONTENTS in a dedicated buffer."
+  (if (and contents (not (equal contents "")))
+      (let ((lsp-help-buf-name "*lsp-help*"))
+        (with-current-buffer (get-buffer-create lsp-help-buf-name)
+          (delay-mode-hooks
+            (lsp-help-mode)
+            (with-help-window lsp-help-buf-name
+              (insert
+               (mapconcat 'string-trim-right
+                          (split-string (lsp--render-on-hover-content contents t) "\n")
+                          "\n"))))
+          (run-mode-hooks)))
+    (lsp--info "No content at point.")))
+
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at point."
   (interactive)
@@ -5464,18 +5479,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
                     (lsp--make-request "textDocument/hover")
                     (lsp--send-request)
                     (lsp:hover-contents))))
-    (if (and contents (not (equal contents "")))
-        (let ((lsp-help-buf-name "*lsp-help*"))
-          (with-current-buffer (get-buffer-create lsp-help-buf-name)
-            (delay-mode-hooks
-              (lsp-help-mode)
-              (with-help-window lsp-help-buf-name
-                (insert
-                 (mapconcat 'string-trim-right
-                            (split-string (lsp--render-on-hover-content contents t) "\n")
-                            "\n"))))
-            (run-mode-hooks)))
-      (lsp--info "No content at point."))))
+    (lsp--display-contents contents)))
 
 (defun lsp--point-in-bounds-p (bounds)
   "Return whether the current point is within BOUNDS."

@@ -433,7 +433,12 @@ See `-let' for a description of the destructuring mechanism."
 (lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
                (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
 
-(lsp-interface (ocaml-lsp:SwitchImplIntfParams (:uri) nil))
+(lsp-interface (ocaml-lsp:SwitchImplIntfParams (:uri) nil)
+               (ocaml-lsp:TypeEnclosingParams (:uri :at :index :verbosity) nil)
+               (ocaml-lsp:TypeEnclosingResult (:index :enclosings :type) nil)
+               (ocaml-lsp:GetDocumentationParams (:textDocument :position :contentFormat) nil)
+               (ocaml-lsp:InferIntfParams (:uri) nil)
+               (ocaml-lsp:TypedHolesParams (:uri) nil))
 
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
