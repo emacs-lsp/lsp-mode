@@ -32,9 +32,10 @@
   * Add Roc support
   * Add support for environment variables in rust analyzer runnables. Allowing the new ~Update Tests (Expect)~ code lens to work as expected.
   * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
-  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).    
+  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).
   * Drop support for emacs 27.1 and 27.2
   * Add ~lsp-nix-nixd-server-arguments~ to allow passing arguments to the ~nixd~ LSP.
+  * Add ~lsp-display-pending-async-request-via-spinner~. If non-nil, indicate we are waiting for async responses via a spinner in the modeline.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
