@@ -17,13 +17,13 @@ jobs:
         with:
           args: -s CHANGELOG.org -t gfm -o docs/page/CHANGELOG.md
 
-      - uses: purcell/setup-emacs@master
+      - uses: jcs090218/setup-emacs@master
         with:
           version: 28.1
 
-      - uses: conao3/setup-cask@master
+      - uses: emacs-eask/setup-eask@master
         with:
-          version: 0.8.4
+          version: 'snapshot'
 
       - name: Generate LSPs docs
         run: 'make docs'
