@@ -5046,7 +5046,7 @@
 <p><em>Default:</em> <code>nil</code></p>
 <p>A path to a config file that will be the only config file read and used.
 This will cause Flake8 to ignore all other config files that exist.</p>
-<p>NOTE: other parameters as `lsp-pylsp-plugins-flake8-max-line-length' take
+<p>NOTE: other parameters as <code>lsp-pylsp-plugins-flake8-max-line-length</code> take
 precedence over parameters referenced in config.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-flake8-enabled"><code>lsp-pylsp-plugins-flake8-enabled</code><a class="headerlink" href="#lsp-pylsp-plugins-flake8-enabled" title="Permanent link">#</a></h3>
@@ -5087,7 +5087,7 @@ entirely URLs.</p>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Specify the list of error codes you wish Flake8 to report. Similarly to
-`lsp-pylsp-plugins-flake8-ignore'. You can specify a portion of an error code to
+<code>lsp-pylsp-plugins-flake8-ignore</code>. You can specify a portion of an error code to
 get all that start with that string. For example, you can use E, E4, E43, and
 E431</p>
 <hr />
@@ -5113,7 +5113,7 @@ completion items.</p>
 <p><em>Default:</em> <code>t</code></p>
 <p>If enabled, adds class objects to completion in order to avoid snippet
 with init args.</p>
-<p>Has no effect if `lsp-pylsp-plugins-jedi-completion-include-params' is disabled.
+<p>Has no effect if <code>lsp-pylsp-plugins-jedi-completion-include-params</code> is disabled.
 Requires pylsp &gt;= 0.33.0</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-jedi-completion-include-params"><code>lsp-pylsp-plugins-jedi-completion-include-params</code><a class="headerlink" href="#lsp-pylsp-plugins-jedi-completion-include-params" title="Permanent link">#</a></h3>
@@ -5143,7 +5143,7 @@ imports.</p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Specify the environment that jedi runs on where <environment>/bin/python
 should be the python executable. This option will be prioritized over
-`lsp-pylsp-plugins-jedi-use-pyenv-environment'.</p>
+<code>lsp-pylsp-plugins-jedi-use-pyenv-environment</code>.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-jedi-hover-enabled"><code>lsp-pylsp-plugins-jedi-hover-enabled</code><a class="headerlink" href="#lsp-pylsp-plugins-jedi-hover-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -5236,7 +5236,7 @@ means you must save your changes for mypy diagnostics to update correctly.</p>
 <p>A list of alternate or supplemental command-line options.</p>
 <p>This modifies the options passed to mypy or the mypy-specific ones passed to
 dmypy run.  When present, the special boolean member True is replaced with
-the command-line options that would've been passed had overrides not been
+the command-line options that would`ve been passed had overrides not been
 specified.  Later options take precedence, which allows for replacing or
 negating individual default options (see mypy.main:process_options and mypy
 --help | grep inverse).</p>
@@ -5286,7 +5286,7 @@ patterns.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Hang closing bracket instead of matching indentation of
-opening bracket's line.</p>
+opening bracket`s line.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-pycodestyle-ignore"><code>lsp-pylsp-plugins-pycodestyle-ignore</code><a class="headerlink" href="#lsp-pylsp-plugins-pycodestyle-ignore" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
@@ -5335,8 +5335,7 @@ existing convention.</p>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>(?!test_).*\.py</code></p>
 <p>Check only files that exactly match the given regular
-expression; default is to match files that don't start with
-<code>test_' but end with</code>.py'.</p>
+expression; default is to match files that don<code>t start with</code>test_<code>but end with</code>.py`.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-pydocstyle-match-dir"><code>lsp-pylsp-plugins-pydocstyle-match-dir</code><a class="headerlink" href="#lsp-pylsp-plugins-pydocstyle-match-dir" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
@@ -5497,7 +5496,7 @@ is present.</p>
 <p><em>Default:</em> <code>jedi</code></p>
 <p>Choose renaming backend.</p>
 <p>Jedi is preferred but only works for python &gt;= 3.6 and pylsp &gt;= 0.32.0
-Beware that Jedi is lazy and doesn't scan the whole project.
+Beware that Jedi is lazy and doesn`t scan the whole project.
 So it will rename only references it can find.</p>
 <hr />
 <h3 id="lsp-pylsp-rope-extension-modules"><code>lsp-pylsp-rope-extension-modules</code><a class="headerlink" href="#lsp-pylsp-rope-extension-modules" title="Permanent link">#</a></h3>
@@ -5526,7 +5525,7 @@ at all.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 12, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 25, 2025</span>
       
     
   </small>

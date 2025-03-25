@@ -4299,19 +4299,19 @@ null is equivalent to <code>${executable_directory}/build_runner.zig</code>.</p>
 <h3 id="lsp-zig-builtin-path"><code>lsp-zig-builtin-path</code><a class="headerlink" href="#lsp-zig-builtin-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> ``</p>
-<p>Path to `builtin'; useful for debugging, automatically set if let null.</p>
+<p>Path to <code>builtin</code>; useful for debugging, automatically set if let null.</p>
 <hr />
 <h3 id="lsp-zig-completions-with-replace"><code>lsp-zig-completions-with-replace</code><a class="headerlink" href="#lsp-zig-completions-with-replace" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Completions confirm behavior.
-If `true', replace the text after the cursor.</p>
+If <code>true</code>, replace the text after the cursor.</p>
 <hr />
 <h3 id="lsp-zig-dangerous-comptime-experiments-do-not-enable"><code>lsp-zig-dangerous-comptime-experiments-do-not-enable</code><a class="headerlink" href="#lsp-zig-dangerous-comptime-experiments-do-not-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>When true, skips searching for references in std.
-Improves lookup speed for functions in user's code.  Renaming and
+Improves lookup speed for functions in user`s code.  Renaming and
 go-to-definition will continue to work as is.</p>
 <hr />
 <h3 id="lsp-zig-enable-argument-placeholders"><code>lsp-zig-enable-argument-placeholders</code><a class="headerlink" href="#lsp-zig-enable-argument-placeholders" title="Permanent link">#</a></h3>
@@ -4338,8 +4338,8 @@ Currently supports adding and removing discards.</p>
 <h3 id="lsp-zig-global-cache-path"><code>lsp-zig-global-cache-path</code><a class="headerlink" href="#lsp-zig-global-cache-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> ``</p>
-<p>Path to a directory that will be used as zig's cache.
-null is equivalent to <code>${KnownFolders.Cache}/zls</code>.</p>
+<p>Path to a directory that will be used as zig<code>s cache.
+null is equivalent to</code>${KnownFolders.Cache}/zls`.</p>
 <hr />
 <h3 id="lsp-zig-highlight-global-var-declarations"><code>lsp-zig-highlight-global-var-declarations</code><a class="headerlink" href="#lsp-zig-highlight-global-var-declarations" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4349,7 +4349,7 @@ null is equivalent to <code>${KnownFolders.Cache}/zls</code>.</p>
 <h3 id="lsp-zig-inlay-hints-exclude-single-argument"><code>lsp-zig-inlay-hints-exclude-single-argument</code><a class="headerlink" href="#lsp-zig-inlay-hints-exclude-single-argument" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Don't show inlay hints for single argument calls.</p>
+<p>Don`t show inlay hints for single argument calls.</p>
 <hr />
 <h3 id="lsp-zig-inlay-hints-hide-redundant-param-names"><code>lsp-zig-inlay-hints-hide-redundant-param-names</code><a class="headerlink" href="#lsp-zig-inlay-hints-hide-redundant-param-names" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4365,7 +4365,7 @@ node (e.g. foo: bar.foo, foo: &amp;foo).</p>
 <h3 id="lsp-zig-inlay-hints-show-builtin"><code>lsp-zig-inlay-hints-show-builtin</code><a class="headerlink" href="#lsp-zig-inlay-hints-show-builtin" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Don't show inlay hints for single argument calls.</p>
+<p>Don`t show inlay hints for single argument calls.</p>
 <hr />
 <h3 id="lsp-zig-inlay-hints-show-parameter-name"><code>lsp-zig-inlay-hints-show-parameter-name</code><a class="headerlink" href="#lsp-zig-inlay-hints-show-parameter-name" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4380,7 +4380,7 @@ node (e.g. foo: bar.foo, foo: &amp;foo).</p>
 <h3 id="lsp-zig-prefer-ast-check-as-child-process"><code>lsp-zig-prefer-ast-check-as-child-process</code><a class="headerlink" href="#lsp-zig-prefer-ast-check-as-child-process" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Favor using <code>zig ast-check</code> instead of ZLS's fork.</p>
+<p>Favor using <code>zig ast-check</code> instead of ZLS`s fork.</p>
 <hr />
 <h3 id="lsp-zig-record-session"><code>lsp-zig-record-session</code><a class="headerlink" href="#lsp-zig-record-session" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4407,14 +4407,14 @@ If no extra argument is given <code>record_session_path</code> is used as the de
 <hr />
 <h3 id="lsp-zig-server-store-path"><code>lsp-zig-server-store-path</code><a class="headerlink" href="#lsp-zig-server-store-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/zig/</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/zig/</code></p>
 <p>The path to the file in which zls will be stored.</p>
 <hr />
 <h3 id="lsp-zig-skip-std-references"><code>lsp-zig-skip-std-references</code><a class="headerlink" href="#lsp-zig-skip-std-references" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>hen true, skips searching for references in std.
-Improves lookup speed for functions in user's code.  Renaming and
+Improves lookup speed for functions in user`s code.  Renaming and
  go-to-definition will continue to work as is.</p>
 <hr />
 <h3 id="lsp-zig-trace-server"><code>lsp-zig-trace-server</code><a class="headerlink" href="#lsp-zig-trace-server" title="Permanent link">#</a></h3>
@@ -4448,7 +4448,7 @@ e.g. <code>/path/to/zig/lib/zig</code>, used to analyze std library imports.</p>
 <p><em>Default:</em> <code>zls</code></p>
 <p>The zls executable to use.</p>
 <p>Leave as just the executable name to use the default behavior of finding the
-executable with variable `exec-path'.</p>
+executable with variable <code>exec-path</code>.</p>
 <hr />
 <h3 id="lsp-zls-enable-snippets"><code>lsp-zls-enable-snippets</code><a class="headerlink" href="#lsp-zls-enable-snippets" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4463,7 +4463,7 @@ executable with variable `exec-path'.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 12, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 25, 2025</span>
       
     
   </small>

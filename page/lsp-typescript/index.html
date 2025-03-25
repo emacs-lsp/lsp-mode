@@ -5149,7 +5149,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <h3 id="lsp-clients-typescript-max-ts-server-memory"><code>lsp-clients-typescript-max-ts-server-memory</code><a class="headerlink" href="#lsp-clients-typescript-max-ts-server-memory" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>integer</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>The maximum size of the V8's old memory section in megabytes.
+<p>The maximum size of the V8`s old memory section in megabytes.
 (for example 4096 means 4GB). The default value is dynamically configured
 by Node so can differ per system. Increase for very big projects that
 exceed allowed memory usage.</p>
@@ -5163,8 +5163,8 @@ exceed allowed memory usage.</p>
 <p><em>Type:</em> <code>(restricted-sexp :tag Vector :match-alternatives (lambda (xs) (and (vectorp xs) (seq-every-p (-lambda ((&amp;plist :name :location)) (and name location)) xs))))</code></p>
 <p><em>Default:</em> <code>[]</code></p>
 <p>The list of plugins to load.
-It should be a vector of plist with keys <code>:location' and</code>:name'
-where <code>:name' is the name of the package and</code>:location' is the
+It should be a vector of plist with keys <code>:location</code> and <code>:name</code>
+where <code>:name</code> is the name of the package and <code>:location</code> is the
 directory containing the package. Example:
 (vector
    (list :name "@vsintellicode/typescript-intellicode-plugin"
@@ -5224,7 +5224,7 @@ TypeScript 3.0 or newer in the workspace.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Show inlay hints for function parameters even when argument matches
-name (e.g. <code>data' variable passed as</code>data' parameter).</p>
+name (e.g. <code>data</code> variable passed as <code>data</code> parameter).</p>
 <hr />
 <h3 id="lsp-javascript-display-parameter-type-hints"><code>lsp-javascript-display-parameter-type-hints</code><a class="headerlink" href="#lsp-javascript-display-parameter-type-hints" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -5594,7 +5594,7 @@ workspace.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enabled/disable occasional surveys that help us improve VS
-Code's JavaScript and TypeScript support.</p>
+Code`s JavaScript and TypeScript support.</p>
 <hr />
 <h3 id="lsp-typescript-tsc-auto-detect"><code>lsp-typescript-tsc-auto-detect</code><a class="headerlink" href="#lsp-typescript-tsc-auto-detect" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const on) (const off) (const build) (const watch))</code></p>
@@ -5649,7 +5649,7 @@ or newer in the workspace.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 12, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 25, 2025</span>
       
     
   </small>

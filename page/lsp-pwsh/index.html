@@ -4270,17 +4270,17 @@ For more information about the brace styles please refer to https://github.com/P
 <h3 id="lsp-pwsh-code-formatting-whitespace-after-separator"><code>lsp-pwsh-code-formatting-whitespace-after-separator</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-after-separator" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Adds a space after a separator (',' and ';').</p>
+<p>Adds a space after a separator (<code>,</code> and <code>;</code>).</p>
 <hr />
 <h3 id="lsp-pwsh-code-formatting-whitespace-around-operator"><code>lsp-pwsh-code-formatting-whitespace-around-operator</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-around-operator" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Adds spaces before and after an operator ('=', '+', '-', etc.).</p>
+<p>Adds spaces before and after an operator (<code>=</code>, <code>+</code>, <code>-</code>, etc.).</p>
 <hr />
 <h3 id="lsp-pwsh-code-formatting-whitespace-around-pipe"><code>lsp-pwsh-code-formatting-whitespace-around-pipe</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-around-pipe" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Adds a space before and after the pipeline operator ('|').</p>
+<p>Adds a space before and after the pipeline operator (<code>|</code>).</p>
 <hr />
 <h3 id="lsp-pwsh-code-formatting-whitespace-before-open-brace"><code>lsp-pwsh-code-formatting-whitespace-before-open-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-before-open-brace" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4296,14 +4296,14 @@ associated conditional expression.</p>
 <h3 id="lsp-pwsh-code-formatting-whitespace-inside-brace"><code>lsp-pwsh-code-formatting-whitespace-inside-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-inside-brace" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Adds a space after an opening brace ('{') and before a closing brace ('}').</p>
+<p>Adds a space after an opening brace (<code>{</code>) and before a closing brace (<code>}</code>).</p>
 <hr />
 <h3 id="lsp-pwsh-developer-editor-services-log-level"><code>lsp-pwsh-developer-editor-services-log-level</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-log-level" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const Diagnostic) (const Verbose) (const Normal) (const Warning) (const Error))</code></p>
 <p><em>Default:</em> <code>Normal</code></p>
 <p>Sets the log level for the PowerShell Editor Services host executable.
-Valid values are ='Diagnostic=', ='Verbose=', ='Normal=',
- ='Warning=', and ='Error='</p>
+Valid values are =<code>Diagnostic=</code>, =<code>Verbose=</code>, =<code>Normal=</code>,
+ =<code>Warning=</code>, and =<code>Error=</code></p>
 <hr />
 <h3 id="lsp-pwsh-developer-editor-services-wait-for-debugger"><code>lsp-pwsh-developer-editor-services-wait-for-debugger</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-wait-for-debugger" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4319,7 +4319,7 @@ extension.</p>
 <hr />
 <h3 id="lsp-pwsh-dir"><code>lsp-pwsh-dir</code><a class="headerlink" href="#lsp-pwsh-dir" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>/home/runner/.emacs.d/.cache/lsp/pwsh</code></p>
+<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/pwsh</code></p>
 <p>Path to PowerShellEditorServices without last slash.</p>
 <hr />
 <h3 id="lsp-pwsh-exe"><code>lsp-pwsh-exe</code><a class="headerlink" href="#lsp-pwsh-exe" title="Permanent link">#</a></h3>
@@ -4329,7 +4329,7 @@ extension.</p>
 <hr />
 <h3 id="lsp-pwsh-ext-path"><code>lsp-pwsh-ext-path</code><a class="headerlink" href="#lsp-pwsh-ext-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>/home/runner/.emacs.d/.cache/lsp/pwsh</code></p>
+<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/pwsh</code></p>
 <p>The path to powershell vscode extension.</p>
 <hr />
 <h3 id="lsp-pwsh-github-asset-url"><code>lsp-pwsh-github-asset-url</code><a class="headerlink" href="#lsp-pwsh-github-asset-url" title="Permanent link">#</a></h3>
@@ -4340,9 +4340,9 @@ extension.</p>
 <h3 id="lsp-pwsh-help-completion"><code>lsp-pwsh-help-completion</code><a class="headerlink" href="#lsp-pwsh-help-completion" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const Disabled) (const BlockComment) (const LineComment))</code></p>
 <p><em>Default:</em> <code>BlockComment</code></p>
-<p>Controls the comment-based help completion behavior triggered by typing '##'.
-Set the generated help style with ='BlockComment=' or ='LineComment='.
-Disable the feature with ='Disabled='.</p>
+<p>Controls the comment-based help completion behavior triggered by typing <code>##</code>.
+Set the generated help style with =<code>BlockComment=</code> or =<code>LineComment=</code>.
+Disable the feature with =<code>Disabled=</code>.</p>
 <hr />
 <h3 id="lsp-pwsh-script-analysis-enable"><code>lsp-pwsh-script-analysis-enable</code><a class="headerlink" href="#lsp-pwsh-script-analysis-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4366,7 +4366,7 @@ or enter a path relative to your workspace.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 12, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 25, 2025</span>
       
     
   </small>
