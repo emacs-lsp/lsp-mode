@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 
 deps:
-	eask install
+	eask install-deps --dev
 
 generate: deps
 	@echo "Generating docs..."
