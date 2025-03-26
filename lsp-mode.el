@@ -211,6 +211,12 @@ Takes a value accepted by `spinner-start'."
                  ,@(mapcar (lambda (c) (list 'const (car c)))
                            spinner-types)))
 
+(defcustom lsp-display-pending-async-request-via-spinner nil
+  "If non-nil, indicate we are waiting for async responses via a spinner
+in the modeline."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defvar-local lsp-use-workspace-root-for-server-default-directory nil
   "Use `lsp-workspace-root' for `default-directory' when starting LSP process.")
 
@@ -3236,6 +3242,24 @@ If WORKSPACE is not provided current workspace will be used."
   "Remove TOKEN from the WORKSPACE work-done-tokens."
   (remhash token (lsp--workspace-work-done-tokens workspace)))
 
+(defun lsp-client-set-async-request (id handler client)
+  "Set ID to HANDLER for pending async requests for a CLIENT"
+  (puthash id handler (lsp--client-response-handlers client))
+  (if (and lsp-display-pending-async-request-via-spinner
+           (= (hash-table-count (lsp--client-response-handlers client)) 1))
+      (lsp--spinner-start)))
+
+(defun lsp-client-get-async-request (id client)
+  "Get the handler for ID from pending async requests for a CLIENT"
+  (gethash id (lsp--client-response-handlers client))
+  )
+
+(defun lsp-client-rem-async-request (id client)
+  "Remove ID from pending async requests for a CLIENT"
+  (remhash id (lsp--client-response-handlers client))
+  (if (and lsp-display-pending-async-request-via-spinner
+           (zerop (hash-table-count (lsp--client-response-handlers client))))
+      (lsp--spinner-stop)))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
@@ -3681,11 +3705,9 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                                                      (plist-get body :params)
                                                      'outgoing-req)
                                 workspace))
-          (puthash id
+          (lsp-client-set-async-request id
                    (list callback error-callback method start-time (current-time))
-                   (-> workspace
-                       (lsp--workspace-client)
-                       (lsp--client-response-handlers)))
+                   (lsp--workspace-client workspace))
           (lsp--send-no-wait body (lsp--workspace-proc workspace)))
         body)
     (error "The connected server(s) does not support method %s.
@@ -5366,7 +5388,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp--cancel-request (id)
   "Cancel request with ID in all workspaces."
   (lsp-foreach-workspace
-   (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
+   (->> lsp--cur-workspace lsp--workspace-client (lsp-client-rem-async-request id))
    (lsp-notify "$/cancelRequest" `(:id ,id))))
 
 (defvar-local lsp--hover-saved-bounds nil)
@@ -7108,25 +7130,25 @@ server. WORKSPACE is the active workspace."
         (pcase (lsp--get-message-type json-data)
           ('response
            (cl-assert id)
-           (-let [(callback _ method _ before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(callback _ method _ before-send) (lsp-client-get-async-request id client)]
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
                                      (lsp--ms-since before-send))
                 workspace))
              (when callback
-               (remhash id (lsp--client-response-handlers client))
+               (lsp-client-rem-async-request id client)
                (funcall callback (lsp:json-response-result json-data)))))
           ('response-error
            (cl-assert id)
-           (-let [(_ callback method _ before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(_ callback method _ before-send) (lsp-client-get-async-request id client)]
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
                                      'incoming-resp (lsp--ms-since before-send))
                 workspace))
              (when callback
-               (remhash id (lsp--client-response-handlers client))
+               (lsp-client-rem-async-request id client)
                (funcall callback (lsp:json-response-error-error json-data)))))
           ('notification
            (lsp--on-notification workspace json-data))
@@ -9141,7 +9163,9 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
 
 (defun lsp--spinner-stop ()
   "Stop the spinner in case all of the workspaces are started."
-  (when (--all? (eq (lsp--workspace-status it) 'initialized)
+  (when (--all? (and (eq (lsp--workspace-status it) 'initialized)
+                     (or (null lsp-display-pending-async-request-via-spinner)
+                         (zerop (hash-table-count (-> it (lsp--workspace-client) (lsp--client-response-handlers))))))
                 lsp--buffer-workspaces)
     (spinner-stop)))
 
