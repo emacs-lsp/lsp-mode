@@ -98,8 +98,8 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     `company` frontend with icons.
   - [dap-mode](https://github.com/emacs-lsp/dap-mode) - Debugger
     integration for `lsp-mode`.
-  - [eglot](https://github.com/joaotavora/eglot) - An alternative
-    minimal LSP implementation.
+  - [eglot](https://www.gnu.org/software/emacs/manual/html_node/eglot/) -
+    A minimal LSP implementation built in to Emacs.
   - [which-key](https://github.com/justbur/emacs-which-key/) - Emacs
     package that displays available keybindings in popup
   - [projectile](https://github.com/bbatsov/projectile/) - Project
