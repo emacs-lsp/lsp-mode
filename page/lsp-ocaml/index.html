@@ -3693,6 +3693,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ocaml-lsp-server" class="md-nav__link">
+    ocaml-lsp-server
+  </a>
+  
+    <nav class="md-nav" aria-label="ocaml-lsp-server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ocaml-find-alternate-file" class="md-nav__link">
+    lsp-ocaml-find-alternate-file
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#available-configurations" class="md-nav__link">
     Available configurations
   </a>
@@ -3701,22 +3734,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-cut-signature" class="md-nav__link">
-    lsp-cut-signature
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-ocaml-lang-server-command" class="md-nav__link">
     lsp-ocaml-lang-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-ocaml-lsp-server-command" class="md-nav__link">
-    lsp-ocaml-lsp-server-command
   </a>
   
 </li>
@@ -3787,20 +3806,19 @@
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
 <p>For more instructions on how to install manually, check <a href="https://github.com/ocaml-lsp/ocaml-language-server#server">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-cut-signature"><code>lsp-cut-signature</code><a class="headerlink" href="#lsp-cut-signature" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (symbol :tag Default behaviour 'cut) (symbol :tag Display all the lines with spaces 'space))</code></p>
-<p><em>Default:</em> <code>space</code></p>
-<p>If non-nil, signatures returned on hover will not be split on newline.</p>
 <hr />
+<p>author: mattiasdrp
+template: comment.html
+root_file: docs/manual-language-docs/lsp-ocaml.md</p>
+<hr />
+<h2 id="ocaml-lsp-server">ocaml-lsp-server<a class="headerlink" href="#ocaml-lsp-server" title="Permanent link">#</a></h2>
+<h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
+<h4 id="lsp-ocaml-find-alternate-file"><code>lsp-ocaml-find-alternate-file</code><a class="headerlink" href="#lsp-ocaml-find-alternate-file" title="Permanent link">#</a></h4>
+<p>Find the interface corresponding to an implementation or the implementation corresponding to an interface.</p>
+<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-ocaml-lang-server-command"><code>lsp-ocaml-lang-server-command</code><a class="headerlink" href="#lsp-ocaml-lang-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (string :tag Single string value) (repeat :tag List of string values string))</code></p>
 <p><em>Default:</em> <code>(ocaml-language-server --stdio)</code></p>
-<p>Command to start ocaml-language-server.</p>
-<hr />
-<h3 id="lsp-ocaml-lsp-server-command"><code>lsp-ocaml-lsp-server-command</code><a class="headerlink" href="#lsp-ocaml-lsp-server-command" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (string :tag Single string value) (repeat :tag List of string values string))</code></p>
-<p><em>Default:</em> <code>(ocamllsp)</code></p>
 <p>Command to start ocaml-language-server.</p>
 <hr />
 
@@ -3811,7 +3829,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 26, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 31, 2025</span>
       
     
   </small>
