@@ -433,6 +433,8 @@ See `-let' for a description of the destructuring mechanism."
 (lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
                (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
 
+(lsp-interface (ocaml-lsp:SwitchImplIntfParams (:uri) nil))
+
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
 (lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
