@@ -1,7 +1,7 @@
 ;;; lsp-doc.el --- LSP doc generator -*- lexical-binding: t; -*-
 
 ;; Keywords: languages, tool
-;; Package-Requires: ((emacs "26.1") (lsp-mode "7.0.1") (emacs "26.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0") (xref "1.6.3"))
+;; Package-Requires: ((emacs "26.1") (lsp-mode "7.0.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0") (xref "1.6.3"))
 ;; Version: 8.0.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
