@@ -3709,6 +3709,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-ocaml-type-enclosing" class="md-nav__link">
+    lsp-ocaml-type-enclosing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-ocaml-find-alternate-file" class="md-nav__link">
     lsp-ocaml-find-alternate-file
   </a>
@@ -3813,6 +3820,29 @@ root_file: docs/manual-language-docs/lsp-ocaml.md</p>
 <hr />
 <h2 id="ocaml-lsp-server">ocaml-lsp-server<a class="headerlink" href="#ocaml-lsp-server" title="Permanent link">#</a></h2>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
+<h4 id="lsp-ocaml-type-enclosing"><code>lsp-ocaml-type-enclosing</code><a class="headerlink" href="#lsp-ocaml-type-enclosing" title="Permanent link">#</a></h4>
+<p>Gets the type of ident under the cursor. It will highlight the ident and display its type.</p>
+<p>When this function is called it will create a transient keymap <code>lsp-ocaml-type-enclosing-map</code> that allows to do the following things:
+- Increase/decrease the number of aliases expansions. As an example, suppose we want to type <code>h</code> in the following expression:
+  <div class="highlight"><pre><span></span><code><span class="k">type</span> <span class="n">t</span> <span class="o">=</span> <span class="nc">A</span> <span class="o">|</span> <span class="nc">B</span>
+<span class="k">let</span> <span class="n">h</span> <span class="o">:</span> <span class="n">t</span> <span class="o">=</span> <span class="nc">A</span>
+</code></pre></div>
+  - The lowest verbosity will give <code>type t</code>
+  - The next verbosity will give <code>type t = A | B</code>
+- Go up/down the enclosing type (bound to <code>C-&lt;up&gt;/&lt;down&gt;</code> by default). As an example:
+  <div class="highlight"><pre><span></span><code><span class="k">module</span> <span class="nc">A</span> <span class="o">=</span> <span class="k">struct</span>
+  <span class="k">let</span> <span class="n">h</span> <span class="o">:</span> <span class="n">t</span> <span class="o">=</span> <span class="nc">A</span>
+  <span class="k">let</span> <span class="n">f</span> <span class="bp">()</span> <span class="o">=</span> <span class="bp">()</span>
+
+  <span class="c">(** Test doc *)</span>
+  <span class="k">let</span> <span class="n">g</span> <span class="o">(</span><span class="n">f</span><span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">&#39;</span><span class="n">b</span><span class="o">)</span> <span class="n">a</span> <span class="o">=</span> <span class="n">f</span> <span class="n">a</span>
+<span class="k">end</span>
+</code></pre></div>
+  - Typing on the last <code>a</code> will show <code>'a</code>
+  - Going up will highlight <code>f a</code> of type <code>'b</code>
+  - Going up will highlight <code>(f: 'a -&gt; 'b) a = f a</code> of type <code>('a -&gt; 'b) -&gt; 'a -&gt; 'b</code>
+  - Going up will highlight the whole module and display its entire type
+- Copy the current type (bound to <code>C-w</code> by default)</p>
 <h4 id="lsp-ocaml-find-alternate-file"><code>lsp-ocaml-find-alternate-file</code><a class="headerlink" href="#lsp-ocaml-find-alternate-file" title="Permanent link">#</a></h4>
 <p>Find the interface corresponding to an implementation or the implementation corresponding to an interface.</p>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
