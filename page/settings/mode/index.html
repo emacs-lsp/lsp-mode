@@ -1163,6 +1163,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-format-buffer-on-save" class="md-nav__link">
+    lsp-format-buffer-on-save
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-format-buffer-on-save-list" class="md-nav__link">
+    lsp-format-buffer-on-save-list
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-guess-root-without-session" class="md-nav__link">
     lsp-guess-root-without-session
   </a>
@@ -4875,6 +4889,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-format-buffer-on-save" class="md-nav__link">
+    lsp-format-buffer-on-save
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-format-buffer-on-save-list" class="md-nav__link">
+    lsp-format-buffer-on-save-list
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-guess-root-without-session" class="md-nav__link">
     lsp-guess-root-without-session
   </a>
@@ -5693,6 +5721,18 @@ Set to nil to disable the warning.</p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>The maximum number of folding ranges to receive from the language server.</p>
 <hr />
+<h3 id="lsp-format-buffer-on-save"><code>lsp-format-buffer-on-save</code><a class="headerlink" href="#lsp-format-buffer-on-save" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>If non-nil format buffer on save.
+To only format specific major-mode buffers see <code>lsp-format-buffer-on-save-list</code>.</p>
+<hr />
+<h3 id="lsp-format-buffer-on-save-list"><code>lsp-format-buffer-on-save-list</code><a class="headerlink" href="#lsp-format-buffer-on-save-list" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat symbol)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>If the list is empty format all buffer on save. Else only format buffers
+if their major-mode is in the list.</p>
+<hr />
 <h3 id="lsp-guess-root-without-session"><code>lsp-guess-root-without-session</code><a class="headerlink" href="#lsp-guess-root-without-session" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -6059,7 +6099,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 31, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 6, 2025</span>
       
     
   </small>
