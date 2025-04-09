@@ -169,6 +169,7 @@ nav:
     - ShaderLab: page/lsp-shader.md
     - SQL (sql): page/lsp-sql.md
     - SQL (sqls): page/lsp-sqls.md
+    - SQL (postgres-ls): page/lsp-postgres.md
     - Standard ML (Millet): page/lsp-sml.md
     - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
