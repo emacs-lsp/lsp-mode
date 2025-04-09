@@ -1119,6 +1119,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "postgres-ls",
+    "full-name": "SQL (postgres-ls)",
+    "server-name": "postgres-language-server",
+    "server-url": "https://github.com/supabase-community/postgres-language-server",
+    "installation-url": "https://pgtools.dev/#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "steep",
     "full-name": "Ruby (Steep)",
     "server-name": "steep",

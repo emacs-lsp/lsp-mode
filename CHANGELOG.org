@@ -33,7 +33,7 @@
   * Add Roc support
   * Add support for environment variables in rust analyzer runnables. Allowing the new ~Update Tests (Expect)~ code lens to work as expected.
   * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
-  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).    
+  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).
   * Drop support for emacs 27.1 and 27.2
   * Add ~lsp-nix-nixd-server-arguments~ to allow passing arguments to the ~nixd~ LSP.
   * Improve the lsp-ocaml client (see [[https://github.com/emacs-lsp/lsp-mode/issues/4731][#4731]] for the follow-up issue. MRs: [[https://github.com/emacs-lsp/lsp-mode/pull/4741][#4741]], [[https://github.com/emacs-lsp/lsp-mode/pull/4732][#4732]])
@@ -156,6 +156,7 @@
   * Add COBOL support.
   * Add Common Lisp support.
   * Add YANG support using TypeFox/yang-lsp Server.
+  * Add Postgres langauge server support.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.

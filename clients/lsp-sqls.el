@@ -188,6 +188,7 @@ use the current region if set, otherwise the entire buffer."
                                        ("switchDatabase" #'lsp-sql-switch-database)
                                        ("switchConnections" #'lsp-sql-switch-connection))
                   :server-id 'sqls
+                  :multi-root t
                   :initialized-fn (lambda (workspace)
                                     (-> workspace
                                         (lsp--workspace-server-capabilities)
