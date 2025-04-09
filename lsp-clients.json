@@ -1119,7 +1119,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "postgres-ls",
+    "name": "postgres",
     "full-name": "SQL (postgres-ls)",
     "server-name": "postgres-language-server",
     "server-url": "https://github.com/supabase-community/postgres-language-server",

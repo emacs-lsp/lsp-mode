@@ -601,7 +601,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-postgres-ls/</loc>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-postgres/</loc>
          <lastmod>2025-04-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
