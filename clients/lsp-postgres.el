@@ -81,7 +81,7 @@ This is only for development use."
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-postgres--server-command)
   :major-modes '(sql-mode)
-  :priority -1
+  :priority -2
   :multi-root t
   :server-id 'postgres-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
