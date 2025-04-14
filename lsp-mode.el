@@ -579,7 +579,7 @@ before saving a document."
   "If non-nil format buffer on save.
 To only format specific major-mode buffers see `lsp-format-buffer-on-save-list'."
   :type 'boolean
-  :safe t
+  :safe #'booleanp
   :local t
   :group 'lsp-mode)
 
