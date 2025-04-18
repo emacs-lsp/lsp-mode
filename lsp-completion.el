@@ -688,10 +688,14 @@ Others: CANDIDATES"
                                            'lsp-completion-item)
                              candidate
                            (cl-find candidate (funcall candidates) :test #'equal)))
+              (item (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))
               (candidate
                ;; see #3498 typescript-language-server does not provide the
                ;; proper insertText without resolving.
-               (if (lsp-completion--find-workspace 'ts-ls)
+               (if (and (lsp-completion--find-workspace 'ts-ls)
+                        lsp-enable-snippet
+                        (eql (lsp:completion-item-insert-text-format? item)
+                             lsp/insert-text-format-snippet))
                    (lsp-completion--resolve candidate)
                  candidate))
               ((&plist 'lsp-completion-item item
