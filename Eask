@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-mode"
          "9.0.1"
          "LSP mode")
