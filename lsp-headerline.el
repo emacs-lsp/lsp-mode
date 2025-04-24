@@ -307,7 +307,11 @@ PATH is the current folder to be checked."
   (let ((range-severity 10))
     (mapc (-lambda ((&Diagnostic :range (&Range :start) :severity?))
             (when (lsp-point-in-range? start range)
-              (setq range-severity (min range-severity severity?))))
+              (setq range-severity
+                    (min range-severity
+                         (or severity?
+                             (lsp-diagnostics-severity->numeric
+                              lsp-diagnostics-default-severity))))))
           (lsp--get-buffer-diagnostics))
     range-severity))
 
