@@ -4563,12 +4563,12 @@ interface TextDocumentEdit {
     (lsp:set-position-line (max 0 line))
     (lsp:set-position-character (max 0 character))))
 
-(lsp-defun lsp--apply-text-edit-replace-buffer-contents ((edit &as
+(lsp-defun lsp--apply-text-edit-replace-region-contents ((edit &as
                                                                &TextEdit
                                                                :range (&Range :start :end)
                                                                :new-text))
   "Apply the edits described in the TextEdit object in TEXT-EDIT.
-The method uses `replace-buffer-contents'."
+The method uses `replace-region-contents'."
   (setq new-text (s-replace "\r" "" (or new-text "")))
   (lsp:set-text-edit-new-text edit new-text)
   (-let* ((source (current-buffer))
@@ -4580,21 +4580,12 @@ The method uses `replace-buffer-contents'."
         (with-current-buffer source
           (save-excursion
             (save-restriction
-              (narrow-to-region beg end)
-
-              ;; On emacs versions < 26.2,
-              ;; `replace-buffer-contents' is buggy - it calls
-              ;; change functions with invalid arguments - so we
-              ;; manually call the change functions here.
-              ;;
-              ;; See emacs bugs #32237, #32278:
-              ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32237
-              ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32278
               (let ((inhibit-modification-hooks t)
                     (length (- end beg)))
                 (run-hook-with-args 'before-change-functions
                                     beg end)
-                (replace-buffer-contents temp)
+                (replace-region-contents beg end
+                                         (lambda (&rest _) temp))
                 (run-hook-with-args 'after-change-functions
                                     beg (+ beg (length new-text))
                                     length)))))))))
@@ -4670,7 +4661,7 @@ OPERATION is symbol representing the source of this text edit."
              (reporter (make-progress-reporter message 0 howmany))
              (done 0)
              (apply-edit (if (not lsp--virtual-buffer)
-                             #'lsp--apply-text-edit-replace-buffer-contents
+                             #'lsp--apply-text-edit-replace-region-contents
                            #'lsp--apply-text-edit)))
         (unwind-protect
             (->> edits
