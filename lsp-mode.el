@@ -6324,8 +6324,6 @@ execute a CODE-ACTION-KIND action."
 
 (lsp-make-interactive-code-action organize-imports "source.organizeImports")
 
-(lsp-make-interactive-code-action remove-unused-imports "source.removeUnusedImports")
-
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region."
   (lsp:set-document-range-formatting-params-range (lsp--make-document-formatting-params)
