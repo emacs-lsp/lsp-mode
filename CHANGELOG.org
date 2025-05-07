@@ -37,7 +37,7 @@
   * Drop support for emacs 27.1 and 27.2
   * Add ~lsp-nix-nixd-server-arguments~ to allow passing arguments to the ~nixd~ LSP.
   * Improve the lsp-ocaml client (see [[https://github.com/emacs-lsp/lsp-mode/issues/4731][#4731]] for the follow-up issue. MRs: [[https://github.com/emacs-lsp/lsp-mode/pull/4741][#4741]], [[https://github.com/emacs-lsp/lsp-mode/pull/4732][#4732]])
-  * Add support for ~source.organizeImports~
+  * Add support for ~source.removeUnusedImports~ for lsp-javascript
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
