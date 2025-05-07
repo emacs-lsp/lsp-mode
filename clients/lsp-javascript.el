@@ -786,6 +786,8 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp)
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
+(lsp-make-interactive-code-action javascript-remove-unused-imports "source.removeUnusedImports")
+
 (defun lsp-javascript-initialized? ()
   (when-let* ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
