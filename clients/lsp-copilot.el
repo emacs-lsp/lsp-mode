@@ -47,7 +47,7 @@
 (defcustom lsp-copilot-auth-check-delay 5
   "How much time to wait before checking if the server is properly authenticated.
 
-Set this value to nil if you do not with for the check to be made."
+Set this value to nil if you do not want for the check to be made."
   :type '(choice (const :tag "Do not check" nil)
                  (integer :tag "Seconds" 5)))
 
