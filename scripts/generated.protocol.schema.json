@@ -1737,7 +1737,7 @@
                     "type": "string"
                 }
             },
-            "required": ["uri" "name"]
+            "required": ["uri", "name"]
         },
         "WorkspaceFoldersChangeEvent": {
             "type": "object",
