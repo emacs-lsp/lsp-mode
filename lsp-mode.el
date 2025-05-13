@@ -6248,6 +6248,7 @@ one or more symbols, and STRUCTURE should be compatible with
     (scala-mode                 . scala-indent:step)                ; Scala
     (sgml-mode                  . sgml-basic-offset)                ; SGML
     (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (swift-mode                 . swift-mode:basic-offset)          ; Swift
     (toml-ts-mode               . toml-ts-mode-indent-offset)
     (typescript-mode            . typescript-indent-level)          ; Typescript
     (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
