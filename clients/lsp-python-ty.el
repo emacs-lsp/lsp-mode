@@ -38,10 +38,11 @@
   :type '(repeat string))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-python-ty-clients-server-command)
-                  :major-modes '(python-mode)
-                  :server-id 'lsp-python-ty))
-
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-python-ty-clients-server-command))
+                  :activation-fn (lsp-activate-on "python")
+                  :priority -1
+                  :add-on? t
+                  :server-id 'ty-ls))
 
 (lsp-consistency-check lsp-python-ty)
 
