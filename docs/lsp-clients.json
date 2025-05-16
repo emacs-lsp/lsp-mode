@@ -941,6 +941,16 @@
     "debugger": "Yes"
   },
   {
+    "name": "python-ty",
+    "full-name": "Python (ty)",
+    "server-name": "LSP support for Python(ty).",
+    "server-url": "https://github.com/astral-sh/ty",
+    "client-name": "lsp-python-ty",
+    "client-url": "https://github.com/astral-sh/ty",
+    "installation-url": "https://github.com/astral-sh/ty",
+    "debugger": "Yes"
+  },
+  {
     "name": "qml-ls",
     "full-name": "QML (Qt Modeling Language)",
     "server-name": "QML Language Server",
