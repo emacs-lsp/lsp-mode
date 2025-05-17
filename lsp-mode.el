@@ -6646,11 +6646,13 @@ to check if server wants to apply any workspaceEdits after renamed."
                      :files (vector (lsp-make-file-rename
                                      :oldUri (lsp--path-to-uri old-name)
                                      :newUri (lsp--path-to-uri new-name))))))
-        (when-let* ((edits (lsp-request "workspace/willRenameFiles" params)))
-          (lsp--apply-workspace-edit edits 'rename-file)
-          (funcall old-func old-name new-name ok-if-already-exists?)
-          (when (lsp--send-did-rename-files-p)
-            (lsp-notify "workspace/didRenameFiles" params))))
+        (if-let* ((edits (lsp-request "workspace/willRenameFiles" params)))
+            (progn
+              (lsp--apply-workspace-edit edits 'rename-file)
+              (funcall old-func old-name new-name ok-if-already-exists?)
+              (when (lsp--send-did-rename-files-p)
+                (lsp-notify "workspace/didRenameFiles" params)))
+          (funcall old-func old-name new-name ok-if-already-exists?)))
     (funcall old-func old-name new-name ok-if-already-exists?)))
 
 (advice-add 'rename-file :around #'lsp--on-rename-file)
