@@ -1,4 +1,4 @@
-;;; lsp-copilot.el --- lsp-mode client for copilot       -*- lexical-binding: t -*-
+;;; lsp-copilot.el --- lsp-mode client for Copilot       -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 Rodrigo Virote Kassick
 
@@ -64,18 +64,18 @@ lsp-install-server to fetch an emacs-local version of the LSP."
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-applicable-fn (lambda (&rest _) lsp-copilot-enabled)
-  "A function which returns whether the copilot is applicable for the buffer.
+  "A function which returns whether the Copilot is applicable for the buffer.
 The input are the file name and the major mode of the buffer."
   :type 'function
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-server-disabled-languages nil
-  "The languages for which the server must not be enabled (initialization setup for copilot)"
+  "The languages for which the server must not be enabled (initialization setup for Copilot)"
   :type '(repeat string)
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-server-multi-root t
-  "Whether the copilot server is started with multi-root."
+  "Whether the Copilot server is started with multi-root."
   :type 'boolean
   :group 'lsp-copilot)
 
@@ -129,7 +129,7 @@ The input are the file name and the major mode of the buffer."
 
 ;;;###autoload
 (defun lsp-copilot-login ()
-  "Log in with copilot.
+  "Log in with Copilot.
 
 This function is automatically called during the client initialization if needed"
   (interactive)
@@ -204,7 +204,7 @@ automatically, browse to %s." user-code verification-uri))
                    (condition-case err
                        (unless (lsp-copilot--authenticated-as)
                          (lsp-copilot-login))
-                     (t (lsp--error "Could not authenticate with copilot: %s" (error-message-string err)))))))
+                     (t (lsp--error "Could not authenticate with Copilot: %s" (error-message-string err)))))))
   t)
 
 ;; Server installed by emacs
