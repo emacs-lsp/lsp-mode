@@ -32,7 +32,7 @@ reliably would also make a huge difference.
 
 ## Pull requests
 
-* Read [how to properly contribute to open source projects on Github][2].
+* Read [how to properly contribute to open source projects on GitHub][2].
 * Use the same coding conventions as the rest of the project.
 * Make sure that the unit tests are passing locally via `make test` or via the CI.
 * Write [good commit messages][3].

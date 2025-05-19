@@ -143,7 +143,7 @@ This function is automatically called during the client initialization if needed
           (cond
            ((s-equals-p status "AlreadySignedIn")
             (lsp--info "Copilot :: Already signed in as %s" user))
-           ((yes-or-no-p "Copilot requires you to log into your Github account. Proceed now?")
+           ((yes-or-no-p "Copilot requires you to log into your GitHub account. Proceed now?")
             (if (display-graphic-p)
                 (progn
                   (gui-set-selection 'CLIPBOARD user-code)
