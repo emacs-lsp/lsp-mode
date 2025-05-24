@@ -5554,23 +5554,21 @@ MODE is the mode used in the parent frame."
           (goto-char end))))))
 
 (defun lsp--buffer-string-visible ()
-  "Return visible buffer string.
-Stolen from `org-copy-visible'."
-  (let ((temp (generate-new-buffer " *temp*"))
-        (beg (point-min))
-        (end (point-max)))
-    (while (/= beg end)
-      (when (get-char-property beg 'invisible)
-        (setq beg (next-single-char-property-change beg 'invisible nil end)))
-      (let* ((next (next-single-char-property-change beg 'invisible nil end))
-             (substring (buffer-substring beg next)))
-        (with-current-buffer temp (insert substring))
-        ;; (setq result (concat result substring))
-        (setq beg next)))
-    (setq deactivate-mark t)
-    (prog1 (with-current-buffer temp
-             (s-chop-suffix "\n" (buffer-string)))
-      (kill-buffer temp))))
+    "Return a string of the buffer's visible text."
+    (let ((beg (point-min))
+           (end (point-max))
+           (parts '()))
+      (while (< beg end)
+        (when (get-char-property beg 'invisible)
+          (setq beg (next-single-char-property-change beg 'invisible nil end)))
+        (let ((next (next-single-char-property-change beg 'invisible nil end)))
+          (push (buffer-substring-no-properties beg next) parts)
+          (setq beg next)))
+      (setq parts (nreverse parts))
+      (let ((result (apply #'concat parts)))
+        (if (string-suffix-p "\n" result)
+          (substring result 0 -1)
+          result))))
 
 (defvar lsp-buffer-major-mode nil
   "Holds the major mode when fontification function is running.
