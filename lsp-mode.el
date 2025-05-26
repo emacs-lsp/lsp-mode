@@ -973,6 +973,7 @@ Changes take effect only when a new session is started."
     (zig-ts-mode . "zig")
     (text-mode . "plaintext")
     (markdown-mode . "markdown")
+    (markdown-ts-mode . "markdown")
     (gfm-mode . "markdown")
     (beancount-mode . "beancount")
     (conf-toml-mode . "toml")
