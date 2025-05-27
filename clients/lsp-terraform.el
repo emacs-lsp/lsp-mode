@@ -293,7 +293,7 @@ This is a synchronous action."
 
 (cl-defstruct tf-package display-name doc-link installed-version version-constraint)
 
-(cl-defstruct tf-module name doc-link version source-type dependent-modules)
+(cl-defstruct tf-module name doc-link version source_type dependent_modules)
 
 (defun construct-tf-package (provider installed-version)
   "Construct `TF-PACKAGE' using PROVIDER and INSTALLED-VERSION."
@@ -307,14 +307,14 @@ This is a synchronous action."
   (make-tf-module :name name
                   :doc-link docs-link
                   :version version
-                  :source-type source-type
-                  :dependent-modules dependent-modules))
+                  :source_type source-type
+                  :dependent_modules dependent-modules))
 
 (lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider-requirements :installed-providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
-  (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
-         (installed-versions (mapcar (lambda (x) (lsp-get installed-providers (make-symbol (format ":%s" x)))) provider-requirements-keys))
-         (providers (mapcar (lambda (x) (lsp-get provider-requirements (make-symbol (format ":%s" x)))) provider-requirements-keys))
+  (let* ((provider_requirements-keys (hash-table-keys provider-requirements))
+         (installed-versions (mapcar (lambda (x) (lsp-get installed-providers (make-symbol (format ":%s" x)))) provider_requirements-keys))
+         (providers (mapcar (lambda (x) (lsp-get provider-requirements (make-symbol (format ":%s" x)))) provider_requirements-keys))
          (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
     tf-packages))
 
