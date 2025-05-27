@@ -3883,6 +3883,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-otp-download-version" class="md-nav__link">
+    lsp-erlang-elp-otp-download-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-erlang-elp-server-command" class="md-nav__link">
     lsp-erlang-elp-server-command
   </a>
@@ -4086,8 +4093,14 @@ Code Lenses. Only applies when <code>#elp.lens.enabled</code> and
 <hr />
 <h3 id="lsp-erlang-elp-download-url"><code>lsp-erlang-elp-download-url</code><a class="headerlink" href="#lsp-erlang-elp-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/elp-linux-x86_64-unknown-linux-gnu-otp-26.tar.gz</code></p>
+<p><em>Default:</em> <code>https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/elp-linux-x86_64-unknown-linux-gnu-otp-27.1.tar.gz</code></p>
 <p>Automatic download url for erlang-language-platform.</p>
+<hr />
+<h3 id="lsp-erlang-elp-otp-download-version"><code>lsp-erlang-elp-otp-download-version</code><a class="headerlink" href="#lsp-erlang-elp-otp-download-version" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (string :tag 25.3) (string :tag 26.2) (string :tag 27.1))</code></p>
+<p><em>Default:</em> <code>27.1</code></p>
+<p>OTP version used as part of the file name when downlading the ELP binary.
+It must match those used in https://github.com/WhatsApp/erlang-language-platform/releases/latest</p>
 <hr />
 <h3 id="lsp-erlang-elp-server-command"><code>lsp-erlang-elp-server-command</code><a class="headerlink" href="#lsp-erlang-elp-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
@@ -4112,7 +4125,7 @@ Code Lenses. Only applies when <code>#elp.lens.enabled</code> and
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 26, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 27, 2025</span>
       
     
   </small>
