@@ -5249,8 +5249,8 @@ modifying the signature that is displayed by eldoc.</p>
 <p>Extra arguments that are passed to every cargo invocation.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-cargo-extra-env"><code>lsp-rust-analyzer-cargo-extra-env</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-extra-env" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-string-vector</code></p>
-<p><em>Default:</em> <code>[]</code></p>
+<p><em>Type:</em> <code>alist</code></p>
+<p><em>Default:</em> <code>#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data ())</code></p>
 <p>Extra environment variables that will be set when running cargo, rustc or
 other commands within the workspace.  Useful for setting RUSTFLAGS.</p>
 <hr />
@@ -5643,7 +5643,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 27, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 29, 2025</span>
       
     
   </small>
