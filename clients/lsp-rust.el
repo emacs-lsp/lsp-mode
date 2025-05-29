@@ -851,10 +851,10 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-rust-analyzer-cargo-extra-env []
+(defcustom lsp-rust-analyzer-cargo-extra-env #s(hash-table)
   "Extra environment variables that will be set when running cargo, rustc or
 other commands within the workspace.  Useful for setting RUSTFLAGS."
-  :type 'lsp-string-vector
+  :type 'alist
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
