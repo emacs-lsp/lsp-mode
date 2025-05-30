@@ -828,6 +828,7 @@ See `-let' for a description of the destructuring mechanism."
  (WillSaveTextDocumentParams (:reason :textDocument) nil)
  (WorkspaceSymbolParams (:query) nil)
  ;; 3.17
+ (RelativePattern (:baseUri :pattern) nil)
  (LabelDetails nil (:detail :description))
  (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
  (InlayHintLabelPart (:value) (:tooltip :location :command))

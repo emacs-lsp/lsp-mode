@@ -186,7 +186,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
      lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-openscad
      lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-postgres
-     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
+     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-python-ty
      lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roc lsp-roslyn lsp-rubocop
      lsp-ruby-lsp lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
@@ -973,6 +973,7 @@ Changes take effect only when a new session is started."
     (zig-ts-mode . "zig")
     (text-mode . "plaintext")
     (markdown-mode . "markdown")
+    (markdown-ts-mode . "markdown")
     (gfm-mode . "markdown")
     (beancount-mode . "beancount")
     (conf-toml-mode . "toml")
@@ -2997,11 +2998,11 @@ and end-of-string meta-characters."
 (defun lsp-glob-to-regexps (glob-pattern)
   "Convert a GLOB-PATTERN to a list of Elisp regexps."
   (when-let*
-      ((glob-pattern (cond ((hash-table-p glob-pattern)
-                            (ht-get glob-pattern "pattern"))
-                           ((stringp glob-pattern) glob-pattern)
-                           (t (error "Unknown glob-pattern type: %s" glob-pattern))))
-       (trimmed-pattern (string-trim glob-pattern))
+      ((glob (pcase glob-pattern
+               ((pred stringp) glob-pattern)
+               ((lsp-interface RelativePattern :base-uri :pattern) (format "%s%s" base-uri pattern))
+               (_ (error "Unknown glob-pattern type: %s" glob-pattern))))
+       (trimmed-pattern (string-trim glob))
        (top-level-unbraced-patterns (lsp-glob-unbrace-at-top-level trimmed-pattern)))
     (seq-map #'lsp-glob-convert-to-wrapped-regexp
              top-level-unbraced-patterns)))

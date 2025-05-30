@@ -873,13 +873,15 @@ If the candidates is non-empty, return the passed STRING and POINT."
   "Passthrough all completions from TABLE with PRED."
   (defvar completion-lazy-hilit-fn)
   (when (bound-and-true-p completion-lazy-hilit)
-    (setq completion-lazy-hilit-fn
-          (lambda (candidate)
-            (->> candidate
-                 lsp-completion--company-match
-                 (mapc (-lambda ((start . end))
-                         (put-text-property start end 'face 'completions-common-part candidate))))
-            candidate)))
+    (let ((buf (current-buffer)))
+      (setq completion-lazy-hilit-fn
+            (lambda (candidate)
+              (with-current-buffer buf
+                (->> candidate
+                     lsp-completion--company-match
+                     (mapc (-lambda ((start . end))
+                             (put-text-property start end 'face 'completions-common-part candidate))))
+                candidate)))))
   (all-completions "" table pred))
 
 ;;;###autoload
