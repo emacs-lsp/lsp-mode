@@ -1722,7 +1722,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
              :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
              :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
              :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
-             :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
+             :unsetTest ,lsp-rust-analyzer-cargo-unset-test
+	     :buildScripts (:overrideCommand ,lsp-rust-analyzer-cargo-override-command))
     :rustfmt ( :extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
                :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
                :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
