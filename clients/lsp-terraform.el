@@ -1,4 +1,4 @@
-;;; lsp-terraform.el --- Terraform Client settings         -*- lexical-binding: t; -*-
+;;; lsp-terraform.el --- Terraform Client settings      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Ross Donaldson, Sibi Prabakaran
 
@@ -134,12 +134,12 @@ Defaults to side following treemacs default."
 (lsp-defun lsp-terraform-ls--show-references ((&Command :arguments?))
   "Show references for command with ARGS."
   (lsp-show-xrefs
-     (lsp--locations-to-xref-items
-      (lsp-request "textDocument/references"
-                   (lsp--make-reference-params
-                    (lsp--text-document-position-params nil (elt arguments? 0)))))
-     t
-     t))
+    (lsp--locations-to-xref-items
+     (lsp-request "textDocument/references"
+                  (lsp--make-reference-params
+                   (lsp--text-document-position-params nil (elt arguments? 0)))))
+    t
+    t))
 
 (defun lsp-terraform-ls--custom-capabilities ()
   "Construct custom capabilities for the language server."
@@ -252,11 +252,11 @@ Defaults to side following treemacs default."
 This is a synchronous action."
   (interactive)
   (lsp-request
-     "workspace/executeCommand"
-     (list :command "terraform-ls.terraform.init"
-           :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
-     :no-wait nil
-     :no-merge t))
+    "workspace/executeCommand"
+    (list :command "terraform-ls.terraform.init"
+          :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
+    :no-wait nil
+    :no-merge t))
 
 (defun lsp-terraform-ls-version ()
   "Get information about the terraform binary version for the current module."
@@ -302,25 +302,25 @@ This is a synchronous action."
                    :installed-version installed-version
                    :version-constraint (lsp-get provider :version_constraint)))
 
-(lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs-link :version :source-type :dependent-modules))
+(lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs_link :version :source_type :dependent_modules))
   "Construct `TF-MODULE' using MODULE."
   (make-tf-module :name name
-                  :doc-link docs-link
+                  :doc-link docs_link
                   :version version
-                  :source-type source-type
-                  :dependent-modules dependent-modules))
+                  :source-type source_type
+                  :dependent-modules dependent_modules))
 
-(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider-requirements :installed-providers))
+(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider_requirements :installed_providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
-  (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
-         (installed-versions (mapcar (lambda (x) (lsp-get installed-providers (make-symbol (format ":%s" x)))) provider-requirements-keys))
-         (providers (mapcar (lambda (x) (lsp-get provider-requirements (make-symbol (format ":%s" x)))) provider-requirements-keys))
-         (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
+  (let* ((provider_requirements-keys (hash-table-keys provider_requirements))
+         (installed_versions (mapcar (lambda (x) (lsp-get installed_providers (make-symbol (format ":%s" x)))) provider_requirements-keys))
+         (providers (mapcar (lambda (x) (lsp-get provider_requirements (make-symbol (format ":%s" x)))) provider_requirements-keys))
+         (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed_versions)))
     tf-packages))
 
-(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :module-calls))
+(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :module_calls))
   "Convert MODULES-TREE-DATA to list of `TF-MODULE'."
-  (let* ((modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
+  (let* ((modules (-map (lambda (x) (construct-tf-module x)) module_calls)))
     modules))
 
 (defun lsp-terraform-ls--fetch-modules-data (project-root)
@@ -358,10 +358,10 @@ This is a synchronous action."
 (defun lsp-terraform-ls--tf-modules-to-treemacs (tf-modules)
   "Convert list of `TF-MODULES' to treemacs compatible data."
   (mapcar (lambda (module) (list :label (format "%s %s" (tf-module-name module) (tf-module-version module))
-                                 :icon 'package
-                                 :key (tf-module-name module)
-                                 :ret-action (lambda (&rest _) (browse-url (tf-module-doc-link module)))
-                                 )) tf-modules))
+                                  :icon 'package
+                                  :key (tf-module-name module)
+                                  :ret-action (lambda (&rest _) (browse-url (tf-module-doc-link module)))
+                                  )) tf-modules))
 
 (defun lsp-terraform-ls--show-providers (ignore-focus?)
   "Show terraform providers and focus on it if IGNORE-FOCUS? is nil."
