@@ -142,11 +142,25 @@
       (setq args (append args lsp-golangci-lint-run-args)))
     args))
 
+(defun lsp-golangci-lint--get-version ()
+  "Get the version of golangci-lint."
+  (with-temp-buffer
+    (when (= 0 (call-process lsp-golangci-lint-path nil t nil "version"))
+      (goto-char (point-min))
+      (when (re-search-forward "has version \\([0-9]+\\)\\." nil t)
+        (string-to-number (match-string 1))))))
+
 (defun lsp-golangci-lint--get-initialization-options ()
   "Return initialization options for golangci-lint-langserver."
-  (let ((opts (make-hash-table :test 'equal))
-        (command (vconcat `(,lsp-golangci-lint-path)
-                          ["run" "--out-format=json" "--issues-exit-code=1"]
+  (let* ((opts (make-hash-table :test 'equal))
+         (version (lsp-golangci-lint--get-version))
+         (format-args (if (and version (>= version 2))
+                         ["--output.json.path" "stdout" "--show-stats=false"]
+                         ["--out-format" "json"]))
+         (command (vconcat `(,lsp-golangci-lint-path)
+                          ["run"]
+                          format-args
+                          ["--issues-exit-code=1"]
                           (lsp-golangci-lint--run-args))))
     (puthash "command" command opts)
     opts))
