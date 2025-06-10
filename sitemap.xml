@@ -801,6 +801,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-toml-tombi/</loc>
+         <lastmod>2025-06-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-toml/</loc>
          <lastmod>2025-06-10</lastmod>
          <changefreq>daily</changefreq>
