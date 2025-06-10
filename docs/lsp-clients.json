@@ -1231,6 +1231,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "toml-tombi",
+    "full-name": "TOML",
+    "server-name": "tombi",
+    "server-url": "https://github.com/tombi-toml/tombi",
+    "installation-url": "https://tombi-toml.github.io/tombi/docs/installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "trunk",
     "full-name": "Trunk",
     "server-name": "trunk-lsp",
