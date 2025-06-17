@@ -147,7 +147,7 @@
   (with-temp-buffer
     (when (= 0 (call-process lsp-golangci-lint-path nil t nil "version"))
       (goto-char (point-min))
-      (when (re-search-forward "has version \\([0-9]+\\)\\." nil t)
+      (when (re-search-forward "has version v?\\([0-9]+\\)\\." nil t)
         (string-to-number (match-string 1))))))
 
 (defun lsp-golangci-lint--get-initialization-options ()
