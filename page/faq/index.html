@@ -785,6 +785,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#i-have-lsp-headerline-breadcrumb-mode-enabled-but-the-breadcrumb-isnt-always-updating-for-example-when-previewing-results-in-consult-xref" class="md-nav__link">
+    I have lsp-headerline-breadcrumb-mode enabled but the breadcrumb isn't always updating, for example when previewing results in consult-xref.
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3913,6 +3920,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#i-have-lsp-headerline-breadcrumb-mode-enabled-but-the-breadcrumb-isnt-always-updating-for-example-when-previewing-results-in-consult-xref" class="md-nav__link">
+    I have lsp-headerline-breadcrumb-mode enabled but the breadcrumb isn't always updating, for example when previewing results in consult-xref.
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4024,6 +4038,16 @@
 
 <p>For more flags, see clangd --help.</p>
 <p>(Thanks to <a href="https://emacs.stackexchange.com/questions/58015/how-to-stop-lsp-mode-including-headers-automatically-for-c-c-code">Martingale on Emacs StackExchange</a> for this answer!)</p>
+<hr />
+<h3 id="i-have-lsp-headerline-breadcrumb-mode-enabled-but-the-breadcrumb-isnt-always-updating-for-example-when-previewing-results-in-consult-xref"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> I have lsp-headerline-breadcrumb-mode enabled but the breadcrumb isn't always updating, for example when previewing results in consult-xref.<a class="headerlink" href="#i-have-lsp-headerline-breadcrumb-mode-enabled-but-the-breadcrumb-isnt-always-updating-for-example-when-previewing-results-in-consult-xref" title="Permanent link">#</a></h3>
+<p>The function that updates the breadcrumb is <code>lsp-headerline-check-breadcrumb</code>. By default, this is added to <code>xref-after-jump-hook</code>, so that the breadcrumb will update immediately after jumping to a new location. Some packages, such as consult during previews, do jumps without calling <code>xref-after-jump-hook</code>, so the breadcrumb never updates.</p>
+<p>The solution is to add <code>lsp-headerline-check-breadcrumb</code> to the appropriate hook. For consult, add the following to your user configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-headerline-breadcrumb-mode-hook</span>
+          <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span>
+            <span class="p">(</span><span class="k">if</span> <span class="nv">lsp-headerline-breadcrumb-mode</span>
+                <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;consult-after-jump-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-headerline-check-breadcrumb</span> <span class="no">nil</span> <span class="no">t</span><span class="p">)</span>
+                <span class="p">(</span><span class="nv">remove-hook</span> <span class="ss">&#39;consult-after-jump-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-headerline-check-breadcrumb</span> <span class="no">t</span><span class="p">))))</span>
+</code></pre></div>
 
 <!-- Source file information -->
 
@@ -4032,7 +4056,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 10, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 17, 2025</span>
       
     
   </small>
