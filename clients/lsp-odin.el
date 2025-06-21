@@ -48,9 +48,7 @@
                 ((and (eq system-type 'gnu/linux)
                       (or (eq (string-match "^x86_64" system-configuration) 0)
                           (eq (string-match "^i[3-6]86" system-configuration) 0)))
-                 "ols-x86_64-unknown-linux-gnu.zip")
-
-                (t "omnisharp-mono.zip")))
+                 "ols-x86_64-unknown-linux-gnu.zip")))
   "Automatic download url for ols language server."
   :group 'lsp-odin-ols
   :type 'string)
