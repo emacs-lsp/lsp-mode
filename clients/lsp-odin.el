@@ -75,14 +75,6 @@ Set this if you have the binary installed or have it built yourself."
 
 
 (defcustom lsp-odin-ols-binary-path
-  (f-join lsp-odin-ols-server-install-dir "latest" (if (eq system-type 'windows-nt)
-                                                       "ols-x86_64-pc-windows-msvc.exe"
-                                                     "ols-x86_64-unknown-linux-gnu"))
-  "The path where ols binary after will be stored."
-  :group 'lsp-odin-ols
-  :type 'file)
-
-(defcustom lsp-odin-ols-binary-path
   (f-join lsp-odin-ols-server-install-dir "latest" (cond ((eq system-type 'windows-nt)
                                                           "ols-x86_64-pc-windows-msvc.exe")
 
