@@ -45,14 +45,13 @@
                 "ols-arm64-darwin.zip"
               "ols-x86_64-darwin.zip"))
            (_
-            "ols-x86_64-unknown-linux-gnu")))
-        (when suffix
-          (f-join "https://github.com/DanielGavin/ols/releases/download/nightly/"
-                  suffix))))
+            "ols-x86_64-unknown-linux-gnu"))))
+    (when suffix
+      (f-join "https://github.com/DanielGavin/ols/releases/download/nightly/"
+              suffix)))
   "Automatic download url for ols language server."
   :group 'lsp-odin-ols
   :type 'string)
-
 
 (defcustom lsp-odin-ols-server-install-dir
   (f-join lsp-server-install-dir "ols/")
