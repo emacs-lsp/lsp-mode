@@ -34,21 +34,21 @@
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-odin-ols-download-url
-  (concat "https://github.com/DanielGavin/ols/releases/download/nightly/"
-          (cond ((eq system-type 'windows-nt)
-                 (if (and (string-match "^x86_64-.*" system-configuration)
-                          (version<= "26.4" emacs-version))
-                     "ols-x86_64-pc-windows-msvc.zip"))
-
-                ((eq system-type 'darwin)
-                 (if (string-match "aarch64-.*" system-configuration)
-                     "ols-arm64-darwin.zip"
-                   "ols-x86_64-darwin.zip"))
-
-                ((and (eq system-type 'gnu/linux)
-                      (or (eq (string-match "^x86_64" system-configuration) 0)
-                          (eq (string-match "^i[3-6]86" system-configuration) 0)))
-                 "ols-x86_64-unknown-linux-gnu.zip")))
+  (let ((suffix
+         (pcase system-type
+           ('windows-nt
+            (when (and (string-match "^x86_64-.*" system-configuration)
+                       (version<= "26.4" emacs-version))
+              "ols-x86_64-pc-windows-msvc.zip"))
+           ('darwin
+            (if (string-match "aarch64-.*" system-configuration)
+                "ols-arm64-darwin.zip"
+              "ols-x86_64-darwin.zip"))
+           (_
+            "ols-x86_64-unknown-linux-gnu")))
+        (when suffix
+          (f-join "https://github.com/DanielGavin/ols/releases/download/nightly/"
+                  suffix))))
   "Automatic download url for ols language server."
   :group 'lsp-odin-ols
   :type 'string)
@@ -66,36 +66,27 @@
   :group 'lsp-odin-ols
   :type 'file)
 
-(defcustom lsp-odin-ols-server-path
-  nil
-  "The path to ols language-server binary.
-Set this if you have the binary installed or have it built yourself."
-  :group 'lsp-odin-ols
-  :type '(string :tag "Single string value or nil"))
-
-
-(defcustom lsp-odin-ols-binary-path
-  (f-join lsp-odin-ols-server-install-dir "latest" (cond ((eq system-type 'windows-nt)
-                                                          "ols-x86_64-pc-windows-msvc.exe")
-
-                                                         ((eq system-type 'darwin)
-                                                          (if (string-match "aarch64-.*" system-configuration)
-                                                              "ols-arm64-darwin"
-                                                            "ols-x86_64-darwin"))
-
-                                                         ((and (eq system-type 'gnu/linux)
-                                                               (or (eq (string-match "^x86_64" system-configuration) 0)
-                                                                   (eq (string-match "^i[3-6]86" system-configuration) 0)))
-                                                          "ols-x86_64-unknown-linux-gnu")))
-  "The path where ols binary after will be stored."
-  :group 'lsp-odin-ols
-  :type 'file)
-
 (defcustom lsp-odin-ols-server-dir
   (f-join lsp-odin-ols-server-install-dir "latest" "ols")
   "The path where ols .zip archive will be extracted."
   :group 'lsp-odin-ols
   :type 'file)
+
+(defcustom lsp-odin-ols-binary-path
+  (f-join lsp-odin-ols-server-install-dir "latest"
+          (pcase system-type
+            ('windows-nt
+             "ols-x86_64-pc-windows-msvc.exe")
+            ('darwin
+             (if (string-match "aarch64-.*" system-configuration)
+                 "ols-arm64-darwin"
+               "ols-x86_64-darwin"))
+            (_
+             "ols-x86_64-unknown-linux-gnu")))
+  "The path where ols binary after will be stored."
+  :group 'lsp-odin-ols
+  :type 'file)
+
 
 (lsp-dependency
  'ols
