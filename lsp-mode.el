@@ -184,7 +184,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
      lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
      lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
-     lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-openscad
+     lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-odin lsp-openscad
      lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-postgres
      lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-python-ty
      lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roc lsp-roslyn lsp-rubocop
@@ -1004,7 +1004,9 @@ Changes take effect only when a new session is started."
     (yang-mode . "yang")
     (matlab-mode . "matlab")
     (message-mode . "plaintext")
-    (mu4e-compose-mode . "plaintext"))
+    (mu4e-compose-mode . "plaintext")
+    (odin-mode . "odin")
+    (odin-ts-mode . "odin"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil

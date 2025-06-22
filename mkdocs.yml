@@ -132,6 +132,7 @@ nav:
     - Nix (nil): page/lsp-nix-nil.md
     - Nushell: page/lsp-nushell.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
+    - Odin (ols): page/lsp-odin-ols-server.md
     - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl (PLS): page/lsp-pls.md
