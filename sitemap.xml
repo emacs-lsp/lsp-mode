@@ -571,6 +571,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ols/</loc>
+         <lastmod>2025-06-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-openscad/</loc>
          <lastmod>2025-06-22</lastmod>
          <changefreq>daily</changefreq>
