@@ -325,11 +325,20 @@ It must match those used in https://github.com/WhatsApp/erlang-language-platform
   "The face modification to use for exported functions."
   :group 'lsp-erlang-elp-semantic-tokens)
 
+(defface lsp-erlang-elp-exported-type-modifier-face
+  '((t :underline t))
+  "The face modification to use for exported types."
+  :group 'lsp-erlang-elp-semantic-tokens)
+
 (defface lsp-erlang-elp-deprecated-function-modifier-face
   '((t :strike-through t))
   "The face modification to use for deprecated functions."
   :group 'lsp-erlang-elp-semantic-tokens)
 
+(defface lsp-erlang-elp-type-dynamic-modifier-face
+  '((t (:weight bold)))
+  "The face modification to use for dynamic types."
+  :group 'lsp-erlang-elp-semantic-tokens)
 
 ;; ---------------------------------------------------------------------
 ;; Semantic token modifier face customization
@@ -346,8 +355,20 @@ It must match those used in https://github.com/WhatsApp/erlang-language-platform
   :group 'lsp-erlang-elp-semantic-tokens
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-erlang-elp-exported-type-modifier 'lsp-erlang-elp-exported-type-modifier-face
+  "Face for semantic token modifier for `exported_type' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-erlang-elp-deprecated-function-modifier 'lsp-erlang-elp-deprecated-function-modifier-face
   "Face for semantic token modifier for `deprecated_function' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-erlang-elp-type-dynamic-modifier 'lsp-erlang-elp-type-dynamic-modifier-face
+  "Face for semantic token modifier for `type_dynamic' attribute."
   :type 'face
   :group 'lsp-erlang-elp-semantic-tokens
   :package-version '(lsp-mode . "9.0.0"))
@@ -361,7 +382,9 @@ tokens legend."
   `(
     ("bound" . ,lsp-erlang-elp-bound-modifier)
     ("exported_function" . ,lsp-erlang-elp-exported-function-modifier)
-    ("deprecated_function" . ,lsp-erlang-elp-deprecated-function-modifier)))
+    ("exported_type" . ,lsp-erlang-elp-exported-type-modifier)
+    ("deprecated_function" . ,lsp-erlang-elp-deprecated-function-modifier)
+    ("type_dynamic" . ,lsp-erlang-elp-type-dynamic-modifier)))
 
 ;; ---------------------------------------------------------------------
 ;; Client
