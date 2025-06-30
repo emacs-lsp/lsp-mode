@@ -41,13 +41,13 @@
   :link '(url-link "https://github.com/vuejs/language-tools")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-take-over-mode t
+(defcustom lsp-volar-take-over-mode nil
   "Enable Take Over Mode."
   :type 'boolean
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-hybrid-mode nil
+(defcustom lsp-volar-hybrid-mode t
   "Enable Hybrid Mode."
   :type 'boolean
   :group 'lsp-volar
