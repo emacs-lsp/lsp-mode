@@ -53,6 +53,12 @@
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.1"))
 
+(defcustom lsp-volar-as-add-on nil
+  "Run volar LSP server alongside other LSP server(s)"
+  :type 'boolean
+  :group 'lsp-volar
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-volar-activate-file ".volarrc"
   "A file with a custom name placed in WORKSPACE-ROOT is used to force enable
  volar when there is no package.json in the WORKSPACE-ROOT."
@@ -125,6 +131,7 @@ in the WORKSPACE-ROOT."
   :activation-fn 'lsp-volar--activate-p
   :priority 0
   :multi-root nil
+  :add-on? lsp-volar-as-add-on
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
                                                (lsp-configuration-section "vue")
