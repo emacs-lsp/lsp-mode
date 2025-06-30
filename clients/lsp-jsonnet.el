@@ -58,7 +58,7 @@
   :type 'string)
 
 (lsp-dependency 'jsonnet-language-server
-                `(:system (cl-first lsp-clients-jsonnet-server-executable))
+                `(:system ,(cl-first lsp-clients-jsonnet-server-executable))
                 `(:download :url ,lsp-clients-jsonnet-server-download-url
                             :store-path ,(f-join user-emacs-directory ".cache" "lsp"
                                                  (if (eq system-type 'windows-nt)
