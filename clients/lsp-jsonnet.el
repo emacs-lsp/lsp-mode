@@ -54,6 +54,7 @@
                 ((eq system-type 'windows-nt)
                  "jsonnet-language-server_0.16.0_windows_amd64.exe")))
   "The jsonnet language server download url."
+  :group 'lsp-jsonnet
   :type 'string)
 
 (lsp-dependency 'jsonnet-language-server
@@ -75,7 +76,7 @@
   :activation-fn (lsp-activate-on "jsonnet")
   :priority -1
   :major-modes '(jsonnet-mode)
-  :download-server-fn (lambda (_client callback error-callback update?)
+  :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'jsonnet-language-server callback error-callback))
   :server-id 'jsonnet-lsp))
 
