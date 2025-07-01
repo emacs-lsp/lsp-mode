@@ -6096,7 +6096,10 @@ Request codeAction/resolve for more info if server supports."
 
 (defun lsp-format-region (s e)
   "Ask the server to format the region, or if none is selected, the current line."
-  (interactive "r")
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (point) (point))))
   (let ((edits (lsp-request
                 "textDocument/rangeFormatting"
                 (lsp--make-document-range-formatting-params s e))))
