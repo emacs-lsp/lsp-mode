@@ -69,7 +69,7 @@ This is only for development use."
 
 (lsp-dependency
  'postgres-ls
- '(:system "postgres-ls")
+ '(:system "postgrestools")
  `(:download :url ,(lsp-postgres--postgres-ls-url)
              :store-path ,(f-join lsp-postgres-server-store-path
                                   (pcase system-type
