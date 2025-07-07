@@ -8474,7 +8474,7 @@ nil."
 Call CALLBACK on success or ERROR-CALLBACK on failure."
   (url-retrieve
    url
-   (lambda (status &rest args)
+   (lambda (status &rest _)
      (cond
       ;; Check for errors
       ((plist-get status :error)
@@ -8501,7 +8501,7 @@ Call CALLBACK on success or ERROR-CALLBACK on failure."
           (funcall error-callback err))))))
    nil 'silent 'inhibit-cookies))
 
-(defun lsp-download-install--verify-signature (main-url main-file asc-url pgp-key)
+(defun lsp-download-install--verify-signature (_main-url main-file asc-url pgp-key)
   "Verify GPG signature for MAIN-FILE.
 Download signature from ASC-URL and verify with PGP-KEY.
 This is a synchronous operation that should be called after the main download."
