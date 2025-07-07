@@ -25,6 +25,8 @@
   * Add support for buf CLI ([[https://github.com/bufbuild/buf/releases/tag/v1.43.0][beta]])
   * Add fennel support
   * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
+  * Fix ~lsp-download-install~ hanging Emacs when downloading large files by replacing synchronous ~url-copy-file~ with asynchronous ~url-retrieve~. This improves the download experience for all LSP clients, especially those with larger server files.
+  * Improve Nextflow language server: add automatic download functionality, better Java home detection, enhanced documentation, and update to version 25.04.2.
   * Add TypeSpec support
   * Add Tree-sitter query support
   * Add [[https://github.com/mrjosh/helm-ls][helm-ls]] (YAML Kubernetes Helm) support.
