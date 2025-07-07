@@ -8468,6 +8468,72 @@ nil."
 
 
 ;; Download URL handling
+
+(defun lsp-download-install--url-retrieve (url file callback error-callback)
+  "Download URL to FILE using url-retrieve asynchronously.
+Call CALLBACK on success or ERROR-CALLBACK on failure."
+  (url-retrieve
+   url
+   (lambda (status &rest args)
+     (cond
+      ;; Check for errors
+      ((plist-get status :error)
+       (lsp--error "Download failed: %s" (plist-get status :error))
+       (funcall error-callback (plist-get status :error)))
+
+      ;; Success - save to file
+      (t
+       (condition-case err
+           (progn
+             ;; Move past HTTP headers
+             (goto-char (point-min))
+             (re-search-forward "\n\n" nil t)
+
+             ;; Write content to file
+             (let ((coding-system-for-write 'binary))
+               (write-region (point) (point-max) file nil 'silent))
+
+             ;; Clean up and call success callback
+             (kill-buffer)
+             (funcall callback))
+         (error
+          (lsp--error "Failed to save downloaded file: %s" err)
+          (funcall error-callback err))))))
+   nil 'silent 'inhibit-cookies))
+
+(defun lsp-download-install--verify-signature (main-url main-file asc-url pgp-key)
+  "Verify GPG signature for MAIN-FILE.
+Download signature from ASC-URL and verify with PGP-KEY.
+This is a synchronous operation that should be called after the main download."
+  (if (executable-find epg-gpg-program)
+      (let ((asc-download-path (concat main-file ".asc"))
+            (context (epg-make-context))
+            (fingerprint)
+            (signature))
+        (when (f-exists? asc-download-path)
+          (f-delete asc-download-path))
+
+        ;; Download signature file - using synchronous download for simplicity
+        ;; since signature files are typically very small
+        (lsp--info "Downloading signature from %s..." asc-url)
+        (url-copy-file asc-url asc-download-path)
+        (lsp--info "Downloaded signature file")
+
+        ;; Import and verify
+        (epg-import-keys-from-string context pgp-key)
+        (setq fingerprint (epg-import-status-fingerprint
+                           (car
+                            (epg-import-result-imports
+                             (epg-context-result-for context 'import)))))
+        (lsp--info "Verifying signature %s..." asc-download-path)
+        (epg-verify-file context asc-download-path main-file)
+        (setq signature (car (epg-context-result-for context 'verify)))
+        (unless (and
+                 (eq (epg-signature-status signature) 'good)
+                 (equal (epg-signature-fingerprint signature) fingerprint))
+          (error "Failed to verify GPG signature: %s" (epg-signature-to-string signature))))
+    (lsp--warn "GPG is not installed, skipping the signature check.")))
+
 (cl-defun lsp-download-install (callback error-callback &key url asc-url pgp-key store-path decompress &allow-other-keys)
   (let* ((url (lsp-resolve-value url))
          (store-path (lsp-resolve-value store-path))
@@ -8479,52 +8545,44 @@ nil."
             (:targz (concat store-path ".tar.gz"))
             (`nil store-path)
             (_ (error ":decompress must be `:gzip', `:zip', `:targz' or `nil'")))))
-    (make-thread
+    ;; Clean up any existing files
+    (when (f-exists? download-path)
+      (f-delete download-path))
+    (when (and (f-exists? store-path) (not (equal download-path store-path)))
+      (f-delete store-path))
+
+    ;; Create parent directory if needed
+    (mkdir (f-parent download-path) t)
+
+    ;; Start async download
+    (lsp--info "Starting to download %s to %s..." url download-path)
+    (lsp-download-install--url-retrieve
+     url
+     download-path
      (lambda ()
+       ;; Success handler - continue with decompression and verification
+       (lsp--info "Finished downloading %s..." download-path)
        (condition-case err
            (progn
-             (when (f-exists? download-path)
-               (f-delete download-path))
-             (when (f-exists? store-path)
-               (f-delete store-path))
-             (lsp--info "Starting to download %s to %s..." url download-path)
-             (mkdir (f-parent download-path) t)
-             (url-copy-file url download-path)
-             (lsp--info "Finished downloading %s..." download-path)
+             ;; Handle signature verification if requested
              (when (and lsp-verify-signature asc-url pgp-key)
-               (if (executable-find epg-gpg-program)
-                   (let ((asc-download-path (concat download-path ".asc"))
-                         (context (epg-make-context))
-                         (fingerprint)
-                         (signature))
-                     (when (f-exists? asc-download-path)
-                       (f-delete asc-download-path))
-                     (lsp--info "Starting to download %s to %s..." asc-url asc-download-path)
-                     (url-copy-file asc-url asc-download-path)
-                     (lsp--info "Finished downloading %s..." asc-download-path)
-                     (epg-import-keys-from-string context pgp-key)
-                     (setq fingerprint (epg-import-status-fingerprint
-                                        (car
-                                         (epg-import-result-imports
-                                          (epg-context-result-for context 'import)))))
-                     (lsp--info "Verifying signature %s..." asc-download-path)
-                     (epg-verify-file context asc-download-path download-path)
-                     (setq signature (car (epg-context-result-for context 'verify)))
-                     (unless (and
-                              (eq (epg-signature-status signature) 'good)
-                              (equal (epg-signature-fingerprint signature) fingerprint))
-                       (error "Failed to verify GPG signature: %s" (epg-signature-to-string signature))))
-                 (lsp--warn "GPG is not installed, skipping the signature check.")))
+               (lsp-download-install--verify-signature url download-path asc-url pgp-key))
+
+             ;; Handle decompression if needed
              (when decompress
                (lsp--info "Decompressing %s..." download-path)
                (pcase decompress
-                 (:gzip
-                  (lsp-gunzip download-path))
+                 (:gzip (lsp-gunzip download-path))
                  (:zip (lsp-unzip download-path (f-parent store-path)))
                  (:targz (lsp-tar-gz-decompress download-path (f-parent store-path))))
                (lsp--info "Decompressed %s..." store-path))
+
+             ;; Call success callback
              (funcall callback))
-         (error (funcall error-callback err)))))))
+         (error
+          (lsp--error "Error in post-download processing: %s" err)
+          (funcall error-callback err))))
+     error-callback)))
 
 (cl-defun lsp-download-path (&key store-path binary-path set-executable? &allow-other-keys)
   "Download URL and store it into STORE-PATH.
