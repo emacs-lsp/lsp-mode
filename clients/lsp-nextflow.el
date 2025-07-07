@@ -21,6 +21,8 @@
 ;;; Commentary:
 
 ;; LSP Clients for the Nextflow Programming Language.
+;;
+;; The language server JAR will be automatically downloaded from GitHub releases.
 
 ;;; Code:
 
@@ -37,7 +39,7 @@
   :group 'lsp-nextflow
   :type 'string)
 
-(defcustom lsp-nextflow-version "1.0.0"
+(defcustom lsp-nextflow-version "25.04.2"
   "Version of Nextflow language server."
   :type 'string
   :group 'lsp-nextflow
@@ -59,14 +61,33 @@
   :type 'file
   :package-version '(lsp-mode . "9.0.0"))
 
+(defun lsp-nextflow--async-download (callback error-callback)
+  "Asynchronously download Nextflow language server JAR file."
+  (let ((download-buffer (url-retrieve 
+                          lsp-nextflow-server-download-url
+                          (lambda (status callback error-callback)
+                            (if (plist-get status :error)
+                                (progn
+                                  (message "Nextflow LSP download failed: %s" (plist-get status :error))
+                                  (funcall error-callback (plist-get status :error)))
+                              (unwind-protect
+                                  (progn
+                                    (goto-char (point-min))
+                                    (re-search-forward "\n\n" nil 'noerror)
+                                    (let ((jar-content (buffer-substring (point) (point-max))))
+                                      (mkdir (f-parent lsp-nextflow-server-file) t)
+                                      (with-temp-file lsp-nextflow-server-file
+                                        (set-buffer-file-coding-system 'binary)
+                                        (insert jar-content))
+                                      (message "Nextflow LSP download completed: %s" lsp-nextflow-server-file)
+                                      (funcall callback)))
+                                (kill-buffer (current-buffer)))))
+                          (list callback error-callback))))
+    (message "Downloading Nextflow LSP server from %s..." lsp-nextflow-server-download-url)))
+
 (defun lsp-nextflow-server-command ()
   "Startup command for Nextflow language server."
-  `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
-
-(lsp-dependency 'nextflow-lsp
-                '(:system lsp-nextflow-server-file)
-                `(:download :url lsp-nextflow-server-download-url
-                  :store-path lsp-nextflow-server-file))
+  `(,lsp-nextflow-java-path "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
 ;;
 ;;; Settings
@@ -118,10 +139,14 @@ find Java automatically."
 
 (lsp-register-client
  (make-lsp-client
-  ;; FIXME
-  ;; :download-server-fn (lambda (_client callback error-callback _update?)
-  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))
-  :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-nextflow--async-download callback error-callback))
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     (list
+                      lsp-nextflow-java-path
+                      "-jar"
+                      (expand-file-name lsp-nextflow-server-file))))
   :major-modes '(nextflow-mode)
   :multi-root t
   :activation-fn (lsp-activate-on "nextflow")
