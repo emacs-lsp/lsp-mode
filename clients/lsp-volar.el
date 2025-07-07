@@ -41,14 +41,20 @@
   :link '(url-link "https://github.com/vuejs/language-tools")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-take-over-mode t
+(defcustom lsp-volar-take-over-mode nil
   "Enable Take Over Mode."
   :type 'boolean
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-hybrid-mode nil
+(defcustom lsp-volar-hybrid-mode t
   "Enable Hybrid Mode."
+  :type 'boolean
+  :group 'lsp-volar
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-volar-as-add-on nil
+  "Run volar LSP server alongside other LSP server(s)"
   :type 'boolean
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.1"))
@@ -125,6 +131,7 @@ in the WORKSPACE-ROOT."
   :activation-fn 'lsp-volar--activate-p
   :priority 0
   :multi-root nil
+  :add-on? lsp-volar-as-add-on
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
                                                (lsp-configuration-section "vue")
