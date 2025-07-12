@@ -228,6 +228,7 @@
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
   * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
+  * Add support for per-project Beancount initialization-options
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
