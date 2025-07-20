@@ -33,25 +33,19 @@
   :link '(url-link "https://github.com/DanielGavin/ols")
   :package-version '(lsp-mode . "9.0.0"))
 
+
 (defcustom lsp-odin-ols-download-url
-  (let ((suffix
-         (pcase system-type
-           ('windows-nt
-            (when (and (string-match "^x86_64-.*" system-configuration)
-                       (version<= "26.4" emacs-version))
-              "ols-x86_64-pc-windows-msvc.zip"))
-           ('darwin
-            (if (string-match "aarch64-.*" system-configuration)
-                "ols-arm64-darwin.zip"
-              "ols-x86_64-darwin.zip"))
-           (_
-            "ols-x86_64-unknown-linux-gnu"))))
-    (when suffix
-      (f-join "https://github.com/DanielGavin/ols/releases/download/nightly/"
-              suffix)))
+  (let* ((x86 (string-prefix-p "x86_64" system-configuration))
+         (arch (if x86 "x86_64" "arm64")))
+    (format "https://github.com/DanielGavin/ols/releases/download/nightly/%s"
+            (pcase system-type
+              ('gnu/linux (format "ols-%s-unknown-linux-gnu.zip" arch))
+              ('darwin (format "ols-%s-darwin.zip" arch))
+              ('windows-nt (format "ols-%s-pc-windows-msvc.zip" arch)))))
   "Automatic download url for ols language server."
+  :type 'string
   :group 'lsp-odin-ols
-  :type 'string)
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-odin-ols-server-install-dir
   (f-join lsp-server-install-dir "ols/")
