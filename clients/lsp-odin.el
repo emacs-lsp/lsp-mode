@@ -33,7 +33,8 @@
   :link '(url-link "https://github.com/DanielGavin/ols")
   :package-version '(lsp-mode . "9.0.0"))
 
-(setq lsp-odin-ols-download-url
+
+(defcustom lsp-odin-ols-download-url
   (let* ((x86 (string-prefix-p "x86_64" system-configuration))
          (arch (if x86 "x86_64" "arm64")))
     (format "https://github.com/DanielGavin/ols/releases/download/nightly/%s"
@@ -41,7 +42,7 @@
               ('gnu/linux (format "ols-%s-unknown-linux-gnu.zip" arch))
               ('darwin (format "ols-%s-darwin.zip" arch))
               ('windows-nt (format "ols-%s-pc-windows-msvc.zip" arch)))))
-  "Automatic download url for ols aaaa"
+  "Automatic download url for ols language server."
   :type 'string
   :group 'lsp-odin-ols
   :package-version '(lsp-mode . "9.0.0"))
