@@ -5036,6 +5036,8 @@ movements may have changed the position")
   :group 'lsp-mode
   :type 'boolean)
 
+(defun lsp--on-type-formatting-do-apply (data)
+  (lsp--apply-text-edits data 'format))
 
 (defun lsp--on-type-formatting (first-trigger-characters more-trigger-characters)
   "Self insert handling.
@@ -5043,19 +5045,29 @@ Applies on type formatting."
   (let ((ch last-command-event))
     (when (or (eq (string-to-char first-trigger-characters) ch)
               (cl-find ch more-trigger-characters :key #'string-to-char))
-      (lsp-request-async "textDocument/onTypeFormatting"
-                         (lsp-make-document-on-type-formatting-params
-                          :text-document (lsp--text-document-identifier)
-                          :options (lsp-make-formatting-options
-                                    :tab-size (symbol-value (lsp--get-indent-width major-mode))
-                                    :insert-spaces (lsp-json-bool (not indent-tabs-mode))
-                                    :trim-trailing-whitespace? (lsp-json-bool lsp-trim-trailing-whitespace)
-                                    :insert-final-newline? (lsp-json-bool lsp-insert-final-newline)
-                                    :trim-final-newlines? (lsp-json-bool lsp-trim-final-newlines))
-                          :ch (char-to-string ch)
-                          :position (lsp--cur-position))
-                         (lambda (data) (lsp--apply-text-edits data 'format))
-                         :mode 'tick))))
+
+      ;; defer to after hooks -- avoids the request being cancelled by smart
+      ;; parens, electric indent or other hooks
+      (run-at-time
+       0 nil
+       (lambda (pos-marker)
+         (lsp-request-async "textDocument/onTypeFormatting"
+                            (lsp-make-document-on-type-formatting-params
+                             :text-document (lsp--text-document-identifier)
+                             :options (lsp-make-formatting-options
+                                       :tab-size (symbol-value (lsp--get-indent-width major-mode))
+                                       :insert-spaces (lsp-json-bool (not indent-tabs-mode))
+                                       :trim-trailing-whitespace? (lsp-json-bool lsp-trim-trailing-whitespace)
+                                       :insert-final-newline? (lsp-json-bool lsp-insert-final-newline)
+                                       :trim-final-newlines? (lsp-json-bool lsp-trim-final-newlines))
+                             :ch (char-to-string ch)
+                             :position (lsp--point-to-position (marker-position pos-marker)))
+                            #'lsp--on-type-formatting-do-apply
+                            :mode 'tick)
+         (set-marker pos-marker nil))
+
+       ;; argument to lambda:
+       (point-marker)))))
 
 
 ;; links
