@@ -71,7 +71,7 @@ Depending on `lsp-sqls-workspace-config-path'."
 
   (if lsp-sqls-connections
       (lsp--set-configuration `(:sqls (:connections ,(apply #'vector lsp-sqls-connections))))
-    (when-let ((config-json-path (cond
+    (when-let* ((config-json-path (cond
                                   ((equal lsp-sqls-workspace-config-path "workspace")
                                    ".sqls/config.json")
                                   ((equal lsp-sqls-workspace-config-path "root")
@@ -188,6 +188,7 @@ use the current region if set, otherwise the entire buffer."
                                        ("switchDatabase" #'lsp-sql-switch-database)
                                        ("switchConnections" #'lsp-sql-switch-connection))
                   :server-id 'sqls
+                  :multi-root t
                   :initialized-fn (lambda (workspace)
                                     (-> workspace
                                         (lsp--workspace-server-capabilities)

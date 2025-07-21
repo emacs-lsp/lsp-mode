@@ -40,11 +40,12 @@
 ;; PowerShell vscode flags
 (defcustom lsp-pwsh-help-completion "BlockComment"
   "Controls the comment-based help completion behavior triggered by typing '##'.
-Set the generated help style with 'BlockComment' or 'LineComment'.
-Disable the feature with 'Disabled'."
+Set the generated help style with \='BlockComment\=' or \='LineComment\='.
+Disable the feature with \='Disabled\='."
   :type
-  '(choice
-    (:tag "Disabled" "BlockComment" "LineComment"))
+  '(choice (const "Disabled")
+           (const "BlockComment")
+           (const "LineComment"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -84,8 +85,10 @@ When disabled, the entire folded region is hidden."
 Sets in a way that is compatible with PowerShell syntax.
 For more information about the brace styles please refer to https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81."
   :type
-  '(choice
-    (:tag "Custom" "Allman" "OTBS" "Stroustrup"))
+  '(choice (const "Custom")
+           (const "Allman")
+           (const "OTBS")
+           (const "Stroustrup"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -110,8 +113,9 @@ For more information about the brace styles please refer to https://github.com/P
 (defcustom lsp-pwsh-code-formatting-pipeline-indentation-style "NoIndentation"
   "Multi-line pipeline style settings."
   :type
-  '(choice
-    (:tag "IncreaseIndentationForFirstPipeline" "IncreaseIndentationAfterEveryPipeline" "NoIndentation"))
+  '(choice (const "IncreaseIndentationForFirstPipeline")
+           (const "IncreaseIndentationAfterEveryPipeline")
+           (const "NoIndentation"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
@@ -173,10 +177,14 @@ associated conditional expression."
 
 (defcustom lsp-pwsh-developer-editor-services-log-level "Normal"
   "Sets the log level for the PowerShell Editor Services host executable.
-Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
+Valid values are \='Diagnostic\=', \='Verbose\=', \='Normal\=',
+ \='Warning\=', and \='Error\='"
   :type
-  '(choice
-    (:tag "Diagnostic" "Verbose" "Normal" "Warning" "Error"))
+  '(choice (const "Diagnostic")
+           (const "Verbose")
+           (const "Normal")
+           (const "Warning")
+           (const "Error"))
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 

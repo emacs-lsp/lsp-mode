@@ -85,3 +85,18 @@ You can use `lsp-clients-clangd-args` to configure your clangd. Add the followin
 For more flags, see clangd --help.
 
 (Thanks to [Martingale on Emacs StackExchange](https://emacs.stackexchange.com/questions/58015/how-to-stop-lsp-mode-including-headers-automatically-for-c-c-code) for this answer!)
+
+---
+### :grey_question: I have lsp-headerline-breadcrumb-mode enabled but the breadcrumb isn't always updating, for example when previewing results in consult-xref.
+
+The function that updates the breadcrumb is `lsp-headerline-check-breadcrumb`. By default, this is added to `xref-after-jump-hook`, so that the breadcrumb will update immediately after jumping to a new location. Some packages, such as consult during previews, do jumps without calling `xref-after-jump-hook`, so the breadcrumb never updates.
+
+The solution is to add `lsp-headerline-check-breadcrumb` to the appropriate hook. For consult, add the following to your user configuration:
+
+  ```elisp
+  (add-hook 'lsp-headerline-breadcrumb-mode-hook
+            (lambda ()
+              (if lsp-headerline-breadcrumb-mode
+                  (add-hook 'consult-after-jump-hook #'lsp-headerline-check-breadcrumb nil t)
+                  (remove-hook 'consult-after-jump-hook #'lsp-headerline-check-breadcrumb t))))
+  ```

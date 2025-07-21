@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-icons)
 
 (defgroup lsp-modeline nil
   "LSP support for modeline"
@@ -71,7 +72,6 @@
                  (const :tag "All Projects" :global))
   :package-version '(lsp-mode . "6.3"))
 
-(declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-errors-list "ext:lsp-treemacs" t)
 
 
@@ -85,14 +85,6 @@
   (if preferred-code-action
       'lsp-modeline-code-actions-preferred-face
     'lsp-modeline-code-actions-face))
-
-(defun lsp-modeline--code-actions-icon (face)
-  "Build the icon for modeline code actions using FACE."
-  (if (require 'all-the-icons nil t)
-      (all-the-icons-octicon "light-bulb"
-                             :face face
-                             :v-adjust -0.0575)
-    (propertize lsp-modeline-code-action-fallback-icon 'face face)))
 
 (defun lsp-modeline--code-action-name (actions preferred-code-action-title)
   "Return the code action name from ACTIONS and PREFERRED-CODE-ACTION-TITLE."
@@ -116,7 +108,13 @@
     (mapconcat
      (lambda (segment)
        (pcase segment
-         ('icon (lsp-modeline--code-actions-icon face))
+         ('icon (lsp-icons-all-the-icons-icon
+                 'octicon
+                 "light-bulb"
+                 face
+                 lsp-modeline-code-action-fallback-icon
+                 'modeline-code-action
+                 :v-adjust -0.0575))
          ('name (propertize (lsp-modeline--code-action-name actions preferred-code-action)
                             'face face))
          ('count (propertize (number-to-string (seq-length actions))

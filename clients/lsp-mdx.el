@@ -40,7 +40,7 @@
 
 (defcustom lsp-mdx-server-command-args '("--stdio")
   "Command-line arguments for the mdx lsp server."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-mdx
   :package-version '(lsp-mode . "8.0.0"))
 

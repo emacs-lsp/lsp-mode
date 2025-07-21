@@ -55,6 +55,168 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   :group 'lsp-erlang
   :package-version '(lsp-mode . "6.2"))
 
+;; ---------------------------------------------------------------------
+;; ELP config settings.  Auto-generated using scripts/lsp-generate-settings.el
+;; And the process in https://github.com/emacs-lsp/lsp-haskell/blob/master/CONTIBUTING.md
+
+(lsp-defcustom lsp-elp-buck-query-use-bxl-enable nil
+  "Use BXL to query for buck project model."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.buck.query.useBxl.enable")
+
+(lsp-defcustom lsp-elp-diagnostics-disabled nil
+  "List of ELP diagnostics to disable."
+  :type 'lsp-string-vector
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.disabled")
+
+(lsp-defcustom lsp-elp-diagnostics-enable-experimental nil
+  "Whether to show experimental ELP diagnostics that might
+have more false positives than usual."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.enableExperimental")
+
+(lsp-defcustom lsp-elp-diagnostics-enable-otp nil
+  "Whether to report diagnostics for OTP files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.enableOtp")
+
+(lsp-defcustom lsp-elp-diagnostics-on-save-enable nil
+  "Update native diagnostics only when the file is saved."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.diagnostics.onSave.enable")
+
+(lsp-defcustom lsp-elp-eqwalizer-all nil
+  "Whether to report Eqwalizer diagnostics for the whole project and not only for opened files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.all")
+
+(lsp-defcustom lsp-elp-eqwalizer-chunk-size 100
+  "Chunk size to use for project-wide eqwalization."
+  :type 'number
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.chunkSize")
+
+(lsp-defcustom lsp-elp-eqwalizer-max-tasks 32
+  "Maximum number of tasks to run in parallel for project-wide eqwalization."
+  :type 'number
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.eqwalizer.maxTasks")
+
+(lsp-defcustom lsp-elp-highlight-dynamic-enable nil
+  "If enabled, highlight variables with type `dynamic()` when Eqwalizer results are available."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.highlightDynamic.enable")
+
+(lsp-defcustom lsp-elp-hover-actions-doc-links-enable nil
+  "Whether to show Hover Actions of type `docs'. Only applies when
+`#elp.hoverActions.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.hoverActions.docLinks.enable")
+
+(lsp-defcustom lsp-elp-hover-actions-enable nil
+  "Whether to show Hover Actions."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.hoverActions.enable")
+
+(lsp-defcustom lsp-elp-inlay-hints-parameter-hints-enable t
+  "Whether to show function parameter name inlay hints at the call
+site."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.inlayHints.parameterHints.enable")
+
+(lsp-defcustom lsp-elp-lens-debug-enable nil
+  "Whether to show the `Debug` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.debug.enable")
+
+(lsp-defcustom lsp-elp-lens-enable nil
+  "Whether to show Code Lenses in Erlang files."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.enable")
+
+(lsp-defcustom lsp-elp-lens-links-enable nil
+  "Whether to show the `Link` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.links.enable")
+
+(lsp-defcustom lsp-elp-lens-run-coverage-enable nil
+  "Display code coverage information when running tests via the
+Code Lenses. Only applies when `#elp.lens.enabled` and
+`#elp.lens.run.enable#` are set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.coverage.enable")
+
+(lsp-defcustom lsp-elp-lens-run-enable nil
+  "Whether to show the `Run` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.enable")
+
+(lsp-defcustom lsp-elp-lens-run-interactive-enable nil
+  "Whether to show the `Run Interactive` lenses. Only applies when
+`#elp.lens.enable#` is set."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.lens.run.interactive.enable")
+
+(lsp-defcustom lsp-elp-log "error"
+  "Configure LSP-based logging using env_logger syntax."
+  :type 'string
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.log")
+
+(lsp-defcustom lsp-elp-signature-help-enable t
+  "Whether to show Signature Help."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.signatureHelp.enable")
+
+(lsp-defcustom lsp-elp-types-on-hover-enable nil
+  "Display types when hovering over expressions."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "elp.typesOnHover.enable")
+
+;; ---------------------------------------------------------------------
+
 ;; erlang-ls
 
 (defcustom lsp-erlang-ls-server-path
@@ -105,18 +267,31 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   :group 'lsp-erlang-elp
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-erlang-elp-download-url
-  (format "https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/%s"
-          (pcase system-type
-            ('gnu/linux "elp-linux-x86_64-unknown-linux-gnu-otp-26.tar.gz")
-            ('darwin
-             (if (string-match "^aarch64-.*" system-configuration)
-                 "elp-macos-aarch64-apple-darwin-otp-25.3.tar.gz"
-               "elp-macos-x86_64-apple-darwin-otp-25.3.tar.gz"))))
-  "Automatic download url for erlang-language-platform."
-  :type 'string
+(defcustom lsp-erlang-elp-otp-download-version "27.1"
+  "OTP version used as part of the file name when downlading the ELP binary.
+It must match those used in https://github.com/WhatsApp/erlang-language-platform/releases/latest"
+  :type '(choice (string :tag "25.3")
+                 (string :tag "26.2")
+                 (string :tag "27.1"))
   :group 'lsp-erlang-elp
   :package-version '(lsp-mode . "8.0.0"))
+
+(defcustom lsp-erlang-elp-download-url
+  (format "https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/elp-%s-otp-%s.tar.gz"
+          (pcase system-type
+            ('gnu/linux
+             (if (string-match "^aarch64-.*" system-configuration)
+                 "linux-aarch64-unknown-linux-gnu"
+               "linux-x86_64-unknown-linux-gnu"))
+             ('darwin
+              (if (string-match "^aarch64-.*" system-configuration)
+                  "macos-aarch64-apple-darwin"
+                "macos-x86_64-apple-darwin")))
+            lsp-erlang-elp-otp-download-version)
+          "Automatic download url for erlang-language-platform."
+          :type 'string
+          :group 'lsp-erlang-elp
+          :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-erlang-elp-store-path (f-join lsp-server-install-dir
                                                 "erlang"
@@ -150,11 +325,20 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   "The face modification to use for exported functions."
   :group 'lsp-erlang-elp-semantic-tokens)
 
+(defface lsp-erlang-elp-exported-type-modifier-face
+  '((t :underline t))
+  "The face modification to use for exported types."
+  :group 'lsp-erlang-elp-semantic-tokens)
+
 (defface lsp-erlang-elp-deprecated-function-modifier-face
   '((t :strike-through t))
   "The face modification to use for deprecated functions."
   :group 'lsp-erlang-elp-semantic-tokens)
 
+(defface lsp-erlang-elp-type-dynamic-modifier-face
+  '((t (:weight bold)))
+  "The face modification to use for dynamic types."
+  :group 'lsp-erlang-elp-semantic-tokens)
 
 ;; ---------------------------------------------------------------------
 ;; Semantic token modifier face customization
@@ -171,8 +355,20 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   :group 'lsp-erlang-elp-semantic-tokens
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-erlang-elp-exported-type-modifier 'lsp-erlang-elp-exported-type-modifier-face
+  "Face for semantic token modifier for `exported_type' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-erlang-elp-deprecated-function-modifier 'lsp-erlang-elp-deprecated-function-modifier-face
   "Face for semantic token modifier for `deprecated_function' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-erlang-elp-type-dynamic-modifier 'lsp-erlang-elp-type-dynamic-modifier-face
+  "Face for semantic token modifier for `type_dynamic' attribute."
   :type 'face
   :group 'lsp-erlang-elp-semantic-tokens
   :package-version '(lsp-mode . "9.0.0"))
@@ -186,7 +382,9 @@ tokens legend."
   `(
     ("bound" . ,lsp-erlang-elp-bound-modifier)
     ("exported_function" . ,lsp-erlang-elp-exported-function-modifier)
-    ("deprecated_function" . ,lsp-erlang-elp-deprecated-function-modifier)))
+    ("exported_type" . ,lsp-erlang-elp-exported-type-modifier)
+    ("deprecated_function" . ,lsp-erlang-elp-deprecated-function-modifier)
+    ("type_dynamic" . ,lsp-erlang-elp-type-dynamic-modifier)))
 
 ;; ---------------------------------------------------------------------
 ;; Client

@@ -112,7 +112,7 @@ path"
 
 (defun lsp-dired--face-for-path (dir)
   "Calculate the face for DIR."
-  (when-let ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
+  (when-let* ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
     (cl-labels ((check-severity
                  (severity)
                  (not (zerop (aref diags severity)))))

@@ -1,5 +1,7 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add format on save support
+  * Fix beancount journal file init option
   * Add support for [[https://github.com/glehmann/earthlyls][earthlyls]]
   * Add support for GNAT Project (~gpr-mode~, ~gpr-ts-mode~).
   * Add SQL support
@@ -22,6 +24,24 @@
   * Fix zls wrong bin path
   * Add support for buf CLI ([[https://github.com/bufbuild/buf/releases/tag/v1.43.0][beta]])
   * Add fennel support
+  * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
+  * Add TypeSpec support
+  * Add Tree-sitter query support
+  * Add [[https://github.com/mrjosh/helm-ls][helm-ls]] (YAML Kubernetes Helm) support.
+  * Add ~lsp-bash-allowed-shells~ to configure supported ~sh-shell~ values.
+  * Add hint about ~activation-fn~ for unsupported buffers.
+  * Add Roc support
+  * Add support for environment variables in rust analyzer runnables. Allowing the new ~Update Tests (Expect)~ code lens to work as expected.
+  * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
+  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).
+  * Drop support for emacs 27.1 and 27.2
+  * Add ~lsp-nix-nixd-server-arguments~ to allow passing arguments to the ~nixd~ LSP.
+  * Improve the lsp-ocaml client (see [[https://github.com/emacs-lsp/lsp-mode/issues/4731][#4731]] for the follow-up issue. MRs: [[https://github.com/emacs-lsp/lsp-mode/pull/4741][#4741]], [[https://github.com/emacs-lsp/lsp-mode/pull/4732][#4732]])
+  * Add support for ~source.removeUnusedImports~ for lsp-javascript
+  * Add Python(ty) support
+  * Add support for [[https://github.com/tombi-toml/tombi][Tombi language server]] (TOML language).
+  * Make lsp-headerline--check-breadcrumb public
+  * Added Odin langauge server support [[https://github.com/DanielGavin/ols][ols]]
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
@@ -141,6 +161,7 @@
   * Add COBOL support.
   * Add Common Lisp support.
   * Add YANG support using TypeFox/yang-lsp Server.
+  * Add Postgres langauge server support.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.

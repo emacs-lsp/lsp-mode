@@ -56,10 +56,9 @@
    Always: wrap prose if it exceeds the print width.
    Never: never wrap the prose.
    Preserve: wrap prose as-is."
-  :type '(choice
-          (const "always")
-          (const "never")
-          (const "preserve"))
+  :type '(choice (const "always")
+                 (const "never")
+                 (const "preserve"))
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 
@@ -111,9 +110,9 @@
   :type 'string
   :group 'lsp-yaml)
 
-(defcustom lsp-yaml-schema-store-local-db (expand-file-name
-                                           (locate-user-emacs-file
-                                            (f-join ".cache" "lsp" "lsp-yaml-schemas.json")))
+(defcustom lsp-yaml-schema-store-local-db
+  (expand-file-name
+   (locate-user-emacs-file (f-join ".cache" "lsp" "lsp-yaml-schemas.json")))
   "Cached database of schema store."
   :type 'file
   :group 'lsp-yaml)
@@ -172,14 +171,20 @@ Limited for performance reasons."
                                         (lsp-package-ensure 'yaml-language-server
                                                             callback error-callback))))
 
+(defconst lsp--yaml-schema-extension-type
+  '(list (cons 'name  string)
+         (cons 'description string)
+         (cons 'url string)
+         (cons 'fileMatch (repeat string))))
+
 (defcustom lsp-yaml-schema-extensions '(((name . "Kubernetes v1.30.3")
-                                          (description . "Kubernetes v1.30.3 manifest schema definition")
-                                          (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
-                                          (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
+                                         (description . "Kubernetes v1.30.3 manifest schema definition")
+                                         (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
+                                         (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
   "User defined schemas that extend default schema store.
 Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
 `lsp-yaml-schema-store-uri'."
-  :type  'list
+  :type  '(repeat lsp--yaml-schema-extension-type)
   :group 'lsp-yaml
   :package-version '(lsp-mode . "9.0.1"))
 

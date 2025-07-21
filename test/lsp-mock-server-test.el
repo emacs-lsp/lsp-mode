@@ -1,9 +1,9 @@
 ;;; lsp-mock-server-test.el --- Unit test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024-2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2025 emacs-lsp maintainers
 
 ;; Author: Arseniy Zaostrovnykh
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; Version: 0.0.1
 ;; License: GPL-3.0-or-later
 
@@ -266,7 +266,7 @@ TEST-BODY can interact with the mock server."
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
   (let ((initial-serv-count (lsp-test-total-folder-count)))
-    (when-let ((buffer (get-buffer "*mock-server::stderr*")))
+    (when-let* ((buffer (get-buffer "*mock-server::stderr*")))
       (kill-buffer buffer))
     (lsp-mock-run-with-mock-server
      (should (eq (lsp-test-total-folder-count) (1+ initial-serv-count)))

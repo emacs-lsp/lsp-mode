@@ -41,14 +41,20 @@
   :link '(url-link "https://github.com/vuejs/language-tools")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-take-over-mode t
+(defcustom lsp-volar-take-over-mode nil
   "Enable Take Over Mode."
   :type 'boolean
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-hybrid-mode nil
+(defcustom lsp-volar-hybrid-mode t
   "Enable Hybrid Mode."
+  :type 'boolean
+  :group 'lsp-volar
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-volar-as-add-on nil
+  "Run volar LSP server alongside other LSP server(s)"
   :type 'boolean
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.1"))
@@ -63,7 +69,7 @@
 (defconst lsp-volar--is-windows (memq system-type '(cygwin windows-nt ms-dos)))
 (defun lsp-volar-get-typescript-tsdk-path ()
   "Get tsserver lib*.d.ts directory path."
-  (if-let ((package-path (lsp-package-path 'typescript))
+  (if-let* ((package-path (lsp-package-path 'typescript))
            (system-tsdk-path (f-join (file-truename package-path)
                                      (if lsp-volar--is-windows
                                          "../node_modules/typescript/lib"
@@ -85,7 +91,7 @@
 (lsp-register-custom-settings
  '(("typescript.tsdk"
     (lambda ()
-      (if-let ((project-root (lsp-workspace-root))
+      (if-let* ((project-root (lsp-workspace-root))
                (tsdk-path (f-join project-root "node_modules/typescript/lib"))
                ((file-exists-p tsdk-path)))
           tsdk-path
@@ -98,7 +104,7 @@
 (defun lsp-volar--vue-project-p (workspace-root)
   "Check if the `Vue' package is present in the package.json file
 in the WORKSPACE-ROOT."
-  (if-let ((package-json (f-join workspace-root "package.json"))
+  (if-let* ((package-json (f-join workspace-root "package.json"))
            (exist (f-file-p package-json))
            (config (json-read-file package-json))
            (dependencies (alist-get 'dependencies config)))
@@ -125,6 +131,7 @@ in the WORKSPACE-ROOT."
   :activation-fn 'lsp-volar--activate-p
   :priority 0
   :multi-root nil
+  :add-on? lsp-volar-as-add-on
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
                                                (lsp-configuration-section "vue")

@@ -1,9 +1,9 @@
 ;;; mock-lsp-server.el --- Mock LSP server                       -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024-2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2025 emacs-lsp maintainers
 
 ;; Author: Arseniy Zaostrovnykh
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; Version: 0.1.0
 ;; License: GPL-3.0-or-later
 
@@ -161,7 +161,7 @@ Returns empty array if not found:
  empty array is the usual representation of empty result.
 
 The response is not removed to cover for potential plural requests."
-  (if-let ((response (gethash method scheduled-responses)))
+  (if-let* ((response (gethash method scheduled-responses)))
       response
     []))
 
