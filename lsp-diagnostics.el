@@ -398,9 +398,9 @@ See https://github.com/emacs-lsp/lsp-mode."
                 (cons end-line   end-column)))
       ;; Diagnostics in current buffer
       (if (lsp--position-equal start end)
-          (if-let ((region (flymake-diag-region (current-buffer)
-                                                start-line
-                                                (if (= start-column 1) 0 start-column))))
+          (if-let* ((region (flymake-diag-region (current-buffer)
+                                                 start-line
+                                                 (if (= start-column 1) 0 start-column))))
               (cons (car region) (cdr region))
             (lsp-save-restriction-and-excursion
               (goto-char (point-min))
