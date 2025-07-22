@@ -410,9 +410,16 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 (defun lsp-diagnostics--flymake-message (message code? source?)
   "Construct diagnostic message with MESSAGE, CODE and SOURCE."
-  (let* ((code (and code? (format " [%s]" code?)))
-         (source (and source? (format " (%s)" source?))))
-    (concat message code source)))
+  ;; Older versions of Flymake don't support source (i.e., origin) and
+  ;; code, so they are added directly to the message text.  Newer
+  ;; versions support a list containing them.  The existence of the
+  ;; `flymake-diagnostic-message' API is used to determine if the list
+  ;; format is supported, since the API exists to retrieve the list.
+  (if (fboundp 'flymake-diagnostic-message)
+      (list source? code? message)
+    (let* ((code (and code? (format " [%s]" code?)))
+           (source (and source? (format " (%s)" source?))))
+      (concat message code source))))
 
 (defun lsp-diagnostics--flymake-update-diagnostics ()
   "Report new diagnostics to flymake."
