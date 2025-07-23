@@ -408,15 +408,22 @@ lsp-inline-completion-mode is active."
   "The idle timer used by lsp-inline-completion-mode.")
 
 ;;;###autoload
+(defun lsp-inline-completion-cancel-timer ()
+  "Cancels the completion idle timer, if set"
+  (when lsp-inline-completion--idle-timer
+    (cancel-timer lsp-inline-completion--idle-timer)
+    (setq lsp-inline-completion--idle-timer nil)))
+
+;;;###autoload
 (define-minor-mode lsp-inline-completion-mode
   "Mode automatically displaying inline completions."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
     (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+
    (t
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
+    (lsp-inline-completion-cancel-timer)
 
     (lsp-inline-completion-cancel)
 
@@ -439,8 +446,7 @@ lsp-inline-completion-mode is active."
   ;; modified in the meantime! Use the values in lsp--after-change-vals to
   ;; ensure this.
 
-  (when lsp-inline-completion--idle-timer
-    (cancel-timer lsp-inline-completion--idle-timer))
+  (lsp-inline-completion-cancel-timer)
 
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
     (let ((original-buffer (plist-get lsp--after-change-vals :buffer))
