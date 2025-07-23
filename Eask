@@ -39,6 +39,7 @@
 (depends-on "markdown-mode")
 (depends-on "lv")
 (depends-on "eldoc")
+(depends-on "uuidgen")
 
 (development
  (depends-on "flycheck")
