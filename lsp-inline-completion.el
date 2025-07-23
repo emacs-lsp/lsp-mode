@@ -62,10 +62,10 @@ InlineCompletionItem objects"
 
 ;;;;;; Default UI -- overlay
 
-(defun lsp-inline-completion--define-key (keymap key def &optional remove keep)
+(defun lsp-inline-completion--define-key (keymap key def &optional keep)
   "Defines key on map. With non-nil keep, will mark it as a command that
 should not cancel the inline completion UI"
-  (define-key keymap key def remove)
+  (define-key keymap key def)
   (when keep
     (pcase def
       ;; Command is OK
@@ -82,21 +82,21 @@ should not cancel the inline completion UI"
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
     ;; accept
-    (lsp-inline-completion--define-key map (kbd "C-<return>") #'lsp-inline-completion-accept nil 'keep)
-    (lsp-inline-completion--define-key map [mouse-1] #'lsp-inline-completion-accept-on-click  nil 'keep)
+    (lsp-inline-completion--define-key map (kbd "C-<return>") #'lsp-inline-completion-accept 'keep)
+    (lsp-inline-completion--define-key map [mouse-1] #'lsp-inline-completion-accept-on-click  'keep)
     ;; navigate
-    (lsp-inline-completion--define-key map (kbd "C-n") #'lsp-inline-completion-next nil 'keep)
-    (lsp-inline-completion--define-key map (kbd "C-p") #'lsp-inline-completion-prev nil 'keep)
+    (lsp-inline-completion--define-key map (kbd "C-n") #'lsp-inline-completion-next 'keep)
+    (lsp-inline-completion--define-key map (kbd "C-p") #'lsp-inline-completion-prev 'keep)
     ;; cancel
     (lsp-inline-completion--define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
     (lsp-inline-completion--define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
     (lsp-inline-completion--define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
     ;; useful -- recenter without loosing the completion
-    (lsp-inline-completion--define-key map (kbd "C-l") #'recenter-top-bottom nil 'keep)
+    (lsp-inline-completion--define-key map (kbd "C-l") #'recenter-top-bottom 'keep)
     ;; ignore
-    (lsp-inline-completion--define-key map [down-mouse-1] #'ignore nil 'keep)
-    (lsp-inline-completion--define-key map [up-mouse-1] #'ignore nil 'keep)
-    (lsp-inline-completion--define-key map [mouse-movement] #'ignore nil 'keep)
+    (lsp-inline-completion--define-key map [down-mouse-1] #'ignore 'keep)
+    (lsp-inline-completion--define-key map [up-mouse-1] #'ignore 'keep)
+    (lsp-inline-completion--define-key map [mouse-movement] #'ignore 'keep)
     ;; Any event outside of the map, cancel and use it
     (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
