@@ -171,7 +171,8 @@ The functions receive the inserted text and the range that was updated by the co
   (when (overlayp lsp-inline-completion--overlay)
     (delete-overlay lsp-inline-completion--overlay))
   (setq lsp-inline-completion--overlay nil)
-  (internal-pop-keymap lsp-inline-completion-active-map 'overriding-terminal-local-map))
+  (internal-pop-keymap lsp-inline-completion-active-map 'overriding-terminal-local-map)
+  (remove-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook t))
 
 
 (defun lsp-inline-completion--show-keys ()
@@ -206,6 +207,7 @@ The functions receive the inserted text and the range that was updated by the co
   "Build the suggestions overlay."
   (lsp-inline-completion--clear-overlay)
 
+  (add-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook nil t)
   (setq lsp-inline-completion--overlay (make-overlay beg end nil nil t))
   (overlay-put lsp-inline-completion--overlay 'priority lsp-inline-completion-overlay-priority)
   (internal-push-keymap lsp-inline-completion-active-map 'overriding-terminal-local-map)
@@ -433,7 +435,6 @@ lsp-inline-completion-mode is active."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
-    (add-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook nil t)
     (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
 
    (t
@@ -442,7 +443,6 @@ lsp-inline-completion-mode is active."
 
     (lsp-inline-completion-cancel)
 
-    (remove-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook t)
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
 (defun lsp-inline-completion--maybe-display (original-buffer original-point)
