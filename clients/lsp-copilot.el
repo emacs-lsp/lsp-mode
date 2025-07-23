@@ -175,7 +175,7 @@ The input are the file name and the major mode of the buffer."
                       ("C-<return>" . lsp-copilot--panel-accept-suggestion-at-point)
                       ("q" . quit-window))))
   (dolist (binding key-bindings)
-    (bind-key (kbd (car binding)) (cdr binding) 'lsp-copilot-panel-buffer-mode-map)))
+    (define-key lsp-copilot-panel-buffer-mode-map (kbd (car binding)) (cdr binding))))
 
 
 (defcustom lsp-copilot-panel-display-fn #'pop-to-buffer
@@ -234,7 +234,7 @@ The input are the file name and the major mode of the buffer."
                  (put-text-property start-point (point) 'lsp-panel-item item)
                  (put-text-property start-point (point) 'lsp-panel-completing-buffer-name completing-buffer-name)))
 
-      (delete-all-space t)
+      (lsp-delete-all-space t)
       (lsp-copilot-panel-buffer-mode)
       (read-only-mode +1)
 
@@ -258,7 +258,7 @@ The input are the file name and the major mode of the buffer."
 
 (defun lsp-copilot--panel-completions-progress-handler (_ params)
   (-let* (((&ProgressParams :token :value) params)
-          ((action completing-buffer-name panel-completion-token) (string-split token " /// " )))
+          ((action completing-buffer-name panel-completion-token) (s-split " /// " token)))
     (pcase action
       ;; copilot sends results in the report
       ("PANEL-PARTIAL-RESULT"
