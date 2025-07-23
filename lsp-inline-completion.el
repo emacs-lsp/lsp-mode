@@ -62,28 +62,53 @@ InlineCompletionItem objects"
 
 ;;;;;; Default UI -- overlay
 
+(defun lsp-inline-completion--define-key (keymap key def &optional remove keep)
+  "Defines key on map. With non-nil keep, will mark it as a command that
+should not cancel the inline completion UI"
+  (define-key keymap key def remove)
+  (when keep
+    (pcase def
+      ;; Command is OK
+      ((pred symbolp)
+       (put def 'lsp-inline-completion-keep t))
+      ;; ("str" . command) is OK
+      (`(,_str . ,defn)
+       (if (symbolp defn)
+           (put defn 'lsp-inline-completion-keep t)
+         (error "Unexpected type (str . defn) key definition %S" (type-of defn))))
+      ;; Keymaps and macros are unsupported
+      (t (error "Unsupported definition with keep -- %S" def)))))
+
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
     ;; accept
-    (define-key map (kbd "C-<return>") #'lsp-inline-completion-accept)
-    (define-key map [mouse-1] #'lsp-inline-completion-accept-on-click)
+    (lsp-inline-completion--define-key map (kbd "C-<return>") #'lsp-inline-completion-accept nil 'keep)
+    (lsp-inline-completion--define-key map [mouse-1] #'lsp-inline-completion-accept-on-click  nil 'keep)
     ;; navigate
-    (define-key map (kbd "C-n") #'lsp-inline-completion-next)
-    (define-key map (kbd "C-p") #'lsp-inline-completion-prev)
+    (lsp-inline-completion--define-key map (kbd "C-n") #'lsp-inline-completion-next nil 'keep)
+    (lsp-inline-completion--define-key map (kbd "C-p") #'lsp-inline-completion-prev nil 'keep)
     ;; cancel
-    (define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
-    (define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
-    (define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
+    (lsp-inline-completion--define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
+    (lsp-inline-completion--define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
+    (lsp-inline-completion--define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
     ;; useful -- recenter without loosing the completion
-    (define-key map (kbd "C-l") #'recenter-top-bottom)
+    (lsp-inline-completion--define-key map (kbd "C-l") #'recenter-top-bottom nil 'keep)
     ;; ignore
-    (define-key map [down-mouse-1] #'ignore)
-    (define-key map [up-mouse-1] #'ignore)
-    (define-key map [mouse-movement] #'ignore)
+    (lsp-inline-completion--define-key map [down-mouse-1] #'ignore nil 'keep)
+    (lsp-inline-completion--define-key map [up-mouse-1] #'ignore nil 'keep)
+    (lsp-inline-completion--define-key map [mouse-movement] #'ignore nil 'keep)
     ;; Any event outside of the map, cancel and use it
     (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
-  "Keymap active when showing inline code suggestions.")
+  "Keymap active when showing inline code suggestions.
+
+When adding new bindings to this map, prefer using
+lsp-inline-completion--define-key. Use a non-nil keep unless the command
+should cancel the completion UI")
+
+(defsubst lsp-inline-completion--keep (cmd)
+  "Returns t if the command should not cancel the current completion"
+  (and (symbolp cmd) (get cmd 'lsp-inline-completion-keep)))
 
 (defface lsp-inline-completion-overlay-face
   '((t :inherit shadow))
@@ -383,6 +408,12 @@ The functions receive the inserted text and the range that was updated by the co
           (lsp--spinner-stop)))
     (t (lsp--error "Could not fetch completions: %s" err))))
 
+(defun lsp-inline-completion--pre-command-hook ()
+  "Cancels the inline completio before a non-keep command"
+  (when (and (lsp-inline-completion--active-p)
+             (not (lsp-inline-completion--keep this-command)))
+    (lsp-inline-completion-cancel)))
+
 
 ;; Inline Completion Mode
 ;;;###autoload
@@ -413,13 +444,16 @@ lsp-inline-completion-mode is active."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
+    (add-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook nil t)
     (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+
    (t
     (when lsp-inline-completion--idle-timer
       (cancel-timer lsp-inline-completion--idle-timer))
 
     (lsp-inline-completion-cancel)
 
+    (remove-hook 'pre-command-hook #'lsp-inline-completion--pre-command-hook t)
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
 
 (defun lsp-inline-completion--maybe-display (original-buffer original-point)
