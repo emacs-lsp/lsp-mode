@@ -97,8 +97,6 @@ should not cancel the inline completion UI"
     (lsp-inline-completion--define-key map [down-mouse-1] #'ignore 'keep)
     (lsp-inline-completion--define-key map [up-mouse-1] #'ignore 'keep)
     (lsp-inline-completion--define-key map [mouse-movement] #'ignore 'keep)
-    ;; Any event outside of the map, cancel and use it
-    (define-key map [t] #'lsp-inline-completion-cancel-with-input)
     map)
   "Keymap active when showing inline code suggestions.
 
@@ -344,15 +342,6 @@ The functions receive the inserted text and the range that was updated by the co
     (when was-active
       (goto-char lsp-inline-completion--start-point)
       (run-hooks 'lsp-inline-completion-cancelled-hook))))
-
-
-(defun lsp-inline-completion-cancel-with-input (event)
-  "Cancel the inline completion and executes whatever event was received."
-  (interactive (list last-input-event))
-
-  (lsp-inline-completion-cancel)
-
-  (setq unread-command-events (nconc unread-command-events (list event))))
 
 (defun lsp-inline-completion-next ()
   "Display the next inline completion."
