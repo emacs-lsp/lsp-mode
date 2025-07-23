@@ -25,13 +25,15 @@
 ;; LSP client for the Copilot Language Server:
 ;; https://www.npmjs.com/package/@github/copilot-language-server
 
-;; Package-Requires: (lsp-mode secrets s compile dash cl-lib request company)
+;; Package-Requires: (lsp-mode secrets s compile dash cl-lib request uuidgen)
 
 ;; Code:
 
 (require 'dash)
 (require 'lsp-mode)
 (require 's)
+(require 'uuidgen)
+(require 'lsp-inline-completion)
 
 (defgroup lsp-copilot ()
   "Copilot LSP configuration"
@@ -94,6 +96,11 @@ The input are the file name and the major mode of the buffer."
 
 ;;; Panel Completion
 
+(declare-function company--active-p "ext:company")
+(declare-function company-cancel "ext:company" (&optional result))
+(declare-function org-forward-heading-same-level "ext:org" (arg &optional invisible-ok))
+(declare-function org-backward-heading-same-level "ext:org" (arg &optional invisible-ok))
+(declare-function org-down-element "ext:org")
 (defvar-local lsp-copilot-panel-completion-items nil
   "A list of completion items returned by the Panel Completion call")
 
@@ -249,7 +256,7 @@ The input are the file name and the major mode of the buffer."
       (lsp-copilot--panel-display-buffer (buffer-name) lsp-copilot-panel-completion-items lsp-copilot-panel-modification-tick)
     (lsp--error "No completions to display")))
 
-(defun lsp-copilot--panel-completions-progress-handler (workspace params)
+(defun lsp-copilot--panel-completions-progress-handler (_ params)
   (-let* (((&ProgressParams :token :value) params)
           ((action completing-buffer-name panel-completion-token) (string-split token " /// " )))
     (pcase action
