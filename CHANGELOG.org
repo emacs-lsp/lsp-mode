@@ -43,6 +43,7 @@
   * Make lsp-headerline--check-breadcrumb public
   * Added Odin langauge server support [[https://github.com/DanielGavin/ols][ols]]
   * Fix bug in lsp-odin where ~f-join~ collapses double slashes. Using ~format~ instead.
+  * Fix bug where persist was attempted when lsp-session-file is nil
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
