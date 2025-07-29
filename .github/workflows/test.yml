@@ -75,6 +75,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         pip3 install python-language-server
+        sudo apt-get update
         sudo apt-get install clangd-15
 
     - name: Install depedencies (macOS)
