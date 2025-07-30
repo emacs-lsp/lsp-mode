@@ -1429,30 +1429,51 @@ Symlinks are not followed."
 
 ;; compat
 (if (version< emacs-version "29.1")
-    ;; Undo macro probably introduced in 29.1
-    (defmacro lsp-with-undo-amalgamate (&rest body)
-      "Like `progn' but perform BODY with amalgamated undo barriers.
+    (progn
+      ;; Undo macro probably introduced in 29.1
+      (defmacro lsp-with-undo-amalgamate (&rest body)
+        "Like `progn' but perform BODY with amalgamated undo barriers.
 
 This allows multiple operations to be undone in a single step.
 When undo is disabled this behaves like `progn'."
-      (declare (indent 0) (debug t))
-      (let ((handle (make-symbol "--change-group-handle--")))
-        `(let ((,handle (prepare-change-group))
-               ;; Don't truncate any undo data in the middle of this,
-               ;; otherwise Emacs might truncate part of the resulting
-               ;; undo step: we want to mimic the behavior we'd get if the
-               ;; undo-boundaries were never added in the first place.
-               (undo-outer-limit nil)
-               (undo-limit most-positive-fixnum)
-               (undo-strong-limit most-positive-fixnum))
-           (unwind-protect
+        (declare (indent 0) (debug t))
+        (let ((handle (make-symbol "--change-group-handle--")))
+          `(let ((,handle (prepare-change-group))
+                 ;; Don't truncate any undo data in the middle of this,
+                 ;; otherwise Emacs might truncate part of the resulting
+                 ;; undo step: we want to mimic the behavior we'd get if the
+                 ;; undo-boundaries were never added in the first place.
+                 (undo-outer-limit nil)
+                 (undo-limit most-positive-fixnum)
+                 (undo-strong-limit most-positive-fixnum))
+             (unwind-protect
+                 (progn
+                   (activate-change-group ,handle)
+                   ,@body)
                (progn
-                 (activate-change-group ,handle)
-                 ,@body)
+                 (accept-change-group ,handle)
+                 (undo-amalgamate-change-group ,handle))))))
+
+      ;; delete-all-space function introduced in 29
+      (defun lsp-delete-all-space (&optional backward-only)
+        "Delete all spaces, tabs, and newlines around point.
+If BACKWARD-ONLY is non-nil, delete them only before point."
+        (interactive "*P")
+        (let ((chars " \t\r\n")
+              (orig-pos (point)))
+          (delete-region
+           (if backward-only
+               orig-pos
              (progn
-               (accept-change-group ,handle)
-               (undo-amalgamate-change-group ,handle))))))
-  (defalias 'lsp-with-undo-amalgamate 'with-undo-amalgamate))
+               (skip-chars-forward chars)
+               (constrain-to-field nil orig-pos t)))
+           (progn
+             (skip-chars-backward chars)
+             (constrain-to-field nil orig-pos))))))
+  ;;29.1+
+  (defalias 'lsp-with-undo-amalgamate 'with-undo-amalgamate)
+  (defalias 'lsp-delete-all-space 'delete-all-space))
+
 
 (defun lsp--merge-results (results method)
   "Merge RESULTS by filtering the empty hash-tables and merging
