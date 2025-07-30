@@ -4545,6 +4545,12 @@ interface TextDocumentEdit {
   (and (= left-line right-line)
        (= left-character right-character)))
 
+(lsp-defun lsp--text-edit-equal ((&TextEdit :range (&Range :start left-start :end left-end))
+                                 (&TextEdit :range (&Range :start right-start :end right-end)))
+  "Return whether LEFT and RIGHT text edits are equal."
+  (and (lsp--position-equal left-start right-start)
+       (lsp--position-equal left-end right-end)))
+
 (lsp-defun lsp--text-edit-sort-predicate ((&TextEdit :range (&Range :start left-start :end left-end))
                                           (&TextEdit :range (&Range :start right-start :end right-end)))
   (if (lsp--position-equal left-start right-start)
@@ -4654,6 +4660,7 @@ LSP server result."
 (defun lsp--apply-text-edits (edits &optional operation)
   "Apply the EDITS described in the TextEdit[] object.
 OPERATION is symbol representing the source of this text edit."
+  (setq edits (seq-uniq edits #'lsp--text-edit-equal))
   (unless (seq-empty-p edits)
     (atomic-change-group
       (run-hooks 'lsp-before-apply-edits-hook)
