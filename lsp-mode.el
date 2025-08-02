@@ -6111,12 +6111,28 @@ It will show up only if current point has signature help."
 
 (defun lsp--text-document-code-action-params (&optional kind)
   "Code action params."
-  (list :textDocument (lsp--text-document-identifier)
-        :range (if (use-region-p)
-                   (lsp--region-to-range (region-beginning) (region-end))
-                 (lsp--region-to-range (point) (point)))
-        :context `( :diagnostics ,(lsp-cur-possition-diagnostics)
-                    ,@(when kind (list :only (vector kind))))))
+  (let* ((diags (lsp-cur-possition-diagnostics))
+         (range (cond ((use-region-p)
+                       (lsp--region-to-range (region-beginning) (region-end)))
+                      (diags
+                       (let* ((start (point))
+                              (end (point)))
+                         (seq-doseq (diag diags)
+                           (when-let* ((diag-range (gethash "range" diag))
+                                       (diag-start (gethash "start" diag-range))
+                                       (l1 (gethash "line" diag-start))
+                                       (c1 (gethash "character" diag-start))
+                                       (diag-end (gethash "end" diag-range))
+                                       (l2 (gethash "line" diag-end))
+                                       (c2 (gethash "character" diag-end)))
+                             (setq start (min (lsp--line-character-to-point l1 c1) start))
+                             (setq end (max (lsp--line-character-to-point l2 c2) end))))
+                         (lsp--region-to-range start end)))
+                      (t (lsp--region-to-range (point) (point))))))
+    (list :textDocument (lsp--text-document-identifier)
+          :range range
+          :context `( :diagnostics ,diags
+                      ,@(when kind (list :only (vector kind)))))))
 
 (defun lsp-code-actions-at-point (&optional kind)
   "Retrieve the code actions for the active region or the current line.
