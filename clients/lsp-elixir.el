@@ -105,6 +105,12 @@ This requires Dialyzer."
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-elixir-dot-formatter ".formatter.exs"
+  "Mix environment to use for compilation."
+  :type 'string
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."
   :group 'lsp-mode
@@ -199,7 +205,8 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
    ("elixirLS.suggestSpecs" lsp-elixir-suggest-specs t)
    ("elixirLS.autoInsertRequiredAlias" lsp-elixir-auto-insert-required-alias t)
    ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
-   ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)))
+   ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)
+   ("elixirLS.dotFormatter" lsp-elixir-dot-formatter)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
