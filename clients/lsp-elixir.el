@@ -106,8 +106,20 @@ This requires Dialyzer."
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-dot-formatter ".formatter.exs"
-  "Mix environment to use for compilation."
+  "Filename used for formatting."
   :type 'string
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-elixir-mcp-enabled nil
+  "Enable or disable the MCP server."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-elixir-mcp-port nil
+  "Set a specific port for the MCP server."
+  :type 'number
   :group 'lsp-elixir
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -129,7 +141,7 @@ Leave as default to let `executable-find' search for it."
   :type '(repeat string)
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-ls-version "v0.29.1"
+(defcustom lsp-elixir-ls-version "v0.29.2"
   "Elixir-Ls version to download.
 It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
@@ -206,7 +218,9 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
    ("elixirLS.autoInsertRequiredAlias" lsp-elixir-auto-insert-required-alias t)
    ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
    ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)
-   ("elixirLS.dotFormatter" lsp-elixir-dot-formatter)))
+   ("elixirLS.dotFormatter" lsp-elixir-dot-formatter)
+   ("elixirLS.mcpEnabled" lsp-elixir-mcp-enabled t)
+   ("elixirLS.mcpPort" lsp-elixir-mcp-port)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
