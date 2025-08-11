@@ -862,6 +862,6 @@ line 3 words here and here
        (should (string-match-p "My command"
                                (overlay-get (car lenses) 'after-string)))
        (goto-char (overlay-start (car lenses)))
-       (should (equal (line-number-at-pos) (- line 1)))))))
+       (should (equal (line-number-at-pos) (+ line 1)))))))
 
 ;;; lsp-mock-server-test.el ends here
