@@ -1669,6 +1669,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-mcp-enabled" class="md-nav__link">
+    lsp-elixir-mcp-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-mcp-port" class="md-nav__link">
+    lsp-elixir-mcp-port
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-mix-env" class="md-nav__link">
     lsp-elixir-mix-env
   </a>
@@ -4045,6 +4059,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-mcp-enabled" class="md-nav__link">
+    lsp-elixir-mcp-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-mcp-port" class="md-nav__link">
+    lsp-elixir-mcp-port
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-mix-env" class="md-nav__link">
     lsp-elixir-mix-env
   </a>
@@ -4183,7 +4211,7 @@ option is unsupported</p>
 <h3 id="lsp-elixir-dot-formatter"><code>lsp-elixir-dot-formatter</code><a class="headerlink" href="#lsp-elixir-dot-formatter" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>.formatter.exs</code></p>
-<p>Mix environment to use for compilation.</p>
+<p>Filename used for formatting.</p>
 <hr />
 <h3 id="lsp-elixir-enable-test-lenses"><code>lsp-elixir-enable-test-lenses</code><a class="headerlink" href="#lsp-elixir-enable-test-lenses" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4207,15 +4235,25 @@ option is unsupported</p>
 <hr />
 <h3 id="lsp-elixir-ls-download-url"><code>lsp-elixir-ls-download-url</code><a class="headerlink" href="#lsp-elixir-ls-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/elixir-lsp/elixir-ls/releases/download/v0.29.1/elixir-ls-v0.29.1.zip</code></p>
+<p><em>Default:</em> <code>https://github.com/elixir-lsp/elixir-ls/releases/download/v0.29.2/elixir-ls-v0.29.2.zip</code></p>
 <p>Automatic download url for elixir-ls.</p>
 <hr />
 <h3 id="lsp-elixir-ls-version"><code>lsp-elixir-ls-version</code><a class="headerlink" href="#lsp-elixir-ls-version" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>v0.29.1</code></p>
+<p><em>Default:</em> <code>v0.29.2</code></p>
 <p>Elixir-Ls version to download.
 It has to be set before <code>lsp-elixir.el</code> is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/</p>
+<hr />
+<h3 id="lsp-elixir-mcp-enabled"><code>lsp-elixir-mcp-enabled</code><a class="headerlink" href="#lsp-elixir-mcp-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable or disable the MCP server.</p>
+<hr />
+<h3 id="lsp-elixir-mcp-port"><code>lsp-elixir-mcp-port</code><a class="headerlink" href="#lsp-elixir-mcp-port" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Set a specific port for the MCP server.</p>
 <hr />
 <h3 id="lsp-elixir-mix-env"><code>lsp-elixir-mix-env</code><a class="headerlink" href="#lsp-elixir-mix-env" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
