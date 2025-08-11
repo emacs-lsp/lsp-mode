@@ -407,25 +407,59 @@ lsp-inline-completion-mode is active."
 (defvar-local lsp-inline-completion--idle-timer nil
   "The idle timer used by lsp-inline-completion-mode.")
 
+(defvar-local lsp-inline-completion--inhibit-idle-timer nil
+  "Flag to indicate we do not want the timer to show inline completions. Reset on change.")
+
+;;;###autoload
+(defun lsp-inline-completion-inhibit-idle-completions ()
+  (setq lsp-inline-completion--inhibit-idle-timer t))
+
+;;;###autoload
+(defun lsp-inline-completion-uninhibit-idle-completions ()
+  (setq lsp-inline-completion--inhibit-idle-timer nil))
+
+;;;###autoload
+(defun lsp-inline-completion-is-inhibited ()
+  lsp-inline-completion--inhibit-idle-timer)
+
+;;;###autoload
+(defun lsp-inline-completion-cancel-timer ()
+  "Cancels the completion idle timer, if set"
+  (when lsp-inline-completion--idle-timer
+    (cancel-timer lsp-inline-completion--idle-timer)
+    (setq lsp-inline-completion--idle-timer nil)))
+
 ;;;###autoload
 (define-minor-mode lsp-inline-completion-mode
   "Mode automatically displaying inline completions."
   :lighter nil
   (cond
    ((and lsp-inline-completion-mode lsp--buffer-workspaces)
+    (add-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change nil t)
     (add-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change nil t))
+
    (t
-    (when lsp-inline-completion--idle-timer
-      (cancel-timer lsp-inline-completion--idle-timer))
+    (lsp-inline-completion-cancel-timer)
 
     (lsp-inline-completion-cancel)
 
+    (remove-hook 'after-change-functions #'lsp-inline-completion--uninhibit-on-change t)
     (remove-hook 'lsp-on-change-hook #'lsp-inline-completion--after-change t))))
+
+(defun lsp-inline-completion--uninhibit-on-change (&rest _)
+  "Resets the uninhibit flag. "
+
+  ;; Must be done in after-change-functions instead of lsp-on-change-hook,
+  ;; because LSP's hook happens after lsp-idle-delay. If the user calls some
+  ;; function that sets the inhibit flag to t *before* the idle delay, we may
+  ;; end up overriding the flag."
+  (lsp-inline-completion-uninhibit-idle-completions))
 
 (defun lsp-inline-completion--maybe-display (original-buffer original-point)
   ;; This is executed on an idle timer -- ensure state did not change before
   ;; displaying
-  (when (and (buffer-live-p original-buffer)
+  (when (and (not (lsp-inline-completion-is-inhibited))
+             (buffer-live-p original-buffer)
              (eq (current-buffer) original-buffer)
              (eq (point) original-point)
              (--none? (funcall it) lsp-inline-completion-inhibit-predicates))
@@ -439,8 +473,7 @@ lsp-inline-completion-mode is active."
   ;; modified in the meantime! Use the values in lsp--after-change-vals to
   ;; ensure this.
 
-  (when lsp-inline-completion--idle-timer
-    (cancel-timer lsp-inline-completion--idle-timer))
+  (lsp-inline-completion-cancel-timer)
 
   (when (and lsp-inline-completion-mode lsp--buffer-workspaces)
     (let ((original-buffer (plist-get lsp--after-change-vals :buffer))
@@ -457,6 +490,7 @@ lsp-inline-completion-mode is active."
                                 (when (and lsp-inline-completion-enable
                                            (lsp-feature? "textDocument/inlineCompletion"))
                                   (lsp-inline-completion-mode))))
+
 
 ;; Company default integration
 
