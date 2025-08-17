@@ -50,13 +50,9 @@
 (define-obsolete-variable-alias 'lsp-flycheck-default-level
   'lsp-diagnostics-flycheck-default-level  "lsp-mode 7.0.1")
 
-(defcustom lsp-diagnostics-flycheck-default-level 'error
-  "Error level to use when the server does not report back a diagnostic level."
-  :type '(choice
-          (const error)
-          (const warning)
-          (const info))
-  :group 'lsp-diagnostics)
+;;;###autoload
+(define-obsolete-variable-alias 'lsp-diagnostics-flycheck-default-level
+  'lsp-diagnostics-default-severity "lsp-mode 9.0.1")
 
 (defcustom lsp-diagnostics-attributes
   `((unnecessary :foreground "gray")
@@ -131,18 +127,19 @@ g. `error', `warning') and list of LSP TAGS."
 
 (defun lsp-diagnostics--flycheck-calculate-level (severity tags)
   "Calculate flycheck level by SEVERITY and TAGS."
-  (let ((level (pcase severity
-                 (1 'error)
-                 (2 'warning)
-                 (3 'info)
-                 (4 'info)
-                 (_ lsp-flycheck-default-level)))
-        ;; materialize only first tag.
-        (tags (seq-map (lambda (tag)
-                         (cond
-                          ((= tag lsp/diagnostic-tag-unnecessary) 'unnecessary)
-                          ((= tag lsp/diagnostic-tag-deprecated) 'deprecated)))
-                       tags)))
+  (let* ((severity (or severity
+                       (lsp-diagnostics-severity->numeric
+                        lsp-diagnostics-default-severity)))
+         (level (cond ((= severity lsp/diagnostic-severity-error)       'error)
+                      ((= severity lsp/diagnostic-severity-warning)     'warning)
+                      ((= severity lsp/diagnostic-severity-information) 'info)
+                      ((= severity lsp/diagnostic-severity-hint)        'info)))
+         ;; materialize only first tag.
+         (tags (seq-map (lambda (tag)
+                          (cond
+                           ((= tag lsp/diagnostic-tag-unnecessary) 'unnecessary)
+                           ((= tag lsp/diagnostic-tag-deprecated) 'deprecated)))
+                        tags)))
     (if tags
         (lsp-diagnostics--flycheck-level level tags)
       level)))
@@ -298,21 +295,21 @@ See https://github.com/emacs-lsp/lsp-mode."
                       (when (= start end)
                         (if-let* ((region (flymake-diag-region (current-buffer)
                                                               (1+ start-line)
-                                                              character)))
+                                                              (1+ character))))
                             (setq start (car region)
                                   end (cdr region))
                           (lsp-save-restriction-and-excursion
                             (goto-char (point-min))
                             (setq start (line-beginning-position (1+ start-line))
                                   end (line-end-position (1+ end-line))))))
-                      (flymake-make-diagnostic (current-buffer)
-                                               start
-                                               end
-                                               (cl-case severity?
-                                                 (1 :error)
-                                                 (2 :warning)
-                                                 (t :note))
-                                               message))))
+                      (let* ((severity (or severity?
+                                           (lsp-diagnostics-severity->numeric
+                                            lsp-diagnostics-default-severity)))
+                             (type (cond ((= severity lsp/diagnostic-severity-error)       :error)
+                                         ((= severity lsp/diagnostic-severity-warning)     :warning)
+                                         ((= severity lsp/diagnostic-severity-information) :note)
+                                         ((= severity lsp/diagnostic-severity-hint)        :note))))
+                        (flymake-make-diagnostic (current-buffer) start end type message)))))
            ;; This :region keyword forces flymake to delete old diagnostics in
            ;; case the buffer hasn't changed since the last call to the report
            ;; function. See https://github.com/joaotavora/eglot/issues/159

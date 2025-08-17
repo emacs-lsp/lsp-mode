@@ -227,8 +227,10 @@ The `:global' workspace is global one.")
     (mapc (lambda (buf-diags)
             (mapc (lambda (diag)
                     (-let [(&Diagnostic? :severity?) diag]
-                      (when severity?
-                        (cl-incf (aref stats severity?)))))
+                      (cl-incf (aref stats
+                                     (or severity?
+                                         (lsp-diagnostics-severity->numeric
+                                          lsp-diagnostics-default-severity))))))
                   buf-diags))
           diagnostics)
     (while (< i lsp/diagnostic-severity-max)
