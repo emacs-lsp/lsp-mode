@@ -56,4 +56,5 @@
 (add-hook 'eask-before-compile-hook
            (lambda ()
              (setq byte-compile-error-on-warn t)
+             (setq byte-compile--suppressed-warnings '((obsolete revert-buffer-in-progress-p)))
              (setq byte-compile-docstring-max-column 1000)))
