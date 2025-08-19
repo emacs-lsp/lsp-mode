@@ -141,23 +141,15 @@
   (let ((lsp-prop1 (-const 10)))
     (cl-assert (lsp-ht->alist (lsp-configuration-section "section1")))))
 
-(ert-deftest lsp--build-workspace-configuration-response-test-1 ()
-  (let ((request
-          (lsp-make-configuration-params
-           :items (list (lsp-make-configuration-item :section "section1")))))
+(ert-deftest lsp--configuration-for-section-path-test-1 ()
+  (cl-assert (equal (lsp-ht->alist (lsp--configuration-for-section-path "section1"))
+                    '(("prop1" . "10"))))
+  (cl-assert (equal (lsp--configuration-for-section-path "section1.prop1") "10"))
 
-    (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
-                      '(("prop1" . "10"))))
-
-    (let ((lsp-prop1 1))
-      (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
-                        '(("prop1" . 1))))))
-
-  (let ((request (lsp-make-configuration-params
-                  :items (list (lsp-make-configuration-item :section "section1.prop1")))))
-    (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
-    (let ((lsp-prop1 1))
-      (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
+  (let ((lsp-prop1 1))
+    (cl-assert (equal (lsp-ht->alist (lsp--configuration-for-section-path "section1"))
+                      '(("prop1" . 1))))
+    (cl-assert (equal (lsp--configuration-for-section-path "section1.prop1") 1))))
 
 (defcustom lsp-nested-prop1 "10"
   "docs"
@@ -179,10 +171,8 @@
                    (equal actual
                           '(("section2" ("nested" ("prop2" . "20") ("prop1" . "10")))))))))
 
-(ert-deftest lsp--build-workspace-configuration-response-test-2 ()
-  (-let* ((request (lsp-make-configuration-params
-                    :items (list (lsp-make-configuration-item :section "section2.nested"))))
-          (result (aref (lsp--build-workspace-configuration-response request) 0)))
+(ert-deftest lsp--configuration-for-section-path-test-2 ()
+  (-let* ((result (lsp--configuration-for-section-path "section2.nested")))
     (cl-assert (equal (ht-get result "prop2") "20"))
     (cl-assert (equal (ht-get result "prop1") "10"))))
 
@@ -198,10 +188,9 @@
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section  "section3"))
                     '(("section3" ("prop1" . :json-false))))))
 
-(ert-deftest lsp--build-workspace-configuration-response-test-3 ()
-  (let ((request (ht ("items" (list (ht ("section" "section3.prop1")))))))
-    (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0)
-                      :json-false))))
+(ert-deftest lsp--configuration-for-section-path-test-3 ()
+  (cl-assert (equal (lsp--configuration-for-section-path "section3.prop1")
+                    :json-false)))
 
 (lsp-register-custom-settings '(("section4.prop1" "value")))
 
@@ -209,9 +198,19 @@
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section "section4"))
                     '(("section4" ("prop1" . "value"))))))
 
-(ert-deftest lsp--build-workspace-configuration-response-test-4 ()
-  (let ((request (ht ("items" (list (ht ("section" "section4.prop1")))))))
-    (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "value"))))
+(ert-deftest lsp--configuration-for-section-path-test-4 ()
+  (cl-assert (equal (lsp--configuration-for-section-path "section4.prop1") "value")))
+
+(ert-deftest lsp--build-workspace-configuration-response-test ()
+  (let* ((lsp--cur-workspace (make-lsp--workspace :root "/tmp/workspace"))
+         (request (ht ("items" (list
+                                (ht ("section" "section3"))
+                                (ht ("section" "section4.prop1"))))))
+         (response (lsp--build-workspace-configuration-response request)))
+    (cl-assert (equal (lsp-ht->alist (aref response 0))
+                      '(("prop1" . :json-false))))
+    (cl-assert (equal (aref response 1) "value"))))
+
 
 (ert-deftest lsp--f-ancestor-of? ()
   (should (lsp-f-ancestor-of? "~/tmp" "~/tmp/test"))
