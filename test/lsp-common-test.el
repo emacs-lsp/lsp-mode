@@ -87,7 +87,6 @@
                                    obsolete noruntime interactive-only
                                    make-local mapcar constants suspicious lexical lexical-dynamic
                                    docstrings-non-ascii-quotes not-unused))
-                       (byte-compile--suppressed-warnings '((obsolete revert-buffer-in-progress-p)))
                        (byte-compile-error-on-warn t))
                    (message "Checking %s..." library)
                    (should (byte-compile-file library))))))))
