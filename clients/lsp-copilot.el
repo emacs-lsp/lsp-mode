@@ -190,7 +190,7 @@ automatically, browse to %s." user-code verification-uri))
         :name "emacs"
         :version "0.1.0"))
 
-(defun lsp-copilot--mcp-tools-notification (workspace params)
+(defun lsp-copilot--mcp-tools-notification (_ params)
   (-let* (((&copilot-ls:McpToolsNotification :servers) params)
           (tools-str (s-join ", " servers)))
     (when (s-present? tools-str)
