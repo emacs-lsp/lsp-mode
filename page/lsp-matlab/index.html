@@ -4032,22 +4032,23 @@ If not specified, then matlab is used from the system path.</p>
 <h3 id="lsp-clients-matlab-server"><code>lsp-clients-matlab-server</code><a class="headerlink" href="#lsp-clients-matlab-server" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(string)</code></p>
 <p><em>Default:</em> <code>/usr/local/apps/matlabls/out/index.js</code></p>
-<p>Path to the MATLAB language server.
-To setup,
-- Download the language server (clone or unzip):
-   - git clone https://github.com/mathworks/MATLAB-language-server.git
-   or
-   - Download zip from https://github.com/mathworks/MATLAB-language-server
-     and unzip.
-- In the downloaded directory,
-    npm install
-    npm run compile
-    npm run package  # optional JavaScript minimization
-- Set lsp-clients-matlab-server to the download directory, or
-  copy the ./out and ./matlab/ directory trees to an install location, e.g.
-    cp -r ./out/ /usr/local/apps/matlabls/out/
-    cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
-  then set <code>lsp-clients-matlab-server</code> to the install location.</p>
+<p>Path to the MATLAB language server, index.js.</p>
+<p>For an overview and detailed install instructions, see:
+https://github.com/mathworks/Emacs-MATLAB-Mode/blob/doc/matlab-language-server-lsp-mode.org</p>
+<p>To setup,
+1. Download the language server (clone or unzip):
+      git clone https://github.com/mathworks/MATLAB-language-server.git
+   or Download and unzip a release from
+      https://github.com/mathworks/MATLAB-language-server
+2. In the clone or unzip directory,
+     npm install
+     npm run compile
+     npm run package  # optional JavaScript minimization
+3. Set lsp-clients-matlab-server to the download directory, or
+   copy the ./out and ./matlab/ directory trees to an install location, e.g.
+     cp -r ./out/ /usr/local/apps/matlabls/out/
+     cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
+   then set <code>lsp-clients-matlab-server</code> to the install location.</p>
 <hr />
 <h3 id="lsp-clients-matlab-server-args"><code>lsp-clients-matlab-server-args</code><a class="headerlink" href="#lsp-clients-matlab-server-args" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
