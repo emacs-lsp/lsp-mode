@@ -4871,7 +4871,7 @@ Added to `before-change-functions'."
       'revert-buffer-in-progress
     'revert-buffer-in-progress-p)
   "Alias for `revert-buffer-in-progress' if available, or `revert-buffer-in-progress-p'
-   prior to emacs 31")
+prior to emacs 31")
 
 (defun lsp-on-change (start end length &optional content-change-event-fn)
   "Executed when a file is changed.
