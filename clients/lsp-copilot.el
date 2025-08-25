@@ -191,6 +191,7 @@ automatically, browse to %s." user-code verification-uri))
         :version "0.1.0"))
 
 (defun lsp-copilot--mcp-tools-notification (_ params)
+   "Reacts to the copilot/mcpTools notification"
   (-let* (((&copilot-ls:McpToolsNotification :servers) params)
           (tools-str (s-join ", " servers)))
     (when (s-present? tools-str)
