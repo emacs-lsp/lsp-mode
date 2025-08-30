@@ -2152,6 +2152,48 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-char" class="md-nav__link">
+    lsp-magik-formatting-indent-char
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-strategy" class="md-nav__link">
+    lsp-magik-formatting-indent-strategy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-width" class="md-nav__link">
+    lsp-magik-formatting-indent-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-insert-final-newline" class="md-nav__link">
+    lsp-magik-formatting-insert-final-newline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-trim-final-newlines" class="md-nav__link">
+    lsp-magik-formatting-trim-final-newlines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-trim-trailing-whitespace" class="md-nav__link">
+    lsp-magik-formatting-trim-trailing-whitespace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-magik-java-path" class="md-nav__link">
     lsp-magik-java-path
   </a>
@@ -3947,6 +3989,48 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-char" class="md-nav__link">
+    lsp-magik-formatting-indent-char
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-strategy" class="md-nav__link">
+    lsp-magik-formatting-indent-strategy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-indent-width" class="md-nav__link">
+    lsp-magik-formatting-indent-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-insert-final-newline" class="md-nav__link">
+    lsp-magik-formatting-insert-final-newline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-trim-final-newlines" class="md-nav__link">
+    lsp-magik-formatting-trim-final-newlines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-formatting-trim-trailing-whitespace" class="md-nav__link">
+    lsp-magik-formatting-trim-trailing-whitespace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-magik-java-path" class="md-nav__link">
     lsp-magik-java-path
   </a>
@@ -4115,8 +4199,38 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-magik-download-url-lsp"><code>lsp-magik-download-url-lsp</code><a class="headerlink" href="#lsp-magik-download-url-lsp" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/StevenLooman/magik-tools/releases/download/0.10.1/magik-language-server-0.10.1.jar</code></p>
+<p><em>Default:</em> <code>https://github.com/StevenLooman/magik-tools/releases/download/0.11.0/magik-language-server-0.11.0.jar</code></p>
 <p>URL of LSP server to download.</p>
+<hr />
+<h3 id="lsp-magik-formatting-indent-char"><code>lsp-magik-formatting-indent-char</code><a class="headerlink" href="#lsp-magik-formatting-indent-char" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const tab) (const space))</code></p>
+<p><em>Default:</em> <code>tab</code></p>
+<p>Indent character, "tab" or "space".</p>
+<hr />
+<h3 id="lsp-magik-formatting-indent-strategy"><code>lsp-magik-formatting-indent-strategy</code><a class="headerlink" href="#lsp-magik-formatting-indent-strategy" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const null) (const relative))</code></p>
+<p><em>Default:</em> <code>null</code></p>
+<p>The strategy used for indentation, "null" or "relative".</p>
+<hr />
+<h3 id="lsp-magik-formatting-indent-width"><code>lsp-magik-formatting-indent-width</code><a class="headerlink" href="#lsp-magik-formatting-indent-width" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>integer</code></p>
+<p><em>Default:</em> <code>8</code></p>
+<p>Indent width (tab size or number of spaces).</p>
+<hr />
+<h3 id="lsp-magik-formatting-insert-final-newline"><code>lsp-magik-formatting-insert-final-newline</code><a class="headerlink" href="#lsp-magik-formatting-insert-final-newline" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Insert final newline.</p>
+<hr />
+<h3 id="lsp-magik-formatting-trim-final-newlines"><code>lsp-magik-formatting-trim-final-newlines</code><a class="headerlink" href="#lsp-magik-formatting-trim-final-newlines" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Trim final newlines.</p>
+<hr />
+<h3 id="lsp-magik-formatting-trim-trailing-whitespace"><code>lsp-magik-formatting-trim-trailing-whitespace</code><a class="headerlink" href="#lsp-magik-formatting-trim-trailing-whitespace" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Trim trailing whitespace.</p>
 <hr />
 <h3 id="lsp-magik-java-path"><code>lsp-magik-java-path</code><a class="headerlink" href="#lsp-magik-java-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
@@ -4130,7 +4244,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <hr />
 <h3 id="lsp-magik-ls-path"><code>lsp-magik-ls-path</code><a class="headerlink" href="#lsp-magik-ls-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/magik-ls/magik-language-server-0.10.1.jar</code></p>
+<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/magik-ls/magik-language-server-0.11.0.jar</code></p>
 <p>Path of the language server.</p>
 <hr />
 <h3 id="lsp-magik-product-dirs"><code>lsp-magik-product-dirs</code><a class="headerlink" href="#lsp-magik-product-dirs" title="Permanent link">#</a></h3>
@@ -4185,7 +4299,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <hr />
 <h3 id="lsp-magik-version"><code>lsp-magik-version</code><a class="headerlink" href="#lsp-magik-version" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>0.10.1</code></p>
+<p><em>Default:</em> <code>0.11.0</code></p>
 <p>Version of LSP server.</p>
 <hr />
 
@@ -4196,7 +4310,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 22, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 30, 2025</span>
       
     
   </small>
