@@ -824,6 +824,15 @@ to run the command in."
         (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
       (lsp-package-path 'typescript))))
 
+(lsp-defun lsp-clients-typescript-handle-interactive-actions ((&Command :arguments? [args]))
+  (pcase (gethash "action" args)
+    ("Move to file"
+     (let* ((directory (file-name-directory (buffer-file-name)))
+            (target-file-name (expand-file-name (read-file-name "Destination file: " directory))))
+       (puthash "interactiveRefactorArguments"
+                `((targetFile . ,target-file-name))
+                args)))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
@@ -845,6 +854,7 @@ to run the command in."
                                                (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
                                                (list :preferences lsp-clients-typescript-preferences))
+                                             (list :supportsMoveToFileCodeAction t)
                                              `(:tsserver ( :path ,(lsp-clients-typescript-server-path)
                                                            ,@lsp-clients-typescript-tsserver))))
                   :initialized-fn (lambda (workspace)
@@ -858,6 +868,7 @@ to run the command in."
                                           (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
                                       (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
                                       (lsp:set-server-capabilities-document-range-formatting-provider? caps format-enable)))
+                  :action-filter 'lsp-clients-typescript-handle-interactive-actions
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
