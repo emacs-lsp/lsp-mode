@@ -7053,24 +7053,31 @@ If nil, and `lsp-debounce-full-sync-notifications' is non-nil,
 
 (lsp-defun lsp--build-workspace-configuration-response ((&ConfigurationParams :items))
   "Get section configuration.
+If a section in the request is empty, all configuration items are returned.
 PARAMS are the `workspace/configuration' request params"
   (->> items
        (-map (-lambda ((&ConfigurationItem :section?))
-               (-let* ((path-parts (split-string section? "\\."))
-                       (path-without-last (s-join "." (-slice path-parts 0 -1)))
-                       (path-parts-len (length path-parts)))
-                 (cond
-                  ((<= path-parts-len 1)
-                   (ht-get (lsp-configuration-section section?)
-                           (car-safe path-parts)
-                           (ht-create)))
-                  ((> path-parts-len 1)
-                   (when-let* ((section (lsp-configuration-section path-without-last))
-                              (keys path-parts))
-                     (while (and keys section)
-                       (setf section (ht-get section (pop keys))))
-                     section))))))
+               (if section?
+                   (lsp--section-workspace-configuration section?)
+                 (lsp--default-workspace-configuration))))
        (apply #'vector)))
+
+(defun lsp--section-workspace-configuration (section-from-request)
+  "Get the configuration for the SECTION from the `workspace/configuration' request."
+  (-let* ((path-parts (split-string section-from-request "\\."))
+          (path-without-last (s-join "." (-slice path-parts 0 -1)))
+          (path-parts-len (length path-parts)))
+    (cond
+     ((<= path-parts-len 1)
+      (ht-get (lsp-configuration-section section-from-request)
+              (car-safe path-parts)
+              (ht-create)))
+     ((> path-parts-len 1)
+      (when-let* ((section (lsp-configuration-section path-without-last))
+                  (keys path-parts))
+        (while (and keys section)
+          (setf section (ht-get section (pop keys))))
+        section)))))
 
 (defun lsp--ms-since (timestamp)
   "Integer number of milliseconds since TIMESTAMP.  Fractions discarded."
@@ -8985,6 +8992,28 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
                                  symbol-value)))
                    (when (or boolean? value)
                      (lsp-ht-set ret (s-split "\\." path) value)))))
+             lsp-client-settings)
+    ret))
+
+(defun lsp--default-workspace-configuration ()
+  "Get all defined settings."
+  (let ((ret (ht-create)))
+    (maphash (-lambda (path (variable boolean?))
+               ;; Trap any error to be safe, as in an older version of lsp-mode,
+               ;; when resolving the variable lsp-volar-get-typescript-tsdk-path,
+               ;; the following error was signaled:
+               ;; :package "typescript" :path "tsserver"
+               ;;  "The package typescript is not installed.  Unable to find nil"
+               (condition-case nil
+                   (let* ((symbol-value (-> variable
+                                            lsp-resolve-value
+                                            lsp-resolve-value))
+                          (value (if (and boolean? (not symbol-value))
+                                     :json-false
+                                   symbol-value)))
+                     (when (or boolean? value)
+                       (lsp-ht-set ret (s-split "\\." path) value)))
+                 (error nil)))
              lsp-client-settings)
     ret))
 

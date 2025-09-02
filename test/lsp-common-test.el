@@ -187,6 +187,13 @@
     (cl-assert (equal (ht-get result "prop2") "20"))
     (cl-assert (equal (ht-get result "prop1") "10"))))
 
+(ert-deftest lsp--build-workspace-configuration-response-test-no-section-given ()
+  (-let* ((request (lsp-make-configuration-params
+                    :items (list (lsp-make-configuration-item :section nil))))
+          (result (aref (lsp--build-workspace-configuration-response request) 0)))
+    (cl-assert (equal (hash-table-count (ht-get result "section1")) 1))
+    (cl-assert (equal (hash-table-count (ht-get (ht-get result "section2") "nested")) 2))))
+
 (defcustom lsp-prop3 nil
   "docs"
   :group 'lsp-python
