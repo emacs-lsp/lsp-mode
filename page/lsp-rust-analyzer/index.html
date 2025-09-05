@@ -2997,6 +2997,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-target-dir" class="md-nav__link">
+    lsp-rust-analyzer-cargo-target-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-unset-test" class="md-nav__link">
     lsp-rust-analyzer-cargo-unset-test
   </a>
@@ -4650,6 +4657,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-target-dir" class="md-nav__link">
+    lsp-rust-analyzer-cargo-target-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-unset-test" class="md-nav__link">
     lsp-rust-analyzer-cargo-unset-test
   </a>
@@ -5297,6 +5311,16 @@ The command should include <code>--message=format=json</code> or similar option.
 <p><em>Type:</em> <code>(choice (string :tag Target) (const :tag None nil))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Compilation target (target triple).</p>
+<hr />
+<h3 id="lsp-rust-analyzer-cargo-target-dir"><code>lsp-rust-analyzer-cargo-target-dir</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-target-dir" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (string :tag Directory) boolean)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Optional path to a rust-analyzer specific target directory.
+This prevents rust-analyzer<code>s</code>cargo check<code>and initial build-script and
+proc-macro building from locking the</code>Cargo.lock` at the expense of
+duplicating build artifacts.</p>
+<p>Set to <code>true</code> to use a subdirectory of the existing target directory or
+set to a path relative to the workspace to use that path.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-cargo-unset-test"><code>lsp-rust-analyzer-cargo-unset-test</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-unset-test" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
