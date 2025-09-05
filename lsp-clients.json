@@ -1271,6 +1271,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "typos",
+    "full-name": "Typos source code spell checker",
+    "server-name": "typos-lsp",
+    "server-url": "https://github.com/tekumara/typos-lsp",
+    "installation": "cargo install --git https://github.com/tekumara/typos-lsp typos-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ttcn3",
     "full-name": "TTCN3",
     "server-name": "ntt",

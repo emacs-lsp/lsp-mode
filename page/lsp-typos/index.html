@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-emmy-lua/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-typos/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Lua (EmmyLua) - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp typos - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lua" class="md-skip">
+        <a href="#typos-source-code-spell-checker" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lua (EmmyLua)
+              Lsp typos
             
           </span>
         </div>
@@ -223,15 +223,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+      <a href="../languages/" class="md-tabs__link">
         Languages
       </a>
     </li>
@@ -1038,14 +1036,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
@@ -2018,113 +2014,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Lua (EmmyLua)
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-emmy-lua/" class="md-nav__link">
         Lua (EmmyLua)
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-args" class="md-nav__link">
-    lsp-clients-emmy-lua-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-command" class="md-nav__link">
-    lsp-clients-emmy-lua-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-jar-path" class="md-nav__link">
-    lsp-clients-emmy-lua-jar-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-java-path" class="md-nav__link">
-    lsp-clients-emmy-lua-java-path
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3863,29 +3757,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-args" class="md-nav__link">
-    lsp-clients-emmy-lua-args
+  <a href="#lsp-typos-config" class="md-nav__link">
+    lsp-typos-config
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-command" class="md-nav__link">
-    lsp-clients-emmy-lua-command
+  <a href="#lsp-typos-diagnostic-severity" class="md-nav__link">
+    lsp-typos-diagnostic-severity
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-jar-path" class="md-nav__link">
-    lsp-clients-emmy-lua-jar-path
+  <a href="#lsp-typos-enable" class="md-nav__link">
+    lsp-typos-enable
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-emmy-lua-java-path" class="md-nav__link">
-    lsp-clients-emmy-lua-java-path
+  <a href="#lsp-typos-path" class="md-nav__link">
+    lsp-typos-path
   </a>
   
 </li>
@@ -3931,7 +3825,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-lua.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-typos.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3950,32 +3844,33 @@
 
 
 <!-- Markdown content -->
-<h1 id="lua">Lua<a class="headerlink" href="#lua" title="Permanent link">#</a></h1>
+<h1 id="typos-source-code-spell-checker">Typos source code spell checker<a class="headerlink" href="#typos-source-code-spell-checker" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/EmmyLua/EmmyLua-LanguageServer">EmmyLua</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/tekumara/typos-lsp">typos-lsp</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/emacs-lsp/lsp-mode/wiki/Install-EmmyLua-Language-server">here</a>.</p>
+<p><code>cargo install --git https://github.com/tekumara/typos-lsp typos-lsp</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-clients-emmy-lua-args"><code>lsp-clients-emmy-lua-args</code><a class="headerlink" href="#lsp-clients-emmy-lua-args" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>(-jar)</code></p>
-<p>Arguments to the Lua Language server.</p>
-<hr />
-<h3 id="lsp-clients-emmy-lua-command"><code>lsp-clients-emmy-lua-command</code><a class="headerlink" href="#lsp-clients-emmy-lua-command" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
+<h3 id="lsp-typos-config"><code>lsp-typos-config</code><a class="headerlink" href="#lsp-typos-config" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const :tag None nil) (string :tag Toml File Path))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Final command to call the Lua Language server.</p>
+<p>Path to toml config file.</p>
 <hr />
-<h3 id="lsp-clients-emmy-lua-jar-path"><code>lsp-clients-emmy-lua-jar-path</code><a class="headerlink" href="#lsp-clients-emmy-lua-jar-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/EmmyLua-LS-all.jar</code></p>
-<p>Emmy Lua language server jar file.</p>
+<h3 id="lsp-typos-diagnostic-severity"><code>lsp-typos-diagnostic-severity</code><a class="headerlink" href="#lsp-typos-diagnostic-severity" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const :tag Error Error) (const :tag Warning Warning) (const :tag Information Information) (const :tag Hint Hint))</code></p>
+<p><em>Default:</em> <code>Warning</code></p>
+<p>Severity level for typos diagnostics.
+Can be one of "Error","Warning", "Information", or "Hint".</p>
 <hr />
-<h3 id="lsp-clients-emmy-lua-java-path"><code>lsp-clients-emmy-lua-java-path</code><a class="headerlink" href="#lsp-clients-emmy-lua-java-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>java</code></p>
-<p>Java Runtime binary location.</p>
+<h3 id="lsp-typos-enable"><code>lsp-typos-enable</code><a class="headerlink" href="#lsp-typos-enable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable or disable LSP Typos.</p>
+<hr />
+<h3 id="lsp-typos-path"><code>lsp-typos-path</code><a class="headerlink" href="#lsp-typos-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>typos-lsp</code></p>
+<p>Path to typos-lsp executable.</p>
 <hr />
 
 <!-- Source file information -->
@@ -3999,41 +3894,6 @@
       </main>
       
         <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        
-        <a href="../lsp-lisp/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Lisp" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Lisp
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../lsp-lua-language-server/" class="md-footer__link md-footer__link--next" aria-label="Next: Lua (Lua Language Server)" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Lua (Lua Language Server)
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
