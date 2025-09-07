@@ -2230,7 +2230,9 @@ PARAMS - the data sent from WORKSPACE."
   "Show document URI in a buffer or in a external browser if EXTERNAL is t, and go to SELECTION if any."
   (let ((path (lsp--uri-to-path uri)))
     (if external?
-	(browse-url uri)
+        (progn
+          (browse-url uri)
+          t)
       (when (f-exists? path)
 	(with-current-buffer (find-file path)
           (when selection?
