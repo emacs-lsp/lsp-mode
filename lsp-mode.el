@@ -2226,14 +2226,18 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
-(lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection?))
-  "Show document URI in a buffer and go to SELECTION if any."
+(lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection? :external?))
+  "Show document URI in a buffer or in a external browser if EXTERNAL is t, and go to SELECTION if any."
   (let ((path (lsp--uri-to-path uri)))
-    (when (f-exists? path)
-      (with-current-buffer (find-file path)
-        (when selection?
-          (goto-char (lsp--position-to-point (lsp:range-start selection?))))
-        t))))
+    (if external?
+        (progn
+          (browse-url uri)
+          t)
+      (when (f-exists? path)
+        (with-current-buffer (find-file path)
+          (when selection?
+            (goto-char (lsp--position-to-point (lsp:range-start selection?))))
+          t)))))
 
 (defcustom lsp-progress-prefix "⌛ "
   "Progress prefix."
