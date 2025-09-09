@@ -2234,7 +2234,7 @@ PARAMS - the data sent from WORKSPACE."
           (browse-url uri)
           t)
       (when (f-exists? path)
-	(with-current-buffer (find-file path)
+        (with-current-buffer (find-file path)
           (when selection?
             (goto-char (lsp--position-to-point (lsp:range-start selection?))))
           t)))))
