@@ -62,9 +62,9 @@ Reference: https://github.com/vuejs/language-tools/discussions/5455"
   (and filename (string-suffix-p ".vue" filename)))
 
 (lsp-dependency 'volar-language-server
+                '(:system "vue-language-server")
                 '(:npm :package "@vue/language-server" :path "vue-language-server"
-                       :version (lambda () (when lsp-volar-support-vue2 "~3.0")))
-                '(:system "vue-language-server"))
+                       :version (lambda () (when lsp-volar-support-vue2 "~3.0"))))
 
 ;; Set lsp-clients-typescript-plugins
 (condition-case nil
