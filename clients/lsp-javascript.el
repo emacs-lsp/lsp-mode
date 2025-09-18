@@ -825,13 +825,13 @@ to run the command in."
       (lsp-package-path 'typescript))))
 
 (lsp-defun lsp-clients-typescript-handle-interactive-actions ((&Command :arguments? [args]))
-  (pcase (gethash "action" args)
+  (pcase (lsp-get args :action)
     ("Move to file"
      (let* ((directory (file-name-directory (buffer-file-name)))
             (target-file-name (expand-file-name (read-file-name "Destination file: " directory))))
-       (puthash "interactiveRefactorArguments"
-                `((targetFile . ,target-file-name))
-                args)))))
+       (lsp-put args
+                :interactiveRefactorArguments
+                `((targetFile . ,target-file-name)))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
