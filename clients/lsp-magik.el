@@ -200,7 +200,7 @@
                       "-jar"
                       (substitute-in-file-name lsp-magik-ls-path)
                       "--debug")))
-  :activation-fn (lsp-activate-on "magik")
+  :major-modes '(magik-mode magik-ts-mode)
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "magik"))))
