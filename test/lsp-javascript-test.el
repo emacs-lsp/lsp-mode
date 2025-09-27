@@ -100,6 +100,7 @@
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jsx"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.ts"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsx"))
+  (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.vue"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "a1.ts"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "a1.d.ts"))
   (should-not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsxx"))

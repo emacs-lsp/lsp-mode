@@ -192,7 +192,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
-     lsp-typespec lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
+     lsp-typespec lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
      lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
@@ -2226,14 +2226,18 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
-(lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection?))
-  "Show document URI in a buffer and go to SELECTION if any."
+(lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection? :external?))
+  "Show document URI in a buffer or in a external browser if EXTERNAL is t, and go to SELECTION if any."
   (let ((path (lsp--uri-to-path uri)))
-    (when (f-exists? path)
-      (with-current-buffer (find-file path)
-        (when selection?
-          (goto-char (lsp--position-to-point (lsp:range-start selection?))))
-        t))))
+    (if external?
+        (progn
+          (browse-url uri)
+          t)
+      (when (f-exists? path)
+        (with-current-buffer (find-file path)
+          (when selection?
+            (goto-char (lsp--position-to-point (lsp:range-start selection?))))
+          t)))))
 
 (defcustom lsp-progress-prefix "⌛ "
   "Progress prefix."

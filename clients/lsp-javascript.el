@@ -50,7 +50,7 @@
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the js-ts lsp server should be enabled based on FILENAME."
-  (or (string-match-p "\\.[cm]js\\|\\.[jt]sx?\\'" filename)
+  (or (string-match-p "\\.vue\\|\\.[cm]js\\|\\.[jt]sx?\\'" filename)
       (and (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode 'typescript-ts-mode)
            (not (derived-mode-p 'json-mode)))))
 
