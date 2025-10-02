@@ -48,12 +48,18 @@
   :type '(repeat string)
   :group 'lsp-graphql)
 
+(defcustom lsp-graphql-activated-modes '(js-mode js2-mode typescript-mode typescript-ts-mode)
+  "List of major modes that can activate the GraphQL language server.
+When a buffer is in one of these modes, the GraphQL language server
+may be activated if appropriate GraphQL content is detected."
+  :type '(repeat symbol)
+  :group 'lsp-graphql)
+
 (defun lsp-graphql-activate-p (filename &optional _)
   "Check if the GraphQL language server should be enabled based on FILENAME."
   (let ((target-extensions (mapconcat 'identity lsp-graphql-target-file-extensions "\\|")))
     (or (string-match-p (format "\\.\\(?:%s\\)\\'" target-extensions) filename)
-        (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode)
-             (not (derived-mode-p 'json-mode))))))
+        (apply 'derived-mode-p lsp-graphql-activated-modes))))
 
 
 (lsp-register-client
