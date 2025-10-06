@@ -245,6 +245,12 @@ stored."
   :type 'string
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-eslint-multi-root nil
+  "If non nil, `eslint' will be started in multi-root mode."
+  :type 'boolean
+  :safe #'booleanp
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defun lsp--find-eslint ()
   (or
    (when-let* ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
@@ -422,7 +428,7 @@ to allow or deny it.")
   :priority -1
   :completion-in-comments? t
   :add-on? t
-  :multi-root t
+  :multi-root lsp-eslint-multi-root
   :notification-handlers (ht ("eslint/status" #'lsp-eslint-status-handler))
   :request-handlers (ht ("workspace/configuration" #'lsp-eslint--configuration)
                         ("eslint/openDoc" #'lsp-eslint--open-doc)
