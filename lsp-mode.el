@@ -9713,6 +9713,24 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function org-src-get-lang-mode "ext:org-src")
 (declare-function org-element-context "ext:org-element")
 
+(defvar lsp--org-element-use-new-api nil
+  "Whether org-element supports the new property-based API.
+This is t for org-mode 9.7 and later, nil for earlier versions.
+Determined at load time to avoid runtime performance impact.")
+
+(defun lsp--detect-org-element-api ()
+  "Detect which org-element API version is available.
+Returns t if org 9.7+ API is available (property-based), nil otherwise."
+  (with-temp-buffer
+    (insert "#+BEGIN_SRC emacs-lisp\n(+ 1 1)\n#+END_SRC")
+    (org-mode)
+    (goto-char (point-min))
+    (let ((elem (org-element-context)))
+      (not (plist-member (cl-second elem) :begin)))))
+
+(with-eval-after-load 'org-element
+  (setq lsp--org-element-use-new-api (lsp--detect-org-element-api)))
+
 (defun lsp--virtual-buffer-update-position ()
   (-if-let (virtual-buffer (-first (-lambda ((&plist :in-range))
                                      (funcall in-range))
@@ -9811,7 +9829,14 @@ defaults to `progress-bar."
                          (save-excursion
                            (funcall goto-buffer)
                            (funcall f))))))
-              ((&plist :begin :end :post-blank :language) (cl-second (org-element-context)))
+              ((begin end post-blank language)
+               (if lsp--org-element-use-new-api
+                   ;; org 9.7+ - use property-based API
+                   (with-no-warnings
+                     (--map (org-element-property it (org-element-context) nil t)
+                            '(:begin :end :post-blank :language)))
+                 ;; org < 9.7 - use plist destructuring
+                 (cl-second (org-element-context))))
               ((&alist :tangle file-name) (cl-third (org-babel-get-src-block-info 'light)))
 
               (file-name (if file-name
