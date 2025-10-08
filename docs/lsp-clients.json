@@ -1360,7 +1360,7 @@
     "full-name": "wgsl",
     "server-name": "wgsl-analyzer",
     "server-url": "https://github.com/wgsl-analyzer/wgsl-analyzer",
-    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl_analyzer",
+    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl-analyzer",
     "debugger": "Not available"
   },
   {
