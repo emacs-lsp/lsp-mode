@@ -200,7 +200,7 @@
                       "-jar"
                       (substitute-in-file-name lsp-magik-ls-path)
                       "--debug")))
-  :activation-fn (lsp-activate-on "magik" "product.def" "module.def")
+  :activation-fn (lsp-activate-on "magik" "sw-product" "sw-module")
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "magik"))))
