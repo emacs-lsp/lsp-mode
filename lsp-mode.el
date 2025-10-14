@@ -985,6 +985,8 @@ Changes take effect only when a new session is started."
     (nginx-mode . "nginx")
     (magik-mode . "magik")
     (magik-ts-mode . "magik")
+    (magik-module-mode . "module.def")
+    (magik-product-mode . "product.def")
     (idris-mode . "idris")
     (idris2-mode . "idris2")
     (gleam-mode . "gleam")
