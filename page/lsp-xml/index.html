@@ -4414,7 +4414,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <hr />
 <h3 id="lsp-xml-bin-file"><code>lsp-xml-bin-file</code><a class="headerlink" href="#lsp-xml-bin-file" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/xmlls/lemminx-linux</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.cache/lsp/xmlls/lemminx-linux</code></p>
 <p>Xml server binary.</p>
 <hr />
 <h3 id="lsp-xml-catalogs"><code>lsp-xml-catalogs</code><a class="headerlink" href="#lsp-xml-catalogs" title="Permanent link">#</a></h3>
@@ -4540,7 +4540,7 @@ Example: <tag/> -&gt; <tag /></p>
 <hr />
 <h3 id="lsp-xml-jar-file"><code>lsp-xml-jar-file</code><a class="headerlink" href="#lsp-xml-jar-file" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/xmlls/org.eclipse.lemminx-uber.jar</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.cache/lsp/xmlls/org.eclipse.lemminx-uber.jar</code></p>
 <p>Xml server jar command.</p>
 <hr />
 <h3 id="lsp-xml-logs-client"><code>lsp-xml-logs-client</code><a class="headerlink" href="#lsp-xml-logs-client" title="Permanent link">#</a></h3>
@@ -4560,7 +4560,7 @@ Example: <tag/> -&gt; <tag /></p>
 <hr />
 <h3 id="lsp-xml-server-command"><code>lsp-xml-server-command</code><a class="headerlink" href="#lsp-xml-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (repeat string) (function))</code></p>
-<p><em>Default:</em> <code>(closure (t) nil (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar (list java -jar lsp-xml-jar-file)) (list lsp-xml-bin-file)))</code></p>
+<p><em>Default:</em> <code>#[nil ((or (and (lsp-xml-has-java?) lsp-xml-prefer-jar (list java -jar lsp-xml-jar-file)) (list lsp-xml-bin-file))) (t)]</code></p>
 <p>Xml server command.</p>
 <hr />
 <h3 id="lsp-xml-server-vmargs"><code>lsp-xml-server-vmargs</code><a class="headerlink" href="#lsp-xml-server-vmargs" title="Permanent link">#</a></h3>

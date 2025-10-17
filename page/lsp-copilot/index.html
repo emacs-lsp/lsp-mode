@@ -4015,7 +4015,7 @@
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-copilot-applicable-fn"><code>lsp-copilot-applicable-fn</code><a class="headerlink" href="#lsp-copilot-applicable-fn" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>function</code></p>
-<p><em>Default:</em> <code>(closure (t) (&amp;rest _) lsp-copilot-enabled)</code></p>
+<p><em>Default:</em> <code>#[(&amp;rest _) (lsp-copilot-enabled) (t)]</code></p>
 <p>A function which returns whether the Copilot is applicable for the buffer.
 The input are the file name and the major mode of the buffer.</p>
 <hr />

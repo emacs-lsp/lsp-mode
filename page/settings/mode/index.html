@@ -5584,7 +5584,7 @@ before saving a document.</p>
 <hr />
 <h3 id="lsp-configure-hook"><code>lsp-configure-hook</code><a class="headerlink" href="#lsp-configure-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
-<p><em>Default:</em> <code>((closure (flymake-mode flymake-diagnostic-functions lsp-diagnostics-mode flycheck-checkers flycheck-checker flycheck-check-syntax-automatically flycheck-mode t) nil (if lsp-auto-configure (progn (lsp-diagnostics--enable)))) (closure (company-abort-on-unique-match company-backends yas-indent-line t) nil (if (and lsp-auto-configure lsp-completion-enable) (progn (lsp-completion--enable)))) (closure (t) nil (if (and lsp-inline-completion-enable (lsp-feature? textDocument/inlineCompletion)) (progn (lsp-inline-completion-mode)))) (closure (t) nil (if lsp-auto-configure (progn (lsp-diagnostics--enable)))) (closure (t) nil (if (and lsp-auto-configure lsp-completion-enable) (progn (lsp-completion--enable)))))</code></p>
+<p><em>Default:</em> <code>(#[nil ((if lsp-auto-configure (progn (lsp-diagnostics--enable)))) (flymake-mode flymake-diagnostic-functions lsp-diagnostics-mode flycheck-checkers flycheck-checker flycheck-check-syntax-automatically flycheck-mode t)] #[nil ((if (and lsp-auto-configure lsp-completion-enable) (progn (lsp-completion--enable)))) (company-abort-on-unique-match company-backends yas-indent-line t)] #[nil ((if (and lsp-inline-completion-enable (lsp-feature? textDocument/inlineCompletion)) (progn (lsp-inline-completion-mode)))) (t)] #[nil ((if lsp-auto-configure (progn (lsp-diagnostics--enable)))) (t)] #[nil ((if (and lsp-auto-configure lsp-completion-enable) (progn (lsp-completion--enable)))) (t)])</code></p>
 <p>Hooks to run when <code>lsp-configure-buffer</code> is called.</p>
 <hr />
 <h3 id="lsp-debounce-full-sync-notifications"><code>lsp-debounce-full-sync-notifications</code><a class="headerlink" href="#lsp-debounce-full-sync-notifications" title="Permanent link">#</a></h3>
@@ -5800,7 +5800,7 @@ following <code>projectile</code>/<code>project.el</code> conventions.</p>
 <hr />
 <h3 id="lsp-gunzip-script"><code>lsp-gunzip-script</code><a class="headerlink" href="#lsp-gunzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to decompress a gzipped file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -6017,7 +6017,7 @@ timing out. Nil if no timeout.</p>
 <hr />
 <h3 id="lsp-server-install-dir"><code>lsp-server-install-dir</code><a class="headerlink" href="#lsp-server-install-dir" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>directory</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.cache/lsp</code></p>
 <p>Directory in which the servers will be installed.</p>
 <hr />
 <h3 id="lsp-server-trace"><code>lsp-server-trace</code><a class="headerlink" href="#lsp-server-trace" title="Permanent link">#</a></h3>
@@ -6029,7 +6029,7 @@ Changes take effect only when a new session is started.</p>
 <hr />
 <h3 id="lsp-session-file"><code>lsp-session-file</code><a class="headerlink" href="#lsp-session-file" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/28.1/.lsp-session-v1</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.lsp-session-v1</code></p>
 <p>File where session information is stored.</p>
 <hr />
 <h3 id="lsp-signature-auto-activate"><code>lsp-signature-auto-activate</code><a class="headerlink" href="#lsp-signature-auto-activate" title="Permanent link">#</a></h3>
@@ -6091,7 +6091,7 @@ namespace SymbolKind.</p>
 <hr />
 <h3 id="lsp-tar-script"><code>lsp-tar-script</code><a class="headerlink" href="#lsp-tar-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find tar) lsp-ext-tar-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((executable-find tar) lsp-ext-tar-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to decompress a .tar.gz file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -6118,7 +6118,7 @@ in place.</p>
 <hr />
 <h3 id="lsp-unzip-script"><code>lsp-unzip-script</code><a class="headerlink" href="#lsp-unzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((and (eq system-type 'windows-nt) (executable-find pwsh)) lsp-ext-pwsh-script) ((and (eq system-type 'windows-nt) (executable-find powershell)) lsp-ext-powershell-script) ((executable-find unzip) lsp-ext-unzip-script) ((executable-find pwsh) lsp-ext-pwsh-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((and (eq system-type 'windows-nt) (executable-find pwsh)) lsp-ext-pwsh-script) ((and (eq system-type 'windows-nt) (executable-find powershell)) lsp-ext-powershell-script) ((executable-find unzip) lsp-ext-unzip-script) ((executable-find pwsh) lsp-ext-pwsh-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to unzip.</p>
 <hr />
 <h3 id="lsp-verify-signature"><code>lsp-verify-signature</code><a class="headerlink" href="#lsp-verify-signature" title="Permanent link">#</a></h3>

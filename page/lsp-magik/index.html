@@ -4234,7 +4234,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <hr />
 <h3 id="lsp-magik-java-path"><code>lsp-magik-java-path</code><a class="headerlink" href="#lsp-magik-java-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (t) nil (cond ((eq system-type 'windows-nt) (or (lsp-resolve-value (executable-find (expand-file-name bin/java (getenv JAVA_HOME)))) (lsp-resolve-value (executable-find java)))) (t java)))</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((eq system-type 'windows-nt) (or (lsp-resolve-value (executable-find (expand-file-name bin/java (getenv JAVA_HOME)))) (lsp-resolve-value (executable-find java)))) (t java))) (t)]</code></p>
 <p>Path to Java Runtime, Java 11 minimum.</p>
 <hr />
 <h3 id="lsp-magik-lint-override-config-file"><code>lsp-magik-lint-override-config-file</code><a class="headerlink" href="#lsp-magik-lint-override-config-file" title="Permanent link">#</a></h3>
@@ -4244,7 +4244,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <hr />
 <h3 id="lsp-magik-ls-path"><code>lsp-magik-ls-path</code><a class="headerlink" href="#lsp-magik-ls-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/28.1/.cache/lsp/magik-ls/magik-language-server-0.11.0.jar</code></p>
+<p><em>Default:</em> <code>/home/runner/work/lsp-mode/lsp-mode/docs/.eask/30.2/.cache/lsp/magik-ls/magik-language-server-0.11.0.jar</code></p>
 <p>Path of the language server.</p>
 <hr />
 <h3 id="lsp-magik-product-dirs"><code>lsp-magik-product-dirs</code><a class="headerlink" href="#lsp-magik-product-dirs" title="Permanent link">#</a></h3>
