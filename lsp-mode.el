@@ -9380,10 +9380,13 @@ The library folders are defined by each client for each of the active workspace.
 
 (defun lsp--persist-session (session)
   "Persist SESSION to `lsp-session-file'."
-  (lsp--persist lsp-session-file (make-lsp-session
-                                  :folders (lsp-session-folders session)
-                                  :folders-blocklist (lsp-session-folders-blocklist session)
-                                  :server-id->folders (lsp-session-server-id->folders session))))
+  (if lsp-session-file
+      (lsp--persist lsp-session-file (make-lsp-session
+                                      :folders (lsp-session-folders session)
+                                      :folders-blocklist (lsp-session-folders-blocklist session)
+                                      :server-id->folders
+                                      (lsp-session-server-id->folders session)))
+    (message "lsp-session-file is nil, not persisting session.")))
 
 (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
   "Try create opening file as a project file.
