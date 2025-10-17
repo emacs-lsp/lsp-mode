@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: purcell/setup-emacs@master
+      - uses: jcs090218/setup-emacs@master
         with:
-          version: 29.4
+          version: 30.2
 
       - uses: emacs-eask/setup-eask@master
         with:
