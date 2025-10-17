@@ -492,7 +492,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
       (funcall old-fontify-region beg-orig end-orig loudly))
      ((not (= lsp--cur-version (plist-get lsp--semantic-tokens-cache :_documentVersion)))
       ;; delay fontification until we have fresh tokens
-      '(jit-lock-bounds 0 . 0))
+      nil)
      (t
       (setq old-bounds (funcall old-fontify-region beg-orig end-orig loudly))
       ;; this is to prevent flickering when semantic token highlighting
