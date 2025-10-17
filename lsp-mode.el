@@ -987,6 +987,7 @@ Changes take effect only when a new session is started."
     (magik-ts-mode . "magik")
     (magik-product-mode . "sw-product-def")
     (magik-module-mode . "sw-module-def")
+    (magik-loadlist-mode . "sw-load-list")
     (idris-mode . "idris")
     (idris2-mode . "idris2")
     (gleam-mode . "gleam")
