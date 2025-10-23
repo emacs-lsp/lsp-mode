@@ -122,8 +122,7 @@
 
 OCaml-lsp custom protocol documented here
 https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/switchImplIntf-spec.md"
-  (-if-let* ((params (lsp-make-ocaml-lsp-switch-impl-intf-params
-                      :uri (lsp--buffer-uri)))
+  (-if-let* ((params (make-vector 1 (lsp--buffer-uri)))
              (uris (lsp-request "ocamllsp/switchImplIntf" params)))
       uris
     (lsp--warn "Your version of ocaml-lsp doesn't support the switchImplIntf extension")))
@@ -158,6 +157,18 @@ https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/ge
       (lsp-request "ocamllsp/getDocumentation" params)
     (lsp--warn "Your version of ocaml-lsp doesn't support the getDocumentation extension")))
 
+(defun lsp-ocaml--infer-intf ()
+  "Infer the interface of the given URI.
+
+The URI should correspond to an implementation file, not an interface one.
+
+OCaml-lsp protocol is documented here:
+https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/inferIntf-spec.md"
+  (-if-let* ((params (make-vector 1 (lsp--buffer-uri)))
+             (result (lsp-request "ocamllsp/inferIntf" params)))
+      result
+    (lsp--warn "Your version of ocaml-lsp doesn't support the inferIntf extension")))
+
 ;;; -------------------
 ;;; OCaml-lsp general utilities
 ;;; -------------------
@@ -169,6 +180,15 @@ https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/ge
 ;;; -------------------
 ;;; OCaml-lsp URI utilities
 ;;; -------------------
+
+(defun lsp-ocaml--is-interface (uri)
+  "Return non-nil if the given URI is an interface, nil otherwise."
+  (let ((path (lsp--uri-to-path uri)))
+    (string-match-p "\\.\\(mli\\|rei\\|eliomi\\)\\'" path)))
+
+(defun lsp-ocaml--on-interface ()
+  "Return non-nil if the current URI is an interface, nil otherwise."
+  (lsp-ocaml--is-interface (lsp--buffer-uri)))
 
 (defun lsp-ocaml--load-uri (uri &optional other-window)
   "Check if URI exists and open its buffer or create a new one.
@@ -327,6 +347,31 @@ If TYPE is a single-line that represents a module type, reformat it."
 ;;; -------------------
 
 ;;; The following functions are interactive implementations of the OCaml-lsp requests
+
+(defun lsp-ocaml-infer-interface ()
+  "Infer the interface for the current file."
+  (interactive)
+  (let* ((current-uri (lsp--buffer-uri))
+         (intf-uri (if (lsp-ocaml--is-interface current-uri)
+                       current-uri
+                     (lsp-ocaml--find-alternate-uri)))
+         (impl-uri (if (lsp-ocaml--is-interface current-uri)
+                       (lsp-ocaml--find-alternate-uri)
+                     current-uri))
+         (intf-path (lsp--uri-to-path intf-uri))
+         (impl-path (lsp--uri-to-path impl-uri)))
+    (if (lsp-ocaml--load-uri impl-uri) ; the impl file needs to be loaded
+        (when (y-or-n-p
+               (format "Try to generate an interface for %s? " impl-path))
+          (let ((result (lsp-ocaml--infer-intf)))
+            (with-current-buffer (get-buffer-create intf-path)
+              (when (or (= (buffer-size) 0)
+                        (y-or-n-p "The buffer is not empty, overwrite it? "))
+                (erase-buffer)
+                (insert result)
+                ;; Create the file if it doesn’t exist
+                (unless (file-exists-p intf-path)
+                  (write-file intf-path)))))))))
 
 (defun lsp-ocaml-find-alternate-file ()
   "Return the URI corresponding to the alternate file if there's only one or prompt for a choice."
