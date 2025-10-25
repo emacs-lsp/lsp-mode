@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix Accommodate renaming of lsp-postgres binaries
   * Fix =lsp-org= for org >= 9.7 (see #4300)
   * Add format on save support
   * Fix beancount journal file init option
