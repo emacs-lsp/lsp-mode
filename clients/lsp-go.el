@@ -453,7 +453,9 @@ Will update if UPDATE? is t"
                   :initialized-fn (lambda (workspace)
                                     (let ((caps (lsp--workspace-server-capabilities workspace)))
                                       (unless (lsp-get caps :inlayHintProvider)
-                                        (lsp:set-server-capabilities-inlay-hint-provider? caps t))))))
+                                        (lsp:set-server-capabilities-inlay-hint-provider? caps t))
+                                      (unless (lsp-get caps :codeLensProvider)
+                                        (lsp:set-server-capabilities-code-lens-provider? caps t))))))
 
 (lsp-consistency-check lsp-go)
 
