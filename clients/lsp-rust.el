@@ -859,6 +859,13 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+;; https://rust-analyzer.github.io/book/configuration#cargo.cfgs
+(defcustom lsp-rust-analyzer-cargo-cfgs ["debug_assertions", "miri"]
+  "Extra configurations that are passed to every cargo invocation."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-rust-analyzer-cargo-extra-args []
   "Extra arguments that are passed to every cargo invocation."
   :type 'lsp-string-vector
@@ -1728,6 +1735,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :cargo ( :allFeatures ,(lsp-json-bool lsp-rust-all-features)
              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
              :features ,lsp-rust-features
+             :cfgs ,lsp-rust-analyzer-cargo-cfgs
              :extraArgs ,lsp-rust-analyzer-cargo-extra-args
              :extraEnv ,lsp-rust-analyzer-cargo-extra-env
              :target ,lsp-rust-analyzer-cargo-target
