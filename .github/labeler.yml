@@ -1,49 +1,49 @@
 tutorial:
-  - changed-files:
-      - any-glob-to-any-file:
-        - docs/tutorials/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - docs/tutorials/**/*
 
 documentation:
-  - changed-files:
-      - any-glob-to-any-file:
-        - docs/**/*
-        - mkdocs.yml
-        - README.md
-        - CHANGELOG.org
-        - examples/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - docs/**/*
+    - mkdocs.yml
+    - README.md
+    - CHANGELOG.org
+    - examples/**/*
 
 completion:
-  - changed-files:
-      - any-glob-to-any-file:
-        - lsp-completion.el
-        - test/lsp-completion-test.el
+- changed-files:
+  - any-glob-to-any-file:
+    - lsp-completion.el
+    - test/lsp-completion-test.el
 
 diagnostics:
-  - changed-files:
-      - any-glob-to-any-file:
-        - lsp-diagnostics.el
+- changed-files:
+  - any-glob-to-any-file:
+    - lsp-diagnostics.el
 
 semantic-tokens:
-  - changed-files:
-      - any-glob-to-any-file:
-        - lsp-semantic-tokens.el
+- changed-files:
+  - any-glob-to-any-file:
+    - lsp-semantic-tokens.el
 
 CI:
-  - changed-files:
-      - any-glob-to-any-file:
-        - .github/workflows/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - .github/workflows/**/*
 
 client:
-  - changed-files:
-      - any-glob-to-any-file:
-        - clients/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - clients/**/*
 
 dockerfile:
-  - changed-files:
-      - any-glob-to-any-file:
-        - clients/lsp-dockerfile.el
+- changed-files:
+  - any-glob-to-any-file:
+    - clients/lsp-dockerfile.el
 
 rust:
-  - changed-files:
-      - any-glob-to-any-file:
-        - clients/lsp-rust.el
+- changed-files:
+  - any-glob-to-any-file:
+    - clients/lsp-rust.el
