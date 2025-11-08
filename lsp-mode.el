@@ -962,6 +962,7 @@ Changes take effect only when a new session is started."
     (gdscript-ts-mode . "gdscript")
     (perl-mode . "perl")
     (cperl-mode . "perl")
+    (perl-ts-mode . "perl")
     (robot-mode . "robot")
     (roc-ts-mode . "roc")
     (racket-mode . "racket")
