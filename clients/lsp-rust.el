@@ -1561,7 +1561,7 @@ and run a compilation"
            :label) runnable))
     (pcase (aref cargo-args 0)
       ("run" (aset cargo-args 0 "build"))
-      ("test" (when (-contains? (append cargo-args ()) "--no-run")
+      ("test" (unless (-contains? (append cargo-args ()) "--no-run")
                 (cl-callf append cargo-args (list "--no-run")))))
     (->> (append (list (executable-find "cargo"))
                  cargo-args
