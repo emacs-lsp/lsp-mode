@@ -47,6 +47,7 @@
   * Fix bug in lsp-odin where ~f-join~ collapses double slashes. Using ~format~ instead.
   * Fix missing gopls inlay hints when ~lsp-use-plist~ is true
   * Fix bug where persist was attempted when lsp-session-file is nil
+  * Debugging tests in Rust no longer runs all the tests prior to launching debug session.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
