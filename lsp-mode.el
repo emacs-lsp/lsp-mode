@@ -352,6 +352,7 @@ the server has requested that."
     "[/\\\\]_darcs\\'"
     "[/\\\\]\\.svn\\'"
     "[/\\\\]_FOSSIL_\\'"
+    "[/\\\\]\\.jj\\'"
     ;; IDE or build tools
     "[/\\\\]\\.idea\\'"
     "[/\\\\]\\.ensime_cache\\'"
@@ -423,7 +424,9 @@ the server has requested that."
     ;; nix-direnv
     "[/\\\\]\\result"
     "[/\\\\]\\result-bin"
-    "[/\\\\]\\.direnv\\'")
+    "[/\\\\]\\.direnv\\'"
+    ;; nix-devenv
+    "[/\\\\]\\.devenv\\'")
   "List of regexps matching directory paths which won't be monitored when
 creating file watches. Customization of this variable is only honored at
 the global level or at a root of an lsp workspace."
