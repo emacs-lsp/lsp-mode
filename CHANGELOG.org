@@ -48,6 +48,7 @@
   * Fix missing gopls inlay hints when ~lsp-use-plist~ is true
   * Fix bug where persist was attempted when lsp-session-file is nil
   * Debugging tests in Rust no longer runs all the tests prior to launching debug session.
+  * Add [[https://devenv.sh/][devenv]] and [[https://jj-vcs.github.io/jj/latest/][jj]] directories to the list of ignored directories (~lsp-file-watch-ignored-directories~)
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
