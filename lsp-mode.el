@@ -6300,6 +6300,8 @@ one or more symbols, and STRUCTURE should be compatible with
     (toml-ts-mode               . toml-ts-mode-indent-offset)
     (typescript-mode            . typescript-indent-level)          ; Typescript
     (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
+    (tsx-mode                   . typescript-indent-level)          ; TSX
+    (tsx-ts-mode                . typescript-ts-mode-indent-offset) ; TSX (tree-sitter, Emacs29)
     (yaml-mode                  . yaml-indent-offset)               ; YAML
     (yang-mode                  . c-basic-offset)                   ; YANG (yang-mode)
 
