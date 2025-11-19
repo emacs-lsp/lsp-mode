@@ -57,6 +57,14 @@ Reference: https://github.com/vuejs/language-tools/discussions/5455"
   :package-version '(lsp-mode . "9.0.1")
   :type 'boolean)
 
+(defcustom lsp-volar-location-for-typescript-plugin :auto
+  "Location of vue package used by typescript plugin.
+Specify a manual value if automatic detection does not work."
+  :group 'lsp-volar
+  :package-version '(lsp-mode . "9.0.1")
+  :type '(choice (const :tag "Automatic detection" :auto)
+                 (directory :tag "Manual value")))
+
 (defun lsp-volar--activate-p (filename &optional _)
   "Check if the volar-language-server should be enabled base on FILENAME."
   (and filename (string-suffix-p ".vue" filename)))
@@ -67,16 +75,19 @@ Reference: https://github.com/vuejs/language-tools/discussions/5455"
                        :version (lambda () (when lsp-volar-support-vue2 "~3.0"))))
 
 ;; Set lsp-clients-typescript-plugins
-(condition-case nil
-  (when-let* ((vue-language-server-path (lsp-package-path 'volar-language-server)))
-    (let ((vue-plugin (list :name "@vue/typescript-plugin"
-                        :location (f-join vue-language-server-path "../.." "lib/node_modules/@vue/language-server/")
-                        :languages (vector "vue")
-                        :configNamespace "typescript"
-                        :enableForWorkspaceTypeScriptVersions t)))
-      (setq lsp-clients-typescript-plugins
-        (vconcat lsp-clients-typescript-plugins (vector vue-plugin)))))
-  (error nil))
+(when-let* ((package-path (ignore-errors (lsp-package-path 'volar-language-server)))
+            (location (if (eq lsp-volar-location-for-typescript-plugin :auto)
+                          (cl-find-if #'file-directory-p
+                                      `(,(f-join package-path "../.." "lib/node_modules/@vue/language-server/")
+                                        ,(f-join (file-chase-links package-path) "../../")))
+                        lsp-volar-location-for-typescript-plugin))
+            (vue-plugin (list :name "@vue/typescript-plugin"
+                              :location location
+                              :languages (vector "vue")
+                              :configNamespace "typescript"
+                              :enableForWorkspaceTypeScriptVersions t)))
+  (setq lsp-clients-typescript-plugins
+        (vconcat lsp-clients-typescript-plugins (vector vue-plugin))))
 
 (defun lsp-volar--send-notify (workspace method params)
   "Send notification to WORKSPACE with METHOD PARAMS."
