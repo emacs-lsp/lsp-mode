@@ -87,7 +87,7 @@ jobs:
       if: runner.os == 'Linux'
       run: "clangd-15 --version"
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Grant execution permission (Unix)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
