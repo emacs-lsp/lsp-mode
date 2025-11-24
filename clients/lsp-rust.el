@@ -860,7 +860,7 @@ or JSON objects in `rust-project.json` format."
   :package-version '(lsp-mode . "8.0.0"))
 
 ;; https://rust-analyzer.github.io/book/configuration#cargo.cfgs
-(defcustom lsp-rust-analyzer-cargo-cfgs ["debug_assertions", "miri"]
+(defcustom lsp-rust-analyzer-cargo-cfgs ["debug_assertions" "miri"]
   "Extra configurations that are passed to every cargo invocation."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
