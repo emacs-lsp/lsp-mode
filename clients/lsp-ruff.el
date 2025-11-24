@@ -92,6 +92,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :server-id 'ruff
   :priority -2
   :add-on? t
+  :multi-root t
   :initialization-options
   (lambda ()
     (list :settings
