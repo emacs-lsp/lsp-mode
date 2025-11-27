@@ -4723,13 +4723,14 @@ Only works when mode is `tick or `alive."
        (remove-hook 'before-change-functions func t)))))
 
 (defun lsp--capability (cap &optional capabilities)
-  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
+  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead.
+Returns the capability value, or t if the capability exists but has an empty value
+\(e.g., an empty DefinitionOptions object)."
   (when (stringp cap)
     (setq cap (intern (concat ":" cap))))
-
-  (lsp-get (or capabilities
-               (lsp--server-capabilities))
-           cap))
+  (let ((caps (or capabilities (lsp--server-capabilities))))
+    (when (lsp-member? caps cap)
+      (or (lsp-get caps cap) t))))
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
