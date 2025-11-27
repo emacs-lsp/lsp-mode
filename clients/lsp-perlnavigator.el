@@ -203,4 +203,4 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
                   :server-id 'perlnavigator))
 
 (provide 'lsp-perlnavigator)
-;;; lsp-perlnavigator.el ends here
+;;; lsp-perlnavigator.el ends here 
