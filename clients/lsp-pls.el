@@ -4,7 +4,6 @@
 
 ;; Author: Alexander Adolf <alexander.adolf@condition-alpha.com>
 ;; Maintainer: Alexander Adolf <alexander.adolf@condition-alpha.com>
-;; Package-Requires: (lsp-mode)
 ;; Keywords: perl, lsp
 
 ;; This file is not part of GNU Emacs
