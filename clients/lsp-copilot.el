@@ -25,8 +25,6 @@
 ;; LSP client for the Copilot Language Server:
 ;; https://www.npmjs.com/package/@github/copilot-language-server
 
-;; Package-Requires: (lsp-mode secrets s compile dash cl-lib request company)
-
 ;; Code:
 
 (require 'dash)
