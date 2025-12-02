@@ -46,17 +46,17 @@
   :group 'lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-dependency
- 'magik-ls
- '(:download :url lsp-magik-download-url-lsp
-             :store-path ,(f-join lsp-server-install-dir "magik-ls" (format "magik-language-server-%s.jar" lsp-magik-version))))
-
 (defcustom lsp-magik-ls-path
-  (f-join lsp-server-install-dir (format "magik-ls/magik-language-server-%s.jar" lsp-magik-version))
+  (f-join lsp-server-install-dir "magik-ls" (format "magik-language-server-%s.jar" lsp-magik-version))
   "Path of the language server."
   :type 'string
   :group 'lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
+
+(lsp-dependency
+ 'magik-ls
+ `(:download :url lsp-magik-download-url-lsp
+             :store-path ,lsp-magik-ls-path))
 
 (lsp-defcustom lsp-magik-product-dirs []
   "Paths to (compiled, containing a libs/ directory) products."
