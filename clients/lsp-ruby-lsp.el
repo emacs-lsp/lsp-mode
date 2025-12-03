@@ -45,10 +45,16 @@
   :group 'lsp-ruby-lsp
   :package-version '(lsp-mode . "9.0.1"))
 
+(defcustom lsp-ruby-lsp-server-command '("ruby-lsp")
+  "Command to start ruby-lsp language server."
+  :type '(repeat string)
+  :group 'lsp-ruby-lsp
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defun lsp-ruby-lsp--build-command ()
   (append
    (if lsp-ruby-lsp-use-bundler '("bundle" "exec"))
-   '("ruby-lsp")))
+   lsp-ruby-lsp-server-command))
 
 (defun lsp-ruby-lsp--open-file (arg_hash)
   "Open a file. This function is for code-lens provided by ruby-lsp-rails."
