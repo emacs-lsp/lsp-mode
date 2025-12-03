@@ -72,6 +72,8 @@
                                     (warn (concat "The javascript-typescript-langserver (jsts-ls) is unmaintained; "
                                                   "it is recommended to use ts-ls or deno-ls instead.")))))
 
+
+
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
   :group 'lsp-mode
@@ -881,6 +883,7 @@ to run the command in."
                                                    error-callback)
                                          error-callback))))
 
+
 
 (defgroup lsp-flow nil
   "LSP support for the Flow Javascript type checker."
@@ -955,6 +958,8 @@ particular FILE-NAME and MODE."
                   :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
+
+
 
 (defgroup lsp-deno nil
   "LSP support for the Deno language server."
@@ -1060,6 +1065,47 @@ Examples: `./import-map.json',
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
                   :server-id 'deno-ls))
+
+
+
+(defgroup lsp-tsgo nil
+  "LSP support for the TypeScript (Go native) language server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/microsoft/typescript-go"))
+
+(defcustom lsp-clients-tsgo-path "tsgo"
+  "Path to the tsgo binary."
+  :group 'lsp-tsgo
+  :risky t
+  :type 'string)
+
+(defcustom lsp-clients-tsgo-args '("--lsp" "--stdio")
+  "Extra arguments for the tsgo language server."
+  :group 'lsp-tsgo
+  :risky t
+  :type '(repeat string))
+
+(lsp-dependency 'tsgo
+                '(:system lsp-clients-tsgo-path)
+                '(:npm :package "@typescript/native-preview"
+                       :path "tsgo"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
+                                                          `(,(lsp-package-path 'tsgo)
+                                                            ,@lsp-clients-tsgo-args)))
+                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :priority -4
+                  :completion-in-comments? t
+                  :initialized-fn (lambda (_workspace))
+                  :server-id 'tsgo
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure
+                                         'tsgo
+                                         callback
+                                         error-callback))))
+
+
 
 (lsp-consistency-check lsp-javascript)
 
