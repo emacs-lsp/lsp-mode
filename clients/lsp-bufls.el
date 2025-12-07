@@ -71,7 +71,7 @@
   :link '(url-lint "https://github.com/bufbuild/buf")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-buf-args `("beta" "lsp" "--timeout" "0" "--log-format" "json")
+(defcustom lsp-buf-args `("lsp" "serve")
   "Arguments to pass to buf CLI."
   :type '(repeat string)
   :group 'lsp-buf
