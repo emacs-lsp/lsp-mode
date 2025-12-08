@@ -539,12 +539,23 @@ workspace."
           (const "non-relative"))
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-typescript-preferences-import-module-specifier "auto"
+(defcustom lsp-typescript-preferences-import-module-specifier-preference "shortest"
   "Infer the shortest path type."
   :type '(choice
-          (const "auto")
+          (const "shortest")
+          (const "project-relative")
           (const "relative")
           (const "non-relative"))
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-typescript-preferences-import-module-specifier-ending "auto"
+  "Determines whether we import `foo/index.ts' as `foo', `foo/index',
+or `foo/index.js'"
+  :type '(choice
+          (const "auto")
+          (const "minimal")
+          (const "index")
+          (const "js"))
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-preferences-rename-shorthand-properties t
@@ -689,7 +700,8 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("typescript.implementationsCodeLens.enabled" lsp-typescript-implementations-code-lens-enabled t)
    ("typescript.locale" lsp-typescript-locale)
    ("typescript.npm" lsp-typescript-npm)
-   ("typescript.preferences.importModuleSpecifier" lsp-typescript-preferences-import-module-specifier)
+   ("typescript.preferences.importModuleSpecifierPreference" lsp-typescript-preferences-import-module-specifier-preference)
+   ("typescript.preferences.importModuleSpecifierEnding" lsp-typescript-preferences-import-module-specifier-ending)
    ("typescript.preferences.quoteStyle" lsp-typescript-preferences-quote-style)
    ("typescript.preferences.renameShorthandProperties" lsp-typescript-preferences-rename-shorthand-properties t)
    ("typescript.referencesCodeLens.enabled" lsp-typescript-references-code-lens-enabled t)
