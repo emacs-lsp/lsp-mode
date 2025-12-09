@@ -44,8 +44,8 @@
 
 (defun lsp-trunk-check-for-init (filename &optional _)
   "Check if the file exists in a workspace that has a .trunk/trunk.yaml"
-  (let ((dir (file-name-directory filename))
-        (trunk-file ".trunk/trunk.yaml"))
+  (when-let* ((dir (file-name-directory filename))
+             (trunk-file ".trunk/trunk.yaml"))
     (locate-dominating-file dir trunk-file)))
 
 (defun lsp-trunk-check-disable (command)

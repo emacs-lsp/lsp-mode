@@ -4,7 +4,6 @@
 
 ;; Author: Alexander Adolf <alexander.adolf@condition-alpha.com>
 ;; Maintainer: Alexander Adolf <alexander.adolf@condition-alpha.com>
-;; Package-Requires: (lsp-mode)
 ;; Keywords: perl, lsp
 
 ;; This file is not part of GNU Emacs
@@ -45,7 +44,7 @@
 
 (defcustom lsp-pls-arguments nil
   "Additional arguments needed to execute PLS."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-pls
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -58,7 +57,7 @@ Defaults to the workspace root when not configured."
 
 (defcustom lsp-pls-include nil
   "Paths to be added to your @INC."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-pls
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -99,7 +98,7 @@ By default, the perl used to run PLS will be used."
   "Additional arguments to pass to Perl when syntax checking.
 This is useful if there is a BEGIN block in your code that
 changes behavior depending on the contents of @ARGV."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-pls
   :package-version '(lsp-mode . "9.0.0"))
 

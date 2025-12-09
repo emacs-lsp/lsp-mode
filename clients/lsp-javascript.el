@@ -50,7 +50,7 @@
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the js-ts lsp server should be enabled based on FILENAME."
-  (or (string-match-p "\\.[cm]js\\|\\.[jt]sx?\\'" filename)
+  (or (string-match-p "\\.vue\\|\\.[cm]js\\|\\.[jt]sx?\\'" filename)
       (and (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode 'typescript-ts-mode)
            (not (derived-mode-p 'json-mode)))))
 
@@ -71,6 +71,8 @@
                   :initialized-fn (lambda (_workspace)
                                     (warn (concat "The javascript-typescript-langserver (jsts-ls) is unmaintained; "
                                                   "it is recommended to use ts-ls or deno-ls instead.")))))
+
+
 
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
@@ -157,7 +159,7 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing tsserver and lib*.d.ts files to use."
   :type '(repeat string)
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-disable-automatic-type-acquisition nil
@@ -165,7 +167,7 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
 Automatic type acquisition fetches `@types` packages from npm to improve
 IntelliSense for external libraries."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-npm nil
@@ -173,32 +175,32 @@ IntelliSense for external libraries."
 Requires using TypeScript 2.3.4 or newer in the
 workspace."
   :type '(repeat string)
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-check-npm-is-installed t
   "Check if NPM is installed for Automatic Type Acquisition."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in JavaScript files."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in TypeScript files."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-implementations-code-lens-enabled nil
   "Enable/disable implementations CodeLens.
 This CodeLens shows the implementers of an interface."
   :type 'boolean
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-log "off"
@@ -211,7 +213,7 @@ from your project."
           (const "terse")
           (const "normal")
           (const "verbose"))
-  :group 'lsp-vetur
+  :group 'lsp-typescript
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-plugin-paths nil
@@ -808,8 +810,10 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp)
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
+(lsp-make-interactive-code-action javascript-remove-unused-imports "source.removeUnusedImports")
+
 (defun lsp-javascript-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-clients-typescript-require-resolve (&optional dir)
@@ -844,6 +848,15 @@ to run the command in."
         (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
       (lsp-package-path 'typescript))))
 
+(lsp-defun lsp-clients-typescript-handle-interactive-actions ((&Command :arguments? [args]))
+  (pcase (lsp-get args :action)
+    ("Move to file"
+     (let* ((directory (file-name-directory (buffer-file-name)))
+            (target-file-name (expand-file-name (read-file-name "Destination file: " directory))))
+       (lsp-put args
+                :interactiveRefactorArguments
+                `((targetFile . ,target-file-name)))))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
@@ -865,6 +878,7 @@ to run the command in."
                                                (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
                                                (list :preferences lsp-clients-typescript-preferences))
+                                             (list :supportsMoveToFileCodeAction t)
                                              `(:tsserver ( :path ,(lsp-clients-typescript-server-path)
                                                            ,@lsp-clients-typescript-tsserver))))
                   :initialized-fn (lambda (workspace)
@@ -878,6 +892,7 @@ to run the command in."
                                           (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
                                       (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
                                       (lsp:set-server-capabilities-document-range-formatting-provider? caps format-enable)))
+                  :action-filter 'lsp-clients-typescript-handle-interactive-actions
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
@@ -890,6 +905,7 @@ to run the command in."
                                                    error-callback)
                                          error-callback))))
 
+
 
 (defgroup lsp-flow nil
   "LSP support for the Flow Javascript type checker."
@@ -913,7 +929,7 @@ finding the executable with variable `exec-path'."
 (defun lsp-clients-flow-tag-file-present-p (file-name)
   "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
-  (if-let ((buffer (find-buffer-visiting file-name)))
+  (if-let* ((buffer (find-buffer-visiting file-name)))
       (with-current-buffer buffer
         (lsp-clients-flow-tag-string-present-p))
     (with-temp-buffer
@@ -964,6 +980,8 @@ particular FILE-NAME and MODE."
                   :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
+
+
 
 (defgroup lsp-deno nil
   "LSP support for the Deno language server."
@@ -1069,6 +1087,47 @@ Examples: `./import-map.json',
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
                   :server-id 'deno-ls))
+
+
+
+(defgroup lsp-tsgo nil
+  "LSP support for the TypeScript (Go native) language server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/microsoft/typescript-go"))
+
+(defcustom lsp-clients-tsgo-path "tsgo"
+  "Path to the tsgo binary."
+  :group 'lsp-tsgo
+  :risky t
+  :type 'string)
+
+(defcustom lsp-clients-tsgo-args '("--lsp" "--stdio")
+  "Extra arguments for the tsgo language server."
+  :group 'lsp-tsgo
+  :risky t
+  :type '(repeat string))
+
+(lsp-dependency 'tsgo
+                '(:system lsp-clients-tsgo-path)
+                '(:npm :package "@typescript/native-preview"
+                       :path "tsgo"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
+                                                          `(,(lsp-package-path 'tsgo)
+                                                            ,@lsp-clients-tsgo-args)))
+                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :priority -4
+                  :completion-in-comments? t
+                  :initialized-fn (lambda (_workspace))
+                  :server-id 'tsgo
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure
+                                         'tsgo
+                                         callback
+                                         error-callback))))
+
+
 
 (lsp-consistency-check lsp-javascript)
 

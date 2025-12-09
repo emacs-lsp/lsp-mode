@@ -5,6 +5,7 @@ on:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -13,14 +14,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
         emacs-version:
-          - 27.2
           - 28.2
-          - 29.3
+          - 29.4
+          - 30.2
         experimental: [false]
         include:
           - os: ubuntu-latest
+            emacs-version: snapshot
+            experimental: true
+          - os: ubuntu-24.04-arm
             emacs-version: snapshot
             experimental: true
           - os: macos-latest
@@ -29,56 +33,68 @@ jobs:
           - os: windows-latest
             emacs-version: snapshot
             experimental: true
-        exclude:
-          - os: macos-latest
-            emacs-version: 27.2
 
     steps:
     - uses: jcs090218/setup-emacs@master
       with:
         version: ${{ matrix.emacs-version }}
 
-    - uses: emacs-eask/setup-eask@master
+    - name: Setup Eask (x64)
+      uses: emacs-eask/setup-eask@master
+      if: matrix.os != 'ubuntu-24.04-arm'
       with:
         version: 'snapshot'
+        architecture: 'x64'
 
-    - name: Setup cmake
+    - name: Setup Eask (arm64)
+      uses: emacs-eask/setup-eask@master
+      if: matrix.os == 'ubuntu-24.04-arm'
+      with:
+        version: 'snapshot'
+        architecture: 'arm64'
+
+    - name: Setup cmake (x64)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       uses: jwlawson/actions-setup-cmake@v1.4
       with:
         cmake-version: '3.18.x'
 
+    - name: Setup cmake (arm64)
+      if: matrix.os == 'ubuntu-24.04-arm'
+      uses: lukka/get-cmake@latest
+
     - name: Check cmake
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
       run: "cmake --version"
       
-    - uses: actions/setup-python@v5.1.0
+    - uses: actions/setup-python@v6.1.0
       with:
         python-version: "3.9"
       
-    - name: Install depedencies on Linux
+    - name: Install depedencies (Linux)
       if: runner.os == 'Linux'
       run: |
         pip3 install python-language-server
-        sudo apt-get install clangd-11
+        sudo apt-get update
+        sudo apt-get install clangd-15
 
-    - name: Install depedencies on macOS
+    - name: Install depedencies (macOS)
       if: runner.os == 'macOS'
       run: |
         pip3 install python-language-server
 
     - name: Check clangd
       if: runner.os == 'Linux'
-      run: "clangd-11 --version"
+      run: "clangd-15 --version"
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
-    - name: Grant execution permission
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+    - name: Grant execution permission (Unix)
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
       run: chmod -R 777 ./
 
     - name: Run tests (Unix)
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
       run: make unix-ci
 
     - name: Run tests (Windows)
@@ -86,7 +102,7 @@ jobs:
       run: make windows-ci
 
     - name: Move built artifact (Unix)
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
       run: |
         mv -f ./.eask/ ./test/downstream/.eask/
         mv -f ./dist/ ./test/downstream/dist/

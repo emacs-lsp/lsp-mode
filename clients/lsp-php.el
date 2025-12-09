@@ -219,7 +219,9 @@ definitions are found in excluded files/folders."
 (lsp-defcustom lsp-intelephense-trace-server "off"
   "Traces the communication between VSCode and the intelephense
 language server."
-  :type '(choice (:tag "off" "messages" "verbose"))
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose"))
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1")
   :lsp-path "intelephense.trace.server")
@@ -440,7 +442,7 @@ already present."
   "Alist mapping extension names to `composer' packages.
 These extensions can be installed using
 `lsp-phpactor-install-extension'."
-  :type '(alist :key-type "string" :value-type "string")
+  :type '(alist :key-type string :value-type string)
   :group 'lsp-phpactor)
 
 (defun lsp-phpactor-install-extension (extension)

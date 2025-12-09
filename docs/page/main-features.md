@@ -92,6 +92,8 @@ the formatting is triggered when the corresponding character is
 pressed(typically, `}`, `RET`). This behaviour is controlled via
 `lsp-enable-on-type-formatting` and it is enabled by default.
 
+You can also trigger format on save by setting the variable `lsp-format-buffer-on-save` to a non-nil value. To select what major modes to format use `lsp-format-buffer-on-save-list`.
+
 ## Debugger
 
 `lsp-mode` integrates with [dap-mode](https://emacs-lsp.github.io/dap-mode/) with implements the DAP(Debugger Adapter Protocol), for more information check the [`dap-mode` documentation](https://emacs-lsp.github.io/dap-mode/).

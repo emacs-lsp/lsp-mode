@@ -41,7 +41,8 @@
   :risky t
   :type 'file)
 
-(defcustom lsp-clients-emmy-lua-jar-path (f-join lsp-server-install-dir "EmmyLua-LS-all.jar")
+(defcustom lsp-clients-emmy-lua-jar-path
+  (f-join lsp-server-install-dir "EmmyLua-LS-all.jar")
   "Emmy Lua language server jar file."
   :group 'lsp-emmy-lua
   :version "8.0.0"
@@ -85,7 +86,7 @@
   "Lua LSP client, provided by the Lua Language Server."
   :group 'lsp-mode
   :version "8.0.0"
-  :link '(url-link "https://github.com/sumneko/lua-language-server"))
+  :link '(url-link "https://github.com/LuaLS/lua-language-server"))
 
 (defcustom lsp-clients-lua-language-server-install-dir (f-join lsp-server-install-dir "lua-language-server/")
   "Installation directory for Lua Language Server."
@@ -137,13 +138,17 @@
 
 (defcustom lsp-lua-color-mode "Semantic"
   "Color mode."
-  :type '(choice (:tag "Grammar" "Semantic"))
+  :type '(choice (const "Grammar")
+                 (const "Semantic"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-call-snippet "Disable"
   "Shows function call snippets."
-  :type '(choice (:tag "Disable" "Both" "Replace"))
+  :type '(choice
+          (const "Disable")
+          (const "Both")
+          (const "Replace"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -165,7 +170,9 @@ fragment.  If it is set to `0`, this feature can be disabled."
 
 (defcustom lsp-lua-completion-keyword-snippet "Replace"
   "Shows keyword syntax snippets."
-  :type '(choice (:tag "Disable" "Both" "Replace"))
+  :type '(choice (const "Disable")
+                 (const "Both")
+                 (const "Replace"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -339,7 +346,8 @@ tolerance for this setting. Please adjust it to the appropriate value."
 (defcustom lsp-lua-runtime-file-encoding "utf8"
   "File encoding.  The `ansi' option is only available under the `Windows'
 platform."
-  :type '(choice (:tag "utf8" "ansi"))
+  :type '(choice (const "utf8")
+                 (const "ansi"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -383,7 +391,11 @@ and the language server will provide special support.
 
 (defcustom lsp-lua-runtime-version "Lua 5.4"
   "Lua runtime version."
-  :type '(choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))
+  :type '(choice (const "Lua 5.1")
+                 (const "Lua 5.2")
+                 (const "Lua 5.3")
+                 (const "Lua 5.4")
+                 (const "LuaJIT"))
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
@@ -547,7 +559,7 @@ and `../lib` ,exclude `../lib/temp`.
        (funcall callback))
      error-callback
      :url (lsp--find-latest-gh-release-url
-           "https://api.github.com/repos/sumneko/lua-language-server/releases/latest"
+           "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
            (format "%s%s.tar.gz"
                    (pcase system-type
                      ('gnu/linux
@@ -676,13 +688,13 @@ and `../lib` ,exclude `../lib/temp`.
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-roblox-language-server-download-url'."
   (lsp-download-install
-    (lambda (&rest _)
+   (lambda (&rest _)
      (set-file-modes lsp-lua-roblox-language-server-bin #o0700)
      (funcall callback))
-     error-callback
-     :url lsp-lua-roblox-server-download-url
-     :store-path lsp-lua-roblox-server-store-path
-     :decompress :zip))
+   error-callback
+   :url lsp-lua-roblox-server-download-url
+   :store-path lsp-lua-roblox-server-store-path
+   :decompress :zip))
 
 (lsp-register-client
  (make-lsp-client

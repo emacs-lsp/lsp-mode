@@ -1,5 +1,10 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add explicit flag to enable (or disable) JSON validation.
+  * Fix Accommodate renaming of lsp-postgres binaries
+  * Fix =lsp-org= for org >= 9.7 (see #4300)
+  * Add format on save support
+  * Fix beancount journal file init option
   * Add support for [[https://github.com/glehmann/earthlyls][earthlyls]]
   * Add support for GNAT Project (~gpr-mode~, ~gpr-ts-mode~).
   * Add SQL support
@@ -8,6 +13,46 @@
   * Added a new optional ~:action-filter~ argument when defining LSP clients that allows code action requests to be modified before they are sent to the server. This is used by the Haskell language server client to work around an ~lsp-mode~ parsing quirk that incorrectly sends ~null~ values instead of ~false~ in code action requests.
   * Add support for C# via the [[https://github.com/dotnet/roslyn/tree/main/src/LanguageServer][Roslyn language server]].
   * Add basic support for [[https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_pullDiagnostics][pull diagnostics]] requests.
+  * Add ~lsp-flush-delayed-changes-before-next-message~ customization point to enforce throttling document change notifications.
+  * Add ~lsp-sql-show-tables~ command.
+  * Fix bug in ~rust-analyzer.check.features~ configuration via ~lsp-rust-checkonsave-features~ Emacs setting: we were defaulting to ~[]~, but ~rust-analyzer~ defaults to inheriting the value from ~rust-analyzer.cargo.features~. The bug resulted in code hidden behind features not getting type checked when those features were enabled by setting ~rust-analyzer.cargo.features~ via the ~lsp-rust-features~ Emacs setting.
+  * Change ~ruff-lsp~ to ~ruff~ for python lsp client. All ~ruff-lsp~ customizable variable change to ~ruff~. Lsp server command now is ~["ruff" "server"]~ instead of ~["ruff-lsp"]~.
+  * Add futhark support
+  * Optimize overlay creation by checking window visibility first
+  * Replace the per-interface ~(INTERFACE ...)~ pcase forms with a single,
+    unified ~(lsp-interface INTERFACE ...)~ form. The per-interface forms are no
+    longer generated. *This is a breaking change.* (See #4430.)
+  * If asm-lsp is installed, lsp-asm won't try to download it to cache store
+  * Fix lsp-unzip on windows when unzip was found on the PATH
+  * Fix zls wrong bin path
+  * Add support for buf CLI ([[https://github.com/bufbuild/buf/releases/tag/v1.43.0][beta]])
+  * Add fennel support
+  * Add support for [[https://github.com/nextflow-io/language-server][Nextflow]]
+  * Add TypeSpec support
+  * Add Tree-sitter query support
+  * Add [[https://github.com/mrjosh/helm-ls][helm-ls]] (YAML Kubernetes Helm) support.
+  * Add ~lsp-bash-allowed-shells~ to configure supported ~sh-shell~ values.
+  * Add hint about ~activation-fn~ for unsupported buffers.
+  * Add Roc support
+  * Add support for environment variables in rust analyzer runnables. Allowing the new ~Update Tests (Expect)~ code lens to work as expected.
+  * Add support for [[https://github.com/mathworks/MATLAB-language-server][MATLAB language server]] (requires [[https://github.com/MathWorks/Emacs-MATLAB-Mode][matlab-mode]]).
+  * Add support for [[https://github.com/c3lang/c3c][c3 language]] (requires [[https://github.com/c3lang/c3-ts-mode][c3-ts-mode]] and [[https://github.com/pherrymason/c3-lsp][c3lsp]]).
+  * Drop support for emacs 27.1 and 27.2
+  * Add ~lsp-nix-nixd-server-arguments~ to allow passing arguments to the ~nixd~ LSP.
+  * Improve the lsp-ocaml client (see [[https://github.com/emacs-lsp/lsp-mode/issues/4731][#4731]] for the follow-up issue. MRs: [[https://github.com/emacs-lsp/lsp-mode/pull/4741][#4741]], [[https://github.com/emacs-lsp/lsp-mode/pull/4732][#4732]])
+  * Add support for ~source.removeUnusedImports~ for lsp-javascript
+  * Add Python(ty) support
+  * Add support for [[https://github.com/tombi-toml/tombi][Tombi language server]] (TOML language).
+  * Make lsp-headerline--check-breadcrumb public
+  * Added Odin langauge server support [[https://github.com/DanielGavin/ols][ols]]
+  * Fix bug in lsp-odin where ~f-join~ collapses double slashes. Using ~format~ instead.
+  * Fix missing gopls inlay hints when ~lsp-use-plist~ is true
+  * Fix bug where persist was attempted when lsp-session-file is nil
+  * Debugging tests in Rust no longer runs all the tests prior to launching debug session.
+  * Add [[https://devenv.sh/][devenv]] and [[https://jj-vcs.github.io/jj/latest/][jj]] directories to the list of ignored directories (~lsp-file-watch-ignored-directories~)
+  * Fix bug where qmlls failed to load due to qml not being in ~lsp-language-id-configuration~
+  * Fix default value for ~lsp-rust-analyzer-cargo-cfgs~
+  * Add ~lsp-ruby-lsp-server-command~ variable to allow overriding of the path to ~ruby-lsp~ executable
   * Add support for the ~javascript.preferences.importModuleSpecifierEnding~ and ~typescript.preferences.importModuleSpecifierEnding~ preferences.
 
 ** 9.0.0
@@ -128,6 +173,7 @@
   * Add COBOL support.
   * Add Common Lisp support.
   * Add YANG support using TypeFox/yang-lsp Server.
+  * Add Postgres langauge server support.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
@@ -194,6 +240,7 @@
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
   * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
+  * Add support for per-project Beancount initialization-options
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.

@@ -55,6 +55,7 @@ This is only for development use."
   :new-connection (lsp-stdio-connection #'lsp-sql--server-command)
   :major-modes '(sql-mode)
   :priority -1
+  :multi-root t
   :server-id 'sql-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'sql-ls callback error-callback))))

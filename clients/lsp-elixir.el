@@ -27,11 +27,23 @@
 (require 'lsp-mode)
 (require 'ht)
 
+(defcustom lsp-elixir-auto-build t
+  "Trigger ElixirLS build when code is saved."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-elixir-dialyzer-enabled t
   "Run ElixirLS's rapid Dialyzer when code is saved."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
+
+(defcustom lsp-elixir-incremental-dialyzer nil
+  "Use OTP incremental dialyzer."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-elixir-dialyzer-warn-opts '()
   "Dialyzer options to enable or disable warnings.
@@ -81,11 +93,35 @@ This requires Dialyzer."
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-elixir-auto-insert-required-alias t
+  "Enable auto-insert required alias."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-elixir-signature-after-complete t
   "Show signature help after confirming autocomplete."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
+
+(defcustom lsp-elixir-dot-formatter ".formatter.exs"
+  "Filename used for formatting."
+  :type 'string
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-elixir-mcp-enabled nil
+  "Enable or disable the MCP server."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-elixir-mcp-port nil
+  "Set a specific port for the MCP server."
+  :type 'number
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."
@@ -105,7 +141,7 @@ Leave as default to let `executable-find' search for it."
   :type '(repeat string)
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-ls-version "v0.22.0"
+(defcustom lsp-elixir-ls-version "v0.29.2"
   "Elixir-Ls version to download.
 It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
@@ -120,7 +156,6 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
   :type 'string
   :group 'lsp-elixir
   :package-version '(lsp-mode . "9.0.0"))
-
 
 (defconst lsp-elixir-ls-server-dir
   (f-join lsp-server-install-dir "elixir-ls")
@@ -170,16 +205,22 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
              :set-executable? t))
 
 (lsp-register-custom-settings
- '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
+ '(("elixirLS.autoBuild" lsp-elixir-auto-build t)
+   ("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
+   ("elixirLS.incrementalDialyzer" lsp-elixir-incremental-dialyzer)
    ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-opts)
    ("elixirLS.dialyzerFormat" lsp-elixir-dialyzer-format)
    ("elixirLS.mixEnv" lsp-elixir-mix-env)
    ("elixirLS.mixTarget" lsp-elixir-mix-target)
    ("elixirLS.projectDir" lsp-elixir-project-dir)
-   ("elixirLS.fetchDeps" lsp-elixir-fetch-deps t)
+   ("elixirLS.fetchDeps" lsp-elixir-fetch-deps)
    ("elixirLS.suggestSpecs" lsp-elixir-suggest-specs t)
+   ("elixirLS.autoInsertRequiredAlias" lsp-elixir-auto-insert-required-alias t)
    ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
-   ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)))
+   ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)
+   ("elixirLS.dotFormatter" lsp-elixir-dot-formatter)
+   ("elixirLS.mcpEnabled" lsp-elixir-mcp-enabled t)
+   ("elixirLS.mcpPort" lsp-elixir-mcp-port)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

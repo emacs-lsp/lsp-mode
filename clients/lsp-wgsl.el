@@ -33,7 +33,7 @@
   :package-version '(lsp-mode . "9.0.0"))
 
 
-(defcustom lsp-wgsl-server-command "wgsl_analyzer"
+(defcustom lsp-wgsl-server-command "wgsl-analyzer"
   "Command to run the wgsl-analyzer executable."
   :type 'boolean
   :group 'lsp-wgsl
@@ -105,7 +105,7 @@
 
 (defcustom lsp-wgsl-shaderdefs []
   "Defines that should be valid for preprocessor operations like ifdef,
-e.g, ['USE_TYPES', 'DEBUG']"
+  e.g, [\='USE_TYPES\=',\='DEBUG\=']"
   :type 'lsp-string-vector
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "9.0.0"))
@@ -174,8 +174,8 @@ definitions resolved."
 
 (lsp-dependency 'wgsl-analyzer
                 '(:system lsp-wgsl-server-command)
-                '(:cargo :package "wgsl_analyzer"
-                         :path "wgsl_analyzer"
+                '(:cargo :package "wgsl-analyzer"
+                         :path "wgsl-analyzer"
                          :git "https://github.com/wgsl-analyzer/wgsl-analyzer"))
 
 (lsp-register-client

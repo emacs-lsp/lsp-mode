@@ -52,7 +52,8 @@
                    #'lsp-typeprof--build-command)
   :priority -4
   :activation-fn (lsp-activate-on "ruby")
-  :server-id 'typeprof-ls))
+  :server-id 'typeprof-ls
+  :multi-root t))
 
 (lsp-consistency-check lsp-typeprof)
 

@@ -90,6 +90,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "buf",
+    "full-name": "buf CLI (Beta)",
+    "server-name": "buf",
+    "server-url": "https://github.com/bufbuild/buf",
+    "installation": "npm install -g @bufbuild/buf",
+    "installation-url": "https://buf.build/docs/installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "bufls",
     "full-name": "buf-language-server",
     "server-name": "bufls",
@@ -105,6 +114,14 @@
     "server-url": "https://github.com/camel-tooling/camel-language-server/",
     "installation": "Automatic by lsp-mode with `lsp-install-server`",
     "lsp-install-server": "camells",
+    "debugger": "Not available"
+  },
+  {
+    "name": "copilot",
+    "full-name": "GitHub Copilot",
+    "server-name": "copilot-language-server",
+    "server-url": "https://www.npmjs.com/package/@github/copilot-language-server",
+    "installation-url": "https://www.npmjs.com/package/@github/copilot-language-server",
     "debugger": "Not available"
   },
   {
@@ -144,6 +161,14 @@
     "installation": "Supports automatic installation via NuGet",
     "lsp-install-server": "csharp-roslyn",
     "debugger": "Yes (netcoredbg)"
+  },
+  {
+    "name": "c3-lsp",
+    "full-name": "c3 language server",
+    "server-name": "c3lsp",
+    "server-url": "https://github.com/pherrymason/c3-lsp",
+    "installation-url": "https://github.com/pherrymason/c3-lsp",
+    "debugger": "Yes (gdb or lldb)"
   },
   {
     "name": "ccls",
@@ -335,6 +360,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "futhark",
+    "full-name": "Futhark",
+    "server-name": "futhark-lsp",
+    "server-url": "https://github.com/diku-dk/futhark",
+    "installation": "A part of the compiler since 0.21.9",
+    "debugger": "Not available"
+  },
+  {
     "name": "gdscript",
     "full-name": "GDScript",
     "server-name": "godot",
@@ -480,6 +513,15 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
+    "name": "typespec",
+    "full-name": "TypeSpec",
+    "server-name": "tsp server",
+    "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
+    "installation": "npm i -g @typespec/compiler",
+    "lsp-install-server": "@typespec/compiler",
+    "debugger": "Yes (Firefox/Chrome)"
+  },
+  {
     "name": "deno",
     "common-group-name": "javascript",
     "full-name": "Javascript/Typescript (deno)",
@@ -549,6 +591,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ltex-plus",
+    "full-name": "LanguageTool",
+    "server-name": "LTEX+",
+    "server-url": "https://github.com/ltex-plus/ltex-ls-plus",
+    "installation-url": "https://ltex-plus.github.io/ltex-plus/installation-usage.html",
+    "debugger": "Not available"
+  },
+  {
     "name": "emmy-lua",
     "common-group-name": "lua",
     "full-name": "Lua",
@@ -562,8 +612,8 @@
     "common-group-name": "lua",
     "full-name": "Lua",
     "server-name": "lua-language-server",
-    "installation-url": "https://github.com/sumneko/lua-language-server/wiki/Build-and-Run-(Standalone)",
-    "server-url": "https://github.com/sumneko/lua-language-server",
+    "installation-url": "https://github.com/LuaLS/lua-language-server/wiki/Getting-Started#build",
+    "server-url": "https://github.com/LuaLS/lua-language-server",
     "debugger": "Not available"
   },
   {
@@ -583,6 +633,16 @@
     "server-name": "lua-roblox-language-server",
     "installation-url": "https://github.com/NightrainsRbx/RobloxLsp",
     "server-url": "https://github.com/NightrainsRbx/RobloxLsp",
+    "debugger": "Not available"
+  },
+  {
+    "name": "fennel",
+    "common-group-name": "fennel",
+    "full-name": "Fennel",
+    "server-name": "fennel-ls",
+    "installation-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "server-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "installation": "luarocks install fennel-ls",
     "debugger": "Not available"
   },
   {
@@ -608,6 +668,14 @@
     "server-name": "marksman",
     "server-url": "https://github.com/artempyanykh/marksman",
     "installation-url": "https://github.com/artempyanykh/marksman",
+    "debugger": "Not available"
+  },
+  {
+    "name": "matlab",
+    "full-name": "MATLAB",
+    "server-name": "MATLAB language server",
+    "server-url": "https://github.com/mathworks/MATLAB-language-server",
+    "installation-url": "https://github.com/mathworks/MATLAB-language-server",
     "debugger": "Not available"
   },
   {
@@ -651,6 +719,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nextflow",
+    "full-name": "Nextflow",
+    "server-name": "nextflow-language-server",
+    "server-url": "https://github.com/nextflow-io/language-server",
+    "installation-url": "https://github.com/nextflow-io/language-server#build",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
@@ -683,7 +759,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix",
+    "name": "nix-nixd",
     "full-name": "Nix (nixd language server)",
     "server-name": "nixd",
     "server-url": "https://github.com/nix-community/nixd",
@@ -691,7 +767,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix",
+    "name": "nix-rnix",
     "full-name": "Nix (rnix language server)",
     "server-name": "rnix-lsp",
     "server-url": "https://github.com/nix-community/rnix-lsp",
@@ -720,6 +796,14 @@
     "server-name": "ocaml-language-server",
     "server-url": "https://github.com/ocaml-lsp/ocaml-language-server",
     "installation-url": "https://github.com/ocaml-lsp/ocaml-language-server#server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "ols",
+    "full-name": "Odin Language Server",
+    "server-name": "ols",
+    "server-url": "https://github.com/DanielGavin/ols",
+    "installation-url": "https://github.com/DanielGavin/ols",
     "debugger": "Not available"
   },
   {
@@ -865,6 +949,16 @@
     "debugger": "Yes"
   },
   {
+    "name": "python-ty",
+    "full-name": "Python (ty)",
+    "server-name": "LSP support for Python(ty).",
+    "server-url": "https://github.com/astral-sh/ty",
+    "client-name": "lsp-python-ty",
+    "client-url": "https://github.com/astral-sh/ty",
+    "installation-url": "https://github.com/astral-sh/ty",
+    "debugger": "Yes"
+  },
+  {
     "name": "qml-ls",
     "full-name": "QML (Qt Modeling Language)",
     "server-name": "QML Language Server",
@@ -933,6 +1027,15 @@
     "debugger": "Yes"
   },
   {
+    "name": "roc",
+    "full-name": "Roc",
+    "server-name": "roc_language_server",
+    "server-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation-url": "https://github.com/roc-lang/roc/tree/main/crates/language_server",
+    "installation": "Along with the compiler",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruby-lsp",
     "full-name": "Ruby (ruby-lsp)",
     "server-name": "ruby-lsp",
@@ -941,11 +1044,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "ruff-lsp",
+    "name": "ruff",
     "full-name": "Python",
-    "server-name": "ruff-lsp",
-    "server-url": "https://github.com/charliermarsh/ruff-lsp",
-    "installation": "pip install ruff-lsp",
+    "server-name": "ruff",
+    "server-url": "https://github.com/astral-sh/ruff",
+    "installation": "pip install ruff (previous pip install ruff-lsp)",
     "debugger": "Not available"
   },
   {
@@ -1029,8 +1132,16 @@
     "name": "sqls",
     "full-name": "SQL (sqls)",
     "server-name": "sqls",
-    "server-url": "https://github.com/lighttiger2505/sqls",
-    "installation": "go install github.com/lighttiger2505/sqls@latest",
+    "server-url": "https://github.com/sqls-server/sqls",
+    "installation": "go install github.com/sqls-server/sqls@latest",
+    "debugger": "Not available"
+  },
+  {
+    "name": "postgres",
+    "full-name": "SQL (postgres-ls)",
+    "server-name": "postgres-language-server",
+    "server-url": "https://github.com/supabase-community/postgres-language-server",
+    "installation-url": "https://pgtools.dev/#installation",
     "debugger": "Not available"
   },
   {
@@ -1128,6 +1239,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "toml-tombi",
+    "full-name": "TOML",
+    "server-name": "tombi",
+    "server-url": "https://github.com/tombi-toml/tombi",
+    "installation-url": "https://tombi-toml.github.io/tombi/docs/installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "trunk",
     "full-name": "Trunk",
     "server-name": "trunk-lsp",
@@ -1137,11 +1256,26 @@
     "debugger": "Not available"
   },
   {
+    "name": "ts-query",
+    "full-name": "Tree-sitter Query",
+    "server-name": "ts-query-lsp",
+    "server-url": "https://github.com/ribru17/ts_query_ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "typeprof",
     "full-name": "Ruby (TypeProf)",
     "server-name": "typeprof",
     "server-url": "https://github.com/ruby/typeprof",
     "installation": "It is included in Ruby >= 3.1",
+    "debugger": "Not available"
+  },
+  {
+    "name": "typos",
+    "full-name": "Typos source code spell checker",
+    "server-name": "typos-lsp",
+    "server-url": "https://github.com/tekumara/typos-lsp",
+    "installation": "cargo install --git https://github.com/tekumara/typos-lsp typos-lsp",
     "debugger": "Not available"
   },
   {
@@ -1226,7 +1360,7 @@
     "full-name": "wgsl",
     "server-name": "wgsl-analyzer",
     "server-url": "https://github.com/wgsl-analyzer/wgsl-analyzer",
-    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl_analyzer",
+    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl-analyzer",
     "debugger": "Not available"
   },
   {
@@ -1245,6 +1379,14 @@
     "server-url": "https://github.com/redhat-developer/yaml-language-server",
     "installation": "npm install -g yaml-language-server",
     "lsp-install-server": "yamlls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "helm",
+    "full-name": "YAML (helm-ls)",
+    "server-name": "helm-ls",
+    "server-url": "https://github.com/mrjosh/helm-ls",
+    "installation-url": "https://github.com/mrjosh/helm-ls?tab=readme-ov-file#installation-with-a-package-manager",
     "debugger": "Not available"
   },
   {

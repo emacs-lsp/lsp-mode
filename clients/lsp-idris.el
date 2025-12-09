@@ -45,7 +45,9 @@
 (defcustom lsp-idris2-lsp-trace-server "off"
   "Traces the communication between VS Code and the language server."
   :group 'lsp-idris
-  :type '(choice (:tag "off" "messages" "verbose"))
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose"))
   :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-custom-settings

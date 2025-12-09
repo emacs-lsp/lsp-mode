@@ -52,10 +52,11 @@ Use nil (the default) to use the current beancount buffer as the journal file."
   :new-connection
   (lsp-stdio-connection
    (lambda ()
-      `(,lsp-beancount-langserver-executable "--stdio")))
+     `(,lsp-beancount-langserver-executable "--stdio")))
   :major-modes '(beancount-mode)
   :initialization-options
-  `((journalFile . ,lsp-beancount-journal-file))
+  (lambda ()
+    `((journal_file . ,lsp-beancount-journal-file)))
   :server-id 'beancount-ls))
 
 (lsp-consistency-check lsp-beancount)

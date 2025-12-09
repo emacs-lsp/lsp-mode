@@ -236,7 +236,7 @@ If `true', replace the text after the cursor."
 This is differ from the variable `lsp-zig-zls-executable'; this is local storage
 and not the global storage."
   (f-join lsp-zig-server-store-path
-          (pcase system-type ('windows-nt "bin/zls.exe") (_ "bin/zls"))))
+          (pcase system-type ('windows-nt "zls.exe") (_ "zls"))))
 
 (lsp-dependency
  'zls

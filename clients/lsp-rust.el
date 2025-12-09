@@ -187,6 +187,7 @@ the latest build duration."
 
 (defcustom lsp-rust-features []
   "List of features to activate.
+Corresponds to the `rust-analyzer` setting `rust-analyzer.cargo.features`.
 Set this to `\"all\"` to pass `--all-features` to cargo."
   :type 'lsp-string-vector
   :group 'lsp-rust-rls
@@ -353,7 +354,7 @@ PARAMS progress report notification data."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-rust-analyzer-library-directories
-  '("~/.cargo/registry/src" "~/.rustup/toolchains")
+  '("~/.cargo/git" "~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
@@ -565,6 +566,20 @@ belongs to."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-cargo-target-dir nil
+  "Optional path to a rust-analyzer specific target directory.
+This prevents rust-analyzer's `cargo check` and initial build-script and
+proc-macro building from locking the `Cargo.lock` at the expense of
+duplicating build artifacts.
+
+Set to `true` to use a subdirectory of the existing target directory or
+set to a path relative to the workspace to use that path."
+  :type '(choice
+          (string :tag "Directory")
+          boolean)
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.0"))
+
 (defcustom lsp-rust-analyzer-cargo-watch-enable t
   "Enable Cargo watch."
   :type 'boolean
@@ -596,9 +611,15 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.2"))
 
-(defcustom lsp-rust-analyzer-checkonsave-features []
+(defcustom lsp-rust-analyzer-checkonsave-features nil
   "List of features to activate.
-Set this to `\"all\"` to pass `--all-features` to cargo."
+Corresponds to the `rust-analyzer` setting `rust-analyzer.check.features`.
+When set to `nil` (default), the value of `lsp-rust-features' is inherited.
+Set this to `\"all\"` to pass `--all-features` to cargo.
+Note: setting this to `nil` means \"unset\", whereas setting this
+to `[]` (empty vector) means \"set to empty list of features\",
+which overrides any value that would otherwise be inherited from
+`lsp-rust-features'."
   :type 'lsp-string-vector
   :group 'lsp-rust-rust-analyzer
   :package-version '(lsp-mode . "8.0.2"))
@@ -606,6 +627,12 @@ Set this to `\"all\"` to pass `--all-features` to cargo."
 (defcustom lsp-rust-analyzer-cargo-unset-test []
   "force rust-analyzer to unset `#[cfg(test)]` for the specified crates."
   :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-rust-analyzer-cfg-set-test t
+  "force rust-analyzer to set `#[cfg(test)]` for the current crate / workspace."
+  :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -747,10 +774,10 @@ them with `crate' or the crate name they refer to."
 (defcustom lsp-rust-analyzer-import-granularity "crate"
   "How imports should be grouped into use statements."
   :type '(choice
-          (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
-          (const "module" :doc "Merge imports from the same module into a single use statement.")
-          (const "item" :doc "Don’t merge imports at all, creating one import per item.")
-          (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+          (const :tag "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24." "crate" )
+          (const :tag "Merge imports from the same module into a single use statement." "module" )
+          (const :tag "Don’t merge imports at all, creating one import per item." "item" )
+          (const :tag "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'" "preserve" ))
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -832,16 +859,23 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+;; https://rust-analyzer.github.io/book/configuration#cargo.cfgs
+(defcustom lsp-rust-analyzer-cargo-cfgs ["debug_assertions" "miri"]
+  "Extra configurations that are passed to every cargo invocation."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-rust-analyzer-cargo-extra-args []
   "Extra arguments that are passed to every cargo invocation."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-rust-analyzer-cargo-extra-env []
+(defcustom lsp-rust-analyzer-cargo-extra-env #s(hash-table)
   "Extra environment variables that will be set when running cargo, rustc or
 other commands within the workspace.  Useful for setting RUSTFLAGS."
-  :type 'lsp-string-vector
+  :type 'alist
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -1433,7 +1467,7 @@ such as imports and dyn traits."
   :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-rust-analyzer-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
+  (when-let* ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-rust-analyzer-expand-macro ()
@@ -1492,18 +1526,24 @@ such as imports and dyn traits."
 Extract the arguments, prepare the minor mode (cargo-process-mode if possible)
 and run a compilation"
   (-let* (((&rust-analyzer:Runnable :kind :label :args) runnable)
-          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test?) args)
+          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test? :environment?) args)
           (default-directory (or workspace-root? default-directory)))
     (if (not (string-equal kind "cargo"))
         (lsp--error "'%s' runnable is not supported" kind)
       (compilation-start
        (string-join (append (when expect-test? '("env" "UPDATE_EXPECT=1"))
+                            (when environment? (lsp-rust-analyzer--to-bash-env environment?))
                             (list "cargo") cargo-args
                             (when executable-args '("--")) executable-args '()) " ")
 
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*"))))))
+
+(defun lsp-rust-analyzer--to-bash-env (env-vars)
+  "Extract the environment variables from plist ENV-VARS."
+  (cl-loop for (key value) on env-vars by 'cddr
+           collect (format "%s=%s" (substring (symbol-name key) 1) value)))
 
 (defun lsp-rust-analyzer-run (runnable)
   "Select and run a RUNNABLE action."
@@ -1521,7 +1561,7 @@ and run a compilation"
            :label) runnable))
     (pcase (aref cargo-args 0)
       ("run" (aset cargo-args 0 "build"))
-      ("test" (when (-contains? (append cargo-args ()) "--no-run")
+      ("test" (unless (-contains? (append cargo-args ()) "--no-run")
                 (cl-callf append cargo-args (list "--no-run")))))
     (->> (append (list (executable-find "cargo"))
                  cargo-args
@@ -1666,11 +1706,22 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                :merge (:glob ,(lsp-json-bool lsp-rust-analyzer-imports-merge-glob))
                :prefix ,lsp-rust-analyzer-import-prefix)
     :lruCapacity ,lsp-rust-analyzer-lru-capacity
+    ;; This `checkOnSave` is called `check` in the `rust-analyzer` docs, not
+    ;; `checkOnSave`, but the `rust-analyzer` source code shows that both names
+    ;; work. The `checkOnSave` name has been supported by `rust-analyzer` for a
+    ;; long time, whereas the `check` name was introduced here in 2023:
+    ;; https://github.com/rust-lang/rust-analyzer/commit/d2bb62b6a81d26f1e41712e04d4ac760f860d3b3
     :checkOnSave ( :enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                    :command ,lsp-rust-analyzer-cargo-watch-command
                    :extraArgs ,lsp-rust-analyzer-cargo-watch-args
                    :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
-                   :features ,lsp-rust-analyzer-checkonsave-features
+                   ;; We need to distinguish between setting this to the empty
+                   ;; vector, and not setting it at all, which `rust-analyzer`
+                   ;; interprets as "inherit from
+                   ;; `rust-analyzer.cargo.features`". We use `nil` to mean
+                   ;; "unset".
+                   ,@(when (vectorp lsp-rust-analyzer-checkonsave-features)
+                       `(:features ,lsp-rust-analyzer-checkonsave-features))
                    :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :highlightRelated ( :breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
                         :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
@@ -1680,18 +1731,22 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :files ( :exclude ,lsp-rust-analyzer-exclude-globs
              :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
              :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
+    :cfg ( :setTest ,(lsp-json-bool lsp-rust-analyzer-cfg-set-test) )
     :cargo ( :allFeatures ,(lsp-json-bool lsp-rust-all-features)
              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
              :features ,lsp-rust-features
+             :cfgs ,lsp-rust-analyzer-cargo-cfgs
              :extraArgs ,lsp-rust-analyzer-cargo-extra-args
              :extraEnv ,lsp-rust-analyzer-cargo-extra-env
              :target ,lsp-rust-analyzer-cargo-target
+             :targetDir ,lsp-rust-analyzer-cargo-target-dir
              :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
              ;; Obsolete, but used by old Rust-Analyzer versions
              :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
              :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
              :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
-             :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
+             :unsetTest ,lsp-rust-analyzer-cargo-unset-test
+	     :buildScripts (:overrideCommand ,lsp-rust-analyzer-cargo-override-command))
     :rustfmt ( :extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
                :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
                :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
@@ -1745,10 +1800,12 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      `(,(or (executable-find
-                             (cl-first lsp-rust-analyzer-server-command))
+                             (cl-first lsp-rust-analyzer-server-command)
+                             t)
                             (lsp-package-path 'rust-analyzer)
                             "rust-analyzer")
-                       ,@(cl-rest lsp-rust-analyzer-server-command))))
+                       ,@(cl-rest lsp-rust-analyzer-server-command)))
+                   (lambda () t))
   :activation-fn (lsp-activate-on "rust")
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
@@ -1761,7 +1818,17 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :semantic-tokens-faces-overrides `( :discard-default-modifiers t
                                       :modifiers ,(lsp-rust-analyzer--semantic-modifiers))
   :server-id 'rust-analyzer
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp 'yas-minor-mode))))))
+  :custom-capabilities `((experimental .
+                                       ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp 'yas-minor-mode)))
+                                        (commands . ((commands .
+                                                               [
+                                                                "rust-analyzer.runSingle"
+                                                                "rust-analyzer.debugSingle"
+                                                                "rust-analyzer.showReferences"
+                                                                ;; "rust-analyzer.gotoLocation"
+                                                                "rust-analyzer.triggerParameterHints"
+                                                                ;; "rust-analyzer.rename"
+                                                                ]))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
 

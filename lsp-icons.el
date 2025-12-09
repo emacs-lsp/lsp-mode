@@ -32,7 +32,11 @@
   :type 'boolean
   :group 'lsp-icons)
 
-(declare-function all-the-icons-material "ext:all-the-icons" t t)
+(defcustom lsp-modeline-code-action-icons-enable t
+  "If non-nil, icons support is enabled for modeline-code-action"
+  :type 'boolean
+  :group 'lsp-icons)
+
 (declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
 (declare-function lsp-treemacs-get-icon "ext:lsp-treemacs" (icon-name))
 
@@ -40,6 +44,7 @@
   "Check if icons support is enabled for FEATURE."
   (cond
    ((eq feature 'headerline-breadcrumb) lsp-headerline-breadcrumb-icons-enable)
+   ((eq feature 'modeline-code-action) lsp-modeline-code-action-icons-enable)
    (t t)))
 
 (defun lsp-icons--fix-image-background (image)
@@ -79,16 +84,17 @@ if its enabled."
     (lsp-icons--fix-image-background
      (lsp-treemacs-symbol-icon kind))))
 
-(defun lsp-icons-all-the-icons-material-icon (icon-name face fallback &optional feature)
-  "Get a material icon from all-the-icons by ICON-NAME using FACE.
+(defun lsp-icons-all-the-icons-icon (icon-set icon-name face fallback &optional feature &rest args)
+  "Get icon ICON-NAME from `all-the-icons' ICON-SET using FACE.
+If ARGS is provided, it's a plist passed directly to the `all-the-icons' function.
 Fallback to FALLBACK string if not found or not available.
 FEATURE is the feature that will use the icon which we should check
 if its enabled."
-  (if (and (functionp 'all-the-icons-material)
-           (lsp-icons--enabled-for-feature feature))
-      (all-the-icons-material icon-name
-                              :face face)
-    (propertize fallback 'face face)))
+  (let ((icon-set-fn (intern-soft (concat "all-the-icons-" (symbol-name icon-set)))))
+    (if (and (fboundp icon-set-fn)
+             (lsp-icons--enabled-for-feature feature))
+        (apply icon-set-fn icon-name :face face args)
+      (propertize fallback 'face face))))
 
 (lsp-consistency-check lsp-icons)
 

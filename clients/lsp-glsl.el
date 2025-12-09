@@ -36,11 +36,13 @@
   "Command to run the GLSL language server."
   :group 'lsp-glsl
   :risky t
-  :type 'list)
+  :type '(repeat string))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-glsl-executable)
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     lsp-glsl-executable))
   :activation-fn (lsp-activate-on "glsl")
   :priority -1
   :server-id 'glslls))
