@@ -517,6 +517,12 @@ workspace."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-typescript-prefer-type-only-auto-imports nil
+  "Prefer to put the `type` keyword before auto-generated imports,
+when they are used only in a type checking context."
+  :type 'boolean
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-javascript-preferences-quote-style "auto" nil
   :type '(choice
           (const "auto")
@@ -711,6 +717,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("typescript.locale" lsp-typescript-locale)
    ("typescript.npm" lsp-typescript-npm)
    ("typescript.preferences.importModuleSpecifier" lsp-typescript-preferences-import-module-specifier)
+   ("typescript.preferences.preferTypeOnlyAutoImports" lsp-typescript-prefer-type-only-auto-imports t)
    ("typescript.preferences.importModuleSpecifierEnding" lsp-typescript-preferences-import-module-specifier-ending)
    ("typescript.preferences.quoteStyle" lsp-typescript-preferences-quote-style)
    ("typescript.preferences.renameShorthandProperties" lsp-typescript-preferences-rename-shorthand-properties t)
