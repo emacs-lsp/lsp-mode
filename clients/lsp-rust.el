@@ -724,6 +724,13 @@ available on a nightly build."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-rust-analyzer-assist-prefer-self nil
+  "Prefer to use `Self` over the type name when inserting a type (e.g. in “fill
+match arms” assist)."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-rust-analyzer-completion-add-call-parenthesis t
   "Whether to add parenthesis when completing functions."
   :type 'boolean
@@ -1783,6 +1790,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                   :typeHints ( :enable ,(lsp-json-bool lsp-inlay-hint-enable)
                                :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
                                :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
+    :assist ( :preferSelf ,(lsp-json-bool lsp-rust-analyzer-assist-prefer-self))
     :completion ( :addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                   :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                   :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
