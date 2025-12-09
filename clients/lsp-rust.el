@@ -816,6 +816,12 @@ and field accesses with self prefixed to them when inside a method."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-completion-term-search-enable nil
+  "Enable term search based snippets like `Some(foo.bar().baz())`."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-rust-analyzer-import-enforce-granularity nil
   "Whether to enforce the import granularity setting for all files.
  If set to nil rust-analyzer will try to keep import styles consistent per file."
@@ -1795,7 +1801,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                   :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                   :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
                   :autoimport (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-import-enable))
-                  :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable)))
+                  :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable))
+                  :termSearch (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-term-search-enable)))
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
     :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
     :rustcSource ,lsp-rust-analyzer-rustc-source
