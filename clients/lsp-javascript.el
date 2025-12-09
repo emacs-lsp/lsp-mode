@@ -547,6 +547,26 @@ workspace."
           (const "non-relative"))
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-javascript-preferences-import-module-specifier-ending "auto"
+  "Preferred path ending for auto imports.
+Requires using TypeScript 4.5+ in the workspace."
+  :type '(choice
+          (const "auto")
+          (const "minimal")
+          (const "index")
+          (const "js"))
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-typescript-preferences-import-module-specifier-ending "auto"
+  "Preferred path ending for auto imports.
+Requires using TypeScript 4.5+ in the workspace."
+  :type '(choice
+          (const "auto")
+          (const "minimal")
+          (const "index")
+          (const "js"))
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-javascript-preferences-rename-shorthand-properties t
   "Enable/disable introducing aliases for object shorthand
 properties during renames. Requires using TypeScript 3.4 or newer
@@ -655,6 +675,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("javascript.implicitProjectConfig.checkJs" lsp-javascript-implicit-project-config-check-js t)
    ("javascript.implicitProjectConfig.experimentalDecorators" lsp-javascript-implicit-project-config-experimental-decorators t)
    ("javascript.preferences.importModuleSpecifier" lsp-javascript-preferences-import-module-specifier)
+   ("javascript.preferences.importModuleSpecifierEnding" lsp-javascript-preferences-import-module-specifier-ending)
    ("javascript.preferences.quoteStyle" lsp-javascript-preferences-quote-style)
    ("javascript.preferences.renameShorthandProperties" lsp-javascript-preferences-rename-shorthand-properties t)
    ("javascript.referencesCodeLens.enabled" lsp-javascript-references-code-lens-enabled t)
@@ -690,6 +711,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("typescript.locale" lsp-typescript-locale)
    ("typescript.npm" lsp-typescript-npm)
    ("typescript.preferences.importModuleSpecifier" lsp-typescript-preferences-import-module-specifier)
+   ("typescript.preferences.importModuleSpecifierEnding" lsp-typescript-preferences-import-module-specifier-ending)
    ("typescript.preferences.quoteStyle" lsp-typescript-preferences-quote-style)
    ("typescript.preferences.renameShorthandProperties" lsp-typescript-preferences-rename-shorthand-properties t)
    ("typescript.referencesCodeLens.enabled" lsp-typescript-references-code-lens-enabled t)
