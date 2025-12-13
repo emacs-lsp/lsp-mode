@@ -3895,41 +3895,31 @@ disappearing, unset all the variables related to it."
          (rel-changed-file (f-relative changed-file root-folder))
          (event-numeric-kind (alist-get (cl-second event) lsp--file-change-type))
          (bit-position (1- event-numeric-kind))
-         (watch-bit (ash 1 bit-position)))
-    (->>
-     session
-     lsp-session-folder->servers
-     (gethash root-folder)
-     (seq-do (lambda (workspace)
-               (when (->>
-                      workspace
-                      lsp--workspace-registered-server-capabilities
-                      (-any?
-                       (lambda (capability)
-                         (and
-                          (equal (lsp--registered-capability-method capability)
-                                 "workspace/didChangeWatchedFiles")
-                          (->>
-                           capability
-                           lsp--registered-capability-options
-                           (lsp:did-change-watched-files-registration-options-watchers)
-                           (seq-find
-                            (-lambda ((fs-watcher &as &FileSystemWatcher :glob-pattern :kind? :_cachedRegexp cached-regexp))
-                              (when (or (null kind?)
-                                        (> (logand kind? watch-bit) 0))
-                                (-let [regexes (or cached-regexp
-                                                   (let ((regexp (lsp-glob-to-regexps glob-pattern)))
-                                                     (lsp-put fs-watcher :_cachedRegexp regexp)
-                                                     regexp))]
-                                  (-any? (lambda (re)
-                                           (or (string-match re changed-file)
-                                               (string-match re rel-changed-file)))
-                                         regexes))))))))))
-                 (with-lsp-workspace workspace
-                   (lsp-notify
-                    "workspace/didChangeWatchedFiles"
-                    `((changes . [((type . ,event-numeric-kind)
-                                   (uri . ,(lsp--path-to-uri changed-file)))]))))))))))
+         (watch-bit (ash 1 bit-position))
+         (workspaces (gethash root-folder (lsp-session-folder->servers session))))
+    (dolist (workspace workspaces)
+      (when (cl-loop for capability in (lsp--workspace-registered-server-capabilities workspace)
+                     thereis (and (equal (lsp--registered-capability-method capability)
+                                         "workspace/didChangeWatchedFiles")
+                                  (cl-loop for fs-watcher in (lsp:did-change-watched-files-registration-options-watchers
+                                                              (lsp--registered-capability-options capability))
+                                           thereis (let ((glob-pattern (lsp:file-system-watcher-glob-pattern fs-watcher))
+                                                         (kind? (lsp:file-system-watcher-kind? fs-watcher))
+                                                         (cached-regexp (lsp-get fs-watcher :_cachedRegexp)))
+                                                     (when (or (null kind?)
+                                                               (> (logand kind? watch-bit) 0))
+                                                       (let ((regexes (or cached-regexp
+                                                                          (let ((regexp (lsp-glob-to-regexps glob-pattern)))
+                                                                            (lsp-put fs-watcher :_cachedRegexp regexp)
+                                                                            regexp))))
+                                                         (cl-loop for re in regexes
+                                                                  thereis (or (string-match re changed-file)
+                                                                              (string-match re rel-changed-file)))))))))
+        (with-lsp-workspace workspace
+          (lsp-notify
+           "workspace/didChangeWatchedFiles"
+           `((changes . [((type . ,event-numeric-kind)
+                          (uri . ,(lsp--path-to-uri changed-file)))]))))))))
 
 (lsp-defun lsp--server-register-capability ((&Registration :method :id :register-options?))
   "Register capability REG."
@@ -4048,14 +4038,15 @@ If any filters, checks if it applies for PATH."
          (filters (seq-into (lsp:file-operation-registration-options-filters will-rename) 'list)))
     (and will-rename
          (or (seq-empty-p filters)
-             (-any? (-lambda ((&FileOperationFilter :scheme? :pattern (&FileOperationPattern :glob)))
-                      (-let [regexes (lsp-glob-to-regexps glob)]
-                        (and (or (not scheme?)
-                                 (string-prefix-p scheme? (lsp--path-to-uri path)))
-                             (-any? (lambda (re)
-                                      (string-match re path))
-                                    regexes))))
-                    filters)))))
+             (let ((uri (lsp--path-to-uri path)))
+               (cl-loop for filter in filters
+                        for scheme? = (lsp:file-operation-filter-scheme? filter)
+                        for glob = (lsp:file-operation-pattern-glob (lsp:file-operation-filter-pattern filter))
+                        thereis (and (or (not scheme?)
+                                         (string-prefix-p scheme? uri))
+                                     (let ((regexes (lsp-glob-to-regexps glob)))
+                                       (cl-loop for re in regexes
+                                                thereis (string-match re path))))))))))
 
 (defun lsp--send-did-rename-files-p ()
   "Return whether didRenameFiles notification should be sent to the server."
