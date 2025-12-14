@@ -182,6 +182,16 @@
   (lsp-register-custom-settings '(("foo" "new value")))
   (should (equal (gethash "foo" lsp-client-settings) '("new value"))))
 
+(ert-deftest lsp-resolve-final-command-with-nil-values ()
+  "Test that lsp-resolve-final-command handles nil values in command list (issue #4099).
+This test reproduces the bug where command lists with nil values cause
+'Invalid command list' assertion errors."
+  ;; Directly pass a list with nil values - this simulates what happens when
+  ;; lsp-resolve-value returns a list containing nil elements
+  (let ((command (list "node" nil "server.js" nil "--stdio")))
+    (should (equal (lsp-resolve-final-command command t)
+                   '("node" "server.js" "--stdio")))))
+
 
 
 ;;; lsp-mode-test.el ends here

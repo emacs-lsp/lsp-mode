@@ -7635,6 +7635,8 @@ Return a nested alist keyed by symbol names. e.g.
 (defun lsp-resolve-final-command (command &optional test?)
   "Resolve final function COMMAND."
   (let* ((command (lsp-resolve-value command))
+         ;; Filter out nil values before validation (issue #4099)
+         (command (if (listp command) (delq nil command) command))
          (command (cl-etypecase command
                     (list
                      (cl-assert (seq-every-p (apply-partially #'stringp) command) nil
