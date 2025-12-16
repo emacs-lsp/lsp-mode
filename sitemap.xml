@@ -691,6 +691,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ron/</loc>
+         <lastmod>2025-12-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rpm-spec/</loc>
          <lastmod>2025-12-16</lastmod>
          <changefreq>daily</changefreq>

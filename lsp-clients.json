@@ -1036,6 +1036,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ron",
+    "full-name": "Rusty Object Notation",
+    "server-name": "ron-lsp",
+    "server-url": "https://github.com/jasonjmcghee/ron-lsp/",
+    "installation": "cargo install ron-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruby-lsp",
     "full-name": "Ruby (ruby-lsp)",
     "server-name": "ruby-lsp",
