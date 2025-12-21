@@ -558,6 +558,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "just",
+    "full-name": "Just",
+    "server-name": "just-lsp",
+    "server-url": "https://github.com/terror/just-lsp",
+    "installation-url": "https://github.com/terror/just-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "jq",
     "full-name": "Jq (jq-lsp)",
     "server-name": "jq-lsp",
