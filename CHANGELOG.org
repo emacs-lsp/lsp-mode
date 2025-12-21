@@ -1,6 +1,7 @@
 * Changelog
 ** Unreleased 9.0.1
-  * Add supprot for RON files through ron-lsp.
+  * Add support for ~just~ files through just-lsp.
+  * Add support for RON files through ron-lsp.
   * Add explicit flag to enable (or disable) JSON validation.
   * Fix Accommodate renaming of lsp-postgres binaries
   * Fix =lsp-org= for org >= 9.7 (see #4300)

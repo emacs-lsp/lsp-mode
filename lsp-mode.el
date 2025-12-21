@@ -180,7 +180,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
      lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
      lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy
-     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-jq
+     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-just lsp-jq
      lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
      lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
      lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
@@ -847,6 +847,8 @@ Changes take effect only when a new session is started."
     (scala-ts-mode . "scala")
     (julia-mode . "julia")
     (julia-ts-mode . "julia")
+    (just-mode . "just")
+    (just-ts-mode . "just")
     (clojure-mode . "clojure")
     (clojurec-mode . "clojure")
     (clojurescript-mode . "clojurescript")
