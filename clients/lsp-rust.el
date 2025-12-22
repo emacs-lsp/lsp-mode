@@ -624,6 +624,28 @@ which overrides any value that would otherwise be inherited from
   :group 'lsp-rust-rust-analyzer
   :package-version '(lsp-mode . "8.0.2"))
 
+(defcustom lsp-rust-analyzer-check-invocation-location "workspace"
+  "Specifies the working directory for running checks.
+- \"workspace\": run checks for workspaces in the corresponding workspaces' root directories.  This falls back to \"root\" if rust-analyzer.check.invocationStrategy is set to once.
+- \"root\": run checks in the project’s root directory.
+This config only has an effect when rust-analyzer.check.overrideCommand is set."
+  :type '(choice
+          (const "workspace")
+          (const "root"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-rust-analyzer-check-invocation-strategy "per_workspace"
+  "Specifies the invocation strategy to use when running the check command.
+If per_workspace is set, the command will be executed for each workspace.
+If once is set, the command will be executed once.
+This config only has an effect when rust-analyzer.check.overrideCommand is set."
+  :type '(choice
+          (const "per_workspace")
+          (const "once"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-rust-analyzer-cargo-unset-test []
   "force rust-analyzer to unset `#[cfg(test)]` for the specified crates."
   :type 'lsp-string-vector
@@ -703,6 +725,34 @@ syntax highlighting."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-cargo-build-scripts-invocation-location "workspace"
+  "Specifies the working directory for running checks.
+- \"workspace\": run checks for workspaces in the corresponding workspaces' root directories.  This falls back to \"root\" if rust-analyzer.check.invocationStrategy is set to once.
+- \"root\": run checks in the project’s root directory.
+This config only has an effect when rust-analyzer.check.overrideCommand is set."
+  :type '(choice
+          (const "workspace")
+          (const "root"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-rust-analyzer-cargo-build-scripts-invocation-strategy "per_workspace"
+  "Specifies the invocation strategy to use when running the check command.
+If per_workspace is set, the command will be executed for each workspace.
+If once is set, the command will be executed once.
+This config only has an effect when rust-analyzer.check.overrideCommand is set."
+  :type '(choice
+          (const "per_workspace")
+          (const "once"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-rust-analyzer-cargo-build-scripts-override-command []
+  "Override the command rust-analyzer uses to run build scripts and build procedural macros."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-rust-analyzer-rustfmt-extra-args []
   "Additional arguments to rustfmt."
   :type 'lsp-string-vector
@@ -761,6 +811,12 @@ Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
   :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-proc-macro-server nil
+  "Internal config, path to proc-macro server executable."
+  :type 'string
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.1"))
 
 (defcustom lsp-rust-analyzer-import-prefix "plain"
   "The path structure for newly inserted paths to use.
@@ -891,6 +947,14 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
   :type 'alist
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-rust-analyzer-cargo-sysroot-src nil
+  "Relative path to the sysroot library sources.
+If left unset, this will default to {cargo.sysroot}/lib/rustlib/src/rust/library.
+This option does not take effect until rust-analyzer is restarted."
+  :type 'string
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-version . "9.0.1"))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
@@ -1735,7 +1799,9 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                    ;; "unset".
                    ,@(when (vectorp lsp-rust-analyzer-checkonsave-features)
                        `(:features ,lsp-rust-analyzer-checkonsave-features))
-                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
+                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command
+                   :invocationLocation ,lsp-rust-analyzer-check-invocation-location
+                   :invocationStrategy ,lsp-rust-analyzer-check-invocation-strategy)
     :highlightRelated ( :breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
                         :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
                         :exitPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-exit-points))
@@ -1759,7 +1825,11 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
              :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
              :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
              :unsetTest ,lsp-rust-analyzer-cargo-unset-test
-	     :buildScripts (:overrideCommand ,lsp-rust-analyzer-cargo-override-command))
+             :sysrootSrc ,lsp-rust-analyzer-cargo-sysroot-src
+             :buildScripts (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
+                            :overrideCommand ,lsp-rust-analyzer-cargo-build-scripts-override-command
+                            :invocationLocation ,lsp-rust-analyzer-cargo-build-scripts-invocation-location
+                            :invocationStrategy ,lsp-rust-analyzer-cargo-build-scripts-invocation-strategy))
     :rustfmt ( :extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
                :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
                :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
@@ -1804,7 +1874,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                   :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable))
                   :termSearch (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-term-search-enable)))
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
-    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
+    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable)
+                :server ,lsp-rust-analyzer-proc-macro-server)
     :rustcSource ,lsp-rust-analyzer-rustc-source
     :linkedProjects ,lsp-rust-analyzer-linked-projects
     :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
