@@ -192,6 +192,51 @@ This test reproduces the bug where command lists with nil values cause
     (should (equal (lsp-resolve-final-command command t)
                    '("node" "server.js" "--stdio")))))
 
+(ert-deftest lsp--capability-test ()
+  "Test lsp--capability returns correct values for various capability states.
+This tests the fix for empty capability objects like DefinitionOptions {}."
+  ;; Create capabilities structure that works in both plist and hash-table modes
+  (let ((capabilities (if lsp-use-plists
+                          ;; plist mode: empty objects are parsed as nil
+                          (list :definitionProvider nil
+                                :hoverProvider t
+                                :completionProvider (list :triggerCharacters ["." ":"]))
+                        ;; hash-table mode
+                        (let ((ht (make-hash-table :test 'equal)))
+                          (puthash "definitionProvider" nil ht)
+                          (puthash "hoverProvider" t ht)
+                          (let ((completion-ht (make-hash-table :test 'equal)))
+                            (puthash "triggerCharacters" ["." ":"] completion-ht)
+                            (puthash "completionProvider" completion-ht ht))
+                          ht))))
+    ;; Test 1: Capability exists with nil value (empty object like DefinitionOptions {})
+    ;; Should return t, not nil
+    (should (eq t (lsp--capability :definitionProvider capabilities)))
+
+    ;; Test 2: Capability exists with truthy value
+    ;; Should return the actual value
+    (should (eq t (lsp--capability :hoverProvider capabilities)))
+
+    ;; Test 3: Capability exists with a structured value
+    ;; Should return the actual value
+    (let ((completion-cap (lsp--capability :completionProvider capabilities)))
+      (should completion-cap)
+      (should-not (eq t completion-cap)))
+
+    ;; Test 4: Capability does not exist
+    ;; Should return nil
+    (should-not (lsp--capability :nonExistentProvider capabilities))))
+
+(ert-deftest lsp--capability-string-key-test ()
+  "Test lsp--capability accepts string keys and converts them properly."
+  (let ((capabilities (if lsp-use-plists
+                          (list :definitionProvider nil)
+                        (let ((ht (make-hash-table :test 'equal)))
+                          (puthash "definitionProvider" nil ht)
+                          ht))))
+    ;; String key should be converted to keyword and work correctly
+    (should (eq t (lsp--capability "definitionProvider" capabilities)))))
+
 
 
 ;;; lsp-mode-test.el ends here
