@@ -4729,8 +4729,8 @@ Returns the capability value, or t if the capability exists but has an empty val
   (when (stringp cap)
     (setq cap (intern (concat ":" cap))))
   (let ((caps (or capabilities (lsp--server-capabilities))))
-    (when (lsp-member? caps cap)
-      (or (lsp-get caps cap) t))))
+    (or (lsp-get caps cap)
+        (lsp-member? caps cap))))
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
