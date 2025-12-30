@@ -56,6 +56,7 @@
   * Fix default value for ~lsp-rust-analyzer-cargo-cfgs~
   * Add ~lsp-ruby-lsp-server-command~ variable to allow overriding of the path to ~ruby-lsp~ executable
   * Add support for the ~javascript.preferences.importModuleSpecifierEnding~ and ~typescript.preferences.importModuleSpecifierEnding~ preferences.
+  * Fix missing ty (a fast python language server) inlay hints when ~lsp-use-plist~ is true
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
