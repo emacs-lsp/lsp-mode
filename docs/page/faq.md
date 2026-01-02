@@ -27,7 +27,7 @@ The highest number is highest priority. Note this is the opposite of [Unix prior
 You may create `dir-local` for each of the projects and specify list of `lsp-enabled-clients`. This will narrow the list of the clients that are going to be tested for the project.
 
 ---
-### :grey_question: The completion does not work fine and inserts arguments and placeholders, what I am doing wrong?
+### :grey_question: The completion does not work fine and inserts arguments and placeholders, what am I doing wrong?
 
 make sure you have installed `yasnippet` and you have `yasnippet` minor mode enabled.
 

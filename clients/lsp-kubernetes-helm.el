@@ -216,7 +216,7 @@ Limited for performance reasons."
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-kubernetes-helm-server-arguments '("serve" "--stdio")
-  "Command to start helm-ls.  Minimally needs serve otherwise the server wont start properly."
+  "Command to start helm-ls.  Minimally needs serve otherwise the server won't start properly."
   :type '(repeat string)
   :group 'lsp-kubernetes-helm
   :package-version '(lsp-mode . "9.0.0"))
