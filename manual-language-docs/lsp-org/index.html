@@ -3852,9 +3852,9 @@ inside of <a href="https://orgmode.org/">org-mode</a> source blocks. <code>lsp-m
 achieving this by obtaining the information about the source block from the
 source block header(language + <code>:tangle</code>) then translating the point to the LSP
 positions back and forth so the language server thinks that Emacs has opened the
-original file. In order that to work the files has to be present on the disk as
+original file. For this to work, the files have to be present on the disk as
 well because the server expects to find them.</p>
-<p>Here it is a sample source block:</p>
+<p>Here is a sample source block:</p>
 <div class="highlight"><pre><span></span><code>#+BEGIN_SRC python :tangle &quot;python.py&quot;
 print &quot;Hello!&quot;
 #+END_SRC
@@ -3905,7 +3905,7 @@ print &quot;Hello!&quot;
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 30, 2025</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2026</span>
       
     
   </small>
