@@ -4189,12 +4189,13 @@ yet."
                                  more-trigger-character?)))))
 
 (defun lsp--update-on-type-formatting-hook (&optional cleanup?)
-  (let ((on-type-formatting-handler (lsp--on-type-formatting-handler-create)))
+  (when-let* ((on-type-formatting-handler
+               (and (or lsp-enable-on-type-formatting cleanup?)
+                    (lsp--on-type-formatting-handler-create))))
     (cond
-     ((and lsp-enable-on-type-formatting on-type-formatting-handler (not cleanup?))
+     ((and lsp-enable-on-type-formatting (not cleanup?))
       (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
-     ((or cleanup?
-          (not lsp-enable-on-type-formatting))
+     ((or cleanup? (not lsp-enable-on-type-formatting))
       (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
 
 (defun lsp--signature-help-handler-create ()
@@ -4204,18 +4205,16 @@ yet."
       (lsp--maybe-enable-signature-help trigger-characters?))))
 
 (defun lsp--update-signature-help-hook (&optional cleanup?)
-  (let ((signature-help-handler (lsp--signature-help-handler-create)))
-    (cond
-     ((and (or (equal lsp-signature-auto-activate t)
-               (memq :on-trigger-char lsp-signature-auto-activate))
-           signature-help-handler
-           (not cleanup?))
-      (add-hook 'post-self-insert-hook signature-help-handler nil t))
-
-     ((or cleanup?
-          (not (or (equal lsp-signature-auto-activate t)
-                   (memq :on-trigger-char lsp-signature-auto-activate))))
-      (remove-hook 'post-self-insert-hook signature-help-handler t)))))
+  (let ((signature-auto-activate-p (or (equal lsp-signature-auto-activate t)
+                                       (memq :on-trigger-char lsp-signature-auto-activate))))
+    (when-let* ((signature-help-handler
+                 (and (or signature-auto-activate-p cleanup?)
+                      (lsp--signature-help-handler-create))))
+      (cond
+       ((and signature-auto-activate-p (not cleanup?))
+        (add-hook 'post-self-insert-hook signature-help-handler nil t))
+       ((or cleanup? (not signature-auto-activate-p))
+        (remove-hook 'post-self-insert-hook signature-help-handler t))))))
 
 (defun lsp--after-set-visited-file-name ()
   (lsp-disconnect)
