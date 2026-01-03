@@ -866,6 +866,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-typst/</loc>
+         <lastmod>2026-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-v/</loc>
          <lastmod>2026-01-03</lastmod>
          <changefreq>daily</changefreq>
