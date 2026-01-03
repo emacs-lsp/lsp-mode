@@ -382,7 +382,8 @@ already present."
                       :fileExtensions ,lsp-serenata-file-extensions)))
 
 
-(lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
+(eval-and-compile
+  (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil)))
 
 (lsp-register-client
  (make-lsp-client
