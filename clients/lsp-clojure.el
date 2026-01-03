@@ -110,8 +110,8 @@ Defaults to side following treemacs default."
 
 ;; Internal
 
-(lsp-interface
- (Clojure:CursorInfoParams (:textDocument :position) nil))
+(eval-and-compile
+  (lsp-interface (Clojure:CursorInfoParams (:textDocument :position) nil)))
 
 (lsp-dependency
  'clojure-lsp
