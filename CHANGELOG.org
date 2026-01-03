@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add support for [[https://github.com/Myriad-Dreamin/tinymist][Typst (Tinymist)]] language server.
   * Add support for ~just~ files through just-lsp.
   * Add support for RON files through ron-lsp.
   * Add explicit flag to enable (or disable) JSON validation.
