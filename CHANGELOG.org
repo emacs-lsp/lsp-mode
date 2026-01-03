@@ -22,6 +22,7 @@
   * Change ~ruff-lsp~ to ~ruff~ for python lsp client. All ~ruff-lsp~ customizable variable change to ~ruff~. Lsp server command now is ~["ruff" "server"]~ instead of ~["ruff-lsp"]~.
   * Add futhark support
   * Optimize overlay creation by checking window visibility first
+  * Optimize hook setup by avoiding unnecessary handler creation when ~lsp-enable-on-type-formatting~ or ~lsp-signature-auto-activate~ are disabled
   * Replace the per-interface ~(INTERFACE ...)~ pcase forms with a single,
     unified ~(lsp-interface INTERFACE ...)~ form. The per-interface forms are no
     longer generated. *This is a breaking change.* (See #4430.)
