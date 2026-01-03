@@ -1287,6 +1287,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "typst",
+    "full-name": "Typst",
+    "server-name": "tinymist",
+    "server-url": "https://github.com/Myriad-Dreamin/tinymist",
+    "installation": "cargo install tinymist",
+    "debugger": "Not available"
+  },
+  {
     "name": "typos",
     "full-name": "Typos source code spell checker",
     "server-name": "typos-lsp",
