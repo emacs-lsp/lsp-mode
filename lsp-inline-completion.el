@@ -41,7 +41,7 @@
                             lsp/inline-completion-trigger-invoked))))
 
 (defun lsp-inline-completion--parse-items (response)
-  "Parses the reponse from the server and returns a list of
+  "Parses the response from the server and returns a list of
 InlineCompletionItem objects"
 
   (pcase response
@@ -74,7 +74,7 @@ InlineCompletionItem objects"
     (define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
     (define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
     (define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
-    ;; useful -- recenter without loosing the completion
+    ;; useful -- recenter without losing the completion
     (define-key map (kbd "C-l") #'recenter-top-bottom)
     ;; ignore
     (define-key map [down-mouse-1] #'ignore)

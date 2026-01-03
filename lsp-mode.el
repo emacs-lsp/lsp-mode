@@ -5649,7 +5649,7 @@ MODE (car) is function which is defined in `lsp-language-id-configuration'.
 Cdr should be list of PROPERTY-LIST.
 
 Each PROPERTY-LIST should have properties:
-:regexp  Regexp which determines what string is relpaced to image.
+:regexp  Regexp which determines what string is replaced to image.
          You should also get information of image, by parenthesis constructs.
          By default, all matched string is replaced to image, but you can
          change index of replaced string by keyword :replaced-index.
@@ -7701,7 +7701,7 @@ corresponding to PATH, else returns `default-directory'."
 
 (defun lsp--fix-remote-cmd (program)
   "Helper for `lsp-stdio-connection'.
-Originally coppied from eglot."
+Originally copied from eglot."
 
   (if (file-remote-p default-directory)
       (list shell-file-name "-c"
