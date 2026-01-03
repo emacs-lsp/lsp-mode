@@ -618,17 +618,17 @@ TypeScript 3.0 or newer in the workspace."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-surveys-enabled t
-  "Enabled/disable occasional surveys that help us improve VS
+  "Enable/disable occasional surveys that help us improve VS
 Code's JavaScript and TypeScript support."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
@@ -791,7 +791,7 @@ name (e.g. `data' variable passed as `data' parameter)."
   nil)
 
 (defun lsp-javascript-rename-file ()
-  "Rename current file and all it's references in other files."
+  "Rename current file and all its references in other files."
   (interactive)
   (let* ((name (buffer-name))
          (old (buffer-file-name))

@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; Tool for convert elisp files into documentation.
+;; Tool to convert elisp files into documentation.
 
 ;;; Code:
 

@@ -55,7 +55,7 @@ here, https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155.
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-json-validate t
-  "Enable json validaten."
+  "Enable JSON validation."
   :type 'boolean
   :group 'lsp-json
   :package-version '(lsp-mode . "9.0.1"))
