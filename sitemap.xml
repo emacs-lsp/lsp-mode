@@ -391,11 +391,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-helm/</loc>
-         <lastmod>2026-01-04</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-html/</loc>
          <lastmod>2026-01-04</lastmod>
          <changefreq>daily</changefreq>
@@ -447,6 +442,11 @@
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-kotlin/</loc>
+         <lastmod>2026-01-04</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-kubernetes-helm/</loc>
          <lastmod>2026-01-04</lastmod>
          <changefreq>daily</changefreq>
     </url>

@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-helm/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-kubernetes-helm/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Lsp helm - LSP Mode - LSP support for Emacs</title>
+        <title>YAML (helm-ls) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lsp helm
+              YAML (helm-ls)
             
           </span>
         </div>
@@ -223,13 +223,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link">
+      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
         Languages
       </a>
     </li>
@@ -1036,12 +1038,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -3274,11 +3278,260 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-kubernetes-helm.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          YAML (helm-ls)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         YAML (helm-ls)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-additional-values-files-pattern" class="md-nav__link">
+    lsp-kubernetes-helm-additional-values-files-pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-log-level" class="md-nav__link">
+    lsp-kubernetes-helm-ls-log-level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-main-values-file-path" class="md-nav__link">
+    lsp-kubernetes-helm-ls-main-values-file-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-server-path" class="md-nav__link">
+    lsp-kubernetes-helm-ls-server-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-overlay-values-file-path" class="md-nav__link">
+    lsp-kubernetes-helm-overlay-values-file-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-server-arguments" class="md-nav__link">
+    lsp-kubernetes-helm-server-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-bracket-spacing" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-bracket-spacing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-completion" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-custom-tags" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-custom-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-diagnostics-limit" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-diagnostics-limit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-enable-for-globs" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-enable-for-globs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-format-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-format-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-hover" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-max-items-computed" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-max-items-computed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-print-width" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-print-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-prose-wrap" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-prose-wrap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-extensions" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-extensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-local-db" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-local-db
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-uri" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-uri
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schemas" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schemas
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-server-path" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-server-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-single-quote" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-single-quote
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-validate" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-validate
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3795,6 +4048,187 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-additional-values-files-pattern" class="md-nav__link">
+    lsp-kubernetes-helm-additional-values-files-pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-log-level" class="md-nav__link">
+    lsp-kubernetes-helm-ls-log-level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-main-values-file-path" class="md-nav__link">
+    lsp-kubernetes-helm-ls-main-values-file-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-ls-server-path" class="md-nav__link">
+    lsp-kubernetes-helm-ls-server-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-overlay-values-file-path" class="md-nav__link">
+    lsp-kubernetes-helm-overlay-values-file-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-server-arguments" class="md-nav__link">
+    lsp-kubernetes-helm-server-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-bracket-spacing" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-bracket-spacing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-completion" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-custom-tags" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-custom-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-diagnostics-limit" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-diagnostics-limit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-enable-for-globs" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-enable-for-globs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-format-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-format-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-hover" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-max-items-computed" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-max-items-computed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-print-width" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-print-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-prose-wrap" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-prose-wrap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-enable" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-extensions" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-extensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-local-db" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-local-db
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schema-store-uri" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schema-store-uri
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-schemas" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-schemas
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-server-path" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-server-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-single-quote" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-single-quote
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kubernetes-helm-yaml-ls-validate" class="md-nav__link">
+    lsp-kubernetes-helm-yaml-ls-validate
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3833,7 +4267,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-helm.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-kubernetes-helm.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3859,6 +4293,141 @@
 <p>For more instructions on how to install manually, check <a href="https://github.com/mrjosh/helm-ls?tab=readme-ov-file#installation-with-a-package-manager">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-kubernetes-helm-additional-values-files-pattern"><code>lsp-kubernetes-helm-additional-values-files-pattern</code><a class="headerlink" href="#lsp-kubernetes-helm-additional-values-files-pattern" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>values*.yaml</code></p>
+<p>Pattern for additional values files, which will be shown for completion and hover.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-ls-log-level"><code>lsp-kubernetes-helm-ls-log-level</code><a class="headerlink" href="#lsp-kubernetes-helm-ls-log-level" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const trace) (const debug) (const info) (const warning) (const error) (const fatal) (const panic))</code></p>
+<p><em>Default:</em> <code>info</code></p>
+<p>Options for the log level of the Helm Language Server.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-ls-main-values-file-path"><code>lsp-kubernetes-helm-ls-main-values-file-path</code><a class="headerlink" href="#lsp-kubernetes-helm-ls-main-values-file-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>values.yaml</code></p>
+<p>Path to main values file for Helm Chart.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-ls-server-path"><code>lsp-kubernetes-helm-ls-server-path</code><a class="headerlink" href="#lsp-kubernetes-helm-ls-server-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>helm_ls</code></p>
+<p>Path to the Helm Language Server binary.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-overlay-values-file-path"><code>lsp-kubernetes-helm-overlay-values-file-path</code><a class="headerlink" href="#lsp-kubernetes-helm-overlay-values-file-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>values.lint.yaml</code></p>
+<p>Path to values file that may be merged with main values files for Helm Chart.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-server-arguments"><code>lsp-kubernetes-helm-server-arguments</code><a class="headerlink" href="#lsp-kubernetes-helm-server-arguments" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>(serve --stdio)</code></p>
+<p>Command to start helm-ls.  Minimally needs serve otherwise the server won`t start properly.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-bracket-spacing"><code>lsp-kubernetes-helm-yaml-ls-bracket-spacing</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-bracket-spacing" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Print spaces between brackets in objects.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-completion"><code>lsp-kubernetes-helm-yaml-ls-completion</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-completion" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable/disable completion feature.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-custom-tags"><code>lsp-kubernetes-helm-yaml-ls-custom-tags</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-custom-tags" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(lsp-repeatable-vector string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Custom tags for the parser to use.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-diagnostics-limit"><code>lsp-kubernetes-helm-yaml-ls-diagnostics-limit</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-diagnostics-limit" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>25</code></p>
+<p>Limit the amount of yaml diagnostics to return.
+Should typically be set to a low number when editing helm files.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-enable"><code>lsp-kubernetes-helm-yaml-ls-enable</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-enable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable/disable default YAML Language Server.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-enable-for-globs"><code>lsp-kubernetes-helm-yaml-ls-enable-for-globs</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-enable-for-globs" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>*.{yaml,yml}</code></p>
+<p>Enable/disable default YAML Language Server.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-format-enable"><code>lsp-kubernetes-helm-yaml-ls-format-enable</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-format-enable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable/disable default YAML formatter.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-hover"><code>lsp-kubernetes-helm-yaml-ls-hover</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-hover" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable/disable hover feature.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-max-items-computed"><code>lsp-kubernetes-helm-yaml-ls-max-items-computed</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-max-items-computed" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>5000</code></p>
+<p>The maximum number of outline symbols and folding regions computed.
+Limited for performance reasons.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-print-width"><code>lsp-kubernetes-helm-yaml-ls-print-width</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-print-width" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>80</code></p>
+<p>Specify the line length that the printer will wrap on.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-prose-wrap"><code>lsp-kubernetes-helm-yaml-ls-prose-wrap</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-prose-wrap" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const always) (const never) (const preserve))</code></p>
+<p><em>Default:</em> <code>preserve</code></p>
+<p>Options for prose-wrap.
+Always: wrap prose if it exceeds the print width.
+Never: never wrap the prose.
+Preserve: wrap prose as-is.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-schema-store-enable"><code>lsp-kubernetes-helm-yaml-ls-schema-store-enable</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-schema-store-enable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable/disable JSON Schema store.  When set to true, available YAML schemas will be automatically pulled from
+<code>lsp-kubernetes-helm-yaml-ls-schema-store-uri</code>.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-schema-store-extensions"><code>lsp-kubernetes-helm-yaml-ls-schema-store-extensions</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-schema-store-extensions" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(list (list (alist :key-type (choice (const :tag Name name) (const :tag Description description) (const :tag URL url)) :value-type string)))</code></p>
+<p><em>Default:</em> <code>(((name . Kubernetes v1.30.3) (description . Kubernetes v1.30.3 manifest schema definition) (url . https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json)))</code></p>
+<p>Schemas defined by user schemas to files in a glob pattern.
+Used by Yaml Language Server to determine which schema to use for which types of files.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-schema-store-local-db"><code>lsp-kubernetes-helm-yaml-ls-schema-store-local-db</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-schema-store-local-db" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.cache/lsp/lsp-kubernetes-helm-schemas.json</code></p>
+<p>Cached database of schema store.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-schema-store-uri"><code>lsp-kubernetes-helm-yaml-ls-schema-store-uri</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-schema-store-uri" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>https://www.schemastore.org/api/json/catalog.json</code></p>
+<p>URL of schema store catalog to use.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-schemas"><code>lsp-kubernetes-helm-yaml-ls-schemas</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-schemas" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(alist :key-type (symbol :tag schema) :value-type (lsp-repeatable-vector :tag files (glob)))</code></p>
+<p><em>Default:</em> <code>((https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json . [*.y*]) (kubernetes . []))</code></p>
+<p>List used by yaml language server to match schemas to globs.
+This list is prioritized over the schema store schemas. Recommended to set
+kubernetes to an empty string and at the end of the list to override the
+default provided in yaml-language-server.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-server-path"><code>lsp-kubernetes-helm-yaml-ls-server-path</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-server-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>yaml-language-server</code></p>
+<p>Path to the Yaml Language Server binary that supports the Helm Language Server.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-single-quote"><code>lsp-kubernetes-helm-yaml-ls-single-quote</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-single-quote" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Use single quote instead of double quotes.</p>
+<hr />
+<h3 id="lsp-kubernetes-helm-yaml-ls-validate"><code>lsp-kubernetes-helm-yaml-ls-validate</code><a class="headerlink" href="#lsp-kubernetes-helm-yaml-ls-validate" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable/disable validation feature.</p>
+<hr />
 
 <!-- Source file information -->
 
@@ -3881,6 +4450,41 @@
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../lsp-yaml/" class="md-footer__link md-footer__link--prev" aria-label="Previous: YAML" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              YAML
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../lsp-yang/" class="md-footer__link md-footer__link--next" aria-label="Next: YANG" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              YANG
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
