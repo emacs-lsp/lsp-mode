@@ -1406,7 +1406,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "helm",
+    "name": "kubernetes-helm",
     "full-name": "YAML (helm-ls)",
     "server-name": "helm-ls",
     "server-url": "https://github.com/mrjosh/helm-ls",
