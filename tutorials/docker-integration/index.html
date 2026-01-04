@@ -3581,7 +3581,7 @@
   
     <li class="md-nav__item">
       <a href="https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/" class="md-nav__link">
-        Python, debbuging with poetry + pyenv
+        Python, debugging with poetry + pyenv
       </a>
     </li>
   
@@ -3906,16 +3906,16 @@
 Imagine that you have a short-time project (or a sideproject) and you don't want to bring any software packages to your local machine.
 Now it is simple: wrap the language server and debugger you need in <code>docker</code> and use <code>lsp-docker</code> for LSP and <code>dap-mode</code> for DAP.</p>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
-<p>Most of the <code>lsp-mode</code> and <code>dap-mode</code> features, but with the ability to use containerized environments.  </p>
+<p>Most of the <code>lsp-mode</code> and <code>dap-mode</code> features, but with the ability to use containerized environments.</p>
 <p><em>Note: some of the features may yet to be tested, so any help finding and fixing any bugs in them is highly appreciated!</em></p>
 <h2 id="components-language-server-lsp-support">Components: Language Server / LSP support<a class="headerlink" href="#components-language-server-lsp-support" title="Permanent link">#</a></h2>
-<p>You can use manually built containers or images hosting language server(s), just follow a few simple rules (shown below).  </p>
+<p>You can use manually built containers or images hosting language server(s), just follow a few simple rules (shown below).</p>
 <p><em>Note: this info is based on the readme in the original project, take a look at <a href="https://github.com/emacs-lsp/lsp-docker">lsp-docker</a> for additional info.</em></p>
 <h3 id="building-a-container-or-an-image">Building a container (or an image):<a class="headerlink" href="#building-a-container-or-an-image" title="Permanent link">#</a></h3>
 <p>You have 2 constraints:</p>
 <p>A language server must be launched in stdio mode (other types of communication are yet to be supported).
 A docker container (only container subtype, see the configuration below) must have your language server as an entrypoint (basically you have to be able to launch it with <code>docker start -i &lt;container_name&gt;</code> as it is launched this way with <code>lsp-docker</code>).
-When you have sucessfully built a language server, you have to register it with either a configuration file or a .dir-locals file.</p>
+When you have successfully built a language server, you have to register it with either a configuration file or a .dir-locals file.</p>
 <h3 id="registering-a-language-server-using-a-persistent-configuration-file">Registering a language server using a persistent configuration file:<a class="headerlink" href="#registering-a-language-server-using-a-persistent-configuration-file" title="Permanent link">#</a></h3>
 <p>A configuration file is a yaml file that is named <code>.lsp-docker.yml</code> or <code>.lsp-docker.yaml</code> and looks generally like this:
 <div class="highlight"><pre><span></span><code><span class="nt">lsp</span><span class="p">:</span><span class="w"></span>
@@ -3924,7 +3924,7 @@ When you have sucessfully built a language server, you have to register it with 
 <span class="w">    </span><span class="nt">subtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container</span><span class="w"> </span><span class="c1"># Or image. container subtype means launching an existing container</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># image subtype means creating a new container each time from a specified image</span><span class="w"></span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not-significant-but-unique-name</span><span class="w"> </span><span class="c1"># Must be unique across all language servers</span><span class="w"></span>
-<span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-id-of-the-base-server</span><span class="w"> </span><span class="c1"># Server id of a registered server (by lsp-mode) </span><span class="w"></span>
+<span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-id-of-the-base-server</span><span class="w"> </span><span class="c1"># Server id of a registered server (by lsp-mode)</span><span class="w"></span>
 <span class="w">    </span><span class="nt">launch_command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;launch</span><span class="nv"> </span><span class="s">command</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">arguments&quot;</span><span class="w"> </span><span class="c1"># Launch command of the language server</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># (selected by a server id specified above) in stdio mode</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Note: launch_command is not used with container subtype servers</span><span class="w"></span>
@@ -3937,7 +3937,7 @@ When you have sucessfully built a language server, you have to register it with 
 <p>Just refer to the source code and general conventions of using .dir-locals. The variable you need is lsp-docker-persistent-default-config, its content is merged with the lsp section from a configuration file (if present).</p>
 <h2 id="components-debugger-dap">Components: Debugger / DAP<a class="headerlink" href="#components-debugger-dap" title="Permanent link">#</a></h2>
 <p><em>Note: this info is based on the readme in the original project, take a look at <a href="https://github.com/emacs-lsp/dap-mode">dap-mode</a> for additional info.</em></p>
-<p>Configure it either with a <code>.dir-locals</code> file or drop an <code>.lsp-docker.yml</code> configuration file (use <code>lsp-docker</code> for general reference). Basically you have one function <code>dap-docker-register</code> that performs all the heavy lifting (finding the original debug template, patching it, registering a debug provider e.t.c). This function examines a configuration file or falls back to the default configuration (which can be patched using the <code>.dir-locals</code> approach, take a note that the default configuration doesn’t provide any sane defaults for debugging) and then operates on the combination of the two. This mechanism is the same as in <code>lsp-docker</code>.  </p>
+<p>Configure it either with a <code>.dir-locals</code> file or drop an <code>.lsp-docker.yml</code> configuration file (use <code>lsp-docker</code> for general reference). Basically you have one function <code>dap-docker-register</code> that performs all the heavy lifting (finding the original debug template, patching it, registering a debug provider e.t.c). This function examines a configuration file or falls back to the default configuration (which can be patched using the <code>.dir-locals</code> approach, take a note that the default configuration doesn’t provide any sane defaults for debugging) and then operates on the combination of the two. This mechanism is the same as in <code>lsp-docker</code>.</p>
 <p><em>Note: currently you cannot use this mode when using a network connection to connect to debuggers (this part is yet to be implemented). Still want to talk to debuggers over network? In order to do so you have to look at the launch-args patching done by <code>dap-docker--dockerize-start-file-args</code>, you have to somehow assign <code>nil</code> to <code>dap-server-path</code> before it is passed further into session creation.</em></p>
 <p>If you want to stick to a configuration file, take a look at the example below:
 <div class="highlight"><pre><span></span><code><span class="nt">lsp</span><span class="p">:</span><span class="w"></span>
@@ -3958,7 +3958,7 @@ When you have sucessfully built a language server, you have to register it with 
 <span class="w">    </span><span class="c1"># e.g. if you have installed a debug server in a different directory, not used with &#39;container&#39; subtype debuggers</span><span class="w"></span>
 </code></pre></div></p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
-<p>Let's develop and debug a simple Ruby application (that uses bundler nonetheless).<br />
+<p>Let's develop and debug a simple Ruby application (that uses bundler nonetheless).
 In the project folder we have at least the actual code and <code>Gemfile</code> with <code>Gemfile.lock</code>.</p>
 <p>First of all we have to build the images and containers. Let's stick with an image for a language server and a container for debugging. In order to have LSP support in Ruby we have to place <code>solargraph</code> in <code>Gemfile</code>.</p>
 <h3 id="building-language-server">Building: Language Server<a class="headerlink" href="#building-language-server" title="Permanent link">#</a></h3>
@@ -3985,9 +3985,9 @@ In the project folder we have at least the actual code and <code>Gemfile</code> 
 <span class="c"># Use the created user, remove this line if you deleted the user creation lines</span>
 <span class="k">USER</span><span class="w"> </span><span class="s">user</span>
 </code></pre></div>
-You may build it with something like this <code>docker build -t lsp-docker-ruby-server .</code> while you are in the project folder.  </p>
+You may build it with something like this <code>docker build -t lsp-docker-ruby-server .</code> while you are in the project folder.</p>
 <h3 id="building-debugger">Building: Debugger<a class="headerlink" href="#building-debugger" title="Permanent link">#</a></h3>
-<p>With a debugger it is a bit more complicated: first of all you need <code>node</code> to run the DAP server (as it is a VSCode extension) and second you need to place the extension into the container. You can download the extension (take the latest version) from the <a href="https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby">VSCode marketplace</a> and place it in your project folder (<code>vspackage.zip</code> for convenience).<br />
+<p>With a debugger it is a bit more complicated: first of all you need <code>node</code> to run the DAP server (as it is a VSCode extension) and second you need to place the extension into the container. You can download the extension (take the latest version) from the <a href="https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby">VSCode marketplace</a> and place it in your project folder (<code>vspackage.zip</code> for convenience).
 In this case your <code>Dockerfile</code> may look like this:
 <div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ruby:3.1.1-slim-bullseye</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">app</span>
 
@@ -4014,7 +4014,7 @@ In this case your <code>Dockerfile</code> may look like this:
 
 <span class="k">USER</span><span class="w"> </span><span class="s">user</span>
 </code></pre></div>
-Again you may build it with something like this <code>docker build -t dap-docker-ruby-server .</code> while you are in the project folder. But as we decided to stick with a container for the debugger, we need to create one! It is easy (but take note that we <strong>have to specify the folder mappings when creating a container!</strong>): <code>docker create -i -v `pwd`:/app -w /app --name dap-docker-ruby-server dap-docker-ruby-server node /debugger/extension/dist/debugger/main.js</code>.  </p>
+Again you may build it with something like this <code>docker build -t dap-docker-ruby-server .</code> while you are in the project folder. But as we decided to stick with a container for the debugger, we need to create one! It is easy (but take note that we <strong>have to specify the folder mappings when creating a container!</strong>): <code>docker create -i -v `pwd`:/app -w /app --name dap-docker-ruby-server dap-docker-ruby-server node /debugger/extension/dist/debugger/main.js</code>.</p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h3>
 <p>Lets use a <code>yaml</code> persistent configuration, we may use something like this (in <code>.lsp-docker.yml</code> in the project folder):
 <div class="highlight"><pre><span></span><code><span class="nt">lsp</span><span class="p">:</span><span class="w"></span>
@@ -4036,7 +4036,7 @@ Again you may build it with something like this <code>docker build -t dap-docker
 <span class="w">    </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ruby::Run&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="nt">launch_command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;node</span><span class="nv"> </span><span class="s">/debugger/extension/dist/debugger/main.js&quot;</span><span class="w"> </span><span class="c1"># It is meaningless as we use a container, but still</span><span class="w"></span>
 </code></pre></div>
-Next we have to register both language server and debugger when the project is opened in Emacs: use <code>lsp-docker-register</code> and <code>dap-docker-register</code> interactive functions.<br />
+Next we have to register both language server and debugger when the project is opened in Emacs: use <code>lsp-docker-register</code> and <code>dap-docker-register</code> interactive functions.
 If everything is fine you may launch a language server by a simple <code>lsp</code> invocation and DAP by <code>dap-debug</code> and selecting a dockerized debug template.</p>
 
 <!-- Source file information -->

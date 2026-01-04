@@ -3697,7 +3697,7 @@
   
     <li class="md-nav__item">
       <a href="https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/" class="md-nav__link">
-        Python, debbuging with poetry + pyenv
+        Python, debugging with poetry + pyenv
       </a>
     </li>
   
@@ -4035,7 +4035,7 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
 </code></pre></div>
 <h3 id="use-plists-for-deserialization">Use <code>plists</code> for deserialization.<a class="headerlink" href="#use-plists-for-deserialization" title="Permanent link">#</a></h3>
-<p><code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in deserialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
+<p><code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in deserialization and also put less pressure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
 <ol>
 <li>Configure the following env variable. Make sure that <code>Emacs</code> can see that variable. For example, this can be done by starting <code>Emacs</code> from the shell.
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LSP_USE_PLISTS</span><span class="o">=</span><span class="nb">true</span>
