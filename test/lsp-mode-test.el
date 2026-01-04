@@ -193,6 +193,118 @@ This test reproduces the bug where command lists with nil values cause
     (should (equal (lsp-resolve-final-command command t)
                    '("node" "server.js" "--stdio")))))
 
+;;; Hook Management Tests (Issue #4815)
 
+(ert-deftest lsp-update-on-type-formatting-hook-enabled ()
+  "Test that handler is created and hook is added when feature is enabled."
+  (with-temp-buffer
+    (let ((lsp-enable-on-type-formatting t)
+          (handler-created nil)
+          (hook-added nil))
+      (cl-letf (((symbol-function 'lsp--on-type-formatting-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-handler))
+                ((symbol-function 'add-hook)
+                 (lambda (hook fn &optional _depth _local)
+                   (when (and (eq hook 'post-self-insert-hook)
+                              (eq fn 'mock-handler))
+                     (setq hook-added t)))))
+        (lsp--update-on-type-formatting-hook)
+        (should handler-created)
+        (should hook-added)))))
+
+(ert-deftest lsp-update-on-type-formatting-hook-disabled-optimization ()
+  "Test that handler creation is skipped when feature is disabled (optimization).
+This verifies issue #4815 is fixed - handler should NOT be created when
+lsp-enable-on-type-formatting is nil and not in cleanup mode."
+  (with-temp-buffer
+    (let ((lsp-enable-on-type-formatting nil)
+          (handler-created nil))
+      (cl-letf (((symbol-function 'lsp--on-type-formatting-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-handler)))
+        (lsp--update-on-type-formatting-hook)
+        (should-not handler-created)))))
+
+(ert-deftest lsp-update-on-type-formatting-hook-cleanup ()
+  "Test that cleanup mode creates handler for proper hook removal."
+  (with-temp-buffer
+    (let ((lsp-enable-on-type-formatting nil)
+          (handler-created nil)
+          (hook-removed nil))
+      (cl-letf (((symbol-function 'lsp--on-type-formatting-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-handler))
+                ((symbol-function 'remove-hook)
+                 (lambda (hook fn &optional _local)
+                   (when (and (eq hook 'post-self-insert-hook)
+                              (eq fn 'mock-handler))
+                     (setq hook-removed t)))))
+        (lsp--update-on-type-formatting-hook :cleanup)
+        (should handler-created)
+        (should hook-removed)))))
+
+(ert-deftest lsp-update-signature-help-hook-enabled ()
+  "Test that handler is created when signature help is enabled."
+  (with-temp-buffer
+    (let ((lsp-signature-auto-activate t)
+          (handler-created nil)
+          (hook-added nil))
+      (cl-letf (((symbol-function 'lsp--signature-help-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-sig-handler))
+                ((symbol-function 'add-hook)
+                 (lambda (hook fn &optional _depth _local)
+                   (when (and (eq hook 'post-self-insert-hook)
+                              (eq fn 'mock-sig-handler))
+                     (setq hook-added t)))))
+        (lsp--update-signature-help-hook)
+        (should handler-created)
+        (should hook-added)))))
+
+(ert-deftest lsp-update-signature-help-hook-disabled-optimization ()
+  "Test that handler creation is skipped when signature help is disabled.
+This verifies the optimization - handler should NOT be created when
+lsp-signature-auto-activate is nil and not in cleanup mode."
+  (with-temp-buffer
+    (let ((lsp-signature-auto-activate nil)
+          (handler-created nil))
+      (cl-letf (((symbol-function 'lsp--signature-help-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-sig-handler)))
+        (lsp--update-signature-help-hook)
+        (should-not handler-created)))))
+
+(ert-deftest lsp-update-signature-help-hook-on-trigger-char ()
+  "Test that handler is created with :on-trigger-char activation mode."
+  (with-temp-buffer
+    (let ((lsp-signature-auto-activate '(:on-trigger-char))
+          (handler-created nil))
+      (cl-letf (((symbol-function 'lsp--signature-help-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-sig-handler))
+                ((symbol-function 'add-hook) #'ignore))
+        (lsp--update-signature-help-hook)
+        (should handler-created)))))
+
+(ert-deftest lsp-update-signature-help-hook-after-completion-only ()
+  "Test that handler is NOT created when only :after-completion is set.
+This verifies the optimization - :after-completion does not require
+post-self-insert-hook, so handler creation should be skipped."
+  (with-temp-buffer
+    (let ((lsp-signature-auto-activate '(:after-completion))
+          (handler-created nil))
+      (cl-letf (((symbol-function 'lsp--signature-help-handler-create)
+                 (lambda ()
+                   (setq handler-created t)
+                   'mock-sig-handler)))
+        (lsp--update-signature-help-hook)
+        (should-not handler-created)))))
 
 ;;; lsp-mode-test.el ends here
