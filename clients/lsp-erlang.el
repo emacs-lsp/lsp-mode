@@ -268,7 +268,7 @@ Code Lenses. Only applies when `#elp.lens.enabled` and
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-erlang-elp-otp-download-version "27.1"
-  "OTP version used as part of the file name when downlading the ELP binary.
+  "OTP version used as part of the file name when downloading the ELP binary.
 It must match those used in https://github.com/WhatsApp/erlang-language-platform/releases/latest"
   :type '(choice (string :tag "25.3")
                  (string :tag "26.2")

@@ -464,7 +464,7 @@ is present."
 
 (defcustom lsp-pylsp-plugins-ruff-target-version nil
   "The minimum python version to target (applies for both linting and formatting).
-    
+
 Note this variable will be ignored when a when a pyproject.toml or ruff.toml
 is present."
   :type 'string
@@ -541,7 +541,7 @@ be helpful to assure yourself whether mypy is still running."
 (defcustom lsp-pylsp-plugins-mypy-exclude nil
   "A list of regular expressions which should be ignored.
 
-The mypy runner wil not be invoked when a document path is matched by one of the
+The mypy runner will not be invoked when a document path is matched by one of the
 expressions.  Note that this differs from the exclude directive of a mypy config
 which is only used for recursively discovering files when mypy is invoked on a
 whole directory.  For both windows or unix platforms you should use forward

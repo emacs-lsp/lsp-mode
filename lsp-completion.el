@@ -657,7 +657,7 @@ Returns resolved completion item details."
        :company-prefix-length
        (save-excursion
          (let (
-               ;; 2 is a heuristic number to make sure we look futher back than
+               ;; 2 is a heuristic number to make sure we look further back than
                ;; the bounds-start, which can be different from the actual start
                ;; of the symbol
                (bounds-left (max (line-beginning-position) (- bounds-start 2)))
