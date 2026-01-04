@@ -1,6 +1,7 @@
 ;;; lsp-pls.el --- PLS Integration for lsp-mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022 Alexander Adolf
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: Alexander Adolf <alexander.adolf@condition-alpha.com>
 ;; Maintainer: Alexander Adolf <alexander.adolf@condition-alpha.com>

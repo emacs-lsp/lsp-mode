@@ -1,6 +1,7 @@
 ;;; lsp-bufls.el --- bufls-langserver Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jim Myhrberg
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jim Myhrberg
 ;; Keywords: lsp, protobuf, buf, bufls

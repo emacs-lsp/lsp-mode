@@ -1,6 +1,7 @@
 ;;; lsp-typeprof.el --- TypeProf server configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Taiki Sugawara
+;; Copyright (C) 2022-2026 lsp-mode maintainers
 
 ;; Author: Taiki Sugawara <buzz.taiki@gmail.com>
 ;; Keywords: lsp, ruby

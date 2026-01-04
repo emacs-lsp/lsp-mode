@@ -1,6 +1,6 @@
 ;;; lsp-perl.el --- lsp-perl config  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 lsp-mode developers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Hiroki Noda <kubo39@gmail.com>
 ;; Keywords:

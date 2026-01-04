@@ -1,6 +1,7 @@
 ;;; lsp-nginx.el --- Nginx Client settings  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021-2023  Shen, Jen-Chieh
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: nginx lsp

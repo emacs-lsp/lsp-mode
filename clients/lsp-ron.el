@@ -1,6 +1,6 @@
 ;;; lsp-ron.el --- lsp-mode RON integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 lsp-mode maintainers
+;; Copyright (C) 2025-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages

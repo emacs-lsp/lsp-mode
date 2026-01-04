@@ -1,6 +1,7 @@
 ;;; lsp-use-package.el --- Integration with `use-package' -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Ivan Yonchovski
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: convenience

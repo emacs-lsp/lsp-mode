@@ -1,6 +1,7 @@
 ;;; lsp-pwsh.el --- client for PowerShellEditorServices  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Kien Nguyen
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: kien.n.quang at gmail.com
 ;; Keywords: lsp

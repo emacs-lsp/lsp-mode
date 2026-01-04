@@ -1,6 +1,7 @@
 ;;; lsp-graphql.el --- lsp client for graphql        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Binbin Ye
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Binbin Ye
 ;; Keywords: lsp, graphql

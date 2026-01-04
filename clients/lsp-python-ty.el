@@ -1,6 +1,6 @@
 ;;; lsp-python-ty.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 emacs-lsp maintainers
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, python

@@ -1,6 +1,7 @@
 ;;; lsp-cypher.el --- Cypher Client                      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Gustav Hedengran
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Gustav Hedengran <gustav.hedengran@gmail.com>
 ;; Keywords: languages lsp cypher

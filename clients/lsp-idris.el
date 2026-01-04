@@ -1,6 +1,7 @@
 ;;; lsp-idris.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2022 skykanin
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 ;;
 ;; Author: skykanin <https://github.com/skykanin>
 ;; Keywords: idris lsp

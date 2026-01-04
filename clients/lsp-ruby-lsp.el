@@ -1,6 +1,7 @@
 ;;; lsp-ruby-lsp.el --- lsp-mode for the Ruby ruby-lsp gem -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Šimon Lukašík
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: Šimon Lukašík
 ;; Keywords: languages

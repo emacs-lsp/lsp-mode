@@ -1,6 +1,7 @@
 ;;; lsp-semgrep.el --- semgrep support -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Austin Theriault
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 ;;
 ;; Author: Austin Theriault <austin@cutedogs.org>
 ;; Keywords: language tools sast

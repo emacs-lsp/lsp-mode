@@ -1,6 +1,7 @@
 ;;; lsp-html.el --- vscode-html-languageserver configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Vibhav Pant
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; Keywords:

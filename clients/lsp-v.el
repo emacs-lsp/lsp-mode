@@ -2,6 +2,7 @@
 
 ;; Copyright (C) 2021 remimimimi
 ;; Copyright (C) 2024 niontrix
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: remimimimi
 ;;         niontrix

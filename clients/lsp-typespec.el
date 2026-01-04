@@ -1,6 +1,7 @@
 ;;; lsp-typespec.el --- Typespec Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  jeremy.ymeng@gmail.com
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 
 ;; Author: Jeremy Meng  <jeremy.ymeng@gmail.com>
 ;; Keywords: languages,tools

@@ -1,6 +1,7 @@
 ;;; lsp-erlang.el --- Erlang Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2023 Roberto Aloi, Alan Zimmerman
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Roberto Aloi, Alan Zimmerman
 ;; Keywords: erlang lsp

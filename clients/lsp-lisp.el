@@ -1,6 +1,7 @@
 ;;; lsp-lisp.el --- LSP client for Lisp  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Shen, Jen-Chieh
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 

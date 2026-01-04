@@ -1,6 +1,7 @@
 ;;; lsp-roslyn.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Ruin0x11
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: Ruin0x11 <ipickering2@gmail.com>
 ;; Keywords:

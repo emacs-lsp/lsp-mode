@@ -1,6 +1,7 @@
 ;;; lsp-rubocop.el --- lsp-mode for RuboCop  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Koichi Ito
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: Koichi Ito <koic.ito@gmail.com>
 ;; Keywords: lsp, ruby, languages

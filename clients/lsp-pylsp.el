@@ -1,6 +1,7 @@
 ;;; lsp-pylsp.el --- python-lsp-server support       -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Doug Davis
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Doug Davis <ddavis@ddavis.io>
 ;; Keywords: language tools

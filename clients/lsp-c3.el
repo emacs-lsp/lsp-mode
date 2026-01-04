@@ -1,6 +1,7 @@
 ;;; lsp-c3.el --- C3 Client settings             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Bruno Dias
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 
 ;; Author: Bruno Dias
 ;; Keywords: c3 lsp

@@ -1,6 +1,7 @@
 ;;; lsp-magik.el --- Language server client for Magik  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Keronic
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: <robin.putters@keronic.com>
 ;; Keywords: lsp, magik

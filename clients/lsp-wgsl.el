@@ -1,6 +1,6 @@
 ;;; lsp-wgsl.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 emacs-lsp maintainers
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, wgsl, shaders, graphics programming,
