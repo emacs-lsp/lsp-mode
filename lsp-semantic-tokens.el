@@ -117,7 +117,7 @@ Unless overridden by a more specific face association."
 
 (defface lsp-face-semhl-string
   '((t (:inherit font-lock-string-face)))
-  "Face used for keywords."
+  "Face used for strings."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-number
@@ -133,11 +133,6 @@ Unless overridden by a more specific face association."
 (defface lsp-face-semhl-operator
   '((t (:inherit font-lock-function-name-face)))
   "Face used for operators."
-  :group 'lsp-semantic-tokens)
-
-(defface lsp-face-semhl-namespace
-  '((t (:inherit font-lock-keyword-face)))
-  "Face used for namespaces."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type
@@ -190,11 +185,6 @@ Unless overridden by a more specific face association."
 (defface lsp-face-semhl-macro
   '((t (:inherit font-lock-preprocessor-face)))
   "Face used for macros."
-  :group 'lsp-semantic-tokens)
-
-(defface lsp-face-semhl-variable
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for variables."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-parameter
