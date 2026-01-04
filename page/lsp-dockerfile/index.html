@@ -1557,6 +1557,69 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-dockerfile-deprecated-maintainer" class="md-nav__link">
+    lsp-dockerfile-deprecated-maintainer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-directive-casing" class="md-nav__link">
+    lsp-dockerfile-directive-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-empty-continuation-line" class="md-nav__link">
+    lsp-dockerfile-empty-continuation-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-format-ignore-multiline-instructions" class="md-nav__link">
+    lsp-dockerfile-format-ignore-multiline-instructions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-casing" class="md-nav__link">
+    lsp-dockerfile-instruction-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-cmd-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-cmd-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-entrypoint-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-entrypoint-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-healthcheck-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-healthcheck-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-json-single-quotes" class="md-nav__link">
+    lsp-dockerfile-instruction-json-single-quotes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-dockerfile-language-server-command" class="md-nav__link">
     lsp-dockerfile-language-server-command
   </a>
@@ -3884,6 +3947,69 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-dockerfile-deprecated-maintainer" class="md-nav__link">
+    lsp-dockerfile-deprecated-maintainer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-directive-casing" class="md-nav__link">
+    lsp-dockerfile-directive-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-empty-continuation-line" class="md-nav__link">
+    lsp-dockerfile-empty-continuation-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-format-ignore-multiline-instructions" class="md-nav__link">
+    lsp-dockerfile-format-ignore-multiline-instructions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-casing" class="md-nav__link">
+    lsp-dockerfile-instruction-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-cmd-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-cmd-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-entrypoint-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-entrypoint-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-healthcheck-multiple" class="md-nav__link">
+    lsp-dockerfile-instruction-healthcheck-multiple
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-dockerfile-instruction-json-single-quotes" class="md-nav__link">
+    lsp-dockerfile-instruction-json-single-quotes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-dockerfile-language-server-command" class="md-nav__link">
     lsp-dockerfile-language-server-command
   </a>
@@ -3959,6 +4085,57 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><code>npm install -g dockerfile-language-server-nodejs</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-dockerfile-deprecated-maintainer"><code>lsp-dockerfile-deprecated-maintainer</code><a class="headerlink" href="#lsp-dockerfile-deprecated-maintainer" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for the deprecated MAINTAINER instruction.</p>
+<hr />
+<h3 id="lsp-dockerfile-directive-casing"><code>lsp-dockerfile-directive-casing</code><a class="headerlink" href="#lsp-dockerfile-directive-casing" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for parser directive casing.
+Parser directives include escape and syntax.</p>
+<hr />
+<h3 id="lsp-dockerfile-empty-continuation-line"><code>lsp-dockerfile-empty-continuation-line</code><a class="headerlink" href="#lsp-dockerfile-empty-continuation-line" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>ignore</code></p>
+<p>Controls the diagnostic severity for empty continuation lines.</p>
+<hr />
+<h3 id="lsp-dockerfile-format-ignore-multiline-instructions"><code>lsp-dockerfile-format-ignore-multiline-instructions</code><a class="headerlink" href="#lsp-dockerfile-format-ignore-multiline-instructions" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Whether to ignore multiline instructions during formatting.</p>
+<hr />
+<h3 id="lsp-dockerfile-instruction-casing"><code>lsp-dockerfile-instruction-casing</code><a class="headerlink" href="#lsp-dockerfile-instruction-casing" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for instruction casing.
+Instructions include FROM, RUN, COPY, etc.</p>
+<hr />
+<h3 id="lsp-dockerfile-instruction-cmd-multiple"><code>lsp-dockerfile-instruction-cmd-multiple</code><a class="headerlink" href="#lsp-dockerfile-instruction-cmd-multiple" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for multiple CMD instructions.
+Only the last CMD instruction takes effect in a Dockerfile.</p>
+<hr />
+<h3 id="lsp-dockerfile-instruction-entrypoint-multiple"><code>lsp-dockerfile-instruction-entrypoint-multiple</code><a class="headerlink" href="#lsp-dockerfile-instruction-entrypoint-multiple" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for multiple ENTRYPOINT instructions.
+Only the last ENTRYPOINT instruction takes effect in a Dockerfile.</p>
+<hr />
+<h3 id="lsp-dockerfile-instruction-healthcheck-multiple"><code>lsp-dockerfile-instruction-healthcheck-multiple</code><a class="headerlink" href="#lsp-dockerfile-instruction-healthcheck-multiple" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for multiple HEALTHCHECK instructions.
+Only the last HEALTHCHECK instruction takes effect in a Dockerfile.</p>
+<hr />
+<h3 id="lsp-dockerfile-instruction-json-single-quotes"><code>lsp-dockerfile-instruction-json-single-quotes</code><a class="headerlink" href="#lsp-dockerfile-instruction-json-single-quotes" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Controls the diagnostic severity for JSON arrays using single quotes.
+JSON arrays in Dockerfile instructions should use double quotes.</p>
+<hr />
 <h3 id="lsp-dockerfile-language-server-command"><code>lsp-dockerfile-language-server-command</code><a class="headerlink" href="#lsp-dockerfile-language-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat :tag List of string values string)</code></p>
 <p><em>Default:</em> <code>(docker-langserver --stdio)</code></p>
@@ -3972,7 +4149,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 4, 2026</span>
       
     
   </small>
