@@ -1,6 +1,6 @@
 ;;; lsp-mock-server-test.el --- Unit test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024-2025 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Arseniy Zaostrovnykh
 ;; Package-Requires: ((emacs "28.1"))

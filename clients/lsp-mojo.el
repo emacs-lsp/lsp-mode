@@ -1,6 +1,7 @@
 ;;; lsp-mojo.el --- lsp-mode Mojo integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Adam Liter
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Adam Liter <io@adamliter.org>
 ;; Keywords: languages,tools

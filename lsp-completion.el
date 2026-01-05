@@ -1,6 +1,6 @@
 ;;; lsp-completion.el --- LSP completion -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020-2025 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -657,7 +657,7 @@ Returns resolved completion item details."
        :company-prefix-length
        (save-excursion
          (let (
-               ;; 2 is a heuristic number to make sure we look futher back than
+               ;; 2 is a heuristic number to make sure we look further back than
                ;; the bounds-start, which can be different from the actual start
                ;; of the symbol
                (bounds-left (max (line-beginning-position) (- bounds-start 2)))

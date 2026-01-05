@@ -1,6 +1,7 @@
 ;;; lsp-odin.el --- Description -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2025 Sam Precious
+;; Copyright (C) 2025-2026 Sam Precious
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 ;;
 ;; Author: Sam Precious <samwdp@gmail.com>
 ;; Keywords: lsp, odin

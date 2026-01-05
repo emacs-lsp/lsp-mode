@@ -1,6 +1,7 @@
 ;;; lsp-csharp.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Jostein Kjønigsen, Saulius Menkevicius
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Saulius Menkevicius <saulius.menkevicius@fastmail.com>
 ;; Keywords:

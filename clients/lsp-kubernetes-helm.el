@@ -1,6 +1,7 @@
 ;;; lsp-kubernetes-helm.el --- LSP YAML server integration        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Aaron Gonzales
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Aaron Gonzales <aarongonzales1@gmail.com>
 ;; Keywords: lsp, kubernetes, helm, yaml

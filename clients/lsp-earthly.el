@@ -1,6 +1,7 @@
 ;;; lsp-earthly.el --- earthlyls client         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Samuel Loury
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Samuel Loury <konubinixweb@gmail.com>
 ;; Keywords: earthly lsp

@@ -1,6 +1,7 @@
 ;;; lsp-go.el --- Go Client settings             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Muir Manders
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Muir Manders <muir@mnd.rs>
 ;; Keywords:

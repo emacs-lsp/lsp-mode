@@ -1,6 +1,7 @@
 ;;; lsp-css.el --- CSS language server configuration   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:

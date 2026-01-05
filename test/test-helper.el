@@ -1,6 +1,7 @@
 ;;; test-helper.el --- Helpers for lsp-mode-test.el  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Google LLC <phst@google.com>
+;; Copyright (C) 2018-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

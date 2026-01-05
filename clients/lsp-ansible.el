@@ -1,6 +1,6 @@
 ;;; lsp-ansible.el --- lsp-mode ansible integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: lsp, yaml, ansible

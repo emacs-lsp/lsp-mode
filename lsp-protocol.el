@@ -1,6 +1,7 @@
 ;;; lsp-protocol.el --- Language Sever Protocol Bindings  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Ivan Yonchovski
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: convenience

@@ -1,6 +1,6 @@
 ;;; lsp-mode.el --- LSP mode                              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020-2025 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
@@ -4204,12 +4204,13 @@ yet."
                                  more-trigger-character?)))))
 
 (defun lsp--update-on-type-formatting-hook (&optional cleanup?)
-  (let ((on-type-formatting-handler (lsp--on-type-formatting-handler-create)))
+  (when-let* ((on-type-formatting-handler
+               (and (or lsp-enable-on-type-formatting cleanup?)
+                    (lsp--on-type-formatting-handler-create))))
     (cond
-     ((and lsp-enable-on-type-formatting on-type-formatting-handler (not cleanup?))
+     ((and lsp-enable-on-type-formatting (not cleanup?))
       (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
-     ((or cleanup?
-          (not lsp-enable-on-type-formatting))
+     ((or cleanup? (not lsp-enable-on-type-formatting))
       (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
 
 (defun lsp--signature-help-handler-create ()
@@ -4219,18 +4220,16 @@ yet."
       (lsp--maybe-enable-signature-help trigger-characters?))))
 
 (defun lsp--update-signature-help-hook (&optional cleanup?)
-  (let ((signature-help-handler (lsp--signature-help-handler-create)))
-    (cond
-     ((and (or (equal lsp-signature-auto-activate t)
-               (memq :on-trigger-char lsp-signature-auto-activate))
-           signature-help-handler
-           (not cleanup?))
-      (add-hook 'post-self-insert-hook signature-help-handler nil t))
-
-     ((or cleanup?
-          (not (or (equal lsp-signature-auto-activate t)
-                   (memq :on-trigger-char lsp-signature-auto-activate))))
-      (remove-hook 'post-self-insert-hook signature-help-handler t)))))
+  (let ((signature-auto-activate-p (or (equal lsp-signature-auto-activate t)
+                                       (memq :on-trigger-char lsp-signature-auto-activate))))
+    (when-let* ((signature-help-handler
+                 (and (or signature-auto-activate-p cleanup?)
+                      (lsp--signature-help-handler-create))))
+      (cond
+       ((and signature-auto-activate-p (not cleanup?))
+        (add-hook 'post-self-insert-hook signature-help-handler nil t))
+       ((or cleanup? (not signature-auto-activate-p))
+        (remove-hook 'post-self-insert-hook signature-help-handler t))))))
 
 (defun lsp--after-set-visited-file-name ()
   (lsp-disconnect)
@@ -5676,7 +5675,7 @@ MODE (car) is function which is defined in `lsp-language-id-configuration'.
 Cdr should be list of PROPERTY-LIST.
 
 Each PROPERTY-LIST should have properties:
-:regexp  Regexp which determines what string is relpaced to image.
+:regexp  Regexp which determines what string is replaced to image.
          You should also get information of image, by parenthesis constructs.
          By default, all matched string is replaced to image, but you can
          change index of replaced string by keyword :replaced-index.
@@ -7764,7 +7763,7 @@ corresponding to PATH, else returns `default-directory'."
 
 (defun lsp--fix-remote-cmd (program)
   "Helper for `lsp-stdio-connection'.
-Originally coppied from eglot."
+Originally copied from eglot."
 
   (if (file-remote-p default-directory)
       (list shell-file-name "-c"

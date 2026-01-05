@@ -1,6 +1,7 @@
 ;;; lsp-clients-test.el --- unit tests for lsp-clients.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Daniel Martín <mardani29@yahoo.es>.
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

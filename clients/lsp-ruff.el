@@ -1,6 +1,7 @@
 ;;; lsp-ruff.el --- ruff lsp support             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Freja Nordsiek
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 ;;
 ;; Author: Freja Nordsiek <fnordsie@posteo.net
 ;; Keywords: language tools

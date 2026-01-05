@@ -1,6 +1,7 @@
 ;;; lsp-methods-test.el --- Tests for lsp-methods    -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Ivan Yonchovski
+;; Copyright (C) 2018-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 

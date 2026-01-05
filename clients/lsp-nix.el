@@ -1,6 +1,6 @@
 ;;; lsp-nix.el --- lsp-mode nix integration    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 lsp-mode maintainers
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Seong Yong-ju <sei40kr@gmail.com>
 ;; Keywords: languages

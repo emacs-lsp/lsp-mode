@@ -1,6 +1,7 @@
 ;;; lsp-typos.el --- LSP client for typos-lsp -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2025 Thanh Vuong
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 ;;
 ;; Author: Thanh Vuong <thanhvg@gmail.com>
 ;; Keywords: lsp, typos

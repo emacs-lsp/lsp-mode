@@ -1,6 +1,7 @@
 ;;; lsp-rust.el --- Rust Client settings             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -1920,7 +1921,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
 
 (cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql rust-analyzer)))
   "Extract first non-comment line from rust-analyzer's hover CONTENTS.
-The first line of the hover contents is usally about memory layout or notable
+The first line of the hover contents is usually about memory layout or notable
 traits starting with //, with the actual signature follows."
   (let* ((lines (s-lines (s-trim (lsp--render-element contents))))
          (non-comment-lines (--filter (not (s-prefix? "//" it)) lines)))
