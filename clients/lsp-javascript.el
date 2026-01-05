@@ -1093,7 +1093,10 @@ Examples: `./import-map.json',
                   :initialization-options #'lsp-clients-deno--make-init-options
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :server-id 'deno-ls))
+                  :server-id 'deno-ls
+                  :notification-handlers (ht ("deno/didRefreshDenoConfigurationTree" #'ignore)
+                                             ("deno/didChangeDenoConfiguration" #'ignore)
+                                             ("deno/didUpgradeCheck" #'ignore))))
 
 
 
