@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix "Unknown notification: semgrep/rulesRefreshed" warning in lsp-semgrep client.
   * Add diagnostic and formatter custom settings for [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][Dockerfile language server]].
   * Fix "Eager macro-expansion failure" errors with lsp-interface pcase patterns (see #4723)
   * Add support for [[https://github.com/Myriad-Dreamin/tinymist][Typst (Tinymist)]] language server.
