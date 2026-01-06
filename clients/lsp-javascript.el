@@ -1106,6 +1106,9 @@ Examples: `./import-map.json',
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
                   :server-id 'deno-ls
+                  :notification-handlers (ht ("deno/didRefreshDenoConfigurationTree" #'ignore)
+                                             ("deno/didChangeDenoConfiguration" #'ignore)
+                                             ("deno/didUpgradeCheck" #'ignore))
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure
                                          'deno
