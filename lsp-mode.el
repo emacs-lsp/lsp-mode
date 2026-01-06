@@ -1996,9 +1996,23 @@ This set of allowed chars is enough for hexifying local file paths.")
       (funcall uri-fn path)
     (lsp--path-to-uri-1 path)))
 
+(defvar lsp--warned-invalid-regexps (make-hash-table :test 'equal)
+  "Hash table of invalid regexps that have already been warned about.
+Used to prevent repeated warnings for the same invalid pattern.")
+
 (defun lsp--string-match-any (regex-list str)
-  "Return the first regex, if any, within REGEX-LIST matching STR."
-  (--first (string-match it str) regex-list))
+  "Return the first regex, if any, within REGEX-LIST matching STR.
+Returns the matching regex string on success, nil on no match or invalid regex.
+Invalid regex patterns are logged as warnings (once per pattern) and skipped."
+  (--first (condition-case err
+               (string-match it str)
+             (invalid-regexp
+              (unless (gethash it lsp--warned-invalid-regexps)
+                (puthash it t lsp--warned-invalid-regexps)
+                (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
+                          (error-message-string err) it))
+              nil))
+           regex-list))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal))
