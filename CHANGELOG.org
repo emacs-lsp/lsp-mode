@@ -1,6 +1,9 @@
 * Changelog
 ** Unreleased 9.0.1
   * Add ~lsp-fix-all~ command and ~lsp-fix-all-on-save~ option for ~source.fixAll~ code action support (see [[https://github.com/emacs-lsp/lsp-mode/issues/1842][#1842]])
+  * Add notification handlers for Deno language server (~deno/didRefreshDenoConfigurationTree~, ~deno/didChangeDenoConfiguration~, ~deno/didUpgradeCheck~).
+  * Fix "Unknown notification: semgrep/rulesRefreshed" warning in lsp-semgrep client.
+  * Add ~lsp-install-server~ support for Deno LSP via npm.
   * Add diagnostic and formatter custom settings for [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][Dockerfile language server]].
   * Fix "Eager macro-expansion failure" errors with lsp-interface pcase patterns (see #4723)
   * Add support for [[https://github.com/Myriad-Dreamin/tinymist][Typst (Tinymist)]] language server.

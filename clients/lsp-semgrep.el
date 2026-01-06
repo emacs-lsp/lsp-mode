@@ -210,6 +210,7 @@ If FULL is non-nil, scan all files in workspace, regardless of git status."
   :server-id 'semgrep-ls
   :priority -1
   :add-on? t
+  :notification-handlers (ht ("semgrep/rulesRefreshed" #'ignore))
   :initialization-options
   (lambda ()
     (list
