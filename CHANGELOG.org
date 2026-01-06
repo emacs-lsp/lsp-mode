@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add ~lsp-install-server~ support for Deno LSP via npm.
   * Add diagnostic and formatter custom settings for [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][Dockerfile language server]].
   * Fix "Eager macro-expansion failure" errors with lsp-interface pcase patterns (see #4723)
   * Add support for [[https://github.com/Myriad-Dreamin/tinymist][Typst (Tinymist)]] language server.
