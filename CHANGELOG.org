@@ -1,6 +1,7 @@
 * Changelog
 ** Unreleased 9.0.1
   * Fix invalid regex patterns in ~lsp-file-watch-ignored-directories~ causing crashes (see [[https://github.com/emacs-lsp/lsp-mode/issues/3439][#3439]])
+  * Add notification handlers for Deno language server (~deno/didRefreshDenoConfigurationTree~, ~deno/didChangeDenoConfiguration~, ~deno/didUpgradeCheck~).
   * Fix "Unknown notification: semgrep/rulesRefreshed" warning in lsp-semgrep client.
   * Add ~lsp-install-server~ support for Deno LSP via npm.
   * Add diagnostic and formatter custom settings for [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][Dockerfile language server]].
