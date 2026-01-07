@@ -1,6 +1,7 @@
 ;;; lsp-sqls.el --- SQL Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Shunya Ishii
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Shunya Ishii
 ;; Keywords: sql lsp

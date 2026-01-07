@@ -1,6 +1,7 @@
 ;;; lsp-volar.el --- A lsp-mode client for Vue3 -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 JadeStrong
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 ;;
 ;; Author: JadeStrong <https://github.com/jadestrong>
 ;; Maintainer: JadeStrong <jadestrong@163.com>
@@ -9,7 +10,6 @@
 ;; Version: 0.0.1
 ;; Keywords: abbrev bib c calendar comm convenience data docs emulations extensions faces files frames games hardware help hypermedia i18n internal languages lisp local maint mail matching mouse multimedia news outlines processes terminals tex tools unix vc wp
 ;; Homepage: https://github.com/jadestrong/lsp-volar
-;; Package-Requires: ((emacs "25.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 
@@ -33,7 +33,8 @@
 ;;
 ;;; Code:
 (require 'lsp-mode)
-(require 'json)
+(require 'lsp-javascript)
+(require 'dash)
 
 (defgroup lsp-volar nil
   "Lsp support for vue3."
@@ -41,87 +42,82 @@
   :link '(url-link "https://github.com/vuejs/language-tools")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-volar-take-over-mode nil
-  "Enable Take Over Mode."
-  :type 'boolean
+(defcustom lsp-volar-typescript-server-id 'ts-ls
+  "The server id of the typescript language server to use."
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.0"))
+  :package-version '(lsp-mode . "9.0.1")
+  :type 'symbol)
 
-(defcustom lsp-volar-hybrid-mode t
-  "Enable Hybrid Mode."
-  :type 'boolean
+(defcustom lsp-volar-support-vue2 nil
+  "Whether to ping Volar's version to ~3.0 to support vue2.
+
+Volar is dropping Vue 2 and vue-class-component Support in v3.1.
+Reference: https://github.com/vuejs/language-tools/discussions/5455"
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "9.0.1")
+  :type 'boolean)
 
-(defcustom lsp-volar-as-add-on nil
-  "Run volar LSP server alongside other LSP server(s)"
-  :type 'boolean
+(defcustom lsp-volar-location-for-typescript-plugin :auto
+  "Location of vue package used by typescript plugin.
+Specify a manual value if automatic detection does not work."
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.1"))
-
-(defcustom lsp-volar-activate-file ".volarrc"
-  "A file with a custom name placed in WORKSPACE-ROOT is used to force enable
- volar when there is no package.json in the WORKSPACE-ROOT."
-  :type 'string
-  :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.0"))
-
-(defconst lsp-volar--is-windows (memq system-type '(cygwin windows-nt ms-dos)))
-(defun lsp-volar-get-typescript-tsdk-path ()
-  "Get tsserver lib*.d.ts directory path."
-  (if-let* ((package-path (lsp-package-path 'typescript))
-           (system-tsdk-path (f-join (file-truename package-path)
-                                     (if lsp-volar--is-windows
-                                         "../node_modules/typescript/lib"
-                                       "../../lib")))
-           ((file-exists-p system-tsdk-path)))
-      system-tsdk-path
-    (prog1 ""
-      (lsp--error "[lsp-volar] Typescript is not detected correctly. Please ensure the npm package typescript is installed in your project or system (npm install -g typescript), otherwise open an issue"))))
-
-(lsp-dependency 'typescript
-                '(:system "tsserver")
-                '(:npm :package "typescript"
-                       :path "tsserver"))
-
-(lsp-dependency 'volar-language-server
-                '(:system "vue-language-server")
-                '(:npm :package "@vue/language-server" :path "vue-language-server"))
-
-(lsp-register-custom-settings
- '(("typescript.tsdk"
-    (lambda ()
-      (if-let* ((project-root (lsp-workspace-root))
-               (tsdk-path (f-join project-root "node_modules/typescript/lib"))
-               ((file-exists-p tsdk-path)))
-          tsdk-path
-        (lsp-volar-get-typescript-tsdk-path)))
-    t)))
-
-(lsp-register-custom-settings
- '(("vue.hybridMode" lsp-volar-hybrid-mode t)))
-
-(defun lsp-volar--vue-project-p (workspace-root)
-  "Check if the `Vue' package is present in the package.json file
-in the WORKSPACE-ROOT."
-  (if-let* ((package-json (f-join workspace-root "package.json"))
-           (exist (f-file-p package-json))
-           (config (json-read-file package-json))
-           (dependencies (alist-get 'dependencies config)))
-      (alist-get 'vue (append dependencies (alist-get 'devDependencies config)))
-  nil))
+  :package-version '(lsp-mode . "9.0.1")
+  :type '(choice (const :tag "Automatic detection" :auto)
+                 (directory :tag "Manual value")))
 
 (defun lsp-volar--activate-p (filename &optional _)
   "Check if the volar-language-server should be enabled base on FILENAME."
-  (if lsp-volar-take-over-mode
-      (or (or
-           (and (lsp-workspace-root) (lsp-volar--vue-project-p (lsp-workspace-root)))
-           (and (lsp-workspace-root) lsp-volar-activate-file (f-file-p (f-join (lsp-workspace-root) lsp-volar-activate-file))))
-          (or (or (string-match-p "\\.mjs\\|\\.[jt]sx?\\'" filename)
-                  (and (derived-mode-p 'js-mode 'typescript-mode 'typescript-ts-mode)
-                       (not (derived-mode-p 'json-mode))))
-              (string= (file-name-extension filename) "vue")))
-    (string= (file-name-extension filename) "vue")))
+  (and filename (string-suffix-p ".vue" filename)))
+
+(lsp-dependency 'volar-language-server
+                '(:system "vue-language-server")
+                '(:npm :package "@vue/language-server" :path "vue-language-server"
+                       :version (lambda () (when lsp-volar-support-vue2 "~3.0"))))
+
+;; Set lsp-clients-typescript-plugins
+(when-let* ((package-path (ignore-errors (lsp-package-path 'volar-language-server)))
+            (location (if (eq lsp-volar-location-for-typescript-plugin :auto)
+                          (cl-find-if #'file-directory-p
+                                      `(,(f-join package-path "../.." "lib/node_modules/@vue/language-server/")
+                                        ,(f-join (file-chase-links package-path) "../../")))
+                        lsp-volar-location-for-typescript-plugin))
+            (vue-plugin (list :name "@vue/typescript-plugin"
+                              :location location
+                              :languages (vector "vue")
+                              :configNamespace "typescript"
+                              :enableForWorkspaceTypeScriptVersions t)))
+  (setq lsp-clients-typescript-plugins
+        (vconcat lsp-clients-typescript-plugins (vector vue-plugin))))
+
+(defun lsp-volar--send-notify (workspace method params)
+  "Send notification to WORKSPACE with METHOD PARAMS."
+  (with-lsp-workspace workspace
+    (let ((body (lsp--make-notification method params)))
+      (lsp--send-no-wait body
+        (lsp--workspace-proc lsp--cur-workspace)))))
+
+(defun lsp-volar--tsserver-request-handler (volar-workspace params)
+  "Handles `tsserver/request` notification from VOLAR-WORKSPACE.
+And forwarding PARAMS to the typescript LSP server.
+
+Reference:
+- https://github.com/vuejs/language-tools/discussions/5456
+- https://github.com/vuejs/language-tools/wiki/Neovim#configuration"
+  (if-let* ((ts-ls-workspace (lsp-find-workspace lsp-volar-typescript-server-id nil)))
+    (with-lsp-workspace ts-ls-workspace
+      (-let [[[id command payload]] params]
+        (lsp-request-async
+          "workspace/executeCommand"
+          (list :command "typescript.tsserverRequest"
+            :arguments (vector command payload))
+          ;; response callback
+          (lambda (response)
+            (let ((body (lsp-get response :body)))
+              (lsp-volar--send-notify volar-workspace "tsserver/response" (vector (vector id body)))))
+          ;; error callback
+          :error-handler (lambda (error-response)
+                           (lsp--warn "tsserver/request async error: %S" error-response)))))
+    (lsp--error "[lsp-volar] Could not found `%s` lsp client, lsp-volar would not work without it" lsp-volar-typescript-server-id)))
 
 (lsp-register-client
  (make-lsp-client
@@ -131,13 +127,10 @@ in the WORKSPACE-ROOT."
   :activation-fn 'lsp-volar--activate-p
   :priority 0
   :multi-root nil
-  :add-on? lsp-volar-as-add-on
+  :add-on? t  ;; work with typescript server
   :server-id 'vue-semantic-server
-  :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
-                                               (lsp-configuration-section "vue")
-                                               (ht ("serverMode" 0)
-                                                   ("diagnosticModel" 1)
-                                                   ("textDocumentSync" 2))))
+  :initialization-options (lambda () (ht-merge (lsp-configuration-section "vue")))
+  :notification-handlers (ht ("tsserver/request" #'lsp-volar--tsserver-request-handler))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--server-register-capability
@@ -146,12 +139,9 @@ in the WORKSPACE-ROOT."
                         :method "workspace/didChangeWatchedFiles"
                         :register-options? (lsp-make-did-change-watched-files-registration-options
                                             :watchers
-                                            `[,(lsp-make-file-system-watcher :glob-pattern "**/*.js")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.ts")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.vue")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.jsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.tsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.json")])))))
+                                            `[
+                                               ,(lsp-make-file-system-watcher :glob-pattern "**/*.vue")
+                                              ])))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'volar-language-server
                                             callback error-callback))))

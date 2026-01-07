@@ -1,6 +1,7 @@
 ;;; lsp-prolog.el --- Prolog Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  James Cash
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: James Cash <james.nvc@gmail.com>
 ;; Keywords: languages,tools

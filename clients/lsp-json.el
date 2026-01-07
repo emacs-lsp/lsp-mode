@@ -1,6 +1,7 @@
 ;;; lsp-json.el ---  vscode-json-languageserver integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Kien Nguyen
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: kien.n.quang at gmail.com
 ;; Keywords: lsp
@@ -54,8 +55,15 @@ here, https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155.
   :group 'lsp-json
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-json-validate t
+  "Enable JSON validation."
+  :type 'boolean
+  :group 'lsp-json
+  :package-version '(lsp-mode . "9.0.1"))
+
 (lsp-register-custom-settings
  '(("json.schemas" lsp-json-schemas)
+   ("json.validate.enable" lsp-json-validate)
    ("http.proxy" lsp-http-proxy)
    ("http.proxyStrictSSL" lsp-http-proxyStrictSSL)))
 

@@ -1,6 +1,6 @@
 ;;; lsp-futhark.el --- lsp-mode futhark integration    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 lsp-mode maintainers
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 
 ;; Keywords: languages
 

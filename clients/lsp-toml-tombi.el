@@ -1,6 +1,6 @@
 ;;; lsp-toml-tombi.el --- lsp-mode TOML integration  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025  Sibi Prabakaran
+;; Copyright (C) 2025-2026  Sibi Prabakaran
 
 ;; Author: Sibi Prabakaran <sibi@psibi.in>
 ;; Keywords: lsp, toml

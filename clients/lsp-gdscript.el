@@ -1,6 +1,7 @@
 ;;; lsp-gdscript.el --- LSP mode -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Oliver Frank
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Oliver Frank <oliverfrank321@gmail.com>
 ;; Keywords: languages

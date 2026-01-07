@@ -1,6 +1,6 @@
 ;;; lsp-test-utils.el --- unit test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) emacs-lsp maintainers
+;; Copyright (C) 2018-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

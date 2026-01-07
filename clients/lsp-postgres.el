@@ -1,6 +1,7 @@
 ;;; lsp-postgres.el --- Postgres client settings.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Shen, Jen-Chieh
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 
@@ -46,7 +47,7 @@ This is only for development use."
   :group 'lsp-postgres)
 
 (defconst lsp-postgres-download-url-format
-  "https://github.com/supabase-community/postgres-language-server/releases/latest/download/postgrestools_%s-%s"
+  "https://github.com/supabase-community/postgres-language-server/releases/latest/download/postgres-language-server_%s-%s"
   "Format to the download url link.")
 
 (defun lsp-postgres--postgres-ls-url ()
@@ -69,12 +70,12 @@ This is only for development use."
 
 (lsp-dependency
  'postgres-ls
- '(:system "postgrestools")
+ '(:system "postgres-language-server")
  `(:download :url ,(lsp-postgres--postgres-ls-url)
              :store-path ,(f-join lsp-postgres-server-store-path
                                   (pcase system-type
-                                    ('windows-nt "postgrestools.exe")
-                                    (_           "postgrestools")))
+                                    ('windows-nt "postgres-language-server.exe")
+                                    (_           "postgres-language-server")))
              :set-executable? t))
 
 (lsp-register-client

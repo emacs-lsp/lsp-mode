@@ -117,7 +117,7 @@ Unless overridden by a more specific face association."
 
 (defface lsp-face-semhl-string
   '((t (:inherit font-lock-string-face)))
-  "Face used for keywords."
+  "Face used for strings."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-number
@@ -133,11 +133,6 @@ Unless overridden by a more specific face association."
 (defface lsp-face-semhl-operator
   '((t (:inherit font-lock-function-name-face)))
   "Face used for operators."
-  :group 'lsp-semantic-tokens)
-
-(defface lsp-face-semhl-namespace
-  '((t (:inherit font-lock-keyword-face)))
-  "Face used for namespaces."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type
@@ -190,11 +185,6 @@ Unless overridden by a more specific face association."
 (defface lsp-face-semhl-macro
   '((t (:inherit font-lock-preprocessor-face)))
   "Face used for macros."
-  :group 'lsp-semantic-tokens)
-
-(defface lsp-face-semhl-variable
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for variables."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-parameter
@@ -277,6 +267,9 @@ Unless overridden by a more specific face association."
 Faces to use for semantic token modifiers if
 `lsp-semantic-tokens-apply-modifiers' is non-nil.")
 
+(defconst lsp--semantic-tokens-font-lock-keywords
+  '((lsp--semantic-tokens-fontify)))
+
 (defun lsp--semantic-tokens-capabilities ()
   `((semanticTokens
      . ((dynamicRegistration . t)
@@ -354,7 +347,7 @@ When non-nil, `lsp--semantic-tokens-cache' should adhere to the
 following lsp-interface:
 `(_SemanticTokensCache
   (:_documentVersion)
-  (:response :_region :_truncated))'.")
+  (:response :_region))'.")
 
 (defsubst lsp--semantic-tokens-putcache (k v)
   "Set key K of `lsp--semantic-tokens-cache' to V."
@@ -446,7 +439,7 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
        (lsp--semantic-tokens-putcache :_documentVersion lsp--cur-version)
        (lsp--semantic-tokens-putcache :_region final-region)
        (funcall response-handler response)
-       (when (or fontify-immediately (plist-get lsp--semantic-tokens-cache :_truncated)) (font-lock-flush)))
+       (when fontify-immediately (font-lock-flush)))
      :error-handler ;; buffer is not captured in `error-handler', it is in `callback'
      (let ((buf (current-buffer)))
        (lambda (&rest _)
@@ -470,45 +463,19 @@ given workspace/language-server combination.
 This cache should be flushed every time any modifier
 configuration changes.")
 
-(defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
-  "Apply fonts to retrieved semantic tokens.
-OLD-FONTIFY-REGION is the underlying region fontification function,
-e.g., `font-lock-fontify-region'.
-BEG-ORIG and END-ORIG deliminate the requested fontification region and maybe
-modified by OLD-FONTIFY-REGION.
-LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
+(defun lsp--semantic-tokens-fontify (end)
+  "Apply semantic tokens from point to END."
   ;; TODO: support multiple language servers per buffer?
   (let ((faces (seq-some #'lsp--workspace-semantic-tokens-faces lsp--buffer-workspaces))
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
-           (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces)))
-        old-bounds
-        beg end)
-    (cond
-     ((or (eq nil faces)
-          (eq nil lsp--semantic-tokens-cache)
-          (eq nil (plist-get lsp--semantic-tokens-cache :response)))
-      ;; default to non-semantic highlighting until first response has arrived
-      (funcall old-fontify-region beg-orig end-orig loudly))
-     ((not (= lsp--cur-version (plist-get lsp--semantic-tokens-cache :_documentVersion)))
-      ;; delay fontification until we have fresh tokens
-      '(jit-lock-bounds 0 . 0))
-     (t
-      (setq old-bounds (funcall old-fontify-region beg-orig end-orig loudly))
-      ;; this is to prevent flickering when semantic token highlighting
-      ;; is layered on top of, e.g., tree-sitter-hl, or clojure-mode's syntax highlighting.
-      (setq beg (min beg-orig (cadr old-bounds))
-            end (max end-orig (cddr old-bounds)))
-      ;; if we're using the response to a ranged request, we'll only be able to fontify within
-      ;; that range (and hence shouldn't clear any highlights outside of that range)
-      (let ((token-region (plist-get lsp--semantic-tokens-cache :_region)))
-        (if token-region
-            (progn
-              (lsp--semantic-tokens-putcache :_truncated (or (< beg (car token-region))
-                                                             (> end (cdr token-region))))
-              (setq beg (max beg (car token-region)))
-              (setq end (min end (cdr token-region))))
-          (lsp--semantic-tokens-putcache :_truncated nil)))
+           (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces))))
+    (unless (or (eq nil faces)
+                (eq nil lsp--semantic-tokens-cache)
+                (eq nil (plist-get lsp--semantic-tokens-cache :response))
+                ;; NOTE: perhaps we'd rather have stale highlights than temporarily dropping them altogether?
+                (not (= lsp--cur-version (plist-get lsp--semantic-tokens-cache :_documentVersion))))
+      
       (-let* ((inhibit-field-text-motion t)
               (data (lsp-get (plist-get lsp--semantic-tokens-cache :response) :data))
               (i0 0)
@@ -517,44 +484,40 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
               (line-delta)
               (column 0)
               (face)
+              (beg)
               (line-start-pos)
               (line-min)
-              (line-max-inclusive)
               (text-property-beg)
               (text-property-end))
-        (save-mark-and-excursion
-          (save-restriction
-            (widen)
-            (goto-char beg)
-            (goto-char (line-beginning-position))
-            (setq line-min (line-number-at-pos))
-            (with-silent-modifications
-              (goto-char end)
-              (goto-char (line-end-position))
-              (setq line-max-inclusive (line-number-at-pos))
-              (forward-line (- line-min line-max-inclusive))
-              (let ((skip-lines (- line-min current-line)))
-                (while (and (<= i0 i-max) (< (aref data i0) skip-lines))
-                  (setq skip-lines (- skip-lines (aref data i0)))
-                  (setq i0 (+ i0 5)))
-                (setq current-line (- line-min skip-lines)))
-              (forward-line (- current-line line-min))
-              (setq line-start-pos (point))
-              (cl-loop
-               for i from i0 to i-max by 5 do
-               (setq line-delta (aref data i))
-               (unless (= line-delta 0)
-                 (forward-line line-delta)
-                 (setq line-start-pos (point))
-                 (setq column 0)
-                 (setq current-line (+ current-line line-delta)))
-               (setq column (+ column (aref data (1+ i))))
-               (setq face (aref faces (aref data (+ i 3))))
-               (setq text-property-beg (+ line-start-pos column))
-               (setq text-property-end
-                     (min (if lsp-semantic-tokens-enable-multiline-token-support
-                              (point-max) (line-end-position))
-                      (+ text-property-beg (aref data (+ i 2)))))
+        ;; TODO: do we need to save mark and excursion within function-type font-lock keywords?
+        (save-restriction
+          (widen)
+          (setq line-min (line-number-at-pos))
+          (setq beg (point))
+          (with-silent-modifications
+            (let ((skip-lines (- line-min current-line)))
+              (while (and (<= i0 i-max) (< (aref data i0) skip-lines))
+                (setq skip-lines (- skip-lines (aref data i0)))
+                (setq i0 (+ i0 5)))
+              (setq current-line (- line-min skip-lines)))
+            (forward-line (- current-line line-min))
+            (setq line-start-pos (point))
+            (cl-loop
+             for i from i0 to i-max by 5 do
+             (setq line-delta (aref data i))
+             (unless (= line-delta 0)
+               (forward-line line-delta)
+               (setq line-start-pos (point))
+               (setq column 0)
+               (setq current-line (+ current-line line-delta)))
+             (setq column (+ column (aref data (1+ i))))
+             (setq face (aref faces (aref data (+ i 3))))
+             (setq text-property-beg (+ line-start-pos column))
+             (setq text-property-end
+                   (min (if lsp-semantic-tokens-enable-multiline-token-support
+                            (point-max) (line-end-position))
+                        (+ text-property-beg (aref data (+ i 2)))))
+             (unless (< text-property-beg beg)
                (when face
                  (put-text-property text-property-beg text-property-end 'face face))
                ;; Deal with modifiers. We cache common combinations of
@@ -569,9 +532,8 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
                               (push (aref modifier-faces j) faces-to-apply)))
                    (puthash modifier-code faces-to-apply semantic-token-modifier-cache))
                  (dolist (face faces-to-apply)
-                   (add-face-text-property text-property-beg text-property-end face)))
-               when (> current-line line-max-inclusive) return nil)))))
-      `(jit-lock-bounds ,beg . ,end)))))
+                   (add-face-text-property text-property-beg text-property-end face))))
+             when (>= (point) end) return nil)))))))
 
 (defun lsp-semantic-tokens--request-update ()
   "Request semantic-tokens update."
@@ -670,28 +632,18 @@ Please adapt your config to prevent unnecessary mode reinitialization in the fut
 (defun lsp--semantic-tokens-initialize-buffer ()
   "Initialize the buffer for semantic tokens.
 IS-RANGE-PROVIDER is non-nil when server supports range requests."
-  (let* ((old-extend-region-functions font-lock-extend-region-functions)
-         ;; make sure font-lock always fontifies entire lines (TODO: do we also have
-         ;; to change some jit-lock-...-region functions/variables?)
-         (new-extend-region-functions
-          (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
-              old-extend-region-functions
-            (cons 'font-lock-extend-region-wholelines old-extend-region-functions)))
-         (buffer (current-buffer)))
+  (let* ((buffer (current-buffer)))
     (setq lsp--semantic-tokens-cache nil)
-    (setq font-lock-extend-region-functions new-extend-region-functions)
-    (add-function :around (local 'font-lock-fontify-region-function) #'lsp-semantic-tokens--fontify)
     (add-hook 'lsp-on-change-hook #'lsp-semantic-tokens--request-update nil t)
     (lsp-semantic-tokens--request-update)
     (setq lsp--semantic-tokens-teardown
           (lambda ()
+            (font-lock-remove-keywords nil lsp--semantic-tokens-font-lock-keywords)
             (setq lsp--semantic-tokens-pending-full-token-requests
                   (--remove (eq buffer (car it)) lsp--semantic-tokens-pending-full-token-requests))
-            (setq font-lock-extend-region-functions old-extend-region-functions)
             (setq lsp--semantic-tokens-cache nil)
-            (remove-function (local 'font-lock-fontify-region-function)
-                             #'lsp-semantic-tokens--fontify)
-            (remove-hook 'lsp-on-change-hook #'lsp-semantic-tokens--request-update t)))))
+            (remove-hook 'lsp-on-change-hook #'lsp-semantic-tokens--request-update t)))
+    (font-lock-add-keywords nil lsp--semantic-tokens-font-lock-keywords)))
 
 (defun lsp--semantic-tokens-build-face-map (identifiers faces category varname)
   "Build map of FACES for IDENTIFIERS using CATEGORY and VARNAME."
@@ -859,8 +811,8 @@ This is a debugging tool, and may incur significant performance penalties."
 
   (defun lsp-log-full-response (response)
     (setq lsp-semantic-tokens--prev-response `(:request-type "full"
-                                                             :response ,response
-                                                             :version ,lsp--cur-version)))
+                                               :response ,response
+                                               :version ,lsp--cur-version)))
   (advice-add 'lsp--semantic-tokens-ingest-full-response :before 'lsp-log-full-response)
 
   (defun lsp-log-range-response (response)

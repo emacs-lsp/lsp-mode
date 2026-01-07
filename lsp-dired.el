@@ -1,6 +1,6 @@
 ;;; lsp-dired.el --- `lsp-mode' diagnostics integrated into `dired' -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>

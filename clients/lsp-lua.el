@@ -1,6 +1,7 @@
 ;;; lsp-lua.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 E. Alexander Barbosa
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: E. Alexander Barbosa <elxbarbosa@outlook.com>
 ;; Keywords:

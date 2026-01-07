@@ -1,6 +1,7 @@
 ;;; lsp-csharp.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Jostein Kjønigsen, Saulius Menkevicius
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Saulius Menkevicius <saulius.menkevicius@fastmail.com>
 ;; Keywords:
@@ -479,7 +480,8 @@ filename is returned so lsp-mode can display this file."
                                  (concat symbol-name ".cs")))
                (file-location (expand-file-name filename (lsp-workspace-root)))
                (metadata-file-location (concat file-location ".metadata-uri"))
-               (path (f-dirname file-location)))
+               (path (f-dirname file-location))
+               (coding-system-for-write 'utf-8-unix))
 
     (unless (file-exists-p file-location)
       (unless (file-directory-p path)

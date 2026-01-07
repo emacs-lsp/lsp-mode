@@ -1,6 +1,7 @@
 ;;; lsp-autotools.el --- Support configure.ac, Makefile.am, Makefile  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jen-Chieh Shen
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: autotools lsp

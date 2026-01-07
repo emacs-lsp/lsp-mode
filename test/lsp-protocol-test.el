@@ -1,6 +1,7 @@
 ;;; lsp-protocol-test.el --- lsp-protocol tests      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Ivan Yonchovski
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -175,5 +176,65 @@
     (should (lsp-member? input :import_for_trait_assoc_item))
     (lsp-put input :import_for_trait_assoc_item :json-false)
     (should (eq (lsp-get input :import_for_trait_assoc_item) :json-false))))
+
+(ert-deftest lsp-test-inline-completion-pcase-patterns ()
+  "Regression test for issue #4723: InlineCompletion pcase patterns.
+Verify that InlineCompletion interfaces can be used in pcase patterns
+without `Eager macro-expansion failure' errors."
+  ;; Test InlineCompletionItem with required property
+  (let ((item (lsp-make-inline-completion-item :insert-text "test completion")))
+    (should (pcase item
+              ((lsp-interface InlineCompletionItem :insert-text text)
+               (string= text "test completion"))
+              (_ nil))))
+
+  ;; Test InlineCompletionItem with optional properties (nil values)
+  (let ((item-with-opts (lsp-make-inline-completion-item
+                         :insert-text "completion"
+                         :filter-text? "filter"
+                         :command? nil)))
+    (should (pcase item-with-opts
+              ((lsp-interface InlineCompletionItem :insert-text text :filter-text? filter)
+               (and (string= text "completion")
+                    (string= filter "filter")))
+              (_ nil))))
+
+  ;; Test InlineCompletionList
+  (let ((list (lsp-make-inline-completion-list
+               :items (vector (lsp-make-inline-completion-item
+                               :insert-text "completion 1")))))
+    (should (pcase list
+              ((lsp-interface InlineCompletionList :items items)
+               (and (vectorp items) (= (length items) 1)))
+              (_ nil))))
+
+  ;; Test InlineCompletionContext with invoked trigger
+  (let ((context-invoked (lsp-make-inline-completion-context
+                          :trigger-kind lsp/inline-completion-trigger-invoked)))
+    (should (pcase context-invoked
+              ((lsp-interface InlineCompletionContext :trigger-kind kind)
+               (= kind lsp/inline-completion-trigger-invoked))
+              (_ nil))))
+
+  ;; Test InlineCompletionContext with automatic trigger
+  (let ((context-auto (lsp-make-inline-completion-context
+                       :trigger-kind lsp/inline-completion-trigger-automatic)))
+    (should (pcase context-auto
+              ((lsp-interface InlineCompletionContext :trigger-kind kind)
+               (= kind lsp/inline-completion-trigger-automatic))
+              (_ nil))))
+
+  ;; Test InlineCompletionParams with nested context
+  (let ((params (lsp-make-inline-completion-params
+                 :text-document (lsp-make-text-document-identifier :uri "file:///test.rs")
+                 :position (lsp-make-position :line 10 :character 5)
+                 :context (lsp-make-inline-completion-context
+                           :trigger-kind lsp/inline-completion-trigger-invoked))))
+    (should (pcase params
+              ((lsp-interface InlineCompletionParams :text-document doc :position pos :context ctx)
+               (and (lsp-text-document-identifier? doc)
+                    (lsp-position? pos)
+                    (lsp-inline-completion-context? ctx)))
+              (_ nil)))))
 
 ;;; lsp-protocol-test.el ends here

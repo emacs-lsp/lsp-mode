@@ -1,6 +1,6 @@
 ;;; lsp-headerline.el --- LSP headerline features -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -306,7 +306,8 @@ PATH is the current folder to be checked."
   "Get the severity level for RANGE."
   (let ((range-severity 10))
     (mapc (-lambda ((&Diagnostic :range (&Range :start) :severity?))
-            (when (lsp-point-in-range? start range)
+            (when (and severity?
+                       (lsp-point-in-range? start range))
               (setq range-severity (min range-severity severity?))))
           (lsp--get-buffer-diagnostics))
     range-severity))

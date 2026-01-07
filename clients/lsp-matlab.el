@@ -20,22 +20,26 @@
   :type '(string))
 
 (defcustom lsp-clients-matlab-server "/usr/local/apps/matlabls/out/index.js"
-  "Path to the MATLAB language server.
+  "Path to the MATLAB language server, index.js.
+
+For an overview and detailed install instructions, see:
+https://github.com/mathworks/Emacs-MATLAB-Mode/blob/doc/\
+matlab-language-server-lsp-mode.org
+
 To setup,
-- Download the language server (clone or unzip):
-   - git clone https://github.com/mathworks/MATLAB-language-server.git
-   or
-   - Download zip from https://github.com/mathworks/MATLAB-language-server
-     and unzip.
-- In the downloaded directory,
-    npm install
-    npm run compile
-    npm run package  # optional JavaScript minimization
-- Set lsp-clients-matlab-server to the download directory, or
-  copy the ./out and ./matlab/ directory trees to an install location, e.g.
-    cp -r ./out/ /usr/local/apps/matlabls/out/
-    cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
-  then set `lsp-clients-matlab-server' to the install location."
+1. Download the language server (clone or unzip):
+      git clone https://github.com/mathworks/MATLAB-language-server.git
+   or Download and unzip a release from
+      https://github.com/mathworks/MATLAB-language-server
+2. In the clone or unzip directory,
+     npm install
+     npm run compile
+     npm run package  # optional JavaScript minimization
+3. Set lsp-clients-matlab-server to the download directory, or
+   copy the ./out and ./matlab/ directory trees to an install location, e.g.
+     cp -r ./out/ /usr/local/apps/matlabls/out/
+     cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
+   then set `lsp-clients-matlab-server' to the install location."
   :group 'lsp-matlab
   :type '(string))
 
@@ -73,9 +77,6 @@ files, then the MATLAB language server may become unresponsive,
 causing hangs."
   :group 'lsp-matlab
   :type '(boolean))
-
-;; Tell lsp-mode about MATLAB language
-(add-to-list 'lsp-language-id-configuration '(matlab-mode . "MATLAB"))
 
 (defun matlabls-command ()
   "Return matlabls launch command LIST."
@@ -120,7 +121,7 @@ causing hangs."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'matlabls-command)
-                  :major-modes '(matlab-mode)
+                  :major-modes '(matlab-ts-mode matlab-mode)
                   :ignore-messages '("readFile .*? requested by MATLAB but content not available")
                   :server-id 'matlab-ls
                   :language-id "MATLAB"
@@ -130,8 +131,10 @@ causing hangs."
                                                          (lsp-configuration-section "MATLAB"))))
                   :notification-handlers ;; See src/notifications/NotificationService.ts
                   (ht ("telemetry/logdata" #'ignore)
-                      ("mvmStateChange" #'ignore)
-                      ("matlab/connection/update/server" #'ignore))))
+                      ("matlab/connection/update/server" #'ignore)
+                      ("matlab/sections" #'ignore)
+                      ("mvmPromptChange" #'ignore)
+                      ("mvmStateChange" #'ignore))))
 
 (provide 'lsp-matlab)
 ;;; lsp-matlab.el ends here

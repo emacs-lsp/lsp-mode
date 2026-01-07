@@ -1,6 +1,7 @@
 ;;; lsp-ruff.el --- ruff lsp support             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Freja Nordsiek
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 ;;
 ;; Author: Freja Nordsiek <fnordsie@posteo.net
 ;; Keywords: language tools
@@ -92,6 +93,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :server-id 'ruff
   :priority -2
   :add-on? t
+  :multi-root t
   :initialization-options
   (lambda ()
     (list :settings

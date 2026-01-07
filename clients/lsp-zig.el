@@ -1,6 +1,7 @@
 ;;; lsp-zig.el --- lsp-mode Zig integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021 Riccardo Binetti
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: Riccardo Binetti <rbino@gmx.com>
 ;; Keywords: languages,tools

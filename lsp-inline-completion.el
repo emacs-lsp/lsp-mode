@@ -1,6 +1,6 @@
 ;;; lsp-inline-completion.el --- LSP mode                              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020-2025 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Rodrigo Kassick
 ;; Keywords: languages
@@ -41,7 +41,7 @@
                             lsp/inline-completion-trigger-invoked))))
 
 (defun lsp-inline-completion--parse-items (response)
-  "Parses the reponse from the server and returns a list of
+  "Parses the response from the server and returns a list of
 InlineCompletionItem objects"
 
   (pcase response
@@ -91,7 +91,7 @@ should not cancel the inline completion UI"
     (lsp-inline-completion--define-key map (kbd "C-g") #'lsp-inline-completion-cancel)
     (lsp-inline-completion--define-key map (kbd "<escape>") #'lsp-inline-completion-cancel)
     (lsp-inline-completion--define-key map (kbd "C-c C-k") #'lsp-inline-completion-cancel)
-    ;; useful -- recenter without loosing the completion
+    ;; useful -- recenter without losing the completion
     (lsp-inline-completion--define-key map (kbd "C-l") #'recenter-top-bottom 'keep)
     ;; ignore
     (lsp-inline-completion--define-key map [down-mouse-1] #'ignore 'keep)
