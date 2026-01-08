@@ -1142,6 +1142,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-fix-all-on-save" class="md-nav__link">
+    lsp-fix-all-on-save
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-fix-all-on-save-list" class="md-nav__link">
+    lsp-fix-all-on-save-list
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-flush-delayed-changes-before-next-message" class="md-nav__link">
     lsp-flush-delayed-changes-before-next-message
   </a>
@@ -4966,6 +4980,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-fix-all-on-save" class="md-nav__link">
+    lsp-fix-all-on-save
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-fix-all-on-save-list" class="md-nav__link">
+    lsp-fix-all-on-save-list
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-flush-delayed-changes-before-next-message" class="md-nav__link">
     lsp-flush-delayed-changes-before-next-message
   </a>
@@ -5801,6 +5829,19 @@ level or at a root of an lsp workspace.</p>
 <p>Show warning if the files to watch are more than.
 Set to nil to disable the warning.</p>
 <hr />
+<h3 id="lsp-fix-all-on-save"><code>lsp-fix-all-on-save</code><a class="headerlink" href="#lsp-fix-all-on-save" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>If non-nil run <code>source.fixAll</code> code action on save.
+This applies all auto-fixable issues before saving.
+To only apply to specific modes see <code>lsp-fix-all-on-save-list</code>.</p>
+<hr />
+<h3 id="lsp-fix-all-on-save-list"><code>lsp-fix-all-on-save-list</code><a class="headerlink" href="#lsp-fix-all-on-save-list" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat symbol)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>If the list is empty apply fixAll to all buffers on save.
+Else only apply fixAll if their major-mode is in the list.</p>
+<hr />
 <h3 id="lsp-flush-delayed-changes-before-next-message"><code>lsp-flush-delayed-changes-before-next-message</code><a class="headerlink" href="#lsp-flush-delayed-changes-before-next-message" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -6198,7 +6239,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 6, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 8, 2026</span>
       
     
   </small>
