@@ -56,6 +56,7 @@
 (require 'xref)
 (require 'minibuffer)
 (require 'help-mode)
+(require 'vc-git)
 (require 'lsp-protocol)
 
 (defgroup lsp-mode nil
@@ -6749,9 +6750,9 @@ relied upon."
                                     :newName ,newname))))
     (lsp--apply-workspace-edit edits 'rename)))
 
-(defun lsp--on-rename-file (old-func old-name new-name &optional ok-if-already-exists?)
-  "Advice around function `rename-file'.
-Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
+(defun lsp--on-rename-file (old-func old-name new-name &rest args)
+  "Advice around file renaming functions such as `rename-file'.
+Applies OLD-FUNC with OLD-NAME, NEW-NAME and remaining ARGS.
 
 This advice sends workspace/willRenameFiles before renaming file
 to check if server wants to apply any workspaceEdits after renamed."
@@ -6764,13 +6765,14 @@ to check if server wants to apply any workspaceEdits after renamed."
         (if-let* ((edits (lsp-request "workspace/willRenameFiles" params)))
             (progn
               (lsp--apply-workspace-edit edits 'rename-file)
-              (funcall old-func old-name new-name ok-if-already-exists?)
+              (apply old-func old-name new-name args)
               (when (lsp--send-did-rename-files-p)
                 (lsp-notify "workspace/didRenameFiles" params)))
-          (funcall old-func old-name new-name ok-if-already-exists?)))
-    (funcall old-func old-name new-name ok-if-already-exists?)))
+          (apply old-func old-name new-name args)))
+    (apply old-func old-name new-name args)))
 
 (advice-add 'rename-file :around #'lsp--on-rename-file)
+(advice-add 'vc-git-rename-file :around #'lsp--on-rename-file)
 
 (defcustom lsp-xref-force-references nil
   "If non-nil threat everything as references(e. g. jump if only one item.)"
