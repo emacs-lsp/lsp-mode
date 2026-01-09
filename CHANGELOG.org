@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix documentation website sidebar visibility on tablet landscape screens (see [[https://github.com/emacs-lsp/lsp-mode/issues/4946][#4946]])
   * Add ~lsp-fix-all~ command and ~lsp-fix-all-on-save~ option for ~source.fixAll~ code action support (see [[https://github.com/emacs-lsp/lsp-mode/issues/1842][#1842]])
   * Add notification handlers for Deno language server (~deno/didRefreshDenoConfigurationTree~, ~deno/didChangeDenoConfiguration~, ~deno/didUpgradeCheck~).
   * Fix "Unknown notification: semgrep/rulesRefreshed" warning in lsp-semgrep client.
