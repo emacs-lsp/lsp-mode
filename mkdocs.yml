@@ -199,7 +199,7 @@ nav:
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
-    - WebAssembly: page/lsp-wat.md
+    - WebAssembly: page/lsp-wasm-language-tools.md
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
