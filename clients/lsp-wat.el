@@ -216,8 +216,7 @@
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-wat-server-command))
   :activation-fn (lsp-activate-on "wat")
-  :server-id 'wat_server
-  ))
+  :server-id 'wat_server))
 
 (lsp-consistency-check lsp-wat)
 
