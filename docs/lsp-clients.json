@@ -1381,7 +1381,7 @@
   },
   {
     "name": "wasm-language-tools",
-    "full-name": "WebAssembly Language Tools",
+    "full-name": "WebAssembly",
     "server-name": "wat_server",
     "server-url": "https://github.com/g-plane/wasm-language-tools",
     "installation-url": "https://wasm-language-tools.netlify.app/guide/getting-started/executable.html",
