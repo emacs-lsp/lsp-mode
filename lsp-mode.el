@@ -193,7 +193,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
      lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
-     lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-volar lsp-wat lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -836,6 +836,7 @@ Changes take effect only when a new session is started."
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
     ("\\.vue$" . "vue")
+    ("\\.wat$" . "wat")
     ("\\.xml$" . "xml")
     ("\\ya?ml$" . "yaml")
     ("^PKGBUILD$" . "shellscript")
@@ -1026,6 +1027,7 @@ Changes take effect only when a new session is started."
     (glsl-mode . "glsl")
     (shader-mode . "shaderlab")
     (wgsl-mode . "wgsl")
+    (wat-mode . "wat")
     (jq-mode . "jq")
     (jq-ts-mode . "jq")
     (protobuf-mode . "protobuf")
