@@ -3,9 +3,10 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // https://github.com/squidfunk/mkdocs-material/issues/767#issuecomment-384558269
+// Breakpoint: 960px (60em) - matches CSS sidebar visibility fix (Issue #4946)
 function load_navpane() {
     var width = window.innerWidth;
-    if (width <= 1200) {
+    if (width <= 960) {
         return;
     }
 
