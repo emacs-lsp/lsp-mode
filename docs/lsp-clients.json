@@ -1380,6 +1380,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "wasm-language-tools",
+    "full-name": "WebAssembly Language Tools",
+    "server-name": "wat_server",
+    "server-url": "https://github.com/g-plane/wasm-language-tools",
+    "installation-url": "https://wasm-language-tools.netlify.app/guide/getting-started/executable.html",
+    "debugger": "Not available"
+  },
+  {
     "name": "wgsl-analyzer",
     "full-name": "wgsl",
     "server-name": "wgsl-analyzer",
