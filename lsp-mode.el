@@ -193,7 +193,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
      lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
-     lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-volar lsp-wat lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -836,6 +836,7 @@ Changes take effect only when a new session is started."
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
     ("\\.vue$" . "vue")
+    ("\\.wat$" . "wat")
     ("\\.xml$" . "xml")
     ("\\ya?ml$" . "yaml")
     ("^PKGBUILD$" . "shellscript")
@@ -1026,6 +1027,7 @@ Changes take effect only when a new session is started."
     (glsl-mode . "glsl")
     (shader-mode . "shaderlab")
     (wgsl-mode . "wgsl")
+    (wat-mode . "wat")
     (jq-mode . "jq")
     (jq-ts-mode . "jq")
     (protobuf-mode . "protobuf")
@@ -2011,9 +2013,23 @@ This set of allowed chars is enough for hexifying local file paths.")
       (funcall uri-fn path)
     (lsp--path-to-uri-1 path)))
 
+(defvar lsp--warned-invalid-regexps (make-hash-table :test 'equal)
+  "Hash table of invalid regexps that have already been warned about.
+Used to prevent repeated warnings for the same invalid pattern.")
+
 (defun lsp--string-match-any (regex-list str)
-  "Return the first regex, if any, within REGEX-LIST matching STR."
-  (--first (string-match it str) regex-list))
+  "Return the first regex, if any, within REGEX-LIST matching STR.
+Returns the matching regex string on success, nil on no match or invalid regex.
+Invalid regex patterns are logged as warnings (once per pattern) and skipped."
+  (--first (condition-case err
+               (string-match it str)
+             (invalid-regexp
+              (unless (gethash it lsp--warned-invalid-regexps)
+                (puthash it t lsp--warned-invalid-regexps)
+                (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
+                          (error-message-string err) it))
+              nil))
+           regex-list))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal))
