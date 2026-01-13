@@ -1381,6 +1381,7 @@
   },
   {
     "name": "wasm-language-tools",
+    "common-group-name": "wat",
     "full-name": "WebAssembly",
     "server-name": "wat_server",
     "server-url": "https://github.com/g-plane/wasm-language-tools",
