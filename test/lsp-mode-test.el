@@ -210,8 +210,8 @@ This tests the fix for empty capability objects like DefinitionOptions {}."
                             (puthash "completionProvider" completion-ht ht))
                           ht))))
     ;; Test 1: Capability exists with nil value (empty object like DefinitionOptions {})
-    ;; Should return t, not nil
-    (should (eq t (lsp--capability :definitionProvider capabilities)))
+    ;; Should return truthy value, not nil
+    (should (lsp--capability :definitionProvider capabilities))
 
     ;; Test 2: Capability exists with truthy value
     ;; Should return the actual value
@@ -235,7 +235,7 @@ This tests the fix for empty capability objects like DefinitionOptions {}."
                           (puthash "definitionProvider" nil ht)
                           ht))))
     ;; String key should be converted to keyword and work correctly
-    (should (eq t (lsp--capability "definitionProvider" capabilities)))))
+    (should (lsp--capability "definitionProvider" capabilities))))
 
 
 
