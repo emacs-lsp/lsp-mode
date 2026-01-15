@@ -1,6 +1,6 @@
 ;;; lsp-ocaml.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, ocaml
@@ -329,7 +329,7 @@ If TYPE is a single-line that represents a module type, reformat it."
           (index lsp-ocaml--type-enclosing-index)
           (type_result (lsp-ocaml--type-enclosing verbosity index))
           ((&ocaml-lsp:TypeEnclosingResult :index :type :enclosings) type_result)
-          ;; Get documentation informations
+          ;; Get documentation information
           (markupkind (symbol-name lsp-ocaml-markupkind))
           (doc_result (lsp-ocaml--get-documentation nil markupkind))
           (doc (cl-getf (cl-getf doc_result :doc) :value)))

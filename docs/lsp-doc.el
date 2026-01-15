@@ -20,10 +20,11 @@
 
 ;;; Commentary:
 
-;; Tool for convert elisp files into documentation.
+;; Tool to convert elisp files into documentation.
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'f)
 (require 's)
 (require 'dash)
@@ -100,16 +101,76 @@
       (seq-map (apply-partially #'car))
       (seq-sort #'string<))))
 
+(defun lsp-doc--extract-standard-value-expr (variable)
+  "Extract the original expression from VARIABLE's standard-value.
+Handles interpreted functions, byte-compiled functions, and plain expressions.
+Returns nil if no suitable expression can be extracted."
+  (let ((standard-expr (car (get variable 'standard-value))))
+    (cond
+     ;; Lexical form with interpreted function: (funcall #'#[args body env ...])
+     ;; The body is at index 1, wrapped in a list
+     ;; Note: interpreted-function-p is only available in Emacs 30.1+
+     ((and (consp standard-expr)
+           (eq (car standard-expr) 'funcall)
+           (let ((fn-form (cadr standard-expr)))
+             (and (consp fn-form)
+                  (memq (car fn-form) '(function quote))
+                  (let ((fn (cadr fn-form)))
+                    (and (fboundp 'interpreted-function-p)
+                         (funcall 'interpreted-function-p fn))))))
+      (let* ((fn (cadr (cadr standard-expr)))
+             (body (aref fn 1)))
+        ;; Body is a list of forms; take the first (and usually only) one
+        (car body)))
+     ;; Byte-compiled lexical form: (funcall #'#<byte-code ...>)
+     ;; Cannot reliably extract the original expression from byte-code,
+     ;; so return nil to trigger the fallback to f-short path display
+     ((and (consp standard-expr)
+           (eq (car standard-expr) 'funcall)
+           (let ((fn-form (cadr standard-expr)))
+             (and (consp fn-form)
+                  (memq (car fn-form) '(function quote))
+                  (byte-code-function-p (cadr fn-form)))))
+      nil)
+     ;; Interpreted closure form: (funcall (function (closure ENV ARGS BODY...)))
+     ((and (consp standard-expr)
+           (eq (car standard-expr) 'funcall)
+           (let ((fn-form (cadr standard-expr)))
+             (and (consp fn-form)
+                  (memq (car fn-form) '(function quote))
+                  (consp (cadr fn-form))
+                  (eq (car (cadr fn-form)) 'closure))))
+      (let ((closure (cadr (cadr standard-expr))))
+        (nth 2 closure)))
+     ;; Plain quoted expression (dynamic scope)
+     (t standard-expr))))
+
+(defun lsp-doc--path-type-p (type)
+  "Return non-nil if TYPE is or contains a file/directory type."
+  (cond
+   ((memq type '(file directory)) t)
+   ((consp type)
+    ;; Handle compound types like (repeat directory), (choice file directory)
+    (or (memq (car type) '(file directory))
+        (cl-some #'lsp-doc--path-type-p (cdr type))))
+   (t nil)))
+
 (defun lsp-doc--pretty-default-value (variable)
   "Return default value for a VARIABLE formatted."
-  (let ((default (if (facep variable)
-                     (face-default-spec variable)
-                   (default-value variable)))
-        (type (get variable 'custom-type)))
-    (if (and (memq type '(file directory))
-             (stringp default))
-        (format "%s" (f-short default))
-      (format "%s" default))))
+  (let ((type (get variable 'custom-type)))
+    (if (lsp-doc--path-type-p type)
+        ;; For file/directory types, show the unevaluated expression
+        ;; to avoid embedding machine-specific paths in documentation
+        (let ((expr (lsp-doc--extract-standard-value-expr variable)))
+          (if expr
+              (format "%S" expr)
+            ;; Fallback if no expression can be extracted
+            (format "%s" (f-short (default-value variable)))))
+      ;; For other types, use evaluated default value
+      (let ((default (if (facep variable)
+                         (face-default-spec variable)
+                       (default-value variable))))
+        (format "%s" default)))))
 
 (defun lsp-doc--variable->value (variable key)
   "Return a decorated value for a VARIABLE, KEY and a CLIENT."

@@ -1,6 +1,7 @@
 ;;; lsp-erlang.el --- Erlang Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019-2023 Roberto Aloi, Alan Zimmerman
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Roberto Aloi, Alan Zimmerman
 ;; Keywords: erlang lsp
@@ -268,7 +269,7 @@ Code Lenses. Only applies when `#elp.lens.enabled` and
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-erlang-elp-otp-download-version "27.1"
-  "OTP version used as part of the file name when downlading the ELP binary.
+  "OTP version used as part of the file name when downloading the ELP binary.
 It must match those used in https://github.com/WhatsApp/erlang-language-platform/releases/latest"
   :type '(choice (string :tag "25.3")
                  (string :tag "26.2")

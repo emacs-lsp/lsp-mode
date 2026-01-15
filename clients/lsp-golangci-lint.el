@@ -1,6 +1,7 @@
 ;;; lsp-golangci-lint.el --- golangci-lint-langserver Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jim Myhrberg
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jim Myhrberg
 ;; Keywords: lsp, go, golang, golangci-lint

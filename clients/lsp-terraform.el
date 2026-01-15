@@ -1,6 +1,7 @@
 ;;; lsp-terraform.el --- Terraform Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Ross Donaldson, Sibi Prabakaran
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ross Donaldson, Sibi Prabakaran
 ;; Keywords: terraform lsp

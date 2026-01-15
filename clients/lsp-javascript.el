@@ -1,6 +1,6 @@
 ;;; lsp-javascript.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp,
@@ -618,17 +618,17 @@ TypeScript 3.0 or newer in the workspace."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-surveys-enabled t
-  "Enabled/disable occasional surveys that help us improve VS
+  "Enable/disable occasional surveys that help us improve VS
 Code's JavaScript and TypeScript support."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
@@ -791,7 +791,7 @@ name (e.g. `data' variable passed as `data' parameter)."
   nil)
 
 (defun lsp-javascript-rename-file ()
-  "Rename current file and all it's references in other files."
+  "Rename current file and all its references in other files."
   (interactive)
   (let* ((name (buffer-name))
          (old (buffer-file-name))
@@ -991,7 +991,14 @@ particular FILE-NAME and MODE."
 
 
 (defgroup lsp-deno nil
-  "LSP support for the Deno language server."
+  "LSP support for the Deno language server.
+
+Deno can be installed via `lsp-install-server' or manually:
+- Shell: curl -fsSL https://deno.land/install.sh | sh
+- Homebrew: brew install deno
+
+Note: npm installation is not recommended due to performance degradation.
+See URL `https://docs.deno.com/runtime/getting_started/installation/'."
   :group 'lsp-mode
   :link '(url-link "https://deno.land/"))
 
@@ -1085,15 +1092,28 @@ Examples: `./import-map.json',
                                                  lsp-clients-deno-enable-code-lens-references-all-functions))
                  :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
 
+(lsp-dependency
+ 'deno
+ `(:system ,lsp-clients-deno-server)
+ '(:npm :package "deno" :path "deno"))
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection (lambda ()
-                                          (cons lsp-clients-deno-server
-                                                lsp-clients-deno-server-args)))
+                                          `(,(lsp-package-path 'deno)
+                                            ,@lsp-clients-deno-server-args)))
                   :initialization-options #'lsp-clients-deno--make-init-options
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :server-id 'deno-ls))
+                  :server-id 'deno-ls
+                  :notification-handlers (ht ("deno/didRefreshDenoConfigurationTree" #'ignore)
+                                             ("deno/didChangeDenoConfiguration" #'ignore)
+                                             ("deno/didUpgradeCheck" #'ignore))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure
+                                         'deno
+                                         callback
+                                         error-callback))))
 
 
 

@@ -1,6 +1,6 @@
 ;;; lsp-beancount.el --- Beancount Client settings         -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 emacs-lsp maintainers
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, beancount

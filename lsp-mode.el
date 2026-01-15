@@ -1,6 +1,6 @@
 ;;; lsp-mode.el --- LSP mode                              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020-2025 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
@@ -180,7 +180,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
      lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
      lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy
-     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-jq
+     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-just lsp-jq
      lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
      lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
      lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
@@ -192,8 +192,8 @@ As defined by the Language Server Protocol 3.16."
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
-     lsp-typespec lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
-     lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
+     lsp-volar lsp-wat lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -594,6 +594,21 @@ if their major-mode is in the list."
   :type '(repeat symbol)
   :group 'lsp-mode)
 
+(defcustom lsp-fix-all-on-save nil
+  "If non-nil run `source.fixAll' code action on save.
+This applies all auto-fixable issues before saving.
+To only apply to specific modes see `lsp-fix-all-on-save-list'."
+  :type 'boolean
+  :safe #'booleanp
+  :local t
+  :group 'lsp-mode)
+
+(defcustom lsp-fix-all-on-save-list '()
+  "If the list is empty apply fixAll to all buffers on save.
+Else only apply fixAll if their major-mode is in the list."
+  :type '(repeat symbol)
+  :group 'lsp-mode)
+
 (defcustom lsp-after-apply-edits-hook nil
   "Hooks to run when text edit is applied.
 It contains the operation source."
@@ -821,6 +836,7 @@ Changes take effect only when a new session is started."
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
     ("\\.vue$" . "vue")
+    ("\\.wat$" . "wat")
     ("\\.xml$" . "xml")
     ("\\ya?ml$" . "yaml")
     ("^PKGBUILD$" . "shellscript")
@@ -847,6 +863,11 @@ Changes take effect only when a new session is started."
     (scala-ts-mode . "scala")
     (julia-mode . "julia")
     (julia-ts-mode . "julia")
+    (just-mode . "just")
+    (just-ts-mode . "just")
+    (typst-mode . "typst")
+    (typst-ts-mode . "typst")
+    ("\\.typ\\'" . "typst")
     (clojure-mode . "clojure")
     (clojurec-mode . "clojure")
     (clojurescript-mode . "clojurescript")
@@ -1006,6 +1027,7 @@ Changes take effect only when a new session is started."
     (glsl-mode . "glsl")
     (shader-mode . "shaderlab")
     (wgsl-mode . "wgsl")
+    (wat-mode . "wat")
     (jq-mode . "jq")
     (jq-ts-mode . "jq")
     (protobuf-mode . "protobuf")
@@ -1991,9 +2013,23 @@ This set of allowed chars is enough for hexifying local file paths.")
       (funcall uri-fn path)
     (lsp--path-to-uri-1 path)))
 
+(defvar lsp--warned-invalid-regexps (make-hash-table :test 'equal)
+  "Hash table of invalid regexps that have already been warned about.
+Used to prevent repeated warnings for the same invalid pattern.")
+
 (defun lsp--string-match-any (regex-list str)
-  "Return the first regex, if any, within REGEX-LIST matching STR."
-  (--first (string-match it str) regex-list))
+  "Return the first regex, if any, within REGEX-LIST matching STR.
+Returns the matching regex string on success, nil on no match or invalid regex.
+Invalid regex patterns are logged as warnings (once per pattern) and skipped."
+  (--first (condition-case err
+               (string-match it str)
+             (invalid-regexp
+              (unless (gethash it lsp--warned-invalid-regexps)
+                (puthash it t lsp--warned-invalid-regexps)
+                (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
+                          (error-message-string err) it))
+              nil))
+           regex-list))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal))
@@ -4184,12 +4220,13 @@ yet."
                                  more-trigger-character?)))))
 
 (defun lsp--update-on-type-formatting-hook (&optional cleanup?)
-  (let ((on-type-formatting-handler (lsp--on-type-formatting-handler-create)))
+  (when-let* ((on-type-formatting-handler
+               (and (or lsp-enable-on-type-formatting cleanup?)
+                    (lsp--on-type-formatting-handler-create))))
     (cond
-     ((and lsp-enable-on-type-formatting on-type-formatting-handler (not cleanup?))
+     ((and lsp-enable-on-type-formatting (not cleanup?))
       (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
-     ((or cleanup?
-          (not lsp-enable-on-type-formatting))
+     ((or cleanup? (not lsp-enable-on-type-formatting))
       (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
 
 (defun lsp--signature-help-handler-create ()
@@ -4199,18 +4236,16 @@ yet."
       (lsp--maybe-enable-signature-help trigger-characters?))))
 
 (defun lsp--update-signature-help-hook (&optional cleanup?)
-  (let ((signature-help-handler (lsp--signature-help-handler-create)))
-    (cond
-     ((and (or (equal lsp-signature-auto-activate t)
-               (memq :on-trigger-char lsp-signature-auto-activate))
-           signature-help-handler
-           (not cleanup?))
-      (add-hook 'post-self-insert-hook signature-help-handler nil t))
-
-     ((or cleanup?
-          (not (or (equal lsp-signature-auto-activate t)
-                   (memq :on-trigger-char lsp-signature-auto-activate))))
-      (remove-hook 'post-self-insert-hook signature-help-handler t)))))
+  (let ((signature-auto-activate-p (or (equal lsp-signature-auto-activate t)
+                                       (memq :on-trigger-char lsp-signature-auto-activate))))
+    (when-let* ((signature-help-handler
+                 (and (or signature-auto-activate-p cleanup?)
+                      (lsp--signature-help-handler-create))))
+      (cond
+       ((and signature-auto-activate-p (not cleanup?))
+        (add-hook 'post-self-insert-hook signature-help-handler nil t))
+       ((or cleanup? (not signature-auto-activate-p))
+        (remove-hook 'post-self-insert-hook signature-help-handler t))))))
 
 (defun lsp--after-set-visited-file-name ()
   (lsp-disconnect)
@@ -5245,6 +5280,18 @@ if it's closing the last buffer in the workspace."
       (when (member major-mode lsp-format-buffer-on-save-list)
         (lsp-format-buffer)))))
 
+(defun lsp--fix-all-before-save ()
+  "Run `source.fixAll' code action before save if configured.
+This is controlled by `lsp-fix-all-on-save' and `lsp-fix-all-on-save-list'."
+  (with-demoted-errors "Error in 'lsp--fix-all-before-save': %S"
+    (when (and lsp-fix-all-on-save
+               (lsp-workspaces)
+               (or (not lsp-fix-all-on-save-list)
+                   (member major-mode lsp-fix-all-on-save-list)))
+      (condition-case nil
+          (lsp-execute-code-action-by-kind-buffer-wide "source.fixAll")
+        (lsp-no-code-actions nil)))))
+
 (defun lsp--on-auto-save ()
   "Handler for auto-save."
   (when (lsp--send-will-save-p)
@@ -5645,7 +5692,7 @@ MODE (car) is function which is defined in `lsp-language-id-configuration'.
 Cdr should be list of PROPERTY-LIST.
 
 Each PROPERTY-LIST should have properties:
-:regexp  Regexp which determines what string is relpaced to image.
+:regexp  Regexp which determines what string is replaced to image.
          You should also get information of image, by parenthesis constructs.
          By default, all matched string is replaced to image, but you can
          change index of replaced string by keyword :replaced-index.
@@ -6126,10 +6173,17 @@ It will show up only if current point has signature help."
            (lsp-workspaces))
    (gethash command lsp--default-action-handlers)))
 
-(defun lsp--text-document-code-action-params (&optional kind)
-  "Code action params."
-  (let* ((diagnostics (lsp-cur-possition-diagnostics))
-         (range (cond ((use-region-p)
+(defun lsp--text-document-code-action-params (&optional kind buffer-wide)
+  "Code action params.
+When BUFFER-WIDE is non-nil, use entire buffer range and all diagnostics.
+This is useful for source actions like `source.fixAll' that operate on the
+whole buffer rather than the current position."
+  (let* ((diagnostics (if buffer-wide
+                          (apply #'vector (lsp--get-buffer-diagnostics))
+                        (lsp-cur-possition-diagnostics)))
+         (range (cond (buffer-wide
+                       (lsp--region-to-range (point-min) (point-max)))
+                      ((use-region-p)
                        (lsp--region-to-range (region-beginning) (region-end)))
                       (diagnostics
                        (let* ((start (point)) (end (point)))
@@ -6364,6 +6418,35 @@ execute a CODE-ACTION-KIND action."
             (lsp--info ,(format "%s action not available" code-action-kind))))))))
 
 (lsp-make-interactive-code-action organize-imports "source.organizeImports")
+
+(defun lsp-code-actions-buffer-wide (&optional kind)
+  "Retrieve the code actions for the entire buffer.
+This is useful for source actions like `source.fixAll' that operate on the
+whole buffer rather than the current position.
+It will filter by KIND if non nil."
+  (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind t)))
+
+(defun lsp-execute-code-action-by-kind-buffer-wide (command-kind)
+  "Execute code action by COMMAND-KIND for the entire buffer.
+Unlike `lsp-execute-code-action-by-kind', this function passes the entire
+buffer range and all diagnostics to the language server."
+  (if-let* ((action (->> (lsp-code-actions-buffer-wide command-kind)
+                        (-filter (-lambda ((&CodeAction :kind?))
+                                   (and kind? (s-prefix? command-kind kind?))))
+                        lsp--select-action)))
+      (lsp-execute-code-action action)
+    (signal 'lsp-no-code-actions '(command-kind))))
+
+(defun lsp-fix-all ()
+  "Perform the source.fixAll code action for the entire buffer, if available.
+This action fixes all auto-fixable issues in the buffer."
+  (interactive)
+  (let ((lsp-auto-execute-action t))
+    (condition-case nil
+        (lsp-execute-code-action-by-kind-buffer-wide "source.fixAll")
+      (lsp-no-code-actions
+       (when (called-interactively-p 'any)
+         (lsp--info "source.fixAll action not available"))))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region."
@@ -7697,7 +7780,7 @@ corresponding to PATH, else returns `default-directory'."
 
 (defun lsp--fix-remote-cmd (program)
   "Helper for `lsp-stdio-connection'.
-Originally coppied from eglot."
+Originally copied from eglot."
 
   (if (file-remote-p default-directory)
       (list shell-file-name "-c"
@@ -9467,6 +9550,7 @@ Errors if there are none."
   (lsp-managed-mode -1)
   (lsp-mode -1)
   (remove-hook 'before-save-hook #'lsp--format-buffer-before-save t)
+  (remove-hook 'before-save-hook #'lsp--fix-all-before-save t)
   (setq lsp--buffer-workspaces nil)
   (lsp--info "Disconnected"))
 
@@ -9515,7 +9599,10 @@ argument ask the user to select which language server to start."
                         (lsp--try-project-root-workspaces (equal arg '(4))
                                                           (and arg (not (equal arg 1))))))
           (lsp-mode 1)
+          ;; Register before-save hooks. Emacs runs hooks in reverse order,
+          ;; so fix-all runs before format (fix issues first, then format).
           (add-hook 'before-save-hook #'lsp--format-buffer-before-save nil t)
+          (add-hook 'before-save-hook #'lsp--fix-all-before-save nil t)
           (when lsp-auto-configure (lsp--auto-configure))
           (setq lsp-buffer-uri (lsp--buffer-uri))
           (lsp--info "Connected to %s."

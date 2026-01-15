@@ -96,7 +96,7 @@ You can also trigger format on save by setting the variable `lsp-format-buffer-o
 
 ## Debugger
 
-`lsp-mode` integrates with [dap-mode](https://emacs-lsp.github.io/dap-mode/) with implements the DAP(Debugger Adapter Protocol), for more information check the [`dap-mode` documentation](https://emacs-lsp.github.io/dap-mode/).
+`lsp-mode` integrates with [dap-mode](https://emacs-lsp.github.io/dap-mode/) which implements the DAP (Debugger Adapter Protocol), for more information check the [`dap-mode` documentation](https://emacs-lsp.github.io/dap-mode/).
 
 ![](../examples/lsp-dart-flutter-debug.gif)
 

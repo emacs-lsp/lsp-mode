@@ -1,6 +1,7 @@
 ;;; lsp-postgres.el --- Postgres client settings.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Shen, Jen-Chieh
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 

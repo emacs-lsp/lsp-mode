@@ -1,6 +1,7 @@
 ;;; lsp-clangd.el --- LSP clients for the C Languages Family -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 Daniel Martin & emacs-lsp maintainers
+;; Copyright (C) 2020 Daniel Martin
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Keywords: languages, c, cpp, clang
 

@@ -1,6 +1,7 @@
 ;;; lsp-clojure.el --- Clojure Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Benedek Fazekas
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Benedek Fazekas <benedek.fazekas@gmail.com>
 ;; Keywords: languages,tools
@@ -110,8 +111,8 @@ Defaults to side following treemacs default."
 
 ;; Internal
 
-(lsp-interface
- (Clojure:CursorInfoParams (:textDocument :position) nil))
+(eval-and-compile
+  (lsp-interface (Clojure:CursorInfoParams (:textDocument :position) nil)))
 
 (lsp-dependency
  'clojure-lsp

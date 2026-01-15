@@ -1,6 +1,7 @@
 ;;; lsp-fennel.el --- lsp-mode for the fennel-ls -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Merrick Luo
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Merrick Luo
 ;; Keywords: languages

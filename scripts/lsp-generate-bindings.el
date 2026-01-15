@@ -1,6 +1,7 @@
 ;;; lsp-generate-bindings.el --- Generates lsp-mode bindings  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Ivan Yonchovski
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: convenience

@@ -1,6 +1,7 @@
 ;;; lsp-copilot.el --- lsp-mode client for Copilot       -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 Rodrigo Virote Kassick
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Rodrigo Virote Kassick <kassick@gmail.com>
 ;; Keywords: lsp-mode, generative-ai, code-assistant
@@ -56,7 +57,7 @@ Set this value to nil if you do not want for the check to be made."
 
 (defcustom lsp-copilot-executable "copilot-language-server"
   "The system-wise executable of lsp-copilot.
-When this executable is not found, you can stil use
+When this executable is not found, you can still use
 lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'string
   :group 'lsp-copilot)

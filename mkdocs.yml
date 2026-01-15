@@ -108,6 +108,7 @@ nav:
     - Json: page/lsp-json.md
     - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
+    - Just: page/lsp-just.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
     - LanguageTool (LTEX+): page/lsp-ltex-plus.md
@@ -188,6 +189,7 @@ nav:
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
     - TypeSpec: page/lsp-typespec.md
+    - Typst: page/lsp-typst.md
     - V: page/lsp-v.md
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
@@ -197,6 +199,7 @@ nav:
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
+    - WebAssembly: page/lsp-wasm-language-tools.md
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
@@ -216,7 +219,7 @@ nav:
       - 'React JavaScript Tutorial in Emacs': tutorials/reactjs-tutorial.md
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
       - 'Debugging Clojurescript': tutorials/debugging-clojure-script.md
-      - 'Python, debbuging with poetry + pyenv': https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/
+      - 'Python, debugging with poetry + pyenv': https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/
       - 'Configuring Emacs as a Crystal IDE': tutorials/crystal-guide.md
   - Blog:
       - 2020:

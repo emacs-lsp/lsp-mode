@@ -1,6 +1,7 @@
 ;;; lsp-steep.el --- lsp-mode for Steep  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Masafumi Koba
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Masafumi Koba <ybiquitous@gmail.com>
 ;; Keywords: languages

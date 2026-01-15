@@ -17,7 +17,7 @@ since [`yang-mode`][2] is the supported major mode.
 (add-hook 'yang-mode-hook 'lsp)
 ```
 
-It recommended to add following configuration for the `yang.settings` file,
+It is recommended to add the following configuration for the `yang.settings` file,
 which resides at the user/project/workspace root, to be validated via
 [`lsp-json`][5]. This may be automated by `lsp-yang` in later stages.
 

@@ -1,6 +1,7 @@
 ;;; lsp-graphql-test.el --- unit tests for lsp-graphql.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 ncaq <ncaq@ncaq.net>
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 
 ;; Author: ncaq <ncaq@ncaq.net>
 ;; Keywords:

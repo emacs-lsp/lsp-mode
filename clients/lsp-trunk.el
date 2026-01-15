@@ -1,6 +1,7 @@
 ;;; lsp-trunk.el --- trunk support -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2024 Trunk Technologies, Inc.
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 ;;
 ;; Author: Tyler Jang <tyler@trunk.io>
 ;; Keywords: trunk, lsp, meta-linter

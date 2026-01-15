@@ -1,6 +1,6 @@
 ;;; lsp-php.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, php
@@ -382,7 +382,8 @@ already present."
                       :fileExtensions ,lsp-serenata-file-extensions)))
 
 
-(lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
+(eval-and-compile
+  (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil)))
 
 (lsp-register-client
  (make-lsp-client

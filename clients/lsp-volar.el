@@ -1,6 +1,7 @@
 ;;; lsp-volar.el --- A lsp-mode client for Vue3 -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 JadeStrong
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 ;;
 ;; Author: JadeStrong <https://github.com/jadestrong>
 ;; Maintainer: JadeStrong <jadestrong@163.com>
