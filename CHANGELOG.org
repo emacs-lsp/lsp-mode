@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
   * Fix documentation to show unevaluated expressions for file/directory defcustom defaults instead of machine-specific paths (see [[https://github.com/emacs-lsp/lsp-mode/issues/4924][#4924]])
   * Fix invalid regex patterns in ~lsp-file-watch-ignored-directories~ causing crashes (see [[https://github.com/emacs-lsp/lsp-mode/issues/3439][#3439]])
   * Fix documentation website sidebar visibility on tablet landscape screens (see [[https://github.com/emacs-lsp/lsp-mode/issues/4946][#4946]])
