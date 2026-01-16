@@ -202,9 +202,9 @@ This tests the fix for empty capability objects like DefinitionOptions {}."
                           (list :definitionProvider nil
                                 :hoverProvider t
                                 :completionProvider (list :triggerCharacters ["." ":"]))
-                        ;; hash-table mode
+                        ;; hash-table mode: empty objects are empty hash-tables, null is nil
                         (let ((ht (make-hash-table :test 'equal)))
-                          (puthash "definitionProvider" nil ht)
+                          (puthash "definitionProvider" (make-hash-table :test 'equal) ht)
                           (puthash "hoverProvider" t ht)
                           (let ((completion-ht (make-hash-table :test 'equal)))
                             (puthash "triggerCharacters" ["." ":"] completion-ht)
@@ -231,9 +231,11 @@ This tests the fix for empty capability objects like DefinitionOptions {}."
 (ert-deftest lsp--capability-string-key-test ()
   "Test lsp--capability accepts string keys and converts them properly."
   (let ((capabilities (if lsp-use-plists
+                          ;; plist mode: empty object is nil
                           (list :definitionProvider nil)
+                        ;; hash-table mode: empty object is empty hash-table
                         (let ((ht (make-hash-table :test 'equal)))
-                          (puthash "definitionProvider" nil ht)
+                          (puthash "definitionProvider" (make-hash-table :test 'equal) ht)
                           ht))))
     ;; String key should be converted to keyword and work correctly
     (should (lsp--capability "definitionProvider" capabilities))))
