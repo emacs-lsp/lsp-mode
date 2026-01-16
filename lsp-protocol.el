@@ -43,7 +43,20 @@
     "Convert a KEYWORD to string."
     (substring (symbol-name keyword) 1))
 
-  (defvar lsp-use-plists (getenv "LSP_USE_PLISTS")))
+  (defvar lsp-use-plists (getenv "LSP_USE_PLISTS"))
+
+  (defconst lsp--json-null :json-null
+    "Marker value representing JSON null in plist mode.
+When `lsp-use-plists' is non-nil, JSON null is parsed as this value
+to distinguish it from empty objects (which become nil in plist mode)."))
+
+(defun lsp-null? (value)
+  "Return non-nil if VALUE represents JSON null.
+In plist mode, JSON null is represented as `:json-null'.
+In hash-table mode, JSON null is represented as nil."
+  (if lsp-use-plists
+      (eq value :json-null)
+    (null value)))
 
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.

@@ -238,6 +238,38 @@ This tests the fix for empty capability objects like DefinitionOptions {}."
     ;; String key should be converted to keyword and work correctly
     (should (lsp--capability "definitionProvider" capabilities))))
 
+(ert-deftest lsp-null?-test ()
+  "Test lsp-null? correctly identifies JSON null values."
+  (if lsp-use-plists
+      ;; plist mode: null is represented as :json-null
+      (progn
+        (should (lsp-null? :json-null))
+        (should-not (lsp-null? nil))
+        (should-not (lsp-null? t))
+        (should-not (lsp-null? '(:foo "bar"))))
+    ;; hash-table mode: null is represented as nil
+    (progn
+      (should (lsp-null? nil))
+      (should-not (lsp-null? t))
+      (should-not (lsp-null? (make-hash-table))))))
+
+(ert-deftest lsp--capability-explicit-null-test ()
+  "Test lsp--capability returns nil when capability is explicitly null.
+This tests the distinction between empty objects ({}) and explicit null."
+  (let ((capabilities (if lsp-use-plists
+                          ;; plist mode: null is :json-null, empty object is nil
+                          (list :definitionProvider nil      ; empty object {}
+                                :referencesProvider :json-null) ; explicit null
+                        ;; hash-table mode: null is nil
+                        (let ((ht (make-hash-table :test 'equal)))
+                          (puthash "definitionProvider" (make-hash-table :test 'equal) ht)
+                          (puthash "referencesProvider" nil ht)
+                          ht))))
+    ;; Empty object should be detected as capability supported
+    (should (lsp--capability :definitionProvider capabilities))
+    ;; Explicit null should be detected as capability not supported
+    (should-not (lsp--capability :referencesProvider capabilities))))
+
 ;;; Hook Management Tests (Issue #4815)
 
 (ert-deftest lsp-update-on-type-formatting-hook-enabled ()
