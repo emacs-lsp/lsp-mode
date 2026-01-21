@@ -9542,6 +9542,20 @@ Errors if there are none."
   (lsp--warn "Stopping %s" (lsp--workspace-print workspace))
   (with-lsp-workspace workspace (lsp--shutdown-workspace)))
 
+(defun lsp-workspace-kill (workspace &optional restart)
+  "Kill the language server behind WORKSPACE.
+Prefer `lsp-workspace-shutdown' if possible, since this command
+may leave the server and Emacs in an inconsistent state, so use
+only in an emergency.
+
+If RESTART (prefix-arg) is non-nil, cause the server to be
+restarted afterwards."
+  (interactive (list (lsp--read-workspace) current-prefix-arg))
+  (lsp--warn "Killing %s" (lsp--workspace-print workspace))
+  (setf (lsp--workspace-shutdown-action workspace)
+        (if restart 'restart 'shutdown))
+  (kill-process (lsp--workspace-proc workspace)))
+
 (defun lsp-disconnect ()
   "Disconnect the buffer from the language server."
   (interactive)
