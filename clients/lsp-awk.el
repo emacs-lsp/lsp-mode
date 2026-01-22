@@ -1,6 +1,6 @@
 ;;; lsp-awk.el --- AWK client -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 emacs-lsp maintainers
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 ;; Keywords: languages lsp awk

@@ -1,6 +1,6 @@
 ;;; lsp-javascript.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp,
@@ -50,7 +50,7 @@
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the js-ts lsp server should be enabled based on FILENAME."
-  (or (string-match-p "\\.[cm]js\\|\\.[jt]sx?\\'" filename)
+  (or (string-match-p "\\.vue\\|\\.[cm]js\\|\\.[jt]sx?\\'" filename)
       (and (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode 'typescript-ts-mode)
            (not (derived-mode-p 'json-mode)))))
 
@@ -71,6 +71,8 @@
                   :initialized-fn (lambda (_workspace)
                                     (warn (concat "The javascript-typescript-langserver (jsts-ls) is unmaintained; "
                                                   "it is recommended to use ts-ls or deno-ls instead.")))))
+
+
 
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
@@ -515,6 +517,12 @@ workspace."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-typescript-prefer-type-only-auto-imports nil
+  "Prefer to put the `type` keyword before auto-generated imports,
+when they are used only in a type checking context."
+  :type 'boolean
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-javascript-preferences-quote-style "auto" nil
   :type '(choice
           (const "auto")
@@ -544,6 +552,26 @@ workspace."
           (const "relative")
           (const "non-relative"))
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-javascript-preferences-import-module-specifier-ending "auto"
+  "Preferred path ending for auto imports.
+Requires using TypeScript 4.5+ in the workspace."
+  :type '(choice
+          (const "auto")
+          (const "minimal")
+          (const "index")
+          (const "js"))
+  :package-version '(lsp-mode . "9.0.1"))
+
+(defcustom lsp-typescript-preferences-import-module-specifier-ending "auto"
+  "Preferred path ending for auto imports.
+Requires using TypeScript 4.5+ in the workspace."
+  :type '(choice
+          (const "auto")
+          (const "minimal")
+          (const "index")
+          (const "js"))
+  :package-version '(lsp-mode . "9.0.1"))
 
 (defcustom lsp-javascript-preferences-rename-shorthand-properties t
   "Enable/disable introducing aliases for object shorthand
@@ -590,17 +618,17 @@ TypeScript 3.0 or newer in the workspace."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-enabled t
-  "Enabled/disable autocomplete suggestions."
+  "Enable/disable autocomplete suggestions."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-surveys-enabled t
-  "Enabled/disable occasional surveys that help us improve VS
+  "Enable/disable occasional surveys that help us improve VS
 Code's JavaScript and TypeScript support."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
@@ -653,6 +681,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("javascript.implicitProjectConfig.checkJs" lsp-javascript-implicit-project-config-check-js t)
    ("javascript.implicitProjectConfig.experimentalDecorators" lsp-javascript-implicit-project-config-experimental-decorators t)
    ("javascript.preferences.importModuleSpecifier" lsp-javascript-preferences-import-module-specifier)
+   ("javascript.preferences.importModuleSpecifierEnding" lsp-javascript-preferences-import-module-specifier-ending)
    ("javascript.preferences.quoteStyle" lsp-javascript-preferences-quote-style)
    ("javascript.preferences.renameShorthandProperties" lsp-javascript-preferences-rename-shorthand-properties t)
    ("javascript.referencesCodeLens.enabled" lsp-javascript-references-code-lens-enabled t)
@@ -688,6 +717,8 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("typescript.locale" lsp-typescript-locale)
    ("typescript.npm" lsp-typescript-npm)
    ("typescript.preferences.importModuleSpecifier" lsp-typescript-preferences-import-module-specifier)
+   ("typescript.preferences.preferTypeOnlyAutoImports" lsp-typescript-prefer-type-only-auto-imports t)
+   ("typescript.preferences.importModuleSpecifierEnding" lsp-typescript-preferences-import-module-specifier-ending)
    ("typescript.preferences.quoteStyle" lsp-typescript-preferences-quote-style)
    ("typescript.preferences.renameShorthandProperties" lsp-typescript-preferences-rename-shorthand-properties t)
    ("typescript.referencesCodeLens.enabled" lsp-typescript-references-code-lens-enabled t)
@@ -760,7 +791,7 @@ name (e.g. `data' variable passed as `data' parameter)."
   nil)
 
 (defun lsp-javascript-rename-file ()
-  "Rename current file and all it's references in other files."
+  "Rename current file and all its references in other files."
   (interactive)
   (let* ((name (buffer-name))
          (old (buffer-file-name))
@@ -824,6 +855,15 @@ to run the command in."
         (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
       (lsp-package-path 'typescript))))
 
+(lsp-defun lsp-clients-typescript-handle-interactive-actions ((&Command :arguments? [args]))
+  (pcase (lsp-get args :action)
+    ("Move to file"
+     (let* ((directory (file-name-directory (buffer-file-name)))
+            (target-file-name (expand-file-name (read-file-name "Destination file: " directory))))
+       (lsp-put args
+                :interactiveRefactorArguments
+                `((targetFile . ,target-file-name)))))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
@@ -845,6 +885,7 @@ to run the command in."
                                                (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
                                                (list :preferences lsp-clients-typescript-preferences))
+                                             (list :supportsMoveToFileCodeAction t)
                                              `(:tsserver ( :path ,(lsp-clients-typescript-server-path)
                                                            ,@lsp-clients-typescript-tsserver))))
                   :initialized-fn (lambda (workspace)
@@ -858,6 +899,7 @@ to run the command in."
                                           (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
                                       (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
                                       (lsp:set-server-capabilities-document-range-formatting-provider? caps format-enable)))
+                  :action-filter 'lsp-clients-typescript-handle-interactive-actions
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
@@ -870,6 +912,7 @@ to run the command in."
                                                    error-callback)
                                          error-callback))))
 
+
 
 (defgroup lsp-flow nil
   "LSP support for the Flow Javascript type checker."
@@ -945,8 +988,17 @@ particular FILE-NAME and MODE."
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
 
+
+
 (defgroup lsp-deno nil
-  "LSP support for the Deno language server."
+  "LSP support for the Deno language server.
+
+Deno can be installed via `lsp-install-server' or manually:
+- Shell: curl -fsSL https://deno.land/install.sh | sh
+- Homebrew: brew install deno
+
+Note: npm installation is not recommended due to performance degradation.
+See URL `https://docs.deno.com/runtime/getting_started/installation/'."
   :group 'lsp-mode
   :link '(url-link "https://deno.land/"))
 
@@ -1040,15 +1092,69 @@ Examples: `./import-map.json',
                                                  lsp-clients-deno-enable-code-lens-references-all-functions))
                  :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
 
+(lsp-dependency
+ 'deno
+ `(:system ,lsp-clients-deno-server)
+ '(:npm :package "deno" :path "deno"))
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection (lambda ()
-                                          (cons lsp-clients-deno-server
-                                                lsp-clients-deno-server-args)))
+                                          `(,(lsp-package-path 'deno)
+                                            ,@lsp-clients-deno-server-args)))
                   :initialization-options #'lsp-clients-deno--make-init-options
                   :priority -5
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :server-id 'deno-ls))
+                  :server-id 'deno-ls
+                  :notification-handlers (ht ("deno/didRefreshDenoConfigurationTree" #'ignore)
+                                             ("deno/didChangeDenoConfiguration" #'ignore)
+                                             ("deno/didUpgradeCheck" #'ignore))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure
+                                         'deno
+                                         callback
+                                         error-callback))))
+
+
+
+(defgroup lsp-tsgo nil
+  "LSP support for the TypeScript (Go native) language server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/microsoft/typescript-go"))
+
+(defcustom lsp-clients-tsgo-path "tsgo"
+  "Path to the tsgo binary."
+  :group 'lsp-tsgo
+  :risky t
+  :type 'string)
+
+(defcustom lsp-clients-tsgo-args '("--lsp" "--stdio")
+  "Extra arguments for the tsgo language server."
+  :group 'lsp-tsgo
+  :risky t
+  :type '(repeat string))
+
+(lsp-dependency 'tsgo
+                '(:system lsp-clients-tsgo-path)
+                '(:npm :package "@typescript/native-preview"
+                       :path "tsgo"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
+                                                          `(,(lsp-package-path 'tsgo)
+                                                            ,@lsp-clients-tsgo-args)))
+                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :priority -4
+                  :completion-in-comments? t
+                  :initialized-fn (lambda (_workspace))
+                  :server-id 'tsgo
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure
+                                         'tsgo
+                                         callback
+                                         error-callback))))
+
+
 
 (lsp-consistency-check lsp-javascript)
 

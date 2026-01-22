@@ -1,6 +1,6 @@
 ;;; lsp-mdx.el --- lsp-mode mdx integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 lsp-mode maintainers
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages

@@ -1,6 +1,7 @@
 ;;; lsp-yaml.el --- LSP YAML server integration        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Aya Igarashi
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Aya Igarashi <ladiclexxx@gmail.com>
 ;; Keywords:

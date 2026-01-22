@@ -1,6 +1,7 @@
 ;;; lsp-semgrep.el --- semgrep support -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Austin Theriault
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 ;;
 ;; Author: Austin Theriault <austin@cutedogs.org>
 ;; Keywords: language tools sast
@@ -209,6 +210,7 @@ If FULL is non-nil, scan all files in workspace, regardless of git status."
   :server-id 'semgrep-ls
   :priority -1
   :add-on? t
+  :notification-handlers (ht ("semgrep/rulesRefreshed" #'ignore))
   :initialization-options
   (lambda ()
     (list

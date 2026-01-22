@@ -1,6 +1,7 @@
 ;;; lsp-clojure.el --- Clojure Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Benedek Fazekas
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Benedek Fazekas <benedek.fazekas@gmail.com>
 ;; Keywords: languages,tools
@@ -110,8 +111,8 @@ Defaults to side following treemacs default."
 
 ;; Internal
 
-(lsp-interface
- (Clojure:CursorInfoParams (:textDocument :position) nil))
+(eval-and-compile
+  (lsp-interface (Clojure:CursorInfoParams (:textDocument :position) nil)))
 
 (lsp-dependency
  'clojure-lsp
@@ -261,6 +262,16 @@ If there are more arguments expected after the line and column numbers."
   "Apply backward slurp refactoring at point."
   (interactive)
   (lsp-clojure--refactoring-call "backward-barf"))
+
+(defun lsp-clojure-kill-sexpr ()
+  "Apply kill sexpr refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "kill-sexp"))
+
+(defun lsp-clojure-raise-sexpr ()
+  "Apply raise refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "raise-sexp"))
 
 (defun lsp-clojure-move-form (dest-filename)
   "Apply move-form refactoring at point to DEST-FILENAME."

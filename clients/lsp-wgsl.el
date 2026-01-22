@@ -1,6 +1,6 @@
 ;;; lsp-wgsl.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 emacs-lsp maintainers
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, wgsl, shaders, graphics programming,
@@ -33,7 +33,7 @@
   :package-version '(lsp-mode . "9.0.0"))
 
 
-(defcustom lsp-wgsl-server-command "wgsl_analyzer"
+(defcustom lsp-wgsl-server-command "wgsl-analyzer"
   "Command to run the wgsl-analyzer executable."
   :type 'boolean
   :group 'lsp-wgsl
@@ -114,7 +114,7 @@
 ;; Currently it relies on a custom extension to query the clients.
 ;; (could not get standard custom-settings blocks to work)
 (defun lsp-wgsl--send-configuration (&rest _)
-  ;; TODO: why doesnt this behave like the normal lists?!?!? I cant just send a list?!?!?! why the fuck?!?!
+  ;; TODO: why doesn't this behave like the normal lists?!?!? I can't just send a list?!?!?! why the fuck?!?!
   (list :customImports lsp-wgsl-custom-imports
         :diagnostics (list :typeErrors (lsp-json-bool lsp-wgsl-diagnostics-type-errors)
                            :nagaParsingErrors (lsp-json-bool lsp-wgsl-diagnostics-naga-parsing-errors)
@@ -174,8 +174,8 @@ definitions resolved."
 
 (lsp-dependency 'wgsl-analyzer
                 '(:system lsp-wgsl-server-command)
-                '(:cargo :package "wgsl_analyzer"
-                         :path "wgsl_analyzer"
+                '(:cargo :package "wgsl-analyzer"
+                         :path "wgsl-analyzer"
                          :git "https://github.com/wgsl-analyzer/wgsl-analyzer"))
 
 (lsp-register-client

@@ -1,6 +1,7 @@
 ;;; lsp-copilot.el --- lsp-mode client for Copilot       -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 Rodrigo Virote Kassick
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Rodrigo Virote Kassick <kassick@gmail.com>
 ;; Keywords: lsp-mode, generative-ai, code-assistant
@@ -24,8 +25,6 @@
 
 ;; LSP client for the Copilot Language Server:
 ;; https://www.npmjs.com/package/@github/copilot-language-server
-
-;; Package-Requires: (lsp-mode secrets s compile dash cl-lib request company)
 
 ;; Code:
 
@@ -58,7 +57,7 @@ Set this value to nil if you do not want for the check to be made."
 
 (defcustom lsp-copilot-executable "copilot-language-server"
   "The system-wise executable of lsp-copilot.
-When this executable is not found, you can stil use
+When this executable is not found, you can still use
 lsp-install-server to fetch an emacs-local version of the LSP."
   :type 'string
   :group 'lsp-copilot)
@@ -190,6 +189,13 @@ automatically, browse to %s." user-code verification-uri))
         :name "emacs"
         :version "0.1.0"))
 
+(defun lsp-copilot--mcp-tools-notification (_ params)
+   "Reacts to the copilot/mcpTools notification"
+  (-let* (((&copilot-ls:McpToolsNotification :servers) params)
+          (tools-str (s-join ", " servers)))
+    (when (s-present? tools-str)
+        (lsp--info "Copilot: Available MCP Tools: %s" tools-str))))
+
 (defun lsp-copilot--server-initialized-fn (workspace)
   ;; Patch capabilities -- server may respond with an empty dict. In plist,
   ;; this would become nil
@@ -228,6 +234,7 @@ automatically, browse to %s." user-code verification-uri))
                           ("featureFlagsNotification" #'ignore)
                           ("statusNotification" #'ignore)
                           ("didChangeStatus" #'ignore)
+                          ("copilot/mcpTools" #'lsp-copilot--mcp-tools-notification)
                           ("window/logMessage" #'lsp--window-log-message)
                           ("conversation/preconditionsNotification" #'ignore))))
 

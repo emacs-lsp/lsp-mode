@@ -1,6 +1,6 @@
 ;;; lsp-beancount.el --- Beancount Client settings         -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 emacs-lsp maintainers
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, beancount
@@ -55,7 +55,8 @@ Use nil (the default) to use the current beancount buffer as the journal file."
      `(,lsp-beancount-langserver-executable "--stdio")))
   :major-modes '(beancount-mode)
   :initialization-options
-  `((journal_file . ,lsp-beancount-journal-file))
+  (lambda ()
+    `((journal_file . ,lsp-beancount-journal-file)))
   :server-id 'beancount-ls))
 
 (lsp-consistency-check lsp-beancount)

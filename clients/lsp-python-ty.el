@@ -1,6 +1,6 @@
 ;;; lsp-python-ty.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 emacs-lsp maintainers
+;; Copyright (C) 2025-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, python
@@ -42,7 +42,11 @@
                   :activation-fn (lsp-activate-on "python")
                   :priority -1
                   :add-on? t
-                  :server-id 'ty-ls))
+                  :server-id 'ty-ls
+                  :initialized-fn (lambda (workspace)
+                                    (let ((caps (lsp--workspace-server-capabilities workspace)))
+                                      (unless (lsp-get caps :inlayHintProvider)
+                                        (lsp:set-server-capabilities-inlay-hint-provider? caps t))))))
 
 (lsp-consistency-check lsp-python-ty)
 

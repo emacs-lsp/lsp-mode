@@ -1,6 +1,7 @@
 ;;; lsp-typeprof.el --- TypeProf server configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Taiki Sugawara
+;; Copyright (C) 2022-2026 lsp-mode maintainers
 
 ;; Author: Taiki Sugawara <buzz.taiki@gmail.com>
 ;; Keywords: lsp, ruby
@@ -52,7 +53,8 @@
                    #'lsp-typeprof--build-command)
   :priority -4
   :activation-fn (lsp-activate-on "ruby")
-  :server-id 'typeprof-ls))
+  :server-id 'typeprof-ls
+  :multi-root t))
 
 (lsp-consistency-check lsp-typeprof)
 

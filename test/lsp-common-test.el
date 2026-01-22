@@ -1,6 +1,7 @@
 ;;; lsp-common-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017  Lukas Fuermetz <fuermetz@mailbox.org>.
+;; Copyright (C) 2017-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

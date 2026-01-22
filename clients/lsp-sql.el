@@ -1,6 +1,7 @@
 ;;; lsp-sql.el --- SQL Client settings.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Shen, Jen-Chieh
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 
 ;; This file is not part of GNU Emacs.
 

@@ -558,6 +558,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "just",
+    "full-name": "Just",
+    "server-name": "just-lsp",
+    "server-url": "https://github.com/terror/just-lsp",
+    "installation-url": "https://github.com/terror/just-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "jq",
     "full-name": "Jq (jq-lsp)",
     "server-name": "jq-lsp",
@@ -1036,6 +1044,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ron",
+    "full-name": "Rusty Object Notation",
+    "server-name": "ron-lsp",
+    "server-url": "https://github.com/jasonjmcghee/ron-lsp/",
+    "installation": "cargo install ron-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruby-lsp",
     "full-name": "Ruby (ruby-lsp)",
     "server-name": "ruby-lsp",
@@ -1271,6 +1287,22 @@
     "debugger": "Not available"
   },
   {
+    "name": "typst",
+    "full-name": "Typst",
+    "server-name": "tinymist",
+    "server-url": "https://github.com/Myriad-Dreamin/tinymist",
+    "installation": "cargo install tinymist",
+    "debugger": "Not available"
+  },
+  {
+    "name": "typos",
+    "full-name": "Typos source code spell checker",
+    "server-name": "typos-lsp",
+    "server-url": "https://github.com/tekumara/typos-lsp",
+    "installation": "cargo install --git https://github.com/tekumara/typos-lsp typos-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ttcn3",
     "full-name": "TTCN3",
     "server-name": "ntt",
@@ -1348,11 +1380,20 @@
     "debugger": "Not available"
   },
   {
+    "name": "wasm-language-tools",
+    "common-group-name": "wat",
+    "full-name": "WebAssembly",
+    "server-name": "wat_server",
+    "server-url": "https://github.com/g-plane/wasm-language-tools",
+    "installation-url": "https://wasm-language-tools.netlify.app/guide/getting-started/executable.html",
+    "debugger": "Not available"
+  },
+  {
     "name": "wgsl-analyzer",
     "full-name": "wgsl",
     "server-name": "wgsl-analyzer",
     "server-url": "https://github.com/wgsl-analyzer/wgsl-analyzer",
-    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl_analyzer",
+    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl-analyzer",
     "debugger": "Not available"
   },
   {
@@ -1374,7 +1415,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "helm",
+    "name": "kubernetes-helm",
     "full-name": "YAML (helm-ls)",
     "server-name": "helm-ls",
     "server-url": "https://github.com/mrjosh/helm-ls",

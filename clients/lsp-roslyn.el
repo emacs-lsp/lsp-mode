@@ -1,6 +1,7 @@
 ;;; lsp-roslyn.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Ruin0x11
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: Ruin0x11 <ipickering2@gmail.com>
 ;; Keywords:
@@ -175,7 +176,7 @@ creates another process connecting to the named pipe it specifies."
         (set-process-query-on-exit-flag (get-buffer-process stderr-buffer) nil))
       (set-process-query-on-exit-flag command-process nil)
       (set-process-query-on-exit-flag communication-process nil)
-      (cons communication-process communication-process))))
+      (cons communication-process command-process))))
 
 (defun lsp-roslyn--uri-to-path (uri)
   "Convert a URI to a file path, without unhexifying."
@@ -230,7 +231,7 @@ creates another process connecting to the named pipe it specifies."
 (defun lsp-roslyn--find-solution-file ()
   (let ((solutions (lsp-roslyn--find-files-in-parent-directories
                     (file-name-directory (buffer-file-name))
-                    (rx (* any) ".sln" eos))))
+                    (rx (* anychar) ".sln" eos))))
     (cond
      ((not solutions) nil)
      ((eq (length solutions) 1) (cl-first solutions))

@@ -1,5 +1,20 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix documentation to show unevaluated expressions for file/directory defcustom defaults instead of machine-specific paths (see [[https://github.com/emacs-lsp/lsp-mode/issues/4924][#4924]])
+  * Fix invalid regex patterns in ~lsp-file-watch-ignored-directories~ causing crashes (see [[https://github.com/emacs-lsp/lsp-mode/issues/3439][#3439]])
+  * Fix documentation website sidebar visibility on tablet landscape screens (see [[https://github.com/emacs-lsp/lsp-mode/issues/4946][#4946]])
+  * Add ~lsp-fix-all~ command and ~lsp-fix-all-on-save~ option for ~source.fixAll~ code action support (see [[https://github.com/emacs-lsp/lsp-mode/issues/1842][#1842]])
+  * Add notification handlers for Deno language server (~deno/didRefreshDenoConfigurationTree~, ~deno/didChangeDenoConfiguration~, ~deno/didUpgradeCheck~).
+  * Fix "Unknown notification: semgrep/rulesRefreshed" warning in lsp-semgrep client.
+  * Add ~lsp-install-server~ support for Deno LSP via npm.
+  * Add diagnostic and formatter custom settings for [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][Dockerfile language server]].
+  * Fix "Eager macro-expansion failure" errors with lsp-interface pcase patterns (see #4723)
+  * Add support for [[https://github.com/Myriad-Dreamin/tinymist][Typst (Tinymist)]] language server.
+  * Add support for ~just~ files through just-lsp.
+  * Add support for RON files through ron-lsp.
+  * Add explicit flag to enable (or disable) JSON validation.
+  * Fix Accommodate renaming of lsp-postgres binaries
+  * Fix =lsp-org= for org >= 9.7 (see #4300)
   * Add format on save support
   * Fix beancount journal file init option
   * Add support for [[https://github.com/glehmann/earthlyls][earthlyls]]
@@ -16,6 +31,7 @@
   * Change ~ruff-lsp~ to ~ruff~ for python lsp client. All ~ruff-lsp~ customizable variable change to ~ruff~. Lsp server command now is ~["ruff" "server"]~ instead of ~["ruff-lsp"]~.
   * Add futhark support
   * Optimize overlay creation by checking window visibility first
+  * Optimize hook setup by avoiding unnecessary handler creation when ~lsp-enable-on-type-formatting~ or ~lsp-signature-auto-activate~ are disabled
   * Replace the per-interface ~(INTERFACE ...)~ pcase forms with a single,
     unified ~(lsp-interface INTERFACE ...)~ form. The per-interface forms are no
     longer generated. *This is a breaking change.* (See #4430.)
@@ -42,6 +58,17 @@
   * Add support for [[https://github.com/tombi-toml/tombi][Tombi language server]] (TOML language).
   * Make lsp-headerline--check-breadcrumb public
   * Added Odin langauge server support [[https://github.com/DanielGavin/ols][ols]]
+  * Fix bug in lsp-odin where ~f-join~ collapses double slashes. Using ~format~ instead.
+  * Fix missing gopls inlay hints when ~lsp-use-plist~ is true
+  * Fix bug where persist was attempted when lsp-session-file is nil
+  * Debugging tests in Rust no longer runs all the tests prior to launching debug session.
+  * Add [[https://devenv.sh/][devenv]] and [[https://jj-vcs.github.io/jj/latest/][jj]] directories to the list of ignored directories (~lsp-file-watch-ignored-directories~)
+  * Fix bug where qmlls failed to load due to qml not being in ~lsp-language-id-configuration~
+  * Fix default value for ~lsp-rust-analyzer-cargo-cfgs~
+  * Add ~lsp-ruby-lsp-server-command~ variable to allow overriding of the path to ~ruby-lsp~ executable
+  * Add support for the ~javascript.preferences.importModuleSpecifierEnding~ and ~typescript.preferences.importModuleSpecifierEnding~ preferences.
+  * Fix missing ty (a fast python language server) inlay hints when ~lsp-use-plist~ is true
+  * Add wasm-language-tools support
   * feat: dedup text edits
 
 ** 9.0.0
@@ -229,6 +256,7 @@
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
   * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
+  * Add support for per-project Beancount initialization-options
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.

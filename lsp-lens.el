@@ -1,6 +1,6 @@
 ;;; lsp-lens.el --- LSP lens -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,9 +103,10 @@ Results are meaningful only if FROM and TO are on the same line."
   "Find or create a lens for the line at POS."
   (-doto (save-excursion
            (goto-char pos)
-           (if (eq 'end-of-line lsp-lens-place-position)
-               (make-overlay (line-end-position) -1 nil t t)
-             (make-overlay (line-beginning-position) (1+ (line-end-position)) nil t t)))
+           (let ((eol (line-end-position)))
+             (if (eq 'end-of-line lsp-lens-place-position)
+                 (make-overlay eol eol nil t t)
+               (make-overlay (line-beginning-position) (1+ eol) nil t t))))
     (overlay-put 'lsp-lens t)
     (overlay-put 'lsp-lens-position pos)))
 

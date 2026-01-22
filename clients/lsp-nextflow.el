@@ -1,6 +1,7 @@
 ;;; lsp-nextflow.el --- lsp-mode nextflow integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Edmund Miller
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Edmund Miller
 ;; Keywords: lsp, nextflow, groovy

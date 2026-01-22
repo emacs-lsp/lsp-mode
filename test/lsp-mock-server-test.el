@@ -1,6 +1,6 @@
 ;;; lsp-mock-server-test.el --- Unit test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024-2025 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: Arseniy Zaostrovnykh
 ;; Package-Requires: ((emacs "28.1"))
@@ -862,6 +862,81 @@ line 3 words here and here
        (should (string-match-p "My command"
                                (overlay-get (car lenses) 'after-string)))
        (goto-char (overlay-start (car lenses)))
-       (should (equal (line-number-at-pos) (- line 1)))))))
+       (should (equal (line-number-at-pos) (+ line 1)))))))
+
+(ert-deftest lsp-mock-server-fix-all-applies-buffer-wide ()
+  "Test ensuring that lsp-fix-all applies source.fixAll action buffer-wide."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-schedule-response
+    "textDocument/codeAction"
+    (vconcat (list `(:title "Fix all issues"
+                     :kind "source.fixAll"
+                     :isPreferred t
+                     :edit
+                     (:changes
+                      ((,(concat "file://" lsp-test-sample-file)
+                        .
+                        ,(lsp-test-make-edits
+                          "Line 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))))))))
+   (lsp-fix-all)
+   (should (equal (buffer-string)
+                  "Line 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))))
+
+(ert-deftest lsp-mock-server-fix-all-no-action-available ()
+  "Test ensuring that lsp-fix-all handles missing source.fixAll gracefully."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-schedule-response
+    "textDocument/codeAction"
+    [])  ; No code actions available
+   ;; Should not error when called non-interactively
+   (lsp-fix-all)
+   ;; Buffer should remain unchanged
+   (should (equal (buffer-string)
+                  "Line 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))))
+
+(ert-deftest lsp-mock-server-execute-code-action-by-kind-buffer-wide ()
+  "Test ensuring that lsp-execute-code-action-by-kind-buffer-wide works correctly."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-schedule-response
+    "textDocument/codeAction"
+    (vconcat (list `(:title "Organize imports"
+                     :kind "source.organizeImports"
+                     :edit
+                     (:changes
+                      ((,(concat "file://" lsp-test-sample-file)
+                        .
+                        ,(lsp-test-make-edits
+                          "#### 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))))))))
+   (lsp-execute-code-action-by-kind-buffer-wide "source.organizeImports")
+   (should (equal (buffer-string)
+                  " 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))))
+
+(ert-deftest lsp-mock-server-execute-code-action-by-kind-buffer-wide-no-match ()
+  "Test that lsp-execute-code-action-by-kind-buffer-wide signals error when no action."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-schedule-response
+    "textDocument/codeAction"
+    [])  ; No code actions available
+   (should-error (lsp-execute-code-action-by-kind-buffer-wide "source.fixAll"))))
 
 ;;; lsp-mock-server-test.el ends here

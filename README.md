@@ -1,6 +1,6 @@
 ---
 title: LSP Mode - Language Server Protocol support for Emacs
-description: Language Server Protocol support with multiples languages support for Emacs
+description: Language Server Protocol support with multiple languages support for Emacs
 root_file: README.md
 ---
 
@@ -130,8 +130,8 @@ You can help us keep going and improving it by **[supporting the project](https:
 
 ### Members
 
-Here it is a list of the current `lsp-mode` members and what they are
-primary working on/responsible for.
+Here is a list of the current `lsp-mode` members and what they are
+primarily working on/responsible for.
 
 <table id="emacs-lsp-members">
   <tr>

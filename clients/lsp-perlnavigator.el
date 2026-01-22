@@ -1,6 +1,7 @@
 ;;; lsp-perlnavigator.el --- Integrates the Perl Navigator LSP Server with lsp-mode  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Matthew Feinberg
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: Matthew Feinberg <matthew.feinberg@gmail.com>
 ;; Keywords: lsp, perl

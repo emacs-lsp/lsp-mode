@@ -1,6 +1,7 @@
 ;;; lsp-xml.el --- LSP XML server integration        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:

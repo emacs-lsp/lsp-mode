@@ -1,6 +1,6 @@
 ;;; lsp-d.el --- lsp-mode dlang integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 lsp-mode maintainers
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages
