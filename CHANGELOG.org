@@ -42,6 +42,7 @@
   * Add support for [[https://github.com/tombi-toml/tombi][Tombi language server]] (TOML language).
   * Make lsp-headerline--check-breadcrumb public
   * Added Odin langauge server support [[https://github.com/DanielGavin/ols][ols]]
+  * feat: dedup text edits
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
