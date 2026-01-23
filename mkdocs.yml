@@ -152,7 +152,7 @@ nav:
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - Python (Ruff): page/lsp-ruff.md
-    - Python (ty): https://github.com/astral-sh/ty
+    - Python (ty): page/lsp-python-ty.md
     - QML: page/lsp-qml.md
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
@@ -199,6 +199,7 @@ nav:
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
+    - WebAssembly: page/lsp-wasm-language-tools.md
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
