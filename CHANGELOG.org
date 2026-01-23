@@ -69,7 +69,7 @@
   * Add support for the ~javascript.preferences.importModuleSpecifierEnding~ and ~typescript.preferences.importModuleSpecifierEnding~ preferences.
   * Fix missing ty (a fast python language server) inlay hints when ~lsp-use-plist~ is true
   * Add wasm-language-tools support
-  * Add ~lsp-ruff-multi-root~ variable to allow disabling multi-root option for ruff client
+  * feat: dedup text edits
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
