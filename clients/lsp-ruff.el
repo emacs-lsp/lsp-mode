@@ -84,6 +84,11 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
                  (const "useBundled"))
   :group 'lsp-ruff)
 
+(defcustom lsp-ruff-multi-root t
+  "If non nil, lsp-ruff will be started in multi-root mode."
+  :type 'boolean
+  :group 'lsp-ruff)
+
 
 (lsp-register-client
  (make-lsp-client
@@ -93,7 +98,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :server-id 'ruff
   :priority -2
   :add-on? t
-  :multi-root t
+  :multi-root lsp-ruff-multi-root
   :initialization-options
   (lambda ()
     (list :settings
