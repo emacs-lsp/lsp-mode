@@ -53,7 +53,7 @@ Uses the OS-specific cache directory."
 Avoids `crates-lsp' throwing errors if you happen to open a toml file with a
 [dependencies] section, which does not contain Rust package names."
   :group 'lsp-crates
-  :type 'vector)
+  :type '(vector string))
 
 (defcustom lsp-crates-use-api nil
   "If true, uses the Crates API instead of the Crate Index.
