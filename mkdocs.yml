@@ -67,6 +67,7 @@ nav:
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
+    - Crates: page/lsp-crates.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
     - Cucumber: page/lsp-cucumber.md
