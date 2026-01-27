@@ -9703,6 +9703,14 @@ This avoids overloading the server with many files when starting Emacs."
                                      (unless (lsp--init-if-visible)
                                        (add-hook 'window-configuration-change-hook #'lsp--init-if-visible nil t))))))))
 
+(with-eval-after-load 'desktop
+  (add-to-list 'desktop-locals-to-save 'lsp--buffer-deferred)
+  (add-to-list 'desktop-minor-mode-handlers
+               '(lsp-mode . (lambda (desktop-buffer-locals)
+                              (if (alist-get 'lsp--buffer-deferred desktop-buffer-locals)
+                                  (lsp-deferred)
+                                (lsp-mode))))))
+
 
 
 (defvar lsp-file-truename-cache (ht))
