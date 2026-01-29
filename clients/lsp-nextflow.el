@@ -47,7 +47,7 @@
 
 (defcustom lsp-nextflow-server-download-url
   (format "https://github.com/nextflow-io/language-server/releases/download/v%s/language-server-all.jar"
-          lsp-nextflow-version)
+          lsp-nextflow-language-version)
   "Automatic download url for lsp-nextflow."
   :type 'string
   :group 'lsp-nextflow
