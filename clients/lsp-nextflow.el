@@ -38,7 +38,7 @@
   :group 'lsp-nextflow
   :type 'string)
 
-(defcustom lsp-nextflow-version "1.0.0"
+(defcustom lsp-nextflow-version "25.04.2"
   "Version of Nextflow language server."
   :type 'string
   :group 'lsp-nextflow
@@ -60,14 +60,13 @@
   :type 'file
   :package-version '(lsp-mode . "9.0.0"))
 
+(lsp-dependency 'nextflow-language-server
+                `(:download :url lsp-nextflow-server-download-url
+                           :store-path lsp-nextflow-server-file))
+
 (defun lsp-nextflow-server-command ()
   "Startup command for Nextflow language server."
-  `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
-
-(lsp-dependency 'nextflow-lsp
-                '(:system lsp-nextflow-server-file)
-                `(:download :url lsp-nextflow-server-download-url
-                  :store-path lsp-nextflow-server-file))
+  `(,lsp-nextflow-java-path "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
 ;;
 ;;; Settings
@@ -119,10 +118,14 @@ find Java automatically."
 
 (lsp-register-client
  (make-lsp-client
-  ;; FIXME
-  ;; :download-server-fn (lambda (_client callback error-callback _update?)
-  ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))
-  :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'nextflow-language-server callback error-callback))
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     (list
+                      lsp-nextflow-java-path
+                      "-jar"
+                      (expand-file-name lsp-nextflow-server-file))))
   :major-modes '(nextflow-mode)
   :multi-root t
   :activation-fn (lsp-activate-on "nextflow")
