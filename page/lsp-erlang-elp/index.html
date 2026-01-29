@@ -19,7 +19,7 @@
     
     
       
-        <title>Lsp erlang elp - LSP Mode - LSP support for Emacs</title>
+        <title>Erlang (ELP) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lsp erlang elp
+              Erlang (ELP)
             
           </span>
         </div>
@@ -223,13 +223,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link">
+      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
         Languages
       </a>
     </li>
@@ -1036,12 +1038,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -1596,9 +1600,279 @@
   
   
     <li class="md-nav__item">
-      <a href="../lsp-erlang.md" class="md-nav__link">
-        Erlang
+      <a href="../lsp-erlang-ls/" class="md-nav__link">
+        Erlang (Erlang Language Server)
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Erlang (ELP)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Erlang (ELP)
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-buck-query-use-bxl-enable" class="md-nav__link">
+    lsp-elp-buck-query-use-bxl-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-diagnostics-disabled" class="md-nav__link">
+    lsp-elp-diagnostics-disabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-diagnostics-enable-experimental" class="md-nav__link">
+    lsp-elp-diagnostics-enable-experimental
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-diagnostics-enable-otp" class="md-nav__link">
+    lsp-elp-diagnostics-enable-otp
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-diagnostics-on-save-enable" class="md-nav__link">
+    lsp-elp-diagnostics-on-save-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-eqwalizer-all" class="md-nav__link">
+    lsp-elp-eqwalizer-all
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-eqwalizer-chunk-size" class="md-nav__link">
+    lsp-elp-eqwalizer-chunk-size
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-eqwalizer-max-tasks" class="md-nav__link">
+    lsp-elp-eqwalizer-max-tasks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-highlight-dynamic-enable" class="md-nav__link">
+    lsp-elp-highlight-dynamic-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-hover-actions-doc-links-enable" class="md-nav__link">
+    lsp-elp-hover-actions-doc-links-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-hover-actions-enable" class="md-nav__link">
+    lsp-elp-hover-actions-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-inlay-hints-parameter-hints-enable" class="md-nav__link">
+    lsp-elp-inlay-hints-parameter-hints-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-debug-enable" class="md-nav__link">
+    lsp-elp-lens-debug-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-enable" class="md-nav__link">
+    lsp-elp-lens-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-links-enable" class="md-nav__link">
+    lsp-elp-lens-links-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-run-coverage-enable" class="md-nav__link">
+    lsp-elp-lens-run-coverage-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-run-enable" class="md-nav__link">
+    lsp-elp-lens-run-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-lens-run-interactive-enable" class="md-nav__link">
+    lsp-elp-lens-run-interactive-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-log" class="md-nav__link">
+    lsp-elp-log
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-signature-help-enable" class="md-nav__link">
+    lsp-elp-signature-help-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elp-types-on-hover-enable" class="md-nav__link">
+    lsp-elp-types-on-hover-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-download-url" class="md-nav__link">
+    lsp-erlang-elp-download-url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-otp-download-version" class="md-nav__link">
+    lsp-erlang-elp-otp-download-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-server-command" class="md-nav__link">
+    lsp-erlang-elp-server-command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-store-path" class="md-nav__link">
+    lsp-erlang-elp-store-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-erlang-elp-types-on-hover" class="md-nav__link">
+    lsp-erlang-elp-types-on-hover
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -4224,7 +4498,7 @@ It must match those used in https://github.com/WhatsApp/erlang-language-platform
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 24, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 29, 2026</span>
       
     
   </small>
@@ -4238,6 +4512,41 @@ It must match those used in https://github.com/WhatsApp/erlang-language-platform
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../lsp-erlang-ls/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Erlang (Erlang Language Server)" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Erlang (Erlang Language Server)
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../lsp-eslint/" class="md-footer__link md-footer__link--next" aria-label="Next: ESLint" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              ESLint
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
