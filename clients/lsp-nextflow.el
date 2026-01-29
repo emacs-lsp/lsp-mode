@@ -38,11 +38,12 @@
   :group 'lsp-nextflow
   :type 'string)
 
-(defcustom lsp-nextflow-version "1.0.0"
-  "Version of Nextflow language server."
-  :type 'string
+(lsp-defcustom lsp-nextflow-language-version "25.10"
+  "Nextflow language version to be used by the language server."
+  :type '(choice (const "26.04 (preview)") (const "25.10") (const "25.04") (const "24.10"))
   :group 'lsp-nextflow
-  :package-version '(lsp-mode . "9.0.0"))
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.languageVersion")
 
 (defcustom lsp-nextflow-server-download-url
   (format "https://github.com/nextflow-io/language-server/releases/download/v%s/language-server-all.jar"
@@ -82,8 +83,7 @@
   :lsp-path "nextflow.debug")
 
 (lsp-defcustom lsp-nextflow-files-exclude [".git" ".nf-test" "work"]
-  "Configure glob patterns for excluding folders from being searched for
-Nextflow scripts and configuration files."
+  "Folders that should be excluded when scanning the workspace for Nextflow files."
   :type 'lsp-string-vector
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
@@ -92,17 +92,19 @@ Nextflow scripts and configuration files."
 (lsp-defcustom lsp-nextflow-formatting-harshil-alignment nil
   "Use the [Harshil Alignment™️](https://nf-co.re/docs/contributing/code_editors_and_styling/harshil_alignment) when formatting Nextflow scripts and config files.
 
-*Note: not all rules are supported yet*"
+*Note: not all rules are supported.*"
   :type 'boolean
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.formatting.harshilAlignment")
 
-(lsp-defcustom lsp-nextflow-java-home nil
-  "Specifies the folder path to the JDK. Use this setting if the extension cannot
-find Java automatically."
-  :type '(choice (const :tag "Auto" nil)
-          (directory :tag "Custom JDK path"))
+(lsp-defcustom lsp-nextflow-java-home ""
+  "Specify the folder path to the desired Java runtime.
+
+Equivalent to the `JAVA_HOME` environment variable, i.e.
+the Java binary should be located at `$JAVA_HOME/bin/java`.
+Use this setting if the extension cannot find Java automatically."
+  :type 'string
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.java.home")
@@ -113,6 +115,60 @@ find Java automatically."
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.suppressFutureWarnings")
+
+(lsp-defcustom lsp-nextflow-completion-extended nil
+  "Provide auto-completions from outside the current script.
+
+If an external completion is selected, it will be automatically
+included into the current script."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.completion.extended")
+
+(lsp-defcustom lsp-nextflow-completion-max-items 100
+  "The maximum number of auto-completions to suggest at a time."
+  :type 'number
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.completion.maxItems")
+
+(lsp-defcustom lsp-nextflow-error-reporting-mode "warnings"
+  "Set the desired level of error reporting."
+  :type '(choice (const "off") (const "errors") (const "warnings") (const "paranoid"))
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.errorReportingMode")
+
+(lsp-defcustom lsp-nextflow-formatting-mahesh-form nil
+  "Place process outputs at the end of the process body when formatting Nextflow scripts."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.formatting.maheshForm")
+
+(lsp-defcustom lsp-nextflow-formatting-sort-declarations nil
+  "Sort script declarations when formatting Nextflow scripts."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.formatting.sortDeclarations")
+
+(lsp-defcustom lsp-nextflow-telemetry-enabled nil
+  "Enable usage data to be sent to Seqera.
+
+See the welcome page for more information about what we do and do not collect."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.telemetry.enabled")
+
+(lsp-defcustom lsp-nextflow-type-checking nil
+  "Enable static type checking."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.typeChecking")
 
 ;;
 ;;; Client
