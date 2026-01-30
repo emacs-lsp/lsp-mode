@@ -2299,8 +2299,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-nextflow-completion-extended" class="md-nav__link">
+    lsp-nextflow-completion-extended
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-completion-max-items" class="md-nav__link">
+    lsp-nextflow-completion-max-items
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-nextflow-debug" class="md-nav__link">
     lsp-nextflow-debug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-error-reporting-mode" class="md-nav__link">
+    lsp-nextflow-error-reporting-mode
   </a>
   
 </li>
@@ -2320,6 +2341,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-nextflow-formatting-mahesh-form" class="md-nav__link">
+    lsp-nextflow-formatting-mahesh-form
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-formatting-sort-declarations" class="md-nav__link">
+    lsp-nextflow-formatting-sort-declarations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-nextflow-java-home" class="md-nav__link">
     lsp-nextflow-java-home
   </a>
@@ -2329,6 +2364,13 @@
           <li class="md-nav__item">
   <a href="#lsp-nextflow-java-path" class="md-nav__link">
     lsp-nextflow-java-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-language-version" class="md-nav__link">
+    lsp-nextflow-language-version
   </a>
   
 </li>
@@ -2355,8 +2397,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-nextflow-version" class="md-nav__link">
-    lsp-nextflow-version
+  <a href="#lsp-nextflow-telemetry-enabled" class="md-nav__link">
+    lsp-nextflow-telemetry-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-type-checking" class="md-nav__link">
+    lsp-nextflow-type-checking
   </a>
   
 </li>
@@ -3982,8 +4031,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-nextflow-completion-extended" class="md-nav__link">
+    lsp-nextflow-completion-extended
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-completion-max-items" class="md-nav__link">
+    lsp-nextflow-completion-max-items
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-nextflow-debug" class="md-nav__link">
     lsp-nextflow-debug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-error-reporting-mode" class="md-nav__link">
+    lsp-nextflow-error-reporting-mode
   </a>
   
 </li>
@@ -4003,6 +4073,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-nextflow-formatting-mahesh-form" class="md-nav__link">
+    lsp-nextflow-formatting-mahesh-form
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-formatting-sort-declarations" class="md-nav__link">
+    lsp-nextflow-formatting-sort-declarations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-nextflow-java-home" class="md-nav__link">
     lsp-nextflow-java-home
   </a>
@@ -4012,6 +4096,13 @@
           <li class="md-nav__item">
   <a href="#lsp-nextflow-java-path" class="md-nav__link">
     lsp-nextflow-java-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-language-version" class="md-nav__link">
+    lsp-nextflow-language-version
   </a>
   
 </li>
@@ -4038,8 +4129,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-nextflow-version" class="md-nav__link">
-    lsp-nextflow-version
+  <a href="#lsp-nextflow-telemetry-enabled" class="md-nav__link">
+    lsp-nextflow-telemetry-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nextflow-type-checking" class="md-nav__link">
+    lsp-nextflow-type-checking
   </a>
   
 </li>
@@ -4112,37 +4210,70 @@
 <p>For more instructions on how to install manually, check <a href="https://github.com/nextflow-io/language-server#build">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-nextflow-completion-extended"><code>lsp-nextflow-completion-extended</code><a class="headerlink" href="#lsp-nextflow-completion-extended" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Provide auto-completions from outside the current script.</p>
+<p>If an external completion is selected, it will be automatically
+included into the current script.</p>
+<hr />
+<h3 id="lsp-nextflow-completion-max-items"><code>lsp-nextflow-completion-max-items</code><a class="headerlink" href="#lsp-nextflow-completion-max-items" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>100</code></p>
+<p>The maximum number of auto-completions to suggest at a time.</p>
+<hr />
 <h3 id="lsp-nextflow-debug"><code>lsp-nextflow-debug</code><a class="headerlink" href="#lsp-nextflow-debug" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enable debug logging and debug information in hover hints.</p>
 <hr />
+<h3 id="lsp-nextflow-error-reporting-mode"><code>lsp-nextflow-error-reporting-mode</code><a class="headerlink" href="#lsp-nextflow-error-reporting-mode" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const off) (const errors) (const warnings) (const paranoid))</code></p>
+<p><em>Default:</em> <code>warnings</code></p>
+<p>Set the desired level of error reporting.</p>
+<hr />
 <h3 id="lsp-nextflow-files-exclude"><code>lsp-nextflow-files-exclude</code><a class="headerlink" href="#lsp-nextflow-files-exclude" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>[.git .nf-test work]</code></p>
-<p>Configure glob patterns for excluding folders from being searched for
-Nextflow scripts and configuration files.</p>
+<p>Folders that should be excluded when scanning the workspace for Nextflow files.</p>
 <hr />
 <h3 id="lsp-nextflow-formatting-harshil-alignment"><code>lsp-nextflow-formatting-harshil-alignment</code><a class="headerlink" href="#lsp-nextflow-formatting-harshil-alignment" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Use the <a href="https://nf-co.re/docs/contributing/code_editors_and_styling/harshil_alignment">Harshil Alignment™️</a> when formatting Nextflow scripts and config files.</p>
-<p><em>Note: not all rules are supported yet</em></p>
+<p><em>Note: not all rules are supported.</em></p>
+<hr />
+<h3 id="lsp-nextflow-formatting-mahesh-form"><code>lsp-nextflow-formatting-mahesh-form</code><a class="headerlink" href="#lsp-nextflow-formatting-mahesh-form" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Place process outputs at the end of the process body when formatting Nextflow scripts.</p>
+<hr />
+<h3 id="lsp-nextflow-formatting-sort-declarations"><code>lsp-nextflow-formatting-sort-declarations</code><a class="headerlink" href="#lsp-nextflow-formatting-sort-declarations" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Sort script declarations when formatting Nextflow scripts.</p>
 <hr />
 <h3 id="lsp-nextflow-java-home"><code>lsp-nextflow-java-home</code><a class="headerlink" href="#lsp-nextflow-java-home" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const :tag Auto nil) (directory :tag Custom JDK path))</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Specifies the folder path to the JDK. Use this setting if the extension cannot
-find Java automatically.</p>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<p>Specify the folder path to the desired Java runtime.</p>
+<p>Equivalent to the <code>JAVA_HOME</code> environment variable, i.e.
+the Java binary should be located at <code>$JAVA_HOME/bin/java</code>.
+Use this setting if the extension cannot find Java automatically.</p>
 <hr />
 <h3 id="lsp-nextflow-java-path"><code>lsp-nextflow-java-path</code><a class="headerlink" href="#lsp-nextflow-java-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>java</code></p>
 <p>Path of the java executable.</p>
 <hr />
+<h3 id="lsp-nextflow-language-version"><code>lsp-nextflow-language-version</code><a class="headerlink" href="#lsp-nextflow-language-version" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const 26.04 (preview)) (const 25.10) (const 25.04) (const 24.10))</code></p>
+<p><em>Default:</em> <code>25.10</code></p>
+<p>Nextflow language version to be used by the language server.</p>
+<hr />
 <h3 id="lsp-nextflow-server-download-url"><code>lsp-nextflow-server-download-url</code><a class="headerlink" href="#lsp-nextflow-server-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/nextflow-io/language-server/releases/download/v1.0.0/language-server-all.jar</code></p>
+<p><em>Default:</em> <code>https://github.com/nextflow-io/language-server/releases/download/v25.10/language-server-all.jar</code></p>
 <p>Automatic download url for lsp-nextflow.</p>
 <hr />
 <h3 id="lsp-nextflow-server-file"><code>lsp-nextflow-server-file</code><a class="headerlink" href="#lsp-nextflow-server-file" title="Permanent link">#</a></h3>
@@ -4155,10 +4286,16 @@ find Java automatically.</p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Hide warnings for future changes, deprecations, and removals.</p>
 <hr />
-<h3 id="lsp-nextflow-version"><code>lsp-nextflow-version</code><a class="headerlink" href="#lsp-nextflow-version" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>1.0.0</code></p>
-<p>Version of Nextflow language server.</p>
+<h3 id="lsp-nextflow-telemetry-enabled"><code>lsp-nextflow-telemetry-enabled</code><a class="headerlink" href="#lsp-nextflow-telemetry-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable usage data to be sent to Seqera.</p>
+<p>See the welcome page for more information about what we do and do not collect.</p>
+<hr />
+<h3 id="lsp-nextflow-type-checking"><code>lsp-nextflow-type-checking</code><a class="headerlink" href="#lsp-nextflow-type-checking" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable static type checking.</p>
 <hr />
 
 <!-- Source file information -->
