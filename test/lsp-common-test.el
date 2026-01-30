@@ -75,7 +75,7 @@
     (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs.html#anchor")
                    "/home/jc/doom/docs.html"))
     ;; URL encoded text containing # in the filename should still be included
-    (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs-%232.html")
+    (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs-%232.html#myanchor")
                    "/home/jc/doom/docs-#2.html"))))
 
 (ert-deftest lsp-byte-compilation-test ()

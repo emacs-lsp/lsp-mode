@@ -1958,18 +1958,12 @@ On other systems, returns path without change."
 
 (defun lsp--uri-to-path-1 (uri)
   "Convert URI to a file path."
-  (let* ((url (url-generic-parse-url (url-unhex-string uri)))
+  (let* ((url (url-generic-parse-url uri))
          (type (url-type url))
          (target (url-target url))
          (file
-          (concat (decode-coding-string (url-filename url)
-                                        (or locale-coding-system 'utf-8))
-                  (when (and target
-                             (not (s-match
-                                   (rx "#" (group (1+ (any word alnum "#" ",")))
-                                       string-end)
-                                   uri)))
-                    (concat "#" target))))
+          (decode-coding-string (url-unhex-string (url-filename url))
+                                        (or locale-coding-system 'utf-8)))
          (file-name (if (and type (not (string= type "file")))
                         (if-let* ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
