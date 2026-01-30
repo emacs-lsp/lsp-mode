@@ -73,6 +73,7 @@
   * Add ~lsp-ruff-multi-root~ variable to allow disabling multi-root option for ruff client
   * Add support for ~~crates-lsp~~
   * Remove outdated Ruff option and add new lint-related options
+  * Add new Nextflow client customizations
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
