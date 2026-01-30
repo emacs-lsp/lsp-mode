@@ -89,6 +89,25 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :type 'boolean
   :group 'lsp-ruff)
 
+(defcustom lsp-ruff-lint-enable t
+  "Whether to enable linting."
+  :type 'boolean
+  :group 'lsp-ruff)
+
+(defcustom lsp-ruff-lint-select []
+  "A list of rule codes or prefixes to enable."
+  :type '(lsp-repeatable-vector string)
+  :group 'lsp-ruff)
+
+(defcustom lsp-ruff-lint-extend-select []
+  "A list of rule codes or prefixes to enable, in addition to those specified by `select'."
+  :type '(lsp-repeatable-vector string)
+  :group 'lsp-ruff)
+
+(defcustom lsp-ruff-lint-ignore []
+  "A list of rule codes or prefixes to ignore."
+  :type '(lsp-repeatable-vector string)
+  :group 'lsp-ruff)
 
 (lsp-register-client
  (make-lsp-client
@@ -103,10 +122,13 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   (lambda ()
     (list :settings
           (list :logLevel lsp-ruff-log-level
-                :showNotifications lsp-ruff-show-notifications
                 :organizeImports (lsp-json-bool lsp-ruff-advertize-organize-imports)
                 :fixAll (lsp-json-bool lsp-ruff-advertize-fix-all)
-                :importStrategy lsp-ruff-import-strategy)))))
+                :importStrategy lsp-ruff-import-strategy
+                :lint (list :enable (lsp-json-bool lsp-ruff-lint-enable)
+                            :select lsp-ruff-lint-select
+                            :extendSelect lsp-ruff-lint-extend-select
+                            :ignore lsp-ruff-lint-ignore))))))
 
 (lsp-consistency-check lsp-ruff)
 
