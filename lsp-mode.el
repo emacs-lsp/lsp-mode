@@ -1960,7 +1960,6 @@ On other systems, returns path without change."
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url uri))
          (type (url-type url))
-         (target (url-target url))
          (file
           (decode-coding-string (url-unhex-string (url-filename url))
                                         (or locale-coding-system 'utf-8)))
