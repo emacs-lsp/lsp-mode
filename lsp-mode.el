@@ -1966,8 +1966,7 @@ On other systems, returns path without change."
                                         (or locale-coding-system 'utf-8))
                   (when (and target
                              (not (s-match
-                                   (rx "#" (group (1+ num)) (or "," "#")
-                                       (group (1+ num))
+                                   (rx "#" (group (1+ (any word alnum "#" ",")))
                                        string-end)
                                    uri)))
                     (concat "#" target))))

@@ -69,6 +69,12 @@
           (system-type 'gnu/linux))
       (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢")))))
 
+(ert-deftest lsp--uri-to-path--handle-file-anchors ()
+  ;; Issue: #4976
+  (let ((lsp--uri-file-prefix "file:///"))
+    (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs.html#anchor")
+                   "/home/jc/doom/docs.html"))))
+
 (ert-deftest lsp-byte-compilation-test ()
   (let ((dir (if load-file-name
                  (f-parent (find-library-name "lsp-mode"))
