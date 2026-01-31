@@ -5074,6 +5074,20 @@ movements may have changed the position")
                               buffer))
   (lsp--idle-reschedule buffer))
 
+(defun lsp--diagnostic-clean-after-edit (&rest _)
+  "Clear diagnostics for the current buffer after workspace edits.
+This prevents stale diagnostics from appearing at wrong line numbers
+when workspace edits shift line positions (see issue #3888)."
+  (when-let* ((file-path (buffer-file-name))
+              (workspaces (lsp-workspaces)))
+    (let ((path (lsp--fix-path-casing file-path)))
+      (dolist (workspace workspaces)
+        (-let [diagnostics (lsp--workspace-diagnostics workspace)]
+          (remhash path diagnostics))))
+    (run-hooks 'lsp-diagnostics-updated-hook)))
+
+(add-hook 'lsp-after-apply-edits-hook #'lsp--diagnostic-clean-after-edit)
+
 
 (defcustom lsp-trim-trailing-whitespace t
   "Trim trailing whitespace on a line."
