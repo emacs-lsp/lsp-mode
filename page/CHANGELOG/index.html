@@ -4088,6 +4088,9 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-901">Unreleased 9.0.1<a class="headerlink" href="#unreleased-901" title="Permanent link">#</a></h2>
 <ul>
+<li>Clear diagnostics after workspace edits to prevent stale diagnostics
+    at wrong line numbers after operations like <code>lsp-organize-imports</code>
+    (see <a href="https://github.com/emacs-lsp/lsp-mode/issues/3888">#3888</a>)</li>
 <li>Add support for <code>workspace/willRenameFiles</code> and
     <code>workspace/didRenameFiles</code> when using <code>vc-git-rename-file</code>.</li>
 <li>Fix documentation to show unevaluated expressions for file/directory
@@ -4810,7 +4813,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 30, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 1, 2026</span>
       
     
   </small>
