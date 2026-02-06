@@ -361,6 +361,14 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
+    "name": "fortitude",
+    "full-name": "Fortran",
+    "server-name": "fortitude",
+    "server-url": "https://github.com/PlasmaFAIR/fortitude",
+    "installation": "pip install fortitude-lint",
+    "debugger": "Not available"
+  },
+  {
     "name": "fortran",
     "full-name": "Fortran",
     "server-name": "fortls",
