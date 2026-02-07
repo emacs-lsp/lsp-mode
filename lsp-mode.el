@@ -471,6 +471,31 @@ level or at a root of an lsp workspace."
 ;; Allow lsp-file-watch-ignored-files as a file or directory-local variable
 ;;;###autoload(put 'lsp-file-watch-ignored-files 'safe-local-variable 'lsp--string-listp)
 
+(defcustom lsp-file-watch-follow-symlinks 'within-root
+  "Policy for following symbolic links during file watching.
+`nil' means never follow symlinks (treat as leaf directories).
+`within-root' means follow symlinks only when the resolved target
+is within the workspace root directory.
+`t' means always follow symlinks (legacy behavior, may cause freezes)."
+  :type '(choice (const :tag "Never follow" nil)
+                 (const :tag "Within root only" within-root)
+                 (const :tag "Always follow" t))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "9.0.1"))
+;;;###autoload(put 'lsp-file-watch-follow-symlinks 'safe-local-variable
+;;;###autoload      (lambda (v) (memq v '(nil within-root t))))
+
+(defcustom lsp-file-watch-max-depth 100
+  "Maximum directory depth for recursive file watching.
+Prevents excessive recursion in deeply nested directory structures.
+Set to `nil' to disable the depth limit."
+  :type '(choice (integer :tag "Maximum depth")
+                 (const :tag "No limit" nil))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "9.0.1"))
+;;;###autoload(put 'lsp-file-watch-max-depth 'safe-local-variable
+;;;###autoload      (lambda (v) (or (integerp v) (null v))))
+
 (defcustom lsp-after-uninitialized-functions nil
   "List of functions to be called after a Language Server has been uninitialized."
   :type 'hook
@@ -2039,21 +2064,36 @@ Invalid regex patterns are logged as warnings (once per pattern) and skipped."
   root-directory)
 
 (defun lsp--folder-watch-callback (event callback watch ignored-files ignored-directories)
+  "Handle file notification EVENT for watched directories.
+Registers watchers for new directories and notifies CALLBACK
+about existing files, respecting `lsp-file-watch-follow-symlinks'."
   (let ((file-name (cl-third event))
         (event-type (cl-second event)))
     (cond
      ((and (file-directory-p file-name)
            (equal 'created event-type)
            (not (lsp--string-match-any ignored-directories file-name)))
-
-      (lsp-watch-root-folder (file-truename file-name) callback ignored-files ignored-directories watch)
-
-      ;; process the files that are already present in
-      ;; the directory.
-      (->> (directory-files-recursively file-name ".*" t)
-           (seq-do (lambda (f)
-                     (unless (file-directory-p f)
-                       (funcall callback (list nil 'created f)))))))
+      (lsp-watch-root-folder (file-truename file-name) callback
+                             ignored-files ignored-directories watch)
+      ;; Notify about files in the new directory (depth limit does not
+      ;; apply here — it only governs OS watcher registration).
+      (let* ((truename-root (lsp-watch-root-directory watch))
+             (truename-dir (file-truename file-name))
+             (follow-symlinks (eq lsp-file-watch-follow-symlinks t))
+             ;; Use truename-dir so all returned paths share the same
+             ;; resolved prefix, making string-prefix-p safe below.
+             (files (directory-files-recursively truename-dir ".*" t nil follow-symlinks)))
+        (when (eq lsp-file-watch-follow-symlinks 'within-root)
+          (let ((root-prefix (file-name-as-directory truename-root)))
+            (setq files (-filter
+                         (lambda (f) (string-prefix-p root-prefix f))
+                         files))))
+        ;; When policy is nil, follow-symlinks is nil so
+        ;; directory-files-recursively already skips symlinked
+        ;; directories — no additional filtering needed.
+        (dolist (f files)
+          (unless (file-directory-p f)
+            (funcall callback (list nil 'created f))))))
      ((and (memq event-type '(created deleted changed))
            (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name)))
@@ -2086,52 +2126,97 @@ Do you want to watch all files in %s? "
   "Figure out whether PATH (inside of DIR) is meant to have a file watcher set.
 IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't
 want to watch."
-  (let
-      ((full-path (f-join dir path)))
+  (let ((full-path (f-join dir path)))
     (and (file-accessible-directory-p full-path)
          (not (equal path "."))
          (not (equal path ".."))
          (not (lsp--string-match-any ignored-directories full-path)))))
 
 
-(defun lsp--all-watchable-directories (dir ignored-directories &optional visited)
-  "Traverse DIR recursively returning a list of paths that should have watchers.
-IGNORED-DIRECTORIES will be used for exclusions.
-VISITED is used to track already-visited directories to avoid infinite loops."
-  (let* ((dir (if (f-symlink? dir)
-                  (file-truename dir)
-                dir))
-         ;; Initialize visited directories if not provided
-         (visited (or visited (make-hash-table :test 'equal))))
-    (if (gethash dir visited)
-        ;; If the directory has already been visited, skip it
-        nil
-      ;; Mark the current directory as visited
-      (puthash dir t visited)
-      (apply #'nconc
-             ;; the directory itself is assumed to be part of the set
-             (list dir)
-             ;; collect all subdirectories that are watchable
-             (-map
-              (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories visited))
-              ;; but only look at subdirectories that are watchable
-              (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
-                       (directory-files dir)))))))
+(defun lsp--watchable-directories-recurse (resolved-dir ignored-directories root visited depth)
+  "Recurse into RESOLVED-DIR and collect watchable subdirectories.
+This is a helper for `lsp--all-watchable-directories' that handles the
+common recursion pattern across all symlink policies."
+  (apply #'append
+         (list resolved-dir)
+         (-map
+          (lambda (path)
+            (lsp--all-watchable-directories
+             (f-join resolved-dir path)
+             ignored-directories root visited (1+ depth)))
+          (-filter
+           (lambda (path)
+             (lsp--path-is-watchable-directory path resolved-dir ignored-directories))
+           (directory-files resolved-dir)))))
+
+(defun lsp--all-watchable-directories (dir ignored-directories root visited depth)
+  "Traverse DIR recursively returning a list of watchable directories.
+ROOT is the workspace root (truename) for boundary checks.
+VISITED tracks directories to prevent cycles.
+DEPTH is compared against `lsp-file-watch-max-depth'.
+Symlink handling is governed by `lsp-file-watch-follow-symlinks'."
+  (if (and lsp-file-watch-max-depth (> depth lsp-file-watch-max-depth))
+      ;; Depth limit reached — warn once per traversal.
+      (progn
+        (unless (gethash :depth-limit-warned visited)
+          (lsp-warn "Depth limit %s reached at %s" lsp-file-watch-max-depth dir)
+          (puthash :depth-limit-warned t visited))
+        nil)
+
+    ;; Resolve symlinks (guard against file-truename failures)
+    (let* ((symlink-p (f-symlink? dir))
+           (truename-failed nil)
+           (resolved-dir (condition-case err
+                             (if symlink-p (file-truename dir) dir)
+                           (error
+                            (lsp-log "Cannot resolve symlink %s: %s" dir (error-message-string err))
+                            (setq truename-failed t)
+                            dir))))
+
+      (pcase lsp-file-watch-follow-symlinks
+        ;; Policy: never follow symlinks
+        (`nil
+         (if (and symlink-p (file-accessible-directory-p dir))
+             (list dir)  ; Include symlink as leaf, don't recurse
+           (unless (gethash resolved-dir visited)
+             (puthash resolved-dir t visited)
+             (lsp--watchable-directories-recurse
+              resolved-dir ignored-directories root visited depth))))
+
+        ;; Policy: follow symlinks within workspace root only
+        (`within-root
+         (if truename-failed
+             nil  ; Cannot verify boundary — skip unresolvable symlink
+           (when (and (or (equal resolved-dir root)
+                          ;; Both are truenames; string-prefix-p avoids
+                          ;; redundant syscalls in file-in-directory-p.
+                          (string-prefix-p (file-name-as-directory root) resolved-dir))
+                      (not (gethash resolved-dir visited)))
+             (puthash resolved-dir t visited)
+             (lsp--watchable-directories-recurse
+              resolved-dir ignored-directories root visited depth))))
+
+        ;; Policy: always follow symlinks (legacy)
+        (_
+         (unless (gethash resolved-dir visited)
+           (puthash resolved-dir t visited)
+           (lsp--watchable-directories-recurse
+            resolved-dir ignored-directories root visited depth)))))))
 
 (defun lsp-watch-root-folder (dir callback ignored-files ignored-directories &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
 CALLBACK will be called when there are changes in any of
-the monitored files. WATCHES is a hash table directory->file
-notification handle which contains all of the watch that
-already have been created. Watches will not be created for
-any directory that matches any regex in IGNORED-DIRECTORIES.
-Watches will not be created for any file that matches any
-regex in IGNORED-FILES."
-  (let* ((dir (if (f-symlink? dir)
-                  (file-truename dir)
-                dir))
+the monitored files. IGNORED-FILES and IGNORED-DIRECTORIES
+are lists of regexps; matching files or directories will not
+be watched. WATCH is an optional `lsp-watch' struct to reuse;
+if nil a new one is created. WARN-BIG-REPO? when non-nil
+will prompt before watching repos exceeding
+`lsp-file-watch-threshold'."
+  (let* ((dir (file-truename dir))
+         (truename-root dir)
          (watch (or watch (make-lsp-watch :root-directory dir)))
-         (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories)))
+         (visited (make-hash-table :test 'equal))
+         (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories truename-root visited 0)))
     (lsp-log "Creating watchers for following %s folders:\n  %s"
              (length dirs-to-watch)
              (s-join "\n  " dirs-to-watch))
@@ -3971,7 +4056,7 @@ disappearing, unset all the variables related to it."
                            (ht-keys created-watches))))
       ;; create watch for each root folder without such
       (dolist (folder root-folders)
-        (let* ((watch (make-lsp-watch :root-directory folder))
+        (let* ((watch (make-lsp-watch :root-directory (file-truename folder)))
                (ignored-things (lsp--get-ignored-regexes-for-workspace-root folder))
                (ignored-files-regex-list (car ignored-things))
                (ignored-directories-regex-list (cadr ignored-things)))

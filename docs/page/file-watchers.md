@@ -19,3 +19,32 @@ If you have problems with file watchers, first check what folders are being watc
 - Increase the file watch warning threshold, the default is `1000`: `(setq lsp-file-watch-threshold 2000)`
 - If the folder is some kind of cache folder or something that should always be excluded for everyone, consider [opening a pull request](https://github.com/emacs-lsp/lsp-mode/pulls) or [filing a bug](https://github.com/emacs-lsp/lsp-mode/issues) to add to the [common regex](https://github.com/emacs-lsp/lsp-mode/blob/1b13d7c1b39aaad12073095ef7719952568c45db/lsp-mode.el#L340).
 - As a last resort, disable file watchers with `(setq lsp-enable-file-watchers nil)` (you may use dir-locals).
+
+## Symlink Handling
+
+By default, `lsp-mode` follows symlinks only when their target is within the workspace root directory. This prevents Emacs from freezing when symlinks point to large external directories (e.g., `/usr/include`).
+
+You can control this behavior with `lsp-file-watch-follow-symlinks`:
+
+```emacs-lisp
+;; Never follow symlinks (safest, treats symlinks as leaf directories)
+(setq lsp-file-watch-follow-symlinks nil)
+
+;; Follow symlinks only within workspace root (default, recommended)
+(setq lsp-file-watch-follow-symlinks 'within-root)
+
+;; Always follow symlinks (legacy behavior, may cause freezes)
+(setq lsp-file-watch-follow-symlinks t)
+```
+
+## Directory Depth Limit
+
+To prevent issues with deeply nested directory structures, `lsp-mode` limits recursion depth when setting up file watchers. The default limit is 100 levels.
+
+```emacs-lisp
+;; Adjust the depth limit (default: 100)
+(setq lsp-file-watch-max-depth 50)
+
+;; Disable depth limit (not recommended)
+(setq lsp-file-watch-max-depth nil)
+```

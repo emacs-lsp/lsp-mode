@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add ~lsp-file-watch-follow-symlinks~ (default ~within-root~) and ~lsp-file-watch-max-depth~ (default ~100~) to control symlink handling and recursion depth during file watching. *Breaking change*: symlinks pointing outside the workspace root are no longer followed by default, preventing Emacs freezes (set ~lsp-file-watch-follow-symlinks~ to ~t~ to restore previous behavior). See [[https://github.com/emacs-lsp/lsp-mode/issues/4973][#4973]], [[https://github.com/emacs-lsp/lsp-mode/issues/4287][#4287]]
   * Clear diagnostics after workspace edits to prevent stale diagnostics at wrong line numbers after operations like ~lsp-organize-imports~ (see [[https://github.com/emacs-lsp/lsp-mode/issues/3888][#3888]])
   * Add support for ~workspace/willRenameFiles~ and ~workspace/didRenameFiles~ when using ~vc-git-rename-file~.
   * Fix documentation to show unevaluated expressions for file/directory defcustom defaults instead of machine-specific paths (see [[https://github.com/emacs-lsp/lsp-mode/issues/4924][#4924]])
