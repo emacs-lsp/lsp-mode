@@ -86,7 +86,8 @@ nav:
     - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
-    - Fortran: page/lsp-fortran.md
+    - Fortran (fortls): page/lsp-fortran.md
+    - Fortran (fortitude): page/lsp-fortitude.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
     - GitHub Copilot: page/lsp-copilot.md
