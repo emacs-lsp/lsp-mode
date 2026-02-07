@@ -1,4 +1,4 @@
-;;; lsp-file-watch.el --- File notifications tests   -*- lexical-binding: t; -*-
+;;; lsp-file-watch-test.el --- File watch tests   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Ivan Yonchovski
 ;; Copyright (C) 2018-2026 lsp-mode maintainers
@@ -409,5 +409,458 @@
 
     (should (null lsp--test-events))
     (should (ht-empty? (lsp-session-watches)))))
+
+;;; Symlink and Depth Limit Tests
+;;
+;; These tests verify the symlink policy and depth limit features:
+;; - `lsp-file-watch-follow-symlinks': nil | 'within-root | t
+;; - `lsp-file-watch-max-depth': integer | nil
+
+(defmacro lsp-file-watch--with-temp-dirs (bindings &rest body)
+  "Execute BODY with temporary directories bound in BINDINGS.
+Each element of BINDINGS is (VAR [TRUENAME]).
+Directories are automatically cleaned up after BODY executes."
+  (declare (indent 1))
+  (let* ((vars (mapcar #'car bindings))
+         (truename-flags (mapcar (lambda (b) (nth 1 b)) bindings))
+         (temp-creates (cl-mapcar
+                        (lambda (var truename)
+                          `(,var ,(if truename
+                                      '(file-truename (make-temp-file "lsp-test" t))
+                                    '(make-temp-file "lsp-test" t))))
+                        vars truename-flags)))
+    `(let* (,@temp-creates)
+       (unwind-protect
+           (progn ,@body)
+         ,@(mapcar (lambda (v) `(ignore-errors (delete-directory ,v t))) vars)))))
+
+(defun lsp-file-watch--get-watchable-dirs (root &optional policy max-depth)
+  "Get watchable directories under ROOT with optional POLICY and MAX-DEPTH.
+POLICY should be nil, `within-root', or t. When not provided, defaults to
+nil (never follow). This is a test helper that provides sensible defaults."
+  (let* ((lsp-file-watch-follow-symlinks policy)
+         (lsp-file-watch-max-depth max-depth)
+         (truename-root (file-truename root)))
+    (lsp--all-watchable-directories
+     truename-root nil truename-root (make-hash-table :test 'equal) 0)))
+
+;; Symlink policy: within-root
+
+(ert-deftest lsp-file-watch--symlink-within-root-followed ()
+  "Symlinks pointing inside workspace root should be followed."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root))
+    (let ((sub (f-join root "sub"))
+          (target (f-join root "target")))
+      (make-directory sub t)
+      (make-directory target t)
+      (make-symbolic-link target (f-join sub "link"))
+      (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+        (should (member (file-truename target) result))))))
+
+(ert-deftest lsp-file-watch--symlink-outside-root-skipped ()
+  "Symlinks pointing outside workspace root should be excluded."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root) (outside))
+    (make-symbolic-link outside (f-join root "link"))
+    (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+      (should-not (member (file-truename outside) result)))))
+
+;; Symlink policy: nil (never follow)
+
+(ert-deftest lsp-file-watch--policy-nil-never-follows ()
+  "With policy nil, symlinks are listed but never followed."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((target (f-join root "target"))
+          (link (f-join root "link")))
+      (make-directory target t)
+      (make-symbolic-link target link)
+      (let ((result (lsp-file-watch--get-watchable-dirs root nil)))
+        (should (member root result))      ; Root included
+        (should (member link result))      ; Symlink listed as leaf
+        (should (= 1 (cl-count target result :test #'equal)))  ; Target only once
+        (should (= 3 (length result)))))))  ; Exactly: root, target, link
+
+;; Symlink policy: t (always follow)
+
+(ert-deftest lsp-file-watch--policy-t-always-follows ()
+  "With policy t, all symlinks are followed including external ones."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root) (outside))
+    (make-symbolic-link outside (f-join root "link"))
+    (let ((result (lsp-file-watch--get-watchable-dirs root t)))
+      (should (member (file-truename outside) result)))))
+
+;; Edge case: workspace root is itself a symlink
+
+(ert-deftest lsp-file-watch--root-is-symlink ()
+  "Symlink as workspace root should work correctly."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((real-dir t))
+    (let ((link-dir (concat (make-temp-file "lsp-link") "-link")))
+      (make-symbolic-link real-dir link-dir)
+      (make-directory (f-join real-dir "sub") t)
+      (unwind-protect
+          (let* ((truename-root (file-truename link-dir))
+                 (result (lsp-file-watch--get-watchable-dirs link-dir 'within-root)))
+            (should (member truename-root result))
+            (should (member (f-join truename-root "sub") result)))
+        (delete-file link-dir)))))
+
+;; Depth limit tests
+
+(ert-deftest lsp-file-watch--depth-limit-stops-recursion ()
+  "Depth limit should stop recursion at the specified level."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((d1 (f-join root "d1"))
+          (d2 (f-join root "d1/d2"))
+          (d3 (f-join root "d1/d2/d3"))
+          (warned nil))
+      (make-directory d3 t)  ; Creates d1, d2, d3
+      (cl-letf (((symbol-function 'lsp-warn) (lambda (&rest _) (setq warned t))))
+        (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root 2)))
+          ;; Depth 0, 1, 2 should be included
+          (should (member root result))
+          (should (member d1 result))
+          (should (member d2 result))
+          ;; Depth 3 should be excluded
+          (should-not (member d3 result))
+          (should warned))))))
+
+(ert-deftest lsp-file-watch--max-depth-zero-root-only ()
+  "With max-depth 0, only the root directory is watched."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (make-directory (f-join root "sub") t)
+    (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root 0)))
+      (should (= 1 (length result)))
+      (should (member root result)))))
+
+(ert-deftest lsp-file-watch--max-depth-nil-unlimited ()
+  "With max-depth nil, recursion is unlimited."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((deep (f-join root "a/b/c/d/e")))
+      (make-directory deep t)
+      (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root nil)))
+        (should (member deep result))
+        (should (= 6 (length result)))))))  ; root + 5 levels
+
+;; Error handling
+
+(ert-deftest lsp-file-watch--dangling-symlink-skipped ()
+  "Dangling symlinks should be skipped gracefully."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root))
+    (make-symbolic-link "/nonexistent/path/lsp-test" (f-join root "broken"))
+    (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+      (should result)  ; Should complete without error
+      (should-not (member (f-join root "broken") result)))))
+
+(ert-deftest lsp-file-watch--root-equality-included ()
+  "Root directory is included via equality check (not just file-in-directory-p)."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+      (should (member root result)))))
+
+;; Cycle detection edge cases
+
+(ert-deftest lsp-file-watch--circular-symlink-handled ()
+  "Circular symlinks should not cause infinite loops."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((dir-a (f-join root "a"))
+          (dir-b (f-join root "b")))
+      (make-directory dir-a t)
+      (make-directory dir-b t)
+      (make-symbolic-link dir-b (f-join dir-a "to-b"))
+      (make-symbolic-link dir-a (f-join dir-b "to-a"))
+      ;; Should complete without hanging due to visited hash table
+      (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+        (should result)
+        (should (member root result))
+        (should (member dir-a result))
+        (should (member dir-b result))))))
+
+(ert-deftest lsp-file-watch--symlink-to-parent-handled ()
+  "Symlink pointing to parent directory should not cause infinite recursion."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((sub (f-join root "sub")))
+      (make-directory sub t)
+      (make-symbolic-link root (f-join sub "parent-link"))
+      ;; Should complete without infinite loop
+      (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+        (should result)
+        (should (member root result))
+        (should (member sub result))))))
+
+;; Runtime callback filtering
+
+(ert-deftest lsp-file-watch--runtime-callback-within-root-filter ()
+  "Runtime callback filters out files from symlinks pointing outside workspace."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t) (outside t))
+    (let* ((new-dir (f-join root "subdir"))
+           (lsp-file-watch-follow-symlinks 'within-root)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil)
+           (watch (make-lsp-watch :root-directory root))
+           (collected-events nil))
+      (make-directory new-dir t)
+      (make-symbolic-link outside (f-join new-dir "external"))
+      (write-region "inside" nil (f-join new-dir "file.txt"))
+      (write-region "outside" nil (f-join outside "external.txt"))
+      ;; Mock file-notify-add-watch to prevent real file watcher setup
+      (cl-letf (((symbol-function 'file-notify-add-watch)
+                 (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+        ;; Call the real production callback with a synthetic directory-created event
+        (lsp--folder-watch-callback
+         (list nil 'created new-dir)
+         (lambda (event) (push event collected-events))
+         watch nil nil))
+      ;; Exactly one file event should be collected (only file.txt)
+      (let ((file-events (seq-filter (lambda (ev)
+                                       (not (file-directory-p (cl-third ev))))
+                                     collected-events)))
+        (should (= 1 (length file-events)))
+        (should (string= (cl-third (car file-events))
+                          (f-join new-dir "file.txt")))))))
+
+(ert-deftest lsp-file-watch--runtime-callback-policy-t-includes-external ()
+  "Runtime callback with policy t follows symlinks and includes external files."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t) (outside t))
+    (let* ((new-dir (f-join root "subdir"))
+           (lsp-file-watch-follow-symlinks t)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil)
+           (watch (make-lsp-watch :root-directory root))
+           (collected-events nil))
+      (make-directory new-dir t)
+      (make-symbolic-link outside (f-join new-dir "external"))
+      (write-region "inside" nil (f-join new-dir "file.txt"))
+      (write-region "outside" nil (f-join outside "external.txt"))
+      ;; Mock file-notify-add-watch to prevent real file watcher setup
+      (cl-letf (((symbol-function 'file-notify-add-watch)
+                 (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+        ;; Call the real production callback with a synthetic directory-created event
+        (lsp--folder-watch-callback
+         (list nil 'created new-dir)
+         (lambda (event) (push event collected-events))
+         watch nil nil))
+      ;; Policy t follows symlinks so both internal and external files should appear
+      (let ((file-events (seq-filter (lambda (ev)
+                                       (not (file-directory-p (cl-third ev))))
+                                     collected-events)))
+        (should (= 2 (length file-events)))
+        (should (seq-find (lambda (ev)
+                            (string= (cl-third ev)
+                                     (f-join new-dir "file.txt")))
+                          file-events))
+        (should (seq-find (lambda (ev)
+                            (string= (cl-third ev)
+                                     (f-join new-dir "external" "external.txt")))
+                          file-events))))))
+
+(ert-deftest lsp-file-watch--runtime-callback-policy-nil-no-symlink-files ()
+  "Runtime callback with policy nil does not descend into symlinked directories."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t) (outside t))
+    (let* ((new-dir (f-join root "subdir"))
+           (lsp-file-watch-follow-symlinks nil)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil)
+           (watch (make-lsp-watch :root-directory root))
+           (collected-events nil))
+      (make-directory new-dir t)
+      (make-symbolic-link outside (f-join new-dir "external"))
+      (write-region "inside" nil (f-join new-dir "file.txt"))
+      (write-region "outside" nil (f-join outside "external.txt"))
+      ;; Mock file-notify-add-watch to prevent real file watcher setup
+      (cl-letf (((symbol-function 'file-notify-add-watch)
+                 (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+        ;; Call the real production callback with a synthetic directory-created event
+        (lsp--folder-watch-callback
+         (list nil 'created new-dir)
+         (lambda (event) (push event collected-events))
+         watch nil nil))
+      ;; Policy nil does not follow symlinks so only internal file should appear
+      (let ((file-events (seq-filter (lambda (ev)
+                                       (not (file-directory-p (cl-third ev))))
+                                     collected-events)))
+        (should (= 1 (length file-events)))
+        (should (string= (cl-third (car file-events))
+                          (f-join new-dir "file.txt")))))))
+
+(ert-deftest lsp-file-watch--runtime-callback-symlink-alias-event-path ()
+  "Runtime callback resolves symlink event paths before filtering.
+When the file-notify event reports a path through a symlink alias
+rather than the truename, the within-root filter should still
+include files that are actually inside the workspace."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let* ((real-sub (f-join root "real-sub"))
+           (link-sub (f-join root "link-sub"))
+           (lsp-file-watch-follow-symlinks 'within-root)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil)
+           (watch (make-lsp-watch :root-directory root))
+           (collected-events nil))
+      (make-directory real-sub t)
+      (make-symbolic-link real-sub link-sub)
+      (write-region "content" nil (f-join real-sub "file.el"))
+      ;; Mock file-notify-add-watch to prevent real file watcher setup
+      (cl-letf (((symbol-function 'file-notify-add-watch)
+                 (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+        ;; Simulate event with the SYMLINK path (not the truename).
+        ;; Before the fix, the callback would use the raw symlink path
+        ;; for directory-files-recursively, returning paths like
+        ;; root/link-sub/file.el which fail string-prefix-p against
+        ;; the truename root.  After the fix, file-name is resolved
+        ;; to its truename first.
+        (lsp--folder-watch-callback
+         (list nil 'created link-sub)
+         (lambda (event) (push event collected-events))
+         watch nil nil))
+      ;; The file should be collected even though the event used the symlink path
+      (let ((file-events (seq-filter (lambda (ev)
+                                       (not (file-directory-p (cl-third ev))))
+                                     collected-events)))
+        (should (= 1 (length file-events)))
+        ;; Path should be under the resolved truename, not the symlink alias
+        (should (string-prefix-p (file-name-as-directory root)
+                                 (cl-third (car file-events))))))))
+
+(ert-deftest lsp-file-watch--runtime-callback-symlink-alias-outside-root ()
+  "Runtime callback rejects files from symlink alias resolving outside root.
+When the event path is a symlink inside the workspace that points to
+a directory outside the workspace, truename resolution should cause
+the within-root filter to correctly reject those files."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t) (outside t))
+    (let* ((link-dir (f-join root "ext-link"))
+           (lsp-file-watch-follow-symlinks 'within-root)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil)
+           (watch (make-lsp-watch :root-directory root))
+           (collected-events nil))
+      (make-symbolic-link outside link-dir)
+      (write-region "external" nil (f-join outside "secret.txt"))
+      (cl-letf (((symbol-function 'file-notify-add-watch)
+                 (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+        (lsp--folder-watch-callback
+         (list nil 'created link-dir)
+         (lambda (event) (push event collected-events))
+         watch nil nil))
+      ;; No file events should be collected — the symlink resolves outside root
+      (let ((file-events (seq-filter (lambda (ev)
+                                       (not (file-directory-p (cl-third ev))))
+                                     collected-events)))
+        (should (= 0 (length file-events)))))))
+
+(ert-deftest lsp-file-watch--watch-root-folder-stores-truename ()
+  "Verify that `lsp-watch-root-folder' stores a truename in the watch struct.
+Even when called with a symlink path, the resulting watch's root-directory
+should be the resolved truename."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((real-dir t))
+    (let* ((link-dir (concat (make-temp-file "lsp-link") "-link"))
+           (lsp-file-watch-follow-symlinks 'within-root)
+           (lsp-file-watch-threshold nil)
+           (lsp-file-watch-max-depth nil))
+      (make-symbolic-link real-dir link-dir)
+      (unwind-protect
+          (cl-letf (((symbol-function 'file-notify-add-watch)
+                     (lambda (_dir _flags _callback) (gensym "mock-watch"))))
+            (let ((watch (lsp-watch-root-folder link-dir #'ignore nil nil)))
+              ;; root-directory should be the truename, not the symlink path
+              (should (string= (lsp-watch-root-directory watch)
+                               (file-truename link-dir)))
+              (should (string= (lsp-watch-root-directory watch)
+                               real-dir))))
+        (delete-file link-dir)))))
+
+(ert-deftest lsp-file-watch--dangling-symlink-policy-t-no-crash ()
+  "Dangling symlinks should not crash even with the most permissive policy (t)."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (make-symbolic-link "/nonexistent/lsp-test-target" (f-join root "dangling"))
+    (let ((result (lsp-file-watch--get-watchable-dirs root t)))
+      (should result)
+      (should (member root result)))))
+
+(ert-deftest lsp-file-watch--depth-limit-with-symlinks ()
+  "Depth limit should apply correctly when symlinks are present in the tree."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let ((target (f-join root "target"))
+          (a (f-join root "target" "a"))
+          (b (f-join root "target" "a" "b")))
+      (make-directory b t)  ; Creates target, a, b
+      (make-symbolic-link target (f-join root "link"))
+      (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root 2)))
+        ;; Depth 0: root, depth 1: target, depth 2: a => all included
+        (should (member root result))
+        (should (member target result))
+        (should (member a result))
+        ;; Depth 3: b => excluded by depth limit
+        (should-not (member b result))
+        ;; Symlink root/link resolves to root/target (already visited) => skipped
+        (should-not (member (f-join root "link") result))))))
+
+(ert-deftest lsp-file-watch--ignored-dirs-with-symlinks ()
+  "Ignored directory patterns should exclude symlink targets matching the pattern."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t))
+    (let* ((node-modules (f-join root "node_modules"))
+           (src (f-join root "src"))
+           (lsp-file-watch-follow-symlinks 'within-root)
+           (lsp-file-watch-max-depth nil)
+           (ignored '("[/\\\\]\\.git\\'" "[/\\\\]node_modules\\'")))
+      (make-directory node-modules t)
+      (make-directory src t)
+      (let ((result (lsp--all-watchable-directories
+                     root ignored (file-truename root)
+                     (make-hash-table :test 'equal) 0)))
+        ;; Root and src should be included
+        (should (member root result))
+        (should (member src result))
+        ;; node_modules should be excluded by ignore pattern
+        (should-not (member node-modules result))))))
+
+(ert-deftest lsp-file-watch--file-truename-error-handled ()
+  "When file-truename fails on a symlink, the error is caught and link skipped."
+  :tags '(no-win)
+  (lsp-file-watch--with-temp-dirs ((root t) (outside))
+    (let* ((link (f-join root "bad-link"))
+           (sub (f-join root "sub"))
+           (original-file-truename (symbol-function 'file-truename))
+           (logged nil))
+      ;; Create a symlink so f-symlink? returns t, triggering the
+      ;; condition-case path that guards file-truename in
+      ;; lsp--all-watchable-directories.
+      (make-symbolic-link outside link)
+      (make-directory sub t)
+      (cl-letf (((symbol-function 'file-truename)
+                 (lambda (path &rest args)
+                   (if (string-match-p "bad-link" path)
+                       (signal 'file-error (list "Permission denied" path))
+                     (apply original-file-truename path args))))
+                ((symbol-function 'lsp-log)
+                 (lambda (&rest _) (setq logged t))))
+        (let ((result (lsp-file-watch--get-watchable-dirs root 'within-root)))
+          ;; Should complete without error
+          (should result)
+          (should (member root result))
+          ;; Normal subdirectory should still be included
+          (should (member sub result))
+          ;; Unresolvable symlink should be excluded (can't verify boundary)
+          (should-not (member link result))
+          ;; The error should have been logged
+          (should logged))))))
 
 ;;; lsp-file-watch-test.el ends here
