@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
   * Add support for [[https://github.com/PlasmaFAIR/fortitude][Fortitude]] (Fortran)
   * Clear diagnostics after workspace edits to prevent stale diagnostics at wrong line numbers after operations like ~lsp-organize-imports~ (see [[https://github.com/emacs-lsp/lsp-mode/issues/3888][#3888]])
   * Add support for ~workspace/willRenameFiles~ and ~workspace/didRenameFiles~ when using ~vc-git-rename-file~.
