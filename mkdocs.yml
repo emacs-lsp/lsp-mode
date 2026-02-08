@@ -67,6 +67,7 @@ nav:
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
+    - Crates: page/lsp-crates.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
     - Cucumber: page/lsp-cucumber.md
@@ -81,10 +82,12 @@ nav:
     - Emacs Lisp (Ellsp): https://github.com/elisp-lsp/ellsp
     - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
     - Emmet: page/lsp-emmet.md
-    - Erlang: page/lsp-erlang.md
+    - Erlang (Erlang Language Server): page/lsp-erlang-ls.md
+    - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
-    - Fortran: page/lsp-fortran.md
+    - Fortran (fortls): page/lsp-fortran.md
+    - Fortran (fortitude): page/lsp-fortitude.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
     - GitHub Copilot: page/lsp-copilot.md
@@ -152,7 +155,7 @@ nav:
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - Python (Ruff): page/lsp-ruff.md
-    - Python (ty): https://github.com/astral-sh/ty
+    - Python (ty): page/lsp-python-ty.md
     - QML: page/lsp-qml.md
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md

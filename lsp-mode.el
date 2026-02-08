@@ -56,6 +56,7 @@
 (require 'xref)
 (require 'minibuffer)
 (require 'help-mode)
+(require 'vc-git)
 (require 'lsp-protocol)
 
 (defgroup lsp-mode nil
@@ -175,25 +176,27 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
-     lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-c3 lsp-css
-     lsp-copilot lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker
-     lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang
-     lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam
-     lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy
-     lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-just lsp-jq
-     lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp lsp-ltex
-     lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown lsp-marksman
-     lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql
-     lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-odin lsp-openscad
-     lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-postgres
-     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-python-ty
-     lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roc lsp-ron lsp-roslyn lsp-rubocop
-     lsp-ruby-lsp lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
+     lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-c3
+     lsp-css lsp-copilot lsp-crates lsp-cucumber lsp-cypher lsp-d lsp-dart
+     lsp-dhall lsp-docker lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet
+     lsp-erlang lsp-eslint lsp-fortitude lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript
+     lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql
+     lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript
+     lsp-just lsp-jq lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp
+     lsp-ltex lsp-ltex-plus lsp-lua lsp-fennel lsp-magik lsp-markdown
+     lsp-marksman lsp-matlab lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo
+     lsp-move lsp-mssql lsp-nextflow lsp-nginx lsp-nim lsp-nix lsp-nushell
+     lsp-ocaml lsp-odin lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
+     lsp-php lsp-pls lsp-postgres lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp
+     lsp-pyright lsp-python-ms lsp-python-ty lsp-qml lsp-r lsp-racket lsp-remark
+     lsp-rf lsp-roc lsp-ron lsp-roslyn lsp-rubocop lsp-ruby-lsp
+     lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3 lsp-typeprof
-     lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript
-     lsp-volar lsp-wat lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)
+     lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3
+     lsp-typeprof lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog
+     lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wat lsp-wgsl lsp-xml
+     lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -6765,9 +6768,9 @@ relied upon."
                                     :newName ,newname))))
     (lsp--apply-workspace-edit edits 'rename)))
 
-(defun lsp--on-rename-file (old-func old-name new-name &optional ok-if-already-exists?)
-  "Advice around function `rename-file'.
-Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
+(defun lsp--on-rename-file (old-func old-name new-name &rest args)
+  "Advice around file renaming functions such as `rename-file'.
+Applies OLD-FUNC with OLD-NAME, NEW-NAME and remaining ARGS.
 
 This advice sends workspace/willRenameFiles before renaming file
 to check if server wants to apply any workspaceEdits after renamed."
@@ -6780,13 +6783,14 @@ to check if server wants to apply any workspaceEdits after renamed."
         (if-let* ((edits (lsp-request "workspace/willRenameFiles" params)))
             (progn
               (lsp--apply-workspace-edit edits 'rename-file)
-              (funcall old-func old-name new-name ok-if-already-exists?)
+              (apply old-func old-name new-name args)
               (when (lsp--send-did-rename-files-p)
                 (lsp-notify "workspace/didRenameFiles" params)))
-          (funcall old-func old-name new-name ok-if-already-exists?)))
-    (funcall old-func old-name new-name ok-if-already-exists?)))
+          (apply old-func old-name new-name args)))
+    (apply old-func old-name new-name args)))
 
 (advice-add 'rename-file :around #'lsp--on-rename-file)
+(advice-add 'vc-git-rename-file :around #'lsp--on-rename-file)
 
 (defcustom lsp-xref-force-references nil
   "If non-nil threat everything as references(e. g. jump if only one item.)"

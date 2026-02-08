@@ -411,6 +411,36 @@ line 3 words here and here
                                        "line 1 unique word broming + common"
                                        "                   ^^^^^^^         "))))))
 
+(ert-deftest lsp-mock-server-clears-diags-after-workspace-edit ()
+  "Test ensuring diagnostics are cleared after workspace edits.
+
+Diagnostics should be cleared after workspace edits (like organize
+imports) to prevent stale diagnostics from appearing at wrong line
+numbers. This test verifies the fix for issue #3888."
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+   ;; Server found diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+   ;; Simulate workspace edit (like organize imports) by running the hook
+   (run-hook-with-args 'lsp-after-apply-edits-hook 'code-action)
+
+   ;; After the hook runs, diagnostics should be cleared
+   (should (null (gethash lsp-test-sample-file (lsp-diagnostics t))))
+
+   ;; Server sent new diagnostics
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+
+   ;; Now the diagnostic is available again
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))))
+
 (defun lsp-test-xref-loc-to-range (xref-loc)
   "Convert XREF-LOC to a range p-list.
 

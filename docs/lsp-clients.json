@@ -215,6 +215,15 @@
     "debugger": "Not relevant"
   },
   {
+    "name": "crates",
+    "full-name": "Crates",
+    "server-name": "crates-lsp",
+    "server-url": "https://github.com/MathiasPius/crates-lsp",
+    "installation-url": "https://github.com/MathiasPius/crates-lsp?tab=readme-ov-file#1-installing-crates-lsp",
+    "lsp-install-server": "crates-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "crystal",
     "full-name": "Crystal",
     "server-name": "crystalline",
@@ -350,6 +359,14 @@
     "installation": "Automatic by lsp-mode",
     "lsp-install-server": "fsac",
     "debugger": "Yes (netcoredbg)"
+  },
+  {
+    "name": "fortitude",
+    "full-name": "Fortran",
+    "server-name": "fortitude",
+    "server-url": "https://github.com/PlasmaFAIR/fortitude",
+    "installation": "pip install fortitude-lint",
+    "debugger": "Not available"
   },
   {
     "name": "fortran",

@@ -176,7 +176,7 @@ creates another process connecting to the named pipe it specifies."
         (set-process-query-on-exit-flag (get-buffer-process stderr-buffer) nil))
       (set-process-query-on-exit-flag command-process nil)
       (set-process-query-on-exit-flag communication-process nil)
-      (cons communication-process communication-process))))
+      (cons communication-process command-process))))
 
 (defun lsp-roslyn--uri-to-path (uri)
   "Convert a URI to a file path, without unhexifying."
