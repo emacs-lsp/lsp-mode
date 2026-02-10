@@ -67,7 +67,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest'
       run: "cmake --version"
       
-    - uses: actions/setup-python@v6.1.0
+    - uses: actions/setup-python@v6.2.0
       with:
         python-version: "3.9"
       
