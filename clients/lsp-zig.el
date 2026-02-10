@@ -26,6 +26,8 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'url)
+(require 'json)
 
 (defgroup lsp-zig nil
   "LSP support for Zig via zls."
@@ -215,8 +217,34 @@ If `true', replace the text after the cursor."
   :type 'file
   :group 'lsp-zig)
 
+(defun lsp-zig--get-zls-latest-version ()
+  "Fetch the version number (tag_name) of the latest zls release from GitHub."
+  (let ((url "https://api.github.com/repos/zigtools/zls/releases/latest")
+        (buffer nil)
+        (json-data nil))
+    (message "Fetching latest ZLS version...")
+    ;; Fetch the JSON data synchronously
+    (setq buffer (url-retrieve-synchronously url))
+    (if (not buffer)
+        (message "Failed to retrieve URL")
+      (with-current-buffer buffer
+        (goto-char (point-min))
+        ;; Skip HTTP headers (search for the first empty line)
+        (re-search-forward "^$" nil 'move)
+        (forward-char) ;; Move past the newline
+        ;; Parse the JSON
+        (condition-case err
+            (setq json-data (json-read))
+          (error (message "Error parsing JSON: %s" err)))
+        ;; Clean up the temporary buffer
+        (kill-buffer buffer)))
+
+    ;; Extract the tag_name
+    (when json-data
+      (cdr (assoc 'tag_name json-data)))))
+
 (defconst lsp-zig-download-url-format
-  "https://github.com/zigtools/zls/releases/latest/download/zls-%s-%s.%s"
+  "https://builds.zigtools.org/zls-%s-%s-%s.%s"
   "Format to the download url link.")
 
 (defun lsp-zig--zls-url ()
@@ -225,11 +253,14 @@ If `true', replace the text after the cursor."
          (arch (if x86 "x86_64" "aarch64")))
     (cl-case system-type
       ((cygwin windows-nt ms-dos)
-       (format lsp-zig-download-url-format arch "windows" "zip"))
+       (format lsp-zig-download-url-format
+               arch "windows" (lsp-zig--get-zls-latest-version) "zip"))
       (darwin
-       (format lsp-zig-download-url-format arch "macos" "tar.gz"))
+       (format lsp-zig-download-url-format
+               arch "macos" (lsp-zig--get-zls-latest-version) "tar.gz"))
       (gnu/linux
-       (format lsp-zig-download-url-format arch "linux" "tar.gz")))))
+       (format lsp-zig-download-url-format
+               arch "linux" (lsp-zig--get-zls-latest-version) "tar.gz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
