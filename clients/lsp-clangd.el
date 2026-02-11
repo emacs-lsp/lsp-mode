@@ -120,7 +120,7 @@ with class `section', and also removes `headerlinks'."
   (lsp-cpp-flycheck-clang-tidy--decode-region-as-utf8 (point-min) (point-max))
   (lsp-cpp-flycheck-clang-tidy--remove-crlf)
   (let* ((dom (libxml-parse-html-region (point-min) (point-max)))
-         (section (dom-by-class dom "section")))
+         (section (dom-by-tag dom 'section)))
     (dolist (headerlink (dom-by-class section "headerlink"))
       (dom-remove-node section headerlink))
     section))
