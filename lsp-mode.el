@@ -7220,6 +7220,23 @@ server. WORKSPACE is the active workspace."
            (json-false nil))
        (json-read-from-string ,str))))
 
+(defmacro lsp-json-read-string (str)
+  "Read json from the current buffer."
+  (if (progn
+        (require 'json)
+        (fboundp 'json-parse-string))
+    `(json-parse-string ,str :object-type (if lsp-use-plists
+                                            'plist
+                                            'hash-table)
+       :null-object nil
+       :false-object nil)
+    `(let ((json-array-type 'vector)
+            (json-object-type (if lsp-use-plists
+                                'plist
+                                'hash-table))
+            (json-false nil))
+       (json-read-string ,str))))
+
 (defmacro lsp-json-read-buffer ()
   "Read json from the current buffer."
   (if (progn
@@ -7279,69 +7296,38 @@ server. WORKSPACE is the active workspace."
           ('request (lsp--on-request workspace json-data)))))))
 
 (defun lsp--create-filter-function (workspace)
-  "Make filter for the workspace."
-  (let ((body-received 0)
-        leftovers body-length body chunk)
+  "Efficiently filter/process LSP messages for WORKSPACE."
+  (let ((input-buffer (generate-new-buffer " *lsp-input*")))
     (lambda (_proc input)
-      (setf chunk (if (s-blank? leftovers)
-                      (encode-coding-string input 'utf-8-unix t)
-                    (concat leftovers (encode-coding-string input 'utf-8-unix t))))
-
-      (let (messages)
-        (while (not (s-blank? chunk))
-          (if (not body-length)
-              ;; Read headers
-              (if-let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
-                  ;; We've got all the headers, handle them all at once:
-                  (setf body-length (lsp--get-body-length
-                                     (mapcar #'lsp--parse-header
-                                             (split-string
-                                              (substring-no-properties chunk
-                                                                       (or (string-match-p "Content-Length" chunk)
-                                                                           (error "Unable to find Content-Length header."))
-                                                                       body-sep-pos)
-                                              "\r\n")))
-                        body-received 0
-                        leftovers nil
-                        chunk (substring-no-properties chunk (+ body-sep-pos 4)))
-
-                ;; Haven't found the end of the headers yet. Save everything
-                ;; for when the next chunk arrives and await further input.
-                (setf leftovers chunk
-                      chunk nil))
-            (let* ((chunk-length (string-bytes chunk))
-                   (left-to-receive (- body-length body-received))
-                   (this-body (if (< left-to-receive chunk-length)
-                                  (prog1 (substring-no-properties chunk 0 left-to-receive)
-                                    (setf chunk (substring-no-properties chunk left-to-receive)))
-                                (prog1 chunk
-                                  (setf chunk nil))))
-                   (body-bytes (string-bytes this-body)))
-              (push this-body body)
-              (setf body-received (+ body-received body-bytes))
-              (when (>= chunk-length left-to-receive)
-                (condition-case err
-                    (with-temp-buffer
-                      (apply #'insert
-                             (nreverse
-                              (prog1 body
-                                (setf leftovers nil
-                                      body-length nil
-                                      body-received nil
-                                      body nil))))
-                      (decode-coding-region (point-min)
-                                            (point-max)
-                                            'utf-8)
-                      (goto-char (point-min))
-                      (push (lsp-json-read-buffer) messages))
-
-                  (error
-                   (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
-                             (concat leftovers input)
-                             err)))))))
-        (mapc (lambda (msg)
-                (lsp--parser-on-message msg workspace))
-              (nreverse messages))))))
+      (with-current-buffer input-buffer
+        ;; Insert raw input at the end
+        (goto-char (point-max))
+        (insert input)  ; Keep as raw bytes initially
+        (goto-char (point-min))
+        (cl-loop
+          while (let ((header-end (search-forward "\r\n\r\n" nil t))
+                       (header-start (search-backward "Content-Length:" nil t)))
+                  (when header-end
+                    (let* ((headers (buffer-substring-no-properties header-start (- header-end 4)))
+                            (header-lines (split-string headers "\r\n" t))
+                            (parsed-headers (mapcar #'lsp--parse-header header-lines))
+                            (body-length (lsp--get-body-length parsed-headers))
+                            (body-start header-end)
+                            (body-end (+ header-end body-length)))
+                      (when (<= body-end (point-max))
+                        ;; Extract and decode the JSON body separately
+                        (let ((json-string (decode-coding-string 
+                                             (buffer-substring-no-properties body-start body-end)
+                                             'utf-8)))
+                          (condition-case err
+                            (let ((msg (lsp-json-read-string json-string)))
+                              (lsp--parser-on-message msg workspace))
+                            (error
+                              (message "LSP JSON parse error: %S" err))))
+                        ;; Remove the processed message
+                        (delete-region (point-min) body-end)
+                        (goto-char (point-min))
+                        t)))))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions
