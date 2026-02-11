@@ -3497,7 +3497,7 @@ If NO-WAIT is non-nil send the request as notification."
                                :cancel-token :sync-request)
             (while (not (or resp-error resp-result))
               (if (functionp 'json-rpc-connection)
-                  (catch 'lsp-done (sit-for 0.01))
+                  (catch 'lsp-done (sleep-for 0.01))
                 (catch 'lsp-done
                   (accept-process-output
                    nil
