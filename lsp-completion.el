@@ -916,7 +916,14 @@ If the candidates is non-empty, return the passed STRING and POINT."
              (fboundp 'company-mode))
         (setq-local company-abort-on-unique-match nil)
         (company-mode 1)
-        (setq-local company-backends (cl-adjoin 'company-capf company-backends :test #'equal)))
+        (let ((expected-backend 'company-capf))
+          (unless (cl-some (lambda (candidate-backend)
+                             (if (listp candidate-backend)
+                                 (memq expected-backend candidate-backend)
+                               (eq expected-backend candidate-backend)))
+                           company-backends)
+            (setq-local company-backends
+                        (cons expected-backend company-backends)))))
        (t
         (lsp--warn "Unable to autoconfigure company-mode.")))
 
