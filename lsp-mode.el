@@ -7043,25 +7043,41 @@ If nil, and `lsp-debounce-full-sync-notifications' is non-nil,
       (when (and method (not (string-prefix-p "$" method)))
         (lsp-warn "Unknown notification: %s" method)))))
 
+(defun lsp--configuration-for-section-path (path)
+  "Fetch configuration for a given section path
+PATH may be a section name, or a dotted path requesting a nested section"
+  (-let* ((path-parts (split-string path "\\."))
+          (path-without-last (s-join "." (-slice path-parts 0 -1)))
+          (path-parts-len (length path-parts)))
+    (cond
+     ((<= path-parts-len 1)
+      (ht-get (lsp-configuration-section path)
+              (car-safe path-parts)
+              (ht-create)))
+     ((> path-parts-len 1)
+      (when-let* ((section (lsp-configuration-section path-without-last))
+                  (keys path-parts))
+        (while (and keys section)
+          (setf section (ht-get section (pop keys))))
+        section)))))
+
+(lsp-defun lsp--buffer-for-scope (scope)
+  (let ((buffers (lsp--workspace-buffers lsp--cur-workspace))
+        (scope-path (if scope (lsp--uri-to-path scope) "")))
+    (seq-find
+     (lambda (buf) (string-prefix-p scope-path (buffer-file-name buf)))
+     buffers)))
+
 (lsp-defun lsp--build-workspace-configuration-response ((&ConfigurationParams :items))
   "Get section configuration.
 PARAMS are the `workspace/configuration' request params"
   (->> items
-       (-map (-lambda ((&ConfigurationItem :section?))
-               (-let* ((path-parts (split-string section? "\\."))
-                       (path-without-last (s-join "." (-slice path-parts 0 -1)))
-                       (path-parts-len (length path-parts)))
-                 (cond
-                  ((<= path-parts-len 1)
-                   (ht-get (lsp-configuration-section section?)
-                           (car-safe path-parts)
-                           (ht-create)))
-                  ((> path-parts-len 1)
-                   (when-let* ((section (lsp-configuration-section path-without-last))
-                              (keys path-parts))
-                     (while (and keys section)
-                       (setf section (ht-get section (pop keys))))
-                     section))))))
+       (-map (-lambda ((&ConfigurationItem :section? :scope-uri?))
+               (if-let* ((buf (lsp--buffer-for-scope scope-uri?)))
+                   (lsp-with-current-buffer buf
+                     (lsp--configuration-for-section-path section?))
+                 (lsp--with-workspace-temp-buffer (lsp--workspace-root lsp--cur-workspace)
+                   (lsp--configuration-for-section-path section?)))))
        (apply #'vector)))
 
 (defun lsp--ms-since (timestamp)
@@ -7136,11 +7152,7 @@ server. WORKSPACE is the active workspace."
                                         :json-false))))
                      ((equal method "workspace/configuration")
                       (with-lsp-workspace workspace
-                        (if-let* ((buf (car buffers)))
-                            (lsp-with-current-buffer buf
-                              (lsp--build-workspace-configuration-response params))
-                          (lsp--with-workspace-temp-buffer (lsp--workspace-root workspace)
-                            (lsp--build-workspace-configuration-response params)))))
+                        (lsp--build-workspace-configuration-response params)))
                      ((equal method "workspace/workspaceFolders")
                       (let ((folders (or (-> workspace
                                              (lsp--workspace-client)
