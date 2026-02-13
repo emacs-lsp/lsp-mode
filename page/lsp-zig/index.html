@@ -4580,9 +4580,10 @@ If no extra argument is given <code>record_session_path</code> is used as the de
 <p>The path to the file in which zls will be stored.</p>
 <hr />
 <h3 id="lsp-zig-server-version"><code>lsp-zig-server-version</code><a class="headerlink" href="#lsp-zig-server-version" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>0.15.1</code></p>
+<p><em>Type:</em> <code>(choice (string :tag Specified version) (const :tag Latest version nil))</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>The target language server version for zls.</p>
+<p>If the value is <code>nil</code>, it will use the latest version instead.</p>
 <hr />
 <h3 id="lsp-zig-skip-std-references"><code>lsp-zig-skip-std-references</code><a class="headerlink" href="#lsp-zig-skip-std-references" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
