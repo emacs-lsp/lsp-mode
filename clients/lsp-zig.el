@@ -243,10 +243,12 @@ If `true', replace the text after the cursor."
     (when json-data
       (cdr (assoc 'tag_name json-data)))))
 
-(defcustom lsp-zig-server-version (or (lsp-zig--get-zls-latest-version)
-                                      "0.15.0")
-  "The target language server version for zls."
-  :type 'string
+(defcustom lsp-zig-server-version nil
+  "The target language server version for zls.
+
+If the value is `nil', it will use the latest version instead."
+  :type '(choice (string :tag "Specified version")
+                 (const :tag "Latest version" nil))
   :group 'lsp-zig)
 
 (defconst lsp-zig-download-url-format
@@ -256,17 +258,19 @@ If `true', replace the text after the cursor."
 (defun lsp-zig--zls-url ()
   "Return Url points to the zls' zip/tar file."
   (let* ((x86 (string-prefix-p "x86_64" system-configuration))
-         (arch (if x86 "x86_64" "aarch64")))
+         (arch (if x86 "x86_64" "aarch64"))
+         (ver (or lsp-zig-server-version
+                  (lsp-zig--get-zls-latest-version))))
     (cl-case system-type
       ((cygwin windows-nt ms-dos)
        (format lsp-zig-download-url-format
-               arch "windows" lsp-zig-server-version "zip"))
+               arch "windows" ver "zip"))
       (darwin
        (format lsp-zig-download-url-format
-               arch "macos" lsp-zig-server-version "tar.gz"))
+               arch "macos" ver "tar.gz"))
       (gnu/linux
        (format lsp-zig-download-url-format
-               arch "linux" lsp-zig-server-version "tar.gz")))))
+               arch "linux" ver "tar.gz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
@@ -279,7 +283,7 @@ and not the global storage."
 (lsp-dependency
  'zls
  '(:system "zls")
- `(:download :url ,(lsp-zig--zls-url)
+ `(:download :url ,(lambda (&rest _) (lsp-zig--zls-url))
              :decompress ,(pcase system-type ('windows-nt :zip) (_ :targz))
              :store-path ,(f-join lsp-zig-server-store-path "temp")
              :set-executable? t)
