@@ -7071,28 +7071,6 @@ PARAMS are the `workspace/configuration' request params"
           (setf section (ht-get section (pop keys))))
         section)))))
 
-(defun lsp--default-workspace-configuration ()
-  "Get all defined settings."
-  (let ((ret (ht-create)))
-    (maphash (-lambda (path (variable boolean?))
-               ;; Trap any error to be safe, as in an older version of lsp-mode,
-               ;; when resolving the variable lsp-volar-get-typescript-tsdk-path,
-               ;; the following error was signaled:
-               ;; :package "typescript" :path "tsserver"
-               ;;  "The package typescript is not installed.  Unable to find nil"
-               (condition-case nil
-                   (let* ((symbol-value (-> variable
-                                            lsp-resolve-value
-                                            lsp-resolve-value))
-                          (value (if (and boolean? (not symbol-value))
-                                     :json-false
-                                   symbol-value)))
-                     (when (or boolean? value)
-                       (lsp-ht-set ret (s-split "\\." path) value)))
-                 (error nil)))
-             lsp-client-settings)
-    ret))
-
 (defun lsp--ms-since (timestamp)
   "Integer number of milliseconds since TIMESTAMP.  Fractions discarded."
   (floor (* 1000 (float-time (time-since timestamp)))))
@@ -9006,6 +8984,28 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
                                  symbol-value)))
                    (when (or boolean? value)
                      (lsp-ht-set ret (s-split "\\." path) value)))))
+             lsp-client-settings)
+    ret))
+
+(defun lsp--default-workspace-configuration ()
+  "Get all defined settings."
+  (let ((ret (ht-create)))
+    (maphash (-lambda (path (variable boolean?))
+               ;; Trap any error to be safe, as in an older version of lsp-mode,
+               ;; when resolving the variable lsp-volar-get-typescript-tsdk-path,
+               ;; the following error was signaled:
+               ;; :package "typescript" :path "tsserver"
+               ;;  "The package typescript is not installed.  Unable to find nil"
+               (condition-case nil
+                   (let* ((symbol-value (-> variable
+                                            lsp-resolve-value
+                                            lsp-resolve-value))
+                          (value (if (and boolean? (not symbol-value))
+                                     :json-false
+                                   symbol-value)))
+                     (when (or boolean? value)
+                       (lsp-ht-set ret (s-split "\\." path) value)))
+                 (error nil)))
              lsp-client-settings)
     ret))
 
