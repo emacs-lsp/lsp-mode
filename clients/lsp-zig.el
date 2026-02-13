@@ -217,12 +217,6 @@ If `true', replace the text after the cursor."
   :type 'file
   :group 'lsp-zig)
 
-(defcustom lsp-zig-server-version (or (lsp-zig--get-zls-latest-version)
-                                      "0.15.0")
-  "The target language server version for zls."
-  :type 'string
-  :group 'lsp-zig)
-
 (defun lsp-zig--get-zls-latest-version ()
   "Fetch the version number (tag_name) of the latest zls release from GitHub."
   (let ((url "https://api.github.com/repos/zigtools/zls/releases/latest")
@@ -248,6 +242,12 @@ If `true', replace the text after the cursor."
     ;; Extract the tag_name
     (when json-data
       (cdr (assoc 'tag_name json-data)))))
+
+(defcustom lsp-zig-server-version (or (lsp-zig--get-zls-latest-version)
+                                      "0.15.0")
+  "The target language server version for zls."
+  :type 'string
+  :group 'lsp-zig)
 
 (defconst lsp-zig-download-url-format
   "https://builds.zigtools.org/zls-%s-%s-%s.%s"
