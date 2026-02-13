@@ -217,6 +217,12 @@ If `true', replace the text after the cursor."
   :type 'file
   :group 'lsp-zig)
 
+(defcustom lsp-zig-server-version (or (lsp-zig--get-zls-latest-version)
+                                      "0.15.0")
+  "The target language server version for zls."
+  :type 'string
+  :group 'lsp-zig)
+
 (defun lsp-zig--get-zls-latest-version ()
   "Fetch the version number (tag_name) of the latest zls release from GitHub."
   (let ((url "https://api.github.com/repos/zigtools/zls/releases/latest")
@@ -254,13 +260,13 @@ If `true', replace the text after the cursor."
     (cl-case system-type
       ((cygwin windows-nt ms-dos)
        (format lsp-zig-download-url-format
-               arch "windows" (lsp-zig--get-zls-latest-version) "zip"))
+               arch "windows" lsp-zig-server-version "zip"))
       (darwin
        (format lsp-zig-download-url-format
-               arch "macos" (lsp-zig--get-zls-latest-version) "tar.gz"))
+               arch "macos" lsp-zig-server-version "tar.gz"))
       (gnu/linux
        (format lsp-zig-download-url-format
-               arch "linux" (lsp-zig--get-zls-latest-version) "tar.gz")))))
+               arch "linux" lsp-zig-server-version "tar.gz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
