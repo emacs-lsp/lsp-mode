@@ -3399,7 +3399,6 @@ TYPE can either be `incoming' or `outgoing'"
                     "Params: ")
                   (lsp--log-font-lock-json (json-encode body))
                   "\n\n\n"))
-    (setq str (propertize str 'mouse-face 'highlight 'read-only t))
     (insert str)))
 
 (defvar-local lsp--log-io-ewoc nil)
