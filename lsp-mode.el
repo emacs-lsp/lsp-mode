@@ -1074,6 +1074,12 @@ directory")
     ("textDocument/documentColor" :capability :colorProvider)
     ("textDocument/documentLink" :capability :documentLinkProvider)
     ("textDocument/inlayHint" :capability :inlayHintProvider)
+    ("inlayHint/resolve"
+     :check-command (lambda (wk)
+                      (with-lsp-workspace wk
+                        (when-let* ((cap (lsp--capability :inlayHintProvider)))
+                          (and (not (booleanp cap))
+                               (lsp:inlay-hint-options-resolve-provider? cap))))))
     ("textDocument/documentHighlight" :capability :documentHighlightProvider)
     ("textDocument/documentSymbol" :capability :documentSymbolProvider)
     ("textDocument/foldingRange" :capability :foldingRangeProvider)
@@ -2841,6 +2847,7 @@ BINDINGS is a list of (key def desc cond)."
       ;; actions
       "aa" lsp-execute-code-action "code actions" (lsp-feature? "textDocument/codeAction")
       "ah" lsp-document-highlight "highlight symbol" (lsp-feature? "textDocument/documentHighlight")
+      "ai" lsp-inlay-hint-accept "accept inlay hint" (lsp-feature? "textDocument/inlayHint")
       "al" lsp-avy-lens "lens" (and (bound-and-true-p lsp-lens-mode) (featurep 'avy))
 
       ;; peeks
@@ -3902,7 +3909,9 @@ disappearing, unset all the variables related to it."
                                      (relatedDocumentSupport . :json-false)))
                       (linkedEditingRange . ((dynamicRegistration . t)))
                       (inlineCompletion . ())
-                      ,@(when lsp-inlay-hint-enable '((inlayHint . ((dynamicRegistration . :json-false)))))))
+                      ,@(when lsp-inlay-hint-enable
+                          '((inlayHint . ((dynamicRegistration . :json-false)
+                                          (resolveSupport . ((properties . ["textEdits" "tooltip"])))))))))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
    custom-capabilities))
@@ -10095,7 +10104,7 @@ defaults to `progress-bar."
 
 (defface lsp-inlay-hint-face
   '((t :inherit font-lock-comment-face))
-  "The face to use for the JavaScript inlays."
+  "The face to use for inlay hints."
   :group 'lsp-mode
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -10142,25 +10151,120 @@ modifying window sizes."
    ((eql kind lsp/inlay-hint-kind-parameter-hint) 'lsp-inlay-hint-parameter-face)
    (t 'lsp-inlay-hint-face)))
 
+(defun lsp--inlay-hint-tooltip-text (tooltip)
+  "Extract plain text from TOOLTIP (string or MarkupContent)."
+  (cond
+   ((stringp tooltip) tooltip)
+   ((lsp-markup-content? tooltip) (lsp:markup-content-value tooltip))
+   (t nil)))
+
 (defun lsp--update-inlay-hints-scroll-function (window start)
   (lsp-update-inlay-hints start (window-end window t)))
 
 (defun lsp--update-inlay-hints ()
   (lsp-update-inlay-hints (window-start) (window-end nil t)))
 
-(defun lsp--label-from-inlay-hints-response (label)
-  "Returns a string label built from an array of
-InlayHintLabelParts or the argument itself if it's already a
-string."
+(defun lsp--inlay-hint-label-part-string (part kind)
+  "Render a single InlayHintLabelPart PART with text properties for KIND."
+  (-let (((&InlayHintLabelPart :value :tooltip? :location? :command?) part))
+    (let ((str value)
+          (face (lsp--face-for-inlay kind))
+          (interactive (or location? command?)))
+      (apply #'propertize str
+             'font-lock-face face
+             (append
+              (when tooltip?
+                (list 'help-echo (lsp--inlay-hint-tooltip-text tooltip?)))
+              (when interactive
+                (list 'mouse-face 'highlight
+                      'pointer 'hand))
+              (when location?
+                (list 'lsp-inlay-hint-location location?))
+              (when command?
+                (list 'lsp-inlay-hint-command command?)))))))
+
+(defun lsp--label-from-inlay-hints-response (label kind)
+  "Build a propertized string from LABEL for inlay hint of KIND.
+LABEL is either a string or a vector of InlayHintLabelPart."
   (cl-typecase label
-    (string label)
+    (string (propertize (lsp--format-inlay label kind)
+                        'font-lock-face (lsp--face-for-inlay kind)))
     (vector
      (string-join (mapcar (lambda (part)
-                            (-let (((&InlayHintLabelPart :value) part))
-                              value))
+                            (lsp--inlay-hint-label-part-string part kind))
                           label)))))
 
+(defun lsp--inlay-hint-resolve (hint)
+  "Resolve HINT by sending inlayHint/resolve if the server supports it.
+Returns the resolved hint, or the original if resolve is not supported."
+  (if (lsp-feature? "inlayHint/resolve")
+      (condition-case err
+          (lsp-request "inlayHint/resolve" hint)
+        (error
+         (lsp--warn "Failed to resolve inlay hint: %s" (error-message-string err))
+         hint))
+    hint))
+
+(defun lsp-inlay-hint-accept ()
+  "Accept the inlay hint at point, applying its text edits.
+If the hint has no textEdits, tries to resolve them via inlayHint/resolve."
+  (interactive)
+  (if-let* ((overlays (overlays-in (point) (1+ (point))))
+            (overlay (cl-find-if (lambda (ov)
+                                   (and (overlay-get ov 'lsp-inlay-hint)
+                                        (= (overlay-start ov) (point))))
+                                 overlays))
+            (hint (overlay-get overlay 'lsp-inlay-hint-data)))
+      (let* ((resolved (if (lsp:inlay-hint-text-edits? hint)
+                           hint
+                         (lsp--inlay-hint-resolve hint)))
+             (edits (lsp:inlay-hint-text-edits? resolved)))
+        (if edits
+            (progn
+              (lsp--apply-text-edits edits 'inlay-hint-accept)
+              (lsp--update-inlay-hints))
+          (lsp--info "No text edits available for this inlay hint.")))
+    (lsp--info "No inlay hint at point.")))
+
+(defun lsp--inlay-hint-mouse-handler (event)
+  "Handle mouse click EVENT on an inlay hint overlay.
+Click precedence: label part location > label part command > hint accept."
+  (interactive "e")
+  (let* ((pos-data (posn-string (event-start event)))
+         (string (car pos-data))
+         (char-pos (cdr pos-data)))
+    (cond
+     ;; Label part with location: navigate
+     ((and string char-pos
+           (get-text-property char-pos 'lsp-inlay-hint-location string))
+      (-let* ((location (get-text-property char-pos 'lsp-inlay-hint-location string))
+              ((&Location :uri :range (&Range :start)) location)
+              (path (lsp--uri-to-path uri)))
+        (xref-push-marker-stack)
+        (find-file path)
+        (goto-char (lsp--position-to-point start))))
+     ;; Label part with command: execute
+     ((and string char-pos
+           (get-text-property char-pos 'lsp-inlay-hint-command string))
+      (lsp--execute-command
+       (get-text-property char-pos 'lsp-inlay-hint-command string)))
+     ;; Default: accept the hint (apply textEdits)
+     (t
+      (let* ((click-posn (event-start event))
+             (window (posn-window click-posn))
+             (pos (posn-point click-posn)))
+        (with-selected-window window
+          (goto-char pos)
+          (lsp-inlay-hint-accept)))))))
+
+(defvar lsp--inlay-hint-mouse-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] #'lsp--inlay-hint-mouse-handler)
+    map)
+  "Keymap for inlay hint overlays.")
+
 (defun lsp-update-inlay-hints (start end)
+  "Update inlay hints between START and END buffer positions."
   (lsp-request-async
    "textDocument/inlayHint"
    (lsp-make-inlay-hints-params
@@ -10172,20 +10276,29 @@ string."
    (lambda (res)
      (lsp--remove-overlays 'lsp-inlay-hint)
      (dolist (hint res)
-       (-let* (((&InlayHint :label :position :kind? :padding-left? :padding-right?) hint)
+       (-let* (((&InlayHint :label :position :kind? :padding-left? :padding-right?
+                             :tooltip?) hint)
                (kind (or kind? lsp/inlay-hint-kind-type-hint))
-               (label (lsp--label-from-inlay-hints-response label))
-               (pos (lsp--position-to-point position))
-               (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-         (when (stringp label)
-           (overlay-put overlay 'lsp-inlay-hint t)
-           (overlay-put overlay 'before-string
-                        (format "%s%s%s"
-                                (if padding-left? " " "")
-                                (propertize (lsp--format-inlay label kind)
-                                            'font-lock-face (lsp--face-for-inlay kind))
-                                (if padding-right? " " "")))))))
-   :mode 'tick))
+               (label-str (lsp--label-from-inlay-hints-response label kind))
+               (pos (lsp--position-to-point position)))
+         (when label-str
+           (let ((overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
+             (overlay-put overlay 'lsp-inlay-hint t)
+             (overlay-put overlay 'lsp-inlay-hint-data hint)
+             (overlay-put overlay 'before-string
+                          (propertize
+                           (format "%s%s%s"
+                                   (if padding-left? " " "")
+                                   (let ((s label-str))
+                                     ;; Add hint-level tooltip as help-echo if no per-part tooltip
+                                     (when (and tooltip? (stringp label))
+                                       (setq s (propertize s 'help-echo
+                                                           (lsp--inlay-hint-tooltip-text tooltip?))))
+                                     s)
+                                   (if padding-right? " " ""))
+                           'keymap lsp--inlay-hint-mouse-map)))))))
+   :mode 'tick
+   :cancel-token :inlay-hints))
 
 (define-minor-mode lsp-inlay-hints-mode
   "Mode for displaying inlay hints."

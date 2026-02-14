@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add support for LSP 3.17 InlayHint features: ~textEdits~, ~tooltip~, ~data~, ~InlayHintLabelPart~ (per-part ~tooltip~/~location~/~command~), ~inlayHint/resolve~, interactive mouse handler, and ~lsp-inlay-hint-accept~ command (see [[https://github.com/emacs-lsp/lsp-mode/issues/4775][#4775]])
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
   * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
   * Add support for [[https://github.com/PlasmaFAIR/fortitude][Fortitude]] (Fortran)
