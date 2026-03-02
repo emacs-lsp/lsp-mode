@@ -84,7 +84,7 @@
                                 :codeActionProvider t
                                 :declarationProvider t
                                 :definitionProvider t
-                                :inlayHintProvider t
+                                :inlayHintProvider (:resolveProvider t)
                                 :codeLensProvider (:resolveProvider ()))
   "Capabilities of the server.")
 
