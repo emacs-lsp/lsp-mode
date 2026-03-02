@@ -4454,20 +4454,20 @@
 <p>Select which step should be executed on build-on-save.</p>
 <hr />
 <h3 id="lsp-zig-build-runner-global-cache-path"><code>lsp-zig-build-runner-global-cache-path</code><a class="headerlink" href="#lsp-zig-build-runner-global-cache-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>Path to a directory that will be used as the global cache path when executing
 a projects build.zig.  null is equivalent to the path shown by <code>zig env</code>.</p>
 <hr />
 <h3 id="lsp-zig-build-runner-path"><code>lsp-zig-build-runner-path</code><a class="headerlink" href="#lsp-zig-build-runner-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>Path to the <code>build_runner.zig</code> file provided by zls.
 null is equivalent to <code>${executable_directory}/build_runner.zig</code>.</p>
 <hr />
 <h3 id="lsp-zig-builtin-path"><code>lsp-zig-builtin-path</code><a class="headerlink" href="#lsp-zig-builtin-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>Path to <code>builtin</code>; useful for debugging, automatically set if let null.</p>
 <hr />
 <h3 id="lsp-zig-completions-with-replace"><code>lsp-zig-completions-with-replace</code><a class="headerlink" href="#lsp-zig-completions-with-replace" title="Permanent link">#</a></h3>
@@ -4505,8 +4505,8 @@ Currently supports adding and removing discards.</p>
 <p>Enables inlay hint support when the client also supports it.</p>
 <hr />
 <h3 id="lsp-zig-global-cache-path"><code>lsp-zig-global-cache-path</code><a class="headerlink" href="#lsp-zig-global-cache-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>Path to a directory that will be used as zig<code>s cache.
 null is equivalent to</code>${KnownFolders.Cache}/zls`.</p>
 <hr />
@@ -4603,8 +4603,8 @@ Improves lookup speed for functions in user`s code.  Renaming and
 <p>Enables warnings for style guideline mismatches.</p>
 <hr />
 <h3 id="lsp-zig-zig-exe-path"><code>lsp-zig-zig-exe-path</code><a class="headerlink" href="#lsp-zig-zig-exe-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <div class="codehilite"><pre><span></span><code>Zig executable path.
 </code></pre></div>
 
@@ -4613,8 +4613,8 @@ looked up in PATH.  Will be used to infer the zig standard library path if none
 is provided.</p>
 <hr />
 <h3 id="lsp-zig-zig-lib-path"><code>lsp-zig-zig-lib-path</code><a class="headerlink" href="#lsp-zig-zig-lib-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
+<p><em>Type:</em> <code>(choice (const nil) string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
 <p>Zig library path.
 e.g. <code>/path/to/zig/lib/zig</code>, used to analyze std library imports.</p>
 <hr />
@@ -4638,7 +4638,7 @@ executable with variable <code>exec-path</code>.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 24, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 2, 2026</span>
       
     
   </small>
