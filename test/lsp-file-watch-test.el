@@ -25,6 +25,7 @@
 ;;; Code:
 (require 'lsp-mode)
 (require 'filenotify)
+(require 'test-helper)
 
 (ert-deftest lsp-file-watch--recursive ()
   :tags '(no-win)
@@ -47,7 +48,7 @@
 
     (write-region "bla" nil matching-file)
 
-    (sit-for 0.2)
+    (lsp-test-wait 0.2)
     ;; created/changed events
     (setq expected-events `((changed ,matching-file)
                             (created ,matching-file)))
@@ -59,13 +60,13 @@
 
     ;; not interested in directories
     (mkdir (concat temp-directory "dirname.ext"))
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     ;; not changed
     (should (equal expected-events events))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created nested-matching-file))
     (add-to-list 'expected-events (list 'changed nested-matching-file))
@@ -78,7 +79,7 @@
       (mkdir nested-dir2)
       (write-region "bla" nil nested-matching-file2)
 
-      (sit-for 0.3)
+      (lsp-test-wait 0.3)
 
       (add-to-list 'expected-events (list 'created nested-matching-file2))
 
@@ -87,7 +88,7 @@
 
       (add-to-list 'expected-events (list 'changed nested-matching-file2))
 
-      (sit-for 0.3)
+      (lsp-test-wait 0.3)
       (should (equal expected-events events)))
 
     (should (equal expected-events events))
@@ -95,7 +96,7 @@
     ;; delete directory
     (delete-directory nested-dir t)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
     (add-to-list 'expected-events (list 'deleted nested-matching-file))
     (add-to-list 'expected-events (list 'deleted nested-dir))
 
@@ -106,7 +107,7 @@
     ;; create directory and then create a file
     ;; no updates after change
     (write-region "bla1" nil matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (should (equal expected-events events))))
 
@@ -141,7 +142,7 @@
                  lsp-file-watch-ignored-directories))
 
     (write-region "bla" nil matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created matching-file))
     (add-to-list 'expected-events (list 'changed matching-file))
@@ -240,7 +241,7 @@
                  ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (should (null events))
     (lsp-kill-watch watch)))
@@ -306,7 +307,7 @@
                  ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created nested-matching-file))
     (add-to-list 'expected-events (list 'changed nested-matching-file))
@@ -360,7 +361,7 @@
 
     (delete-file matching-file-1)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 
@@ -403,7 +404,7 @@
 
     (f-write-text "some-text" 'utf-8 matching-file)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 

@@ -39,4 +39,14 @@
 (add-to-list 'load-path
              (file-name-as-directory (f-parent (f-this-file))))
 
+(defun lsp-test-wait (secs)
+  "Wait SECS for file-notify events to be processed.
+`sit-for' does not pump the file-notify event queue in batch
+mode; only `read-event' does.  This helper works correctly in
+both batch and interactive contexts."
+  (let ((deadline (+ (float-time) secs)))
+    (while (< (float-time) deadline)
+      (read-event nil nil 0.05))))
+
+(provide 'test-helper)
 ;;; test-helper.el ends here

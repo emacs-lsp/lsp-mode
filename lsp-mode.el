@@ -3931,7 +3931,7 @@ disappearing, unset all the variables related to it."
       (when (cl-loop for capability in (lsp--workspace-registered-server-capabilities workspace)
                      thereis (and (equal (lsp--registered-capability-method capability)
                                          "workspace/didChangeWatchedFiles")
-                                  (cl-loop for fs-watcher in (lsp:did-change-watched-files-registration-options-watchers
+                                  (cl-loop for fs-watcher across (lsp:did-change-watched-files-registration-options-watchers
                                                               (lsp--registered-capability-options capability))
                                            thereis (let ((glob-pattern (lsp:file-system-watcher-glob-pattern fs-watcher))
                                                          (kind? (lsp:file-system-watcher-kind? fs-watcher))
