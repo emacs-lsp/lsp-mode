@@ -5940,7 +5940,7 @@ following <code>projectile</code>/<code>project.el</code> conventions.</p>
 <hr />
 <h3 id="lsp-gunzip-script"><code>lsp-gunzip-script</code><a class="headerlink" href="#lsp-gunzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>#[nil ((cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags lsp--move-to-column-function cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to decompress a gzipped file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -6231,7 +6231,7 @@ namespace SymbolKind.</p>
 <hr />
 <h3 id="lsp-tar-script"><code>lsp-tar-script</code><a class="headerlink" href="#lsp-tar-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>#[nil ((cond ((executable-find tar) lsp-ext-tar-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((executable-find tar) lsp-ext-tar-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags lsp--move-to-column-function cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to decompress a .tar.gz file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -6258,7 +6258,7 @@ in place.</p>
 <hr />
 <h3 id="lsp-unzip-script"><code>lsp-unzip-script</code><a class="headerlink" href="#lsp-unzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>#[nil ((cond ((and (eq system-type 'windows-nt) (executable-find pwsh)) lsp-ext-pwsh-script) ((and (eq system-type 'windows-nt) (executable-find powershell)) lsp-ext-powershell-script) ((executable-find unzip) lsp-ext-unzip-script) ((executable-find pwsh) lsp-ext-pwsh-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
+<p><em>Default:</em> <code>#[nil ((cond ((and (eq system-type 'windows-nt) (executable-find pwsh)) lsp-ext-pwsh-script) ((and (eq system-type 'windows-nt) (executable-find powershell)) lsp-ext-powershell-script) ((executable-find unzip) lsp-ext-unzip-script) ((executable-find pwsh) lsp-ext-pwsh-script) (t nil))) (tramp-ssh-controlmaster-options tramp-use-ssh-controlmaster-options view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags lsp--move-to-column-function cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t)]</code></p>
 <p>The script to unzip.</p>
 <hr />
 <h3 id="lsp-verify-signature"><code>lsp-verify-signature</code><a class="headerlink" href="#lsp-verify-signature" title="Permanent link">#</a></h3>
@@ -6295,7 +6295,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 2, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 4, 2026</span>
       
     
   </small>
