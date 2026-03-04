@@ -307,4 +307,83 @@ post-self-insert-hook, so handler creation should be skipped."
         (lsp--update-signature-help-hook)
         (should-not handler-created)))))
 
+;;; Position encoding tests
+
+(ert-deftest lsp--utf-16-column-ascii ()
+  "UTF-16 column equals codepoint column for ASCII text."
+  (with-temp-buffer
+    (insert "hello")
+    (goto-char 4)                         ; after "hel"
+    (should (= (lsp--utf-16-column) 3))))
+
+(ert-deftest lsp--utf-16-column-supplementary ()
+  "Supplementary plane characters count as 2 UTF-16 code units."
+  (with-temp-buffer
+    (insert "a\U0001F600b")               ; a + emoji + b
+    (goto-char (point-max))               ; after "a😀b"
+    (should (= (lsp--utf-16-column) 4)))) ; 1 + 2 + 1
+
+(ert-deftest lsp--move-to-utf-16-column-supplementary ()
+  "Moving by UTF-16 offset accounts for surrogate pairs."
+  (with-temp-buffer
+    (insert "a\U0001F600b")
+    (lsp--move-to-utf-16-column 3)       ; past 'a' (1) + emoji (2)
+    (should (= (char-after) ?b))))
+
+(ert-deftest lsp--utf-32-column-supplementary ()
+  "UTF-32 column counts each character as 1 regardless of plane."
+  (with-temp-buffer
+    (insert "a\U0001F600b")
+    (goto-char (point-max))
+    (should (= (lsp--utf-32-column) 3))))
+
+(ert-deftest lsp--utf-8-column-multibyte ()
+  "UTF-8 column counts bytes, not characters."
+  (with-temp-buffer
+    (insert "aé")                          ; 'a' = 1 byte, 'é' = 2 bytes
+    (goto-char (point-max))
+    (should (= (lsp--utf-8-column) 3))))
+
+(ert-deftest lsp--move-to-utf-8-column-multibyte ()
+  "Moving by UTF-8 byte offset lands on the correct character."
+  (with-temp-buffer
+    (insert "aéb")                         ; a(1) + é(2) + b(1)
+    (lsp--move-to-utf-8-column 3)         ; 1 + 2 = byte offset of 'b'
+    (should (= (char-after) ?b))))
+
+(ert-deftest lsp--set-position-encoding-utf-16 ()
+  "Setting encoding to utf-16 installs the correct functions."
+  (with-temp-buffer
+    (lsp--set-position-encoding "utf-16")
+    (should (eq lsp--position-column-function #'lsp--utf-16-column))
+    (should (eq lsp--move-to-column-function #'lsp--move-to-utf-16-column))))
+
+(ert-deftest lsp--set-position-encoding-utf-32 ()
+  "Setting encoding to utf-32 installs the correct functions."
+  (with-temp-buffer
+    (lsp--set-position-encoding "utf-32")
+    (should (eq lsp--position-column-function #'lsp--utf-32-column))
+    (should (eq lsp--move-to-column-function #'lsp--move-to-utf-32-column))))
+
+(ert-deftest lsp--line-character-to-point-utf-16 ()
+  "line-character-to-point respects UTF-16 encoding."
+  (with-temp-buffer
+    (insert "a\U0001F600b\n")
+    (lsp--set-position-encoding "utf-16")
+    ;; line 0, character 3 (UTF-16 units: a=1, emoji=2) → point at 'b'
+    (let ((pt (lsp--line-character-to-point 0 3)))
+      (should (= (char-after pt) ?b)))))
+
+(ert-deftest lsp--move-to-column-clamps-to-eol ()
+  "Column beyond line length clamps to end of line."
+  (with-temp-buffer
+    (insert "ab\n")
+    (goto-char (point-min))
+    (let ((eol (line-end-position)))
+      (should (= (lsp--move-to-utf-16-column 100) eol))
+      (goto-char (point-min))
+      (should (= (lsp--move-to-utf-32-column 100) eol))
+      (goto-char (point-min))
+      (should (= (lsp--move-to-utf-8-column 100) eol)))))
+
 ;;; lsp-mode-test.el ends here

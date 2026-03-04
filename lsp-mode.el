@@ -1861,6 +1861,9 @@ etc."
          (widen)
          (save-excursion ,@form)))))
 
+;; Forward-declare; actual `defvar-local' is in the "Position encoding" section.
+(defvar lsp--move-to-column-function)
+
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
   "Return the point for character CHARACTER on line LINE."
@@ -1869,13 +1872,7 @@ etc."
         (lsp-save-restriction-and-excursion
           (goto-char (point-min))
           (forward-line line)
-          ;; server may send character position beyond the current line and we
-          ;; should fallback to line end.
-          (-let [line-end (line-end-position)]
-            (if (> character (- line-end (point)))
-                line-end
-              (forward-char character)
-              (point)))))))
+          (funcall lsp--move-to-column-function character)))))
 
 (lsp-defun lsp--position-to-point ((&Position :line :character))
   "Convert `Position' object in PARAMS to a point."
@@ -3805,7 +3802,7 @@ disappearing, unset all the variables related to it."
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities appending CUSTOM-CAPABILITIES."
   (append
-   `((general . ((positionEncodings . ["utf-32", "utf-16"])))
+   `((general . ((positionEncodings . ["utf-32" "utf-8" "utf-16"])))
      (workspace . ((workspaceEdit . ((documentChanges . t)
                                      (resourceOperations . ["create" "rename" "delete"])))
                    (applyEdit . t)
@@ -4436,12 +4433,87 @@ yet."
 (defun lsp--cur-line (&optional point)
   (1- (line-number-at-pos point)))
 
+;;
+;; Position encoding
+;;
+;; LSP uses UTF-16 code units for character offsets by default.  Emacs uses
+;; codepoints (effectively UTF-32).  Characters in the supplementary planes
+;; (U+10000–U+10FFFF, e.g. emoji) require 2 UTF-16 code units but only 1
+;; Emacs character position.  The functions below handle the conversion.
+;; With LSP 3.17 positionEncoding negotiation, servers may use UTF-32 or
+;; UTF-8 instead, avoiding the conversion entirely.
+
+(defvar-local lsp--position-column-function #'lsp--utf-32-column
+  "Function to compute the column offset for the current point.
+Set per-buffer based on the negotiated position encoding.")
+
+(defvar-local lsp--move-to-column-function #'lsp--move-to-utf-32-column
+  "Function to move point to a given column offset.
+Set per-buffer based on the negotiated position encoding.")
+
+(defun lsp--utf-16-column ()
+  "Return the current column as a UTF-16 code unit offset from line beginning."
+  (/ (- (length (encode-coding-region (line-beginning-position)
+                                      (point) 'utf-16 t))
+        2)                              ; subtract 2-byte BOM
+     2))                                ; convert bytes to code units
+
+(defun lsp--move-to-utf-16-column (column)
+  "Move point to COLUMN expressed as UTF-16 code unit offset from line beginning."
+  (let ((bol (line-beginning-position))
+        (eol (line-end-position))
+        (goal column))
+    (goto-char bol)
+    (while (and (> goal 0) (< (point) eol))
+      (when (<= #x10000 (char-after) #x10ffff)
+        (setq goal (1- goal)))           ; supplementary char = 2 UTF-16 units
+      (forward-char 1)
+      (setq goal (1- goal)))
+    (point)))
+
+(defun lsp--utf-32-column ()
+  "Return the current column as a codepoint offset from line beginning."
+  (- (point) (line-beginning-position)))
+
+(defun lsp--move-to-utf-32-column (column)
+  "Move point to COLUMN expressed as codepoint offset from line beginning."
+  (goto-char (min (+ (line-beginning-position) column) (line-end-position)))
+  (point))
+
+(defun lsp--utf-8-column ()
+  "Return the current column as a UTF-8 byte offset from line beginning."
+  (- (position-bytes (point)) (position-bytes (line-beginning-position))))
+
+(defun lsp--move-to-utf-8-column (column)
+  "Move point to COLUMN expressed as UTF-8 byte offset from line beginning."
+  (let ((bol (line-beginning-position))
+        (eol (line-end-position))
+        (goal-byte (+ (position-bytes (line-beginning-position)) column)))
+    (goto-char bol)
+    (while (and (< (position-bytes (point)) goal-byte) (< (point) eol))
+      (forward-char 1))
+    (point)))
+
+(defun lsp--set-position-encoding (encoding)
+  "Set position encoding functions for the current buffer.
+ENCODING is a string: \"utf-16\", \"utf-32\", or \"utf-8\"."
+  (pcase encoding
+    ("utf-16"
+     (setq-local lsp--position-column-function #'lsp--utf-16-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-16-column))
+    ("utf-8"
+     (setq-local lsp--position-column-function #'lsp--utf-8-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-8-column))
+    (_
+     (setq-local lsp--position-column-function #'lsp--utf-32-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-32-column))))
+
 (defun lsp--cur-position ()
   "Make a Position object for the current point."
   (or (lsp-virtual-buffer-call :cur-position)
       (lsp-save-restriction-and-excursion
         (list :line (lsp--cur-line)
-              :character (- (point) (line-beginning-position))))))
+              :character (funcall lsp--position-column-function)))))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
@@ -8132,6 +8204,14 @@ SESSION is the active session."
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
 
+         ;; Apply the negotiated position encoding to all workspace buffers.
+         (when-let* ((encoding (lsp:server-capabilities-position-encoding? capabilities)))
+           (mapc (lambda (buffer)
+                   (when (lsp-buffer-live-p buffer)
+                     (lsp-with-current-buffer buffer
+                       (lsp--set-position-encoding encoding))))
+                 (lsp--workspace-buffers workspace)))
+
          (with-lsp-workspace workspace
            (lsp-notify "initialized" lsp--empty-ht))
 
@@ -9328,6 +9408,9 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
   (if (eq 'initialized (lsp--workspace-status workspace))
       ;; when workspace is initialized just call document did open.
       (progn
+        (when-let* ((encoding (lsp:server-capabilities-position-encoding?
+                               (lsp--workspace-server-capabilities workspace))))
+          (lsp--set-position-encoding encoding))
         (with-lsp-workspace workspace
           (when-let* ((before-document-open-fn (-> workspace
                                                   lsp--workspace-client
