@@ -574,9 +574,9 @@ and `../lib` ,exclude `../lib/temp`.
                          (pcase (lsp-resolve-value lsp--system-arch)
                            ('x64     "linux-x64"))))
                       (if lsp-lua-prefer-musl "-musl" "")))))
-    (let ((decompress (if (string-match "\.zip$" url)
+    (let ((decompress (if (string-match-p "\.zip$" url)
                           (progn :zip)
-                        (if (string-match "\.tar.gz$" url)
+                        (if (string-match-p "\.tar.gz$" url)
                             (progn :targz)
                           :gzip))))
       (lsp-download-install
