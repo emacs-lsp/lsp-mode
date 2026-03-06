@@ -4826,13 +4826,23 @@ Only works when mode is `tick or `alive."
        (remove-hook 'before-change-functions func t)))))
 
 (defun lsp--capability (cap &optional capabilities)
-  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
+  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead.
+Returns the capability value, or t if the capability exists but has an empty value
+\(e.g., an empty DefinitionOptions object).
+Returns nil if the capability does not exist or is explicitly set to null."
   (when (stringp cap)
     (setq cap (intern (concat ":" cap))))
-
-  (lsp-get (or capabilities
-               (lsp--server-capabilities))
-           cap))
+  (let* ((caps (or capabilities (lsp--server-capabilities)))
+         (value (lsp-get caps cap)))
+    (cond
+     ;; Explicitly null -> capability not supported
+     ((lsp-null? value) nil)
+     ;; Truthy value -> return the value
+     (value value)
+     ;; nil but key exists -> empty object (e.g., {}) -> capability supported
+     ((lsp-member? caps cap) t)
+     ;; Key does not exist -> capability not supported
+     (t nil))))
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
@@ -7291,7 +7301,7 @@ server. WORKSPACE is the active workspace."
                           :object-type (if lsp-use-plists
                                            'plist
                                          'hash-table)
-                          :null-object nil
+                          :null-object ,(if lsp-use-plists :json-null nil)
                           :false-object nil)
     `(let ((json-array-type 'vector)
            (json-object-type (if lsp-use-plists
@@ -7308,7 +7318,7 @@ server. WORKSPACE is the active workspace."
       `(json-parse-buffer :object-type (if lsp-use-plists
                                            'plist
                                          'hash-table)
-                          :null-object nil
+                          :null-object ,(if lsp-use-plists :json-null nil)
                           :false-object nil)
     `(let ((json-array-type 'vector)
            (json-object-type (if lsp-use-plists
@@ -9255,7 +9265,7 @@ When ALL is t, erase all log buffers of the running session."
                 (err (warn "Json parsing failed with the following error: %s" err))
                 (done (lsp--handle-process-exit workspace ""))))))
           :object-type object-type
-          :null-object nil
+          :null-object (if lsp-use-plists :json-null nil)
           :false-object nil))
        "*json-rpc-connection*"))
     (cons con con)))
