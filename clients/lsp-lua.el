@@ -586,8 +586,7 @@ and `../lib` ,exclude `../lib/temp`.
        error-callback
        :url url
        :store-path store-path
-       :decompress decompress)
-      )))
+       :decompress decompress))))
 
 (lsp-register-client
  (make-lsp-client
