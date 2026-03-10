@@ -2014,15 +2014,20 @@ Used to prevent repeated warnings for the same invalid pattern.")
   "Return the first regex, if any, within REGEX-LIST matching STR.
 Returns the matching regex string on success, nil on no match or invalid regex.
 Invalid regex patterns are logged as warnings (once per pattern) and skipped."
-  (--first (condition-case err
-               (string-match it str)
-             (invalid-regexp
-              (unless (gethash it lsp--warned-invalid-regexps)
-                (puthash it t lsp--warned-invalid-regexps)
-                (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
-                          (error-message-string err) it))
-              nil))
-           regex-list))
+  (let (result)
+    (while regex-list
+      (let ((re (car regex-list)))
+        (setq regex-list (cdr regex-list))
+        (condition-case err
+            (when (string-match-p re str)
+              (setq result re
+                    regex-list nil))
+          (invalid-regexp
+           (unless (gethash re lsp--warned-invalid-regexps)
+             (puthash re t lsp--warned-invalid-regexps)
+             (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
+                       (error-message-string err) re))))))
+    result))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal))
