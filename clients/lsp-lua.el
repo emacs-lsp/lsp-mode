@@ -553,34 +553,40 @@ and `../lib` ,exclude `../lib/temp`.
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-language-server-install-dir'."
   (ignore client update?)
-  (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir)))
-    (lsp-download-install
-     (lambda (&rest _)
-       (set-file-modes lsp-clients-lua-language-server-bin #o0700)
-       (funcall callback))
-     error-callback
-     :url (lsp--find-latest-gh-release-url
-           "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
-           (format "%s%s.tar.gz"
-                   (pcase system-type
-                     ('gnu/linux
-                      (pcase (lsp-resolve-value lsp--system-arch)
-                        ('x64     "linux-x64")
-                        ('arm64   "linux-arm64")))
-                     ('darwin
-                      (pcase (lsp-resolve-value lsp--system-arch)
-                        ('x64     "darwin-x64")
-                        ('arm64   "darwin-arm64")))
-                     ('windows-nt
-                      (pcase (lsp-resolve-value lsp--system-arch)
-                        ('x64     "win32-x64")
-                        ('arm64   "win32-ia32")))
-                     (_
-                      (pcase (lsp-resolve-value lsp--system-arch)
-                        ('x64     "linux-x64"))))
-                   (if lsp-lua-prefer-musl "-musl" "")))
-     :store-path store-path
-     :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
+  (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir))
+        (url (lsp--find-latest-gh-release-url
+              "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
+              (format "%s%s"
+                      (pcase system-type
+                        ('gnu/linux
+                         (pcase (lsp-resolve-value lsp--system-arch)
+                           ('x64     "linux-x64")
+                           ('arm64   "linux-arm64")))
+                        ('darwin
+                         (pcase (lsp-resolve-value lsp--system-arch)
+                           ('x64     "darwin-x64")
+                           ('arm64   "darwin-arm64")))
+                        ('windows-nt
+                         (pcase (lsp-resolve-value lsp--system-arch)
+                           ('x64     "win32-x64")
+                           ('arm64   "win32-ia32")))
+                        (_
+                         (pcase (lsp-resolve-value lsp--system-arch)
+                           ('x64     "linux-x64"))))
+                      (if lsp-lua-prefer-musl "-musl" "")))))
+    (let ((decompress (if (string-match-p "\.zip$" url)
+                          (progn :zip)
+                        (if (string-match-p "\.tar.gz$" url)
+                            (progn :targz)
+                          :gzip))))
+      (lsp-download-install
+       (lambda (&rest _)
+         (set-file-modes lsp-clients-lua-language-server-bin #o0700)
+         (funcall callback))
+       error-callback
+       :url url
+       :store-path store-path
+       :decompress decompress))))
 
 (lsp-register-client
  (make-lsp-client
