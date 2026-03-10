@@ -2076,12 +2076,11 @@ Do you want to watch all files in %s? "
   "Figure out whether PATH (inside of DIR) is meant to have a file watcher set.
 IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't
 want to watch."
-  (let
-      ((full-path (f-join dir path)))
-    (and (file-accessible-directory-p full-path)
-         (not (equal path "."))
-         (not (equal path ".."))
-         (not (lsp--string-match-any ignored-directories full-path)))))
+  (and (not (string= path "."))
+       (not (string= path ".."))
+       (let ((full-path (expand-file-name path dir)))
+         (and (file-accessible-directory-p full-path)
+              (not (lsp--string-match-any ignored-directories full-path))))))
 
 
 (defun lsp--all-watchable-directories (dir ignored-directories &optional visited)
