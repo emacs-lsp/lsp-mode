@@ -2071,42 +2071,28 @@ Do you want to watch all files in %s? "
      (concat "You can configure this warning with the `lsp-enable-file-watchers' "
              "and `lsp-file-watch-threshold' variables"))))
 
-
-(defun lsp--path-is-watchable-directory (path dir ignored-directories)
-  "Figure out whether PATH (inside of DIR) is meant to have a file watcher set.
-IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't
-want to watch."
-  (let
-      ((full-path (f-join dir path)))
-    (and (file-accessible-directory-p full-path)
-         (not (equal path "."))
-         (not (equal path ".."))
-         (not (lsp--string-match-any ignored-directories full-path)))))
-
-
 (defun lsp--all-watchable-directories (dir ignored-directories &optional visited)
   "Traverse DIR recursively returning a list of paths that should have watchers.
 IGNORED-DIRECTORIES will be used for exclusions.
 VISITED is used to track already-visited directories to avoid infinite loops."
-  (let* ((dir (if (f-symlink? dir)
-                  (file-truename dir)
-                dir))
-         ;; Initialize visited directories if not provided
-         (visited (or visited (make-hash-table :test 'equal))))
-    (if (gethash dir visited)
-        ;; If the directory has already been visited, skip it
-        nil
-      ;; Mark the current directory as visited
-      (puthash dir t visited)
-      (apply #'nconc
-             ;; the directory itself is assumed to be part of the set
-             (list dir)
-             ;; collect all subdirectories that are watchable
-             (-map
-              (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories visited))
-              ;; but only look at subdirectories that are watchable
-              (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
-                       (directory-files dir)))))))
+  (let ((visited (or visited (make-hash-table :test 'equal)))
+        (stack (list (if (file-symlink-p dir) (file-truename dir) dir)))
+        result)
+    (while stack
+      (let ((cur (pop stack)))
+        (unless (gethash cur visited)
+          (puthash cur t visited)
+          (push cur result)
+          (dolist (entry (directory-files cur))
+            (unless (or (string= entry ".") (string= entry ".."))
+              (let ((full-path (expand-file-name entry cur)))
+                (when (and (file-accessible-directory-p full-path)
+                           (not (lsp--string-match-any ignored-directories full-path)))
+                  (push (if (file-symlink-p full-path)
+                            (file-truename full-path)
+                          full-path)
+                        stack))))))))
+    (nreverse result)))
 
 (defun lsp-watch-root-folder (dir callback ignored-files ignored-directories &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
