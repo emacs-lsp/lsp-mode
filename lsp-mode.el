@@ -3933,18 +3933,17 @@ disappearing, unset all the variables related to it."
                                          "workspace/didChangeWatchedFiles")
                                   (cl-loop for fs-watcher across (lsp:did-change-watched-files-registration-options-watchers
                                                               (lsp--registered-capability-options capability))
-                                           thereis (let ((glob-pattern (lsp:file-system-watcher-glob-pattern fs-watcher))
-                                                         (kind? (lsp:file-system-watcher-kind? fs-watcher))
-                                                         (cached-regexp (lsp-get fs-watcher :_cachedRegexp)))
+                                           thereis (let ((kind? (lsp:file-system-watcher-kind? fs-watcher)))
                                                      (when (or (null kind?)
                                                                (> (logand kind? watch-bit) 0))
-                                                       (let ((regexes (or cached-regexp
-                                                                          (let ((regexp (lsp-glob-to-regexps glob-pattern)))
+                                                       (let ((regexes (or (lsp-get fs-watcher :_cachedRegexp)
+                                                                          (let ((regexp (lsp-glob-to-regexps
+                                                                                         (lsp:file-system-watcher-glob-pattern fs-watcher))))
                                                                             (lsp-put fs-watcher :_cachedRegexp regexp)
                                                                             regexp))))
                                                          (cl-loop for re in regexes
-                                                                  thereis (or (string-match re changed-file)
-                                                                              (string-match re rel-changed-file)))))))))
+                                                                  thereis (or (string-match-p re changed-file)
+                                                                              (string-match-p re rel-changed-file)))))))))
         (with-lsp-workspace workspace
           (lsp-notify
            "workspace/didChangeWatchedFiles"
