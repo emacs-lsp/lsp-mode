@@ -8694,8 +8694,9 @@ nil."
             (:gzip (concat store-path ".gz"))
             (:zip (concat store-path ".zip"))
             (:targz (concat store-path ".tar.gz"))
+            (:tarxz (concat store-path ".tar.xz"))
             (`nil store-path)
-            (_ (error ":decompress must be `:gzip', `:zip', `:targz' or `nil'")))))
+            (_ (error ":decompress must be `:gzip', `:zip', `:targz', `:tarxz' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
@@ -8738,7 +8739,8 @@ nil."
                  (:gzip
                   (lsp-gunzip download-path))
                  (:zip (lsp-unzip download-path (f-parent store-path)))
-                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path))))
+                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path)))
+                 (:tarxz (lsp-tar-gz-decompress download-path (f-parent store-path)))) ;; NOTE: this function decompresses all tar compressed paths.
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
