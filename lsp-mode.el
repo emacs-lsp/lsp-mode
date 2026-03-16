@@ -2037,30 +2037,29 @@ Invalid regex patterns are logged as warnings (once per pattern) and skipped."
   root-directory)
 
 (defun lsp--folder-watch-callback (event callback watch ignored-files ignored-directories)
-  (let ((file-name (cl-third event))
-        (event-type (cl-second event)))
+  (let ((file-name (nth 2 event))
+        (event-type (nth 1 event)))
     (cond
      ((and (file-directory-p file-name)
-           (equal 'created event-type)
+           (eq 'created event-type)
            (not (lsp--string-match-any ignored-directories file-name)))
 
       (lsp-watch-root-folder (file-truename file-name) callback ignored-files ignored-directories watch)
 
       ;; process the files that are already present in
       ;; the directory.
-      (->> (directory-files-recursively file-name ".*" t)
-           (seq-do (lambda (f)
-                     (unless (file-directory-p f)
-                       (funcall callback (list nil 'created f)))))))
+      (dolist (f (directory-files-recursively file-name ".*" t))
+        (unless (file-directory-p f)
+          (funcall callback (list nil 'created f)))))
      ((and (memq event-type '(created deleted changed))
            (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name)))
       (funcall callback event))
-     ((and (memq event-type '(renamed))
+     ((and (eq event-type 'renamed)
            (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name)))
-      (funcall callback `(,(cl-first event) deleted ,(cl-third event)))
-      (funcall callback `(,(cl-first event) created ,(cl-fourth event)))))))
+      (funcall callback (list (car event) 'deleted (nth 2 event)))
+      (funcall callback (list (car event) 'created (nth 3 event)))))))
 
 (defun lsp--ask-about-watching-big-repo (number-of-directories dir)
   "Ask the user if they want to watch NUMBER-OF-DIRECTORIES from a repository DIR.
