@@ -267,10 +267,10 @@ If the value is `nil', it will use the latest version instead."
                arch "windows" ver "zip"))
       (darwin
        (format lsp-zig-download-url-format
-               arch "macos" ver "tar.gz"))
+               arch "macos" ver "tar.xz"))
       (gnu/linux
        (format lsp-zig-download-url-format
-               arch "linux" ver "tar.gz")))))
+               arch "linux" ver "tar.xz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
@@ -284,7 +284,7 @@ and not the global storage."
  'zls
  '(:system "zls")
  `(:download :url ,(lambda (&rest _) (lsp-zig--zls-url))
-             :decompress ,(pcase system-type ('windows-nt :zip) (_ :targz))
+             :decompress ,(pcase system-type ('windows-nt :zip) (_ :tarxz))
              :store-path ,(f-join lsp-zig-server-store-path "temp")
              :set-executable? t)
  `(:system ,(lsp-zig--stored-zls-executable)))
