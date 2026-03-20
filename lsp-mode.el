@@ -4068,7 +4068,7 @@ If any filters, checks if it applies for PATH."
                                          (string-prefix-p scheme? uri))
                                      (let ((regexes (lsp-glob-to-regexps glob)))
                                        (cl-loop for re in regexes
-                                                thereis (string-match re path))))))))))
+                                                thereis (string-match-p re path))))))))))
 
 (defun lsp--send-did-rename-files-p ()
   "Return whether didRenameFiles notification should be sent to the server."
@@ -7261,7 +7261,7 @@ server. WORKSPACE is the active workspace."
 
 (defun lsp--parse-header (s)
   "Parse string S as a LSP (KEY . VAL) header."
-  (let ((pos (string-match "\:" s))
+  (let ((pos (string-match-p "\:" s))
         key val)
     (unless pos
       (signal 'lsp-invalid-header-name (list s)))
