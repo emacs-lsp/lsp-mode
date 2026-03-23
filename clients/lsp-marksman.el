@@ -49,7 +49,7 @@
   (format "https://github.com/artempyanykh/marksman/releases/latest/download/%s"
           (pcase system-type
             ('gnu/linux
-             (if (string-match "^aarch64-.*" system-configuration)
+             (if (string-match-p "^aarch64-.*" system-configuration)
                  "marksman-linux-arm64"
                "marksman-linux-x64"))
             ('darwin "marksman-macos")

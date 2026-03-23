@@ -81,19 +81,19 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
                  ; On Windows we're trying to avoid a crash starting 64bit .NET PE binaries in
                  ; Emacs by using x86 version of omnisharp-roslyn on older (<= 26.4) versions
                  ; of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg00893.html"
-                 (if (and (string-match "^x86_64-.*" system-configuration)
+                 (if (and (string-match-p "^x86_64-.*" system-configuration)
                           (version<= "26.4" emacs-version))
                      "omnisharp-win-x64.zip"
                    "omnisharp-win-x86.zip"))
 
                 ((eq system-type 'darwin)
-                 (if (string-match "aarch64-.*" system-configuration)
+                 (if (string-match-p "aarch64-.*" system-configuration)
                      "omnisharp-osx-arm64-net6.0.zip"
                    "omnisharp-osx-x64-net6.0.zip"))
 
                 ((and (eq system-type 'gnu/linux)
-                      (or (eq (string-match "^x86_64" system-configuration) 0)
-                          (eq (string-match "^i[3-6]86" system-configuration) 0)))
+                      (or (eq (string-match-p "^x86_64" system-configuration) 0)
+                          (eq (string-match-p "^i[3-6]86" system-configuration) 0)))
                  "omnisharp-linux-x64-net6.0.zip")
 
                 (t "omnisharp-mono.zip")))
