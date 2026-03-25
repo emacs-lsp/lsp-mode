@@ -78,6 +78,7 @@
   * Add support for ~~crates-lsp~~
   * Remove outdated Ruff option and add new lint-related options
   * Add new Nextflow client customizations
+  * Add support for ~~fish-lsp~~
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.

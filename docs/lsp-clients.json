@@ -368,6 +368,14 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
+    "name": "fish",
+    "full-name": "Fish shell",
+    "server-name": "fish-lsp",
+    "server-url": "https://fish-lsp.dev/",
+    "installation-url": "https://github.com/ndonfris/fish-lsp#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "fortitude",
     "full-name": "Fortran",
     "server-name": "fortitude",
