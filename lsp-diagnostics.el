@@ -147,6 +147,47 @@ g. `error', `warning') and list of LSP TAGS."
         (lsp-diagnostics--flycheck-level level tags)
       level)))
 
+(lsp-defun lsp-diagnostics--flycheck-range-to-region
+  ((range &as &Range
+          :start (start &as &Position
+                        :line start-line
+                        :character start-column)
+          :end (end &as &Position
+                    :line end-line
+                    :character end-column))
+   external)
+  "Determine diagnostic region from RANGE."
+  (if external
+      (let ((start-line   (1+ start-line))
+            (start-column (1+ start-column))
+            (end-line     (1+ end-line))
+            (end-column   (1+ end-column)))
+        (if (lsp--position-equal start end)
+            (if (= start-column 1)
+                ;; Highlight entire line
+                (cons (cons start-line nil)
+                      (cons start-line nil))
+              ;; Approximate using `flycheck-highlighting-mode'
+              (cons (cons start-line start-column)
+                    (cons start-line nil)))
+          (cons (cons start-line start-column)
+                (cons end-line   end-column))))
+    ;; Diagnostic in current buffer
+    (let ((start-line   (lsp-translate-line (1+ start-line)))
+          (start-column (1+ (lsp-translate-column start-column)))
+          (end-line     (lsp-translate-line (1+ end-line)))
+          (end-column   (1+ (lsp-translate-column end-column))))
+      (if (lsp--position-equal start end)
+          (if (= start-column 1)
+              ;; Highlight entire line
+              (cons (cons start-line nil)
+                    (cons start-line nil))
+            ;; Approximate using `flycheck-highlighting-mode'
+            (cons (cons start-line start-column)
+                  (cons start-line nil)))
+        (cons (cons start-line start-column)
+              (cons end-line   end-column))))))
+
 (defun lsp-diagnostics--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.
 
@@ -154,28 +195,58 @@ CALLBACK is the status callback passed by Flycheck."
 
   (remove-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer t)
 
-  (->> (lsp--get-buffer-diagnostics)
-       (-map (-lambda ((&Diagnostic :message :severity? :tags? :code? :source?
-                                    :range (&Range :start (start &as &Position
-                                                                 :line      start-line
-                                                                 :character start-character)
-                                                   :end   (end   &as &Position
-                                                                 :line      end-line
-                                                                 :character end-character))))
-               (flycheck-error-new
-                :buffer (current-buffer)
-                :checker checker
-                :filename buffer-file-name
-                :message message
-                :level (lsp-diagnostics--flycheck-calculate-level severity? tags?)
-                :id code?
-                :group source?
-                :line (lsp-translate-line (1+ start-line))
-                :column (1+ (lsp-translate-column start-character))
-                :end-line (lsp-translate-line (1+ end-line))
-                :end-column (unless (lsp--position-equal start end)
-                              (1+ (lsp-translate-column end-character))))))
-       (funcall callback 'finished)))
+  (let ((diagnostics nil)
+        (path (lsp--fix-path-casing buffer-file-name)))
+    (seq-doseq (diagnostic (lsp--get-buffer-diagnostics))
+      (-let* (((&Diagnostic :message :severity? :tags? :code?
+                            :source? :related-information?
+                            :range) diagnostic)
+              (level (lsp-diagnostics--flycheck-calculate-level severity? tags?))
+              (checker (if (stringp source?) (intern source?) checker))
+              (group (gensym)))
+        (-let ((((start-line . start-column) .
+                 (end-line   . end-column))
+                (lsp-diagnostics--flycheck-range-to-region range nil)))
+          (push
+           (flycheck-error-new
+            :buffer (current-buffer)
+            :checker checker
+            :filename buffer-file-name
+            :message message
+            :level level
+            :id code?
+            :group group
+            :line start-line
+            :column start-column
+            :end-line end-line
+            :end-column end-column)
+           diagnostics))
+        (seq-doseq (related-info related-information?)
+          (-let* (((&DiagnosticRelatedInformation
+                    :message :location (&Location :range :uri)) related-info)
+                  (related-file (lsp--fix-path-casing (lsp--uri-to-path uri)))
+                  (external (not (equal path related-file)))
+                  (((start-line . start-column) .
+                    (end-line   . end-column))
+                   (lsp-diagnostics--flycheck-range-to-region range external)))
+            (push
+             (flycheck-error-new
+              :buffer (current-buffer)
+              :checker checker
+              :filename related-file
+              :message message
+              :level level
+              :id code?
+              :group group
+              :line start-line
+              :column start-column
+              :end-line end-line
+              :end-column end-column)
+             diagnostics)))))
+
+    ;; Refresh diagnostics
+    (setq diagnostics (nreverse diagnostics))
+    (funcall callback 'finished diagnostics)))
 
 (defun lsp-diagnostics--flycheck-buffer ()
   "Trigger flyckeck on buffer."
@@ -260,6 +331,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 (declare-function flymake-diag-region "ext:flymake")
 
 (defvar flymake-diagnostic-functions)
+(defvar flymake-list-only-diagnostics)
 (defvar flymake-mode)
 (defvar-local lsp-diagnostics--flymake-report-fn nil)
 
@@ -285,38 +357,123 @@ See https://github.com/emacs-lsp/lsp-mode."
     (when first-run
       (lsp-diagnostics--flymake-update-diagnostics))))
 
+(defun lsp-diagnostics--flymake-calculate-level (severity?)
+  "Determine SEVERITY mapping, defaulting to error."
+
+  (when (stringp severity?)
+    (setq severity? (string-to-number severity?)))
+
+  (pcase severity?
+    ((pred null)                                    :error)
+    ((pred (= lsp/diagnostic-severity-error))       :error)
+    ((pred (= lsp/diagnostic-severity-warning))     :warning)
+    ((pred (= lsp/diagnostic-severity-information)) :note)
+    ((pred (= lsp/diagnostic-severity-hint))        :note)
+    (_                                              :error)))
+
+(lsp-defun lsp-diagnostics--flymake-range-to-region
+  ((range &as &Range
+          :start (start &as &Position
+                        :line start-line
+                        :character start-column)
+          :end (end &as &Position
+                    :line end-line
+                    :character end-column))
+   external)
+  "Determine diagnostic region from RANGE."
+  (let ((start-line   (1+ start-line))
+        (start-column (1+ start-column))
+        (end-line     (1+ end-line))
+        (end-column   (1+ end-column)))
+    (if external
+        (if (lsp--position-equal start end)
+            (if (= start-column 1)
+                ;; Highlight entire line
+                (cons (cons start-line 0)
+                      (cons start-line 0))
+              ;; Approximate using `flymake-diag-region'
+              (cons (cons start-line start-column)
+                    (cons start-line start-column)))
+          (cons (cons start-line start-column)
+                (cons end-line   end-column)))
+      ;; Diagnostics in current buffer
+      (if (lsp--position-equal start end)
+          (if-let* ((region (flymake-diag-region (current-buffer)
+                                                 start-line
+                                                 (if (= start-column 1) 0 start-column))))
+              (cons (car region) (cdr region))
+            (lsp-save-restriction-and-excursion
+              (goto-char (point-min))
+              (cons (line-beginning-position start-line)
+                    (line-end-position end-line))))
+        (lsp--range-to-region range)))))
+
+(defun lsp-diagnostics--flymake-message (message code? source?)
+  "Construct diagnostic message with MESSAGE, CODE and SOURCE."
+  ;; Older versions of Flymake don't support source (i.e., origin) and
+  ;; code, so they are added directly to the message text.  Newer
+  ;; versions support a list containing them.  The existence of the
+  ;; `flymake-diagnostic-message' API is used to determine if the list
+  ;; format is supported, since the API exists to retrieve the list.
+  (if (fboundp 'flymake-diagnostic-message)
+      (list source? code? message)
+    (let* ((code (and code? (format " [%s]" code?)))
+           (source (and source? (format " (%s)" source?))))
+      (concat message code source))))
+
 (defun lsp-diagnostics--flymake-update-diagnostics ()
   "Report new diagnostics to flymake."
-  (funcall lsp-diagnostics--flymake-report-fn
-           (-some->> (lsp-diagnostics t)
-             (gethash (lsp--fix-path-casing buffer-file-name))
-             (--map (-let* (((&Diagnostic :message :severity?
-                                          :range (range &as &Range
-                                                        :start (&Position :line start-line :character)
-                                                        :end (&Position :line end-line))) it)
-                            ((start . end) (lsp--range-to-region range)))
-                      (when (= start end)
-                        (if-let* ((region (flymake-diag-region (current-buffer)
-                                                              (1+ start-line)
-                                                              character)))
-                            (setq start (car region)
-                                  end (cdr region))
-                          (lsp-save-restriction-and-excursion
-                            (goto-char (point-min))
-                            (setq start (line-beginning-position (1+ start-line))
-                                  end (line-end-position (1+ end-line))))))
-                      (flymake-make-diagnostic (current-buffer)
-                                               start
-                                               end
-                                               (cl-case severity?
-                                                 (1 :error)
-                                                 (2 :warning)
-                                                 (t :note))
-                                               message))))
-           ;; This :region keyword forces flymake to delete old diagnostics in
-           ;; case the buffer hasn't changed since the last call to the report
-           ;; function. See https://github.com/joaotavora/eglot/issues/159
-           :region (cons (point-min) (point-max))))
+  (let ((foreign-diagnostics (ht-create))
+        (domestic-diagnostics nil)
+        (path (lsp--fix-path-casing buffer-file-name)))
+
+    ;; Remove any "foreign" diagnostics which may have existed prior
+    ;; to this buffer having been loaded.
+    (setq flymake-list-only-diagnostics
+          (assoc-delete-all path flymake-list-only-diagnostics))
+
+    (seq-doseq (diagnostic (lsp--get-buffer-diagnostics))
+      (-let* (((&Diagnostic :message :severity? :code?
+                            :source? :related-information?
+                            :range) diagnostic)
+              (level (lsp-diagnostics--flymake-calculate-level severity?))
+              (message (lsp-diagnostics--flymake-message message code? source?)))
+        (-let (((start . end)
+                (lsp-diagnostics--flymake-range-to-region range nil)))
+          (push
+           (flymake-make-diagnostic (current-buffer) start end level message)
+           domestic-diagnostics))
+        (seq-doseq (related-info related-information?)
+          (-let* (((&DiagnosticRelatedInformation
+                    :message :location (&Location :range :uri)) related-info)
+                  (related-file (lsp--fix-path-casing (lsp--uri-to-path uri)))
+                  (external (not (equal path related-file)))
+                  ((start . end)
+                   (lsp-diagnostics--flymake-range-to-region range external))
+                  (message (lsp-diagnostics--flymake-message message code? source?)))
+            (if external
+                (push
+                 (flymake-make-diagnostic related-file start end level message)
+                 (gethash related-file foreign-diagnostics))
+              (push
+               (flymake-make-diagnostic (current-buffer) start end level message)
+               domestic-diagnostics))))))
+
+    ;; Refresh foreign diagnostics
+    (maphash
+     (lambda (foreign-file diagnostics)
+       (setq flymake-list-only-diagnostics
+             (assoc-delete-all foreign-file flymake-list-only-diagnostics))
+       (push (cons foreign-file (reverse diagnostics)) flymake-list-only-diagnostics))
+     foreign-diagnostics)
+
+    ;; Refresh domestic diagnostics
+    (funcall lsp-diagnostics--flymake-report-fn
+             (reverse domestic-diagnostics)
+             ;; This :region keyword forces flymake to delete old diagnostics in
+             ;; case the buffer hasn't changed since the last call to the report
+             ;; function. See https://github.com/joaotavora/eglot/issues/159
+             :region (cons (point-min) (point-max)))))
 
 
 
