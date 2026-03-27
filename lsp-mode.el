@@ -6900,6 +6900,7 @@ REFERENCES? t when METHOD returns references."
   (let* ((ec (event-start click))
          (p1 (posn-point ec))
          (w1 (posn-window ec)))
+    (mouse-set-mark click) ; so we can go back there later
     (select-window w1)
     (goto-char p1)
     (lsp-find-definition)))
