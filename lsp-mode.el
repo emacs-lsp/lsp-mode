@@ -398,6 +398,8 @@ the server has requested that."
     "[/\\\\]\\.cache[/\\\\]lsp-csharp\\'"
     "[/\\\\]\\.meta\\'"
     "[/\\\\]\\.nuget\\'"
+    ;; Lean 4
+    "[/\\\\]\\.lake\\'"
     ;; Unity
     "[/\\\\]Library\\'"
     ;; Clojure
