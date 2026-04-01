@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-matlab/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fish/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>MATLAB - LSP Mode - LSP support for Emacs</title>
+        <title>Fish (fish-lsp) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#matlab" class="md-skip">
+        <a href="#fish-shell" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MATLAB
+              Fish (fish-lsp)
             
           </span>
         </div>
@@ -1668,11 +1668,92 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-fish/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Fish (fish-lsp)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Fish (fish-lsp)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-fish-executable" class="md-nav__link">
+    lsp-fish-executable
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2200,134 +2281,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          MATLAB
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-matlab/" class="md-nav__link">
         MATLAB
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-cmd-args" class="md-nav__link">
-    lsp-clients-matlab-cmd-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-connection-timing" class="md-nav__link">
-    lsp-clients-matlab-connection-timing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-index-workspace" class="md-nav__link">
-    lsp-clients-matlab-index-workspace
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-install-path" class="md-nav__link">
-    lsp-clients-matlab-install-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-nodejs" class="md-nav__link">
-    lsp-clients-matlab-nodejs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-server" class="md-nav__link">
-    lsp-clients-matlab-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-server-args" class="md-nav__link">
-    lsp-clients-matlab-server-args
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -4010,50 +3968,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-cmd-args" class="md-nav__link">
-    lsp-clients-matlab-cmd-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-connection-timing" class="md-nav__link">
-    lsp-clients-matlab-connection-timing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-index-workspace" class="md-nav__link">
-    lsp-clients-matlab-index-workspace
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-install-path" class="md-nav__link">
-    lsp-clients-matlab-install-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-nodejs" class="md-nav__link">
-    lsp-clients-matlab-nodejs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-server" class="md-nav__link">
-    lsp-clients-matlab-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-matlab-server-args" class="md-nav__link">
-    lsp-clients-matlab-server-args
+  <a href="#lsp-fish-executable" class="md-nav__link">
+    lsp-fish-executable
   </a>
   
 </li>
@@ -4100,7 +4016,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-matlab.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-fish.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -4119,68 +4035,17 @@
 
 
 <!-- Markdown content -->
-<h1 id="matlab">MATLAB<a class="headerlink" href="#matlab" title="Permanent link">#</a></h1>
+<h1 id="fish-shell">Fish shell<a class="headerlink" href="#fish-shell" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/mathworks/MATLAB-language-server">MATLAB language server</a>.</p>
+<p>For more information about the LSP server, check <a href="https://fish-lsp.dev/">fish-lsp</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/mathworks/MATLAB-language-server">here</a>.</p>
+<p>For more instructions on how to install manually, check <a href="https://github.com/ndonfris/fish-lsp#installation">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-clients-matlab-cmd-args"><code>lsp-clients-matlab-cmd-args</code><a class="headerlink" href="#lsp-clients-matlab-cmd-args" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string)</code></p>
-<p><em>Default:</em> ``</p>
-<p>Extra arguments the language server should specify when starting MATLAB.</p>
-<hr />
-<h3 id="lsp-clients-matlab-connection-timing"><code>lsp-clients-matlab-connection-timing</code><a class="headerlink" href="#lsp-clients-matlab-connection-timing" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const onStart) (const onDemand) (const never))</code></p>
-<p><em>Default:</em> <code>onStart</code></p>
-<p>When to start the MATLAB language server.</p>
-<hr />
-<h3 id="lsp-clients-matlab-index-workspace"><code>lsp-clients-matlab-index-workspace</code><a class="headerlink" href="#lsp-clients-matlab-index-workspace" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(boolean)</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether or not to use the full background indexer.</p>
-<p>Turning this on instructs the MATLAB language server to index all
-<em>.m files under the project root.  If there are thousands of </em>.m
-files, then the MATLAB language server may become unresponsive,
-causing hangs.</p>
-<hr />
-<h3 id="lsp-clients-matlab-install-path"><code>lsp-clients-matlab-install-path</code><a class="headerlink" href="#lsp-clients-matlab-install-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string)</code></p>
-<p><em>Default:</em> ``</p>
-<p>Path to MATLAB to use.
-If not specified, then matlab is used from the system path.</p>
-<hr />
-<h3 id="lsp-clients-matlab-nodejs"><code>lsp-clients-matlab-nodejs</code><a class="headerlink" href="#lsp-clients-matlab-nodejs" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string)</code></p>
-<p><em>Default:</em> <code>node</code></p>
-<p>Node.js to launch the MATLAB language server.</p>
-<hr />
-<h3 id="lsp-clients-matlab-server"><code>lsp-clients-matlab-server</code><a class="headerlink" href="#lsp-clients-matlab-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string)</code></p>
-<p><em>Default:</em> <code>/usr/local/apps/matlabls/out/index.js</code></p>
-<p>Path to the MATLAB language server, index.js.</p>
-<p>For an overview and detailed install instructions, see:
-https://github.com/mathworks/Emacs-MATLAB-Mode/blob/doc/matlab-language-server-lsp-mode.org</p>
-<p>To setup,
-1. Download the language server (clone or unzip):
-      git clone https://github.com/mathworks/MATLAB-language-server.git
-   or Download and unzip a release from
-      https://github.com/mathworks/MATLAB-language-server
-2. In the clone or unzip directory,
-     npm install
-     npm run compile
-     npm run package  # optional JavaScript minimization
-3. Set lsp-clients-matlab-server to the download directory, or
-   copy the ./out and ./matlab/ directory trees to an install location, e.g.
-     cp -r ./out/ /usr/local/apps/matlabls/out/
-     cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
-   then set <code>lsp-clients-matlab-server</code> to the install location.</p>
-<hr />
-<h3 id="lsp-clients-matlab-server-args"><code>lsp-clients-matlab-server-args</code><a class="headerlink" href="#lsp-clients-matlab-server-args" title="Permanent link">#</a></h3>
+<h3 id="lsp-fish-executable"><code>lsp-fish-executable</code><a class="headerlink" href="#lsp-fish-executable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>(--stdio)</code></p>
-<p>MATLAB language server arguments.</p>
+<p><em>Default:</em> <code>(fish-lsp start)</code></p>
+<p>Command to run the fish-shell language server.</p>
 <hr />
 
 <!-- Source file information -->
@@ -4208,7 +4073,7 @@ https://github.com/mathworks/Emacs-MATLAB-Mode/blob/doc/matlab-language-server-l
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-marksman/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Marksman" rel="prev">
+        <a href="../lsp-fsharp/" class="md-footer__link md-footer__link--prev" aria-label="Previous: F#" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -4217,20 +4082,20 @@ https://github.com/mathworks/Emacs-MATLAB-Mode/blob/doc/matlab-language-server-l
               <span class="md-footer__direction">
                 Previous
               </span>
-              Marksman
+              F#
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-meson/" class="md-footer__link md-footer__link--next" aria-label="Next: Meson" rel="next">
+        <a href="../lsp-fortran/" class="md-footer__link md-footer__link--next" aria-label="Next: Fortran (fortls)" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Meson
+              Fortran (fortls)
             </div>
           </div>
           <div class="md-footer__button md-icon">
