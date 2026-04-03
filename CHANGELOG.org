@@ -1,4 +1,6 @@
 * Changelog
+** Unreleased 10.0.1
+
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
   * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
