@@ -634,7 +634,7 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
           (const "workspace")
           (const "root"))
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-check-invocation-strategy "per_workspace"
   "Specifies the invocation strategy to use when running the check command.
@@ -645,7 +645,7 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
           (const "per_workspace")
           (const "once"))
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-cargo-unset-test []
   "force rust-analyzer to unset `#[cfg(test)]` for the specified crates."
@@ -735,7 +735,7 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
           (const "workspace")
           (const "root"))
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-cargo-build-scripts-invocation-strategy "per_workspace"
   "Specifies the invocation strategy to use when running the check command.
@@ -746,13 +746,13 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
           (const "per_workspace")
           (const "once"))
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-cargo-build-scripts-override-command []
   "Override the command rust-analyzer uses to run build scripts and build procedural macros."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-rustfmt-extra-args []
   "Additional arguments to rustfmt."
@@ -780,7 +780,7 @@ available on a nightly build."
 match arms” assist)."
   :type 'boolean
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-completion-add-call-parenthesis t
   "Whether to add parenthesis when completing functions."
@@ -817,7 +817,7 @@ Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
   "Internal config, path to proc-macro server executable."
   :type 'string
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-import-prefix "plain"
   "The path structure for newly inserted paths to use.
@@ -877,7 +877,7 @@ and field accesses with self prefixed to them when inside a method."
   "Enable term search based snippets like `Some(foo.bar().baz())`."
   :type 'boolean
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-import-enforce-granularity nil
   "Whether to enforce the import granularity setting for all files.
@@ -955,7 +955,7 @@ If left unset, this will default to {cargo.sysroot}/lib/rustlib/src/rust/library
 This option does not take effect until rust-analyzer is restarted."
   :type 'string
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-version . "9.0.1"))
+  :package-version '(lsp-version . "10.0.0"))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))

@@ -1,7 +1,7 @@
 ;; -*- mode: eask; lexical-binding: t -*-
 
 (package "lsp-mode"
-         "9.0.1"
+         "10.0.0"
          "LSP mode")
 
 (website-url "https://github.com/emacs-lsp/lsp-mode")

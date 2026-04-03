@@ -30,7 +30,7 @@
   "LSP support for Crates."
   :group 'lsp-mode
   :link '(url-link "https://github.com/MathiasPius/crates-lsp")
-  :package-version `(lsp-mode . "9.0.1"))
+  :package-version `(lsp-mode . "10.0.0"))
 
 (defcustom lsp-crates-executable "crates-lsp"
   "The crates-lsp executable to use.

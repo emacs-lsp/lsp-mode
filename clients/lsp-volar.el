@@ -45,7 +45,7 @@
 (defcustom lsp-volar-typescript-server-id 'ts-ls
   "The server id of the typescript language server to use."
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :type 'symbol)
 
 (defcustom lsp-volar-support-vue2 nil
@@ -54,14 +54,14 @@
 Volar is dropping Vue 2 and vue-class-component Support in v3.1.
 Reference: https://github.com/vuejs/language-tools/discussions/5455"
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :type 'boolean)
 
 (defcustom lsp-volar-location-for-typescript-plugin :auto
   "Location of vue package used by typescript plugin.
 Specify a manual value if automatic detection does not work."
   :group 'lsp-volar
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :type '(choice (const :tag "Automatic detection" :auto)
                  (directory :tag "Manual value")))
 

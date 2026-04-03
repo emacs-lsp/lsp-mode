@@ -29,7 +29,7 @@
   "LSP support for Futhark, using futhark lsp"
   :group 'lsp-mode
   :link '(url-link "https://github.com/diku-dk/futhark/tree/master/src/Futhark/LSP")
-  :package-version `(lsp-mode . "9.0.1"))
+  :package-version `(lsp-mode . "10.0.0"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("futhark" "lsp"))

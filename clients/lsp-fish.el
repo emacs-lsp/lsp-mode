@@ -30,7 +30,7 @@
   "Settings for the fish-shell Language Server."
   :group 'lsp-mode
   :link '(url-link "https://fish-lsp.dev/")
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-fish-executable '("fish-lsp" "start")
   "Command to run the fish-shell language server."
