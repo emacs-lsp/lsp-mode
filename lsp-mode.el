@@ -946,6 +946,7 @@ Changes take effect only when a new session is started."
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
+    (fsharp-ts-mode . "fsharp")
     (reason-mode . "reason")
     (caml-mode . "ocaml")
     (neocaml-mode . "ocaml")
