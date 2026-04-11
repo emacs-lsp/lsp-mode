@@ -290,11 +290,14 @@ See https://github.com/emacs-lsp/lsp-mode."
   (funcall lsp-diagnostics--flymake-report-fn
            (-some->> (lsp-diagnostics t)
              (gethash (lsp--fix-path-casing buffer-file-name))
-             (--map (-let* (((&Diagnostic :message :severity?
+             (--map (-let* (((&Diagnostic :message :severity? :code?
                                           :range (range &as &Range
                                                         :start (&Position :line start-line :character)
                                                         :end (&Position :line end-line))) it)
-                            ((start . end) (lsp--range-to-region range)))
+                            ((start . end) (lsp--range-to-region range))
+                            (text (if code?
+                                      (format "%s [%s]" message code?)
+                                    message)))
                       (when (= start end)
                         (if-let* ((region (flymake-diag-region (current-buffer)
                                                               (1+ start-line)
@@ -312,7 +315,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                                  (1 :error)
                                                  (2 :warning)
                                                  (t :note))
-                                               message))))
+                                               text))))
            ;; This :region keyword forces flymake to delete old diagnostics in
            ;; case the buffer hasn't changed since the last call to the report
            ;; function. See https://github.com/joaotavora/eglot/issues/159
