@@ -1,6 +1,8 @@
 * Changelog
-** Unreleased 9.0.1
+** Unreleased 10.0.1
   * Fix crash (EXC_CRASH / SIGABRT) on macOS when installing language servers: replace ~url-copy-file~ in a background thread with ~make-process~ (curl) + sentinel, avoiding the NS event-loop thread-safety assertion in ~ns_select_1~
+
+** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
   * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
   * Add support for [[https://github.com/PlasmaFAIR/fortitude][Fortitude]] (Fortran)
@@ -79,6 +81,7 @@
   * Add support for ~~crates-lsp~~
   * Remove outdated Ruff option and add new lint-related options
   * Add new Nextflow client customizations
+  * Add support for ~~fish-lsp~~
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.

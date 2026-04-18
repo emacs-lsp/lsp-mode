@@ -63,7 +63,7 @@ environment."
   :group 'lsp-ada
   :link '(url-link :tag "Configuration Example"
                    "https://github.com/AdaCore/ada_language_server")
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.projectFile")
 ;;;###autoload(put 'lsp-ada-project-file 'safe-local-variable 'stringp)
 
@@ -83,7 +83,7 @@ environment."
                  (const "always")
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.displayMethodAncestryOnNavigation")
 
 (lsp-defcustom lsp-ada-documentation-style nil
@@ -92,7 +92,7 @@ environment."
                  (const "leading")
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.documentationStyle")
 
 (lsp-defcustom lsp-ada-enable-diagnostics nil
@@ -101,7 +101,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.enableDiagnostics")
 
 (lsp-defcustom lsp-ada-enable-indexing nil
@@ -110,7 +110,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.enableIndexing")
 
 (lsp-defcustom lsp-ada-fold-comments nil
@@ -119,7 +119,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.foldComments")
 
 (lsp-defcustom lsp-ada-follow-symlinks nil
@@ -128,7 +128,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.followSymlinks")
 
 (lsp-defcustom lsp-ada-insert-with-clauses nil
@@ -137,7 +137,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.insertWithClauses")
 
 (lsp-defcustom lsp-ada-log-threshold nil
@@ -148,7 +148,7 @@ environment."
   :link `(url-link :tag "Traces Documentation"
                    ,(concat "https://github.com/AdaCore/ada_language_server"
                             "/blob/master/doc/traces.md"))
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.logThreshold")
 
 (lsp-defcustom lsp-ada-named-notation-threshold nil
@@ -156,7 +156,7 @@ environment."
   :type '(choice (integer :tag "Threshold")
                  (const   :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.namedNotationThreshold")
 
 (lsp-defcustom lsp-ada-on-type-formatting-indent-only nil
@@ -165,7 +165,7 @@ environment."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.onTypeFormatting.indentOnly")
 
 (lsp-defcustom lsp-ada-project-diagnostics nil
@@ -178,7 +178,7 @@ modifying this setting."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.projectDiagnostics")
 
 (lsp-defcustom lsp-ada-relocate-build-tree nil
@@ -186,7 +186,7 @@ modifying this setting."
   :type '(choice (string :tag "Path")
                  (const  :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.relocateBuildTree")
 
 (lsp-defcustom lsp-ada-root-dir nil
@@ -196,7 +196,7 @@ This setting must be used in conjunction with `lsp-ada-relocate-build-tree'."
   :type '(choice (string :tag "Root Dir")
                  (const  :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.rootDir")
 
 (lsp-defcustom lsp-ada-rename-in-comments nil
@@ -205,7 +205,7 @@ This setting must be used in conjunction with `lsp-ada-relocate-build-tree'."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.renameInComments")
 
 (lsp-defcustom lsp-ada-scenario-variables nil
@@ -214,7 +214,7 @@ This setting must be used in conjunction with `lsp-ada-relocate-build-tree'."
                 :key-type (symbol :tag "Variable Name")
                 :value-type (string :tag "Value"))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.scenarioVariables")
 
 (lsp-defcustom lsp-ada-use-completion-snippets nil
@@ -223,7 +223,7 @@ This setting must be used in conjunction with `lsp-ada-relocate-build-tree'."
                  (const :tag "Disabled"      :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.useCompletionSnippets")
 
 (lsp-defcustom lsp-ada-use-gnatformat nil
@@ -234,7 +234,7 @@ This option controls the formatting provider."
                  (const :tag "GNATpp"        :json-false)
                  (const :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "ada.useGnatformat")
 
 (defcustom lsp-ada-als-executable "ada_language_server"
@@ -258,7 +258,7 @@ must return a list of Ada library folders, or nil if none."
   :type '(choice function
                  (repeat :tag "Library Folders"
                          (directory :tag "Library Folder")))
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-ada-semantic-token-face-overrides
   '(("namespace" . default)

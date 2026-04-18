@@ -250,7 +250,7 @@ stored."
   "If non nil, `eslint' will be started in multi-root mode."
   :type 'boolean
   :safe #'booleanp
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defun lsp--find-eslint ()
   (or

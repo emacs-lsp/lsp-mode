@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "28.1") (dash "2.18.0") (f "0.21.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0") (eldoc "1.11"))
-;; Version: 9.0.1
+;; Version: 10.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -179,7 +179,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-c3
      lsp-css lsp-copilot lsp-crates lsp-cucumber lsp-cypher lsp-d lsp-dart
      lsp-dhall lsp-docker lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet
-     lsp-erlang lsp-eslint lsp-fortitude lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript
+     lsp-erlang lsp-eslint lsp-fortitude lsp-fortran lsp-futhark lsp-fsharp lsp-fish lsp-gdscript
      lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql
      lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript
      lsp-just lsp-jq lsp-json lsp-kotlin lsp-kubernetes-helm lsp-latex lsp-lisp
@@ -398,6 +398,8 @@ the server has requested that."
     "[/\\\\]\\.cache[/\\\\]lsp-csharp\\'"
     "[/\\\\]\\.meta\\'"
     "[/\\\\]\\.nuget\\'"
+    ;; Lean 4
+    "[/\\\\]\\.lake\\'"
     ;; Unity
     "[/\\\\]Library\\'"
     ;; Clojure
@@ -554,7 +556,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
 (define-obsolete-variable-alias
   'lsp-references-exclude-definition
   'lsp-references-exclude-declaration
-  "9.0.1")
+  "10.0.0")
 
 (defcustom lsp-references-exclude-declaration nil
   "If non-nil, exclude declarations when finding references."
@@ -862,6 +864,7 @@ Changes take effect only when a new session is started."
     (ebuild-mode . "shellscript")
     (pkgbuild-mode . "shellscript")
     (envrc-file-mode . "shellscript")
+    (fish-mode . "fish")
     (scala-mode . "scala")
     (scala-ts-mode . "scala")
     (julia-mode . "julia")
@@ -943,6 +946,7 @@ Changes take effect only when a new session is started."
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
+    (fsharp-ts-mode . "fsharp")
     (reason-mode . "reason")
     (caml-mode . "ocaml")
     (neocaml-mode . "ocaml")
@@ -4068,7 +4072,7 @@ If any filters, checks if it applies for PATH."
                                          (string-prefix-p scheme? uri))
                                      (let ((regexes (lsp-glob-to-regexps glob)))
                                        (cl-loop for re in regexes
-                                                thereis (string-match re path))))))))))
+                                                thereis (string-match-p re path))))))))))
 
 (defun lsp--send-did-rename-files-p ()
   "Return whether didRenameFiles notification should be sent to the server."
@@ -7261,7 +7265,7 @@ server. WORKSPACE is the active workspace."
 
 (defun lsp--parse-header (s)
   "Parse string S as a LSP (KEY . VAL) header."
-  (let ((pos (string-match "\:" s))
+  (let ((pos (string-match-p "\:" s))
         key val)
     (unless pos
       (signal 'lsp-invalid-header-name (list s)))
@@ -9927,7 +9931,7 @@ This avoids overloading the server with many files when starting Emacs."
       (package-version-join
        (package-desc-version
         (car (alist-get 'lsp-mode (package--alist)))))
-    (error "9.0.1")))
+    (error "10.0.0")))
 
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."

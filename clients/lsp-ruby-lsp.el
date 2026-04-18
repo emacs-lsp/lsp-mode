@@ -44,13 +44,13 @@
   "List of directories which will be considered to be libraries."
   :type '(repeat string)
   :group 'lsp-ruby-lsp
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-ruby-lsp-server-command '("ruby-lsp")
   "Command to start ruby-lsp language server."
   :type '(repeat string)
   :group 'lsp-ruby-lsp
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defun lsp-ruby-lsp--build-command ()
   (append

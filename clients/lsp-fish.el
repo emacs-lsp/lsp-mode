@@ -1,4 +1,4 @@
-;;; lsp-ron.el --- lsp-mode RON integration -*- lexical-binding: t; -*-
+;;; lsp-fish.el --- lsp-mode fish-shell integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025-2026 lsp-mode maintainers
 
@@ -20,33 +20,34 @@
 
 ;;; Commentary:
 
-;;  Client for RON, Rusty Object notation (https://github.com/ron-rs/ron)
+;;  Client for fish, the user-friendly command line shell (https://github.com/fish-shell/fish-shell/)
 
 ;;; Code:
 
 (require 'lsp-mode)
 
-(defgroup lsp-ron nil
-  "Settings for the RON Language Server."
+(defgroup lsp-fish nil
+  "Settings for the fish-shell Language Server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/jasonjmcghee/ron-lsp/")
+  :link '(url-link "https://fish-lsp.dev/")
   :package-version '(lsp-mode . "10.0.0"))
 
-(defcustom lsp-ron-executable '("ron-lsp")
-  "Command to run the RON language server."
-  :group 'lsp-ron
+(defcustom lsp-fish-executable '("fish-lsp" "start")
+  "Command to run the fish-shell language server."
+  :group 'lsp-fish
   :risky t
   :type '(repeat string))
 
-(lsp-dependency 'ron-language-server
-                '(:system "ron-lsp"))
+(lsp-dependency 'fish-language-server
+                '(:system "fish-lsp"))
 
 (lsp-register-client
- (make-lsp-client :server-id 'ron-lsp
-                  :new-connection (lsp-stdio-connection (lambda () lsp-ron-executable))
-                  :major-modes '(ron-mode)))
+ (make-lsp-client :server-id 'fish-lsp
+                  :new-connection (lsp-stdio-connection (lambda () lsp-fish-executable))
+                  :activation-fn (lsp-activate-on "fish")
+                  :major-modes '(fish-mode)))
 
-(lsp-consistency-check lsp-ron)
+(lsp-consistency-check lsp-fish)
 
-(provide 'lsp-ron)
-;;; lsp-ron.el ends here
+(provide 'lsp-fish)
+;;; lsp-fish.el ends here

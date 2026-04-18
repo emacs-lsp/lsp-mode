@@ -5,7 +5,7 @@
 ;; Author: Rodrigo Kassick
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "28.1") (dash "2.18.0") (spinner "1.7.3"))
-;; Version: 9.0.1
+;; Version: 10.0.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -412,14 +412,14 @@ The functions receive the inserted text and the range that was updated by the co
   "If non-nil it will enable inline completions on idle."
   :type 'boolean
   :group 'lsp-mode
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-inline-completion-idle-delay 2
   "The number of seconds before trying to fetch inline completions, when
 lsp-inline-completion-mode is active."
   :type 'number
   :group 'lsp-mode
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-inline-completion-inhibit-predicates nil
   "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion."

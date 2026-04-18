@@ -37,7 +37,7 @@
   "List of allowed `sh-shell` values that LSP will be enabled for."
   :type '(list symbol)
   :group 'lsp-bash
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-bash-explainshell-endpoint nil
   "The endpoint to use explainshell.com to answer `onHover' queries.

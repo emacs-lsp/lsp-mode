@@ -63,7 +63,7 @@
   "Paths to (compiled, containing a libs/ directory) products."
   :type 'lsp-string-vector
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.productDirs")
 
 (lsp-defcustom lsp-magik-lint-override-config-file nil
@@ -84,14 +84,14 @@
   "Show typing inlay hints."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.showTypingInlayHints")
 
 (lsp-defcustom lsp-magik-typing-show-argument-inlay-hints nil
   "Show (certain) argument name inlay hints."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.showArgumentInlayHints")
 
 (lsp-defcustom lsp-magik-typing-enable-checks nil
@@ -105,35 +105,35 @@
   "Enable indexing of usages of globals by methods."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexGlobalUsages")
 
 (lsp-defcustom lsp-magik-typing-index-method-usages nil
   "Enable indexing of usages of methods by methods."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexMethodUsages")
 
 (lsp-defcustom lsp-magik-typing-index-slot-usages t
   "Enable indexing of usages of slots by methods."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexSlotUsages")
 
 (lsp-defcustom lsp-magik-typing-index-condition-usages t
   "Enable indexing of usages of conditions by methods."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexConditionUsages")
 
 (lsp-defcustom lsp-magik-typing-cache-indexed-definitions-method-usages t
   "Store and load the indexed definitions in the workspace folders."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.cacheIndexedDefinitions")
 
 (lsp-defcustom lsp-magik-formatting-indent-char "tab"
@@ -141,35 +141,35 @@
   :type '(choice (const "tab")
                  (const "space"))
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.indentChar")
 
 (lsp-defcustom lsp-magik-formatting-indent-width 8
   "Indent width (tab size or number of spaces)."
   :type 'integer
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.indentWidth")
 
 (lsp-defcustom lsp-magik-formatting-insert-final-newline t
   "Insert final newline."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.insertFinalNewline")
 
 (lsp-defcustom lsp-magik-formatting-trim-trailing-whitespace t
   "Trim trailing whitespace."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.trimTrailingWhitespace")
 
 (lsp-defcustom lsp-magik-formatting-trim-final-newlines t
   "Trim final newlines."
   :type 'boolean
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.trimFinalNewlines")
 
 (lsp-defcustom lsp-magik-formatting-indent-strategy "null"
@@ -177,7 +177,7 @@
   :type '(choice (const "null")
                  (const "relative"))
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.indentStrategy")
 
 (defcustom lsp-magik-java-path (lambda ()
@@ -188,7 +188,7 @@
   "Path to Java Runtime, Java 11 minimum."
   :type 'string
   :group 'lsp-magik
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-register-client
  (make-lsp-client

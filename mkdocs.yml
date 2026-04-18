@@ -87,6 +87,7 @@ nav:
     - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
+    - Fish (fish-lsp): page/lsp-fish.md
     - Fortran (fortls): page/lsp-fortran.md
     - Fortran (fortitude): page/lsp-fortitude.md
     - Futhark: page/lsp-futhark.md

@@ -30,7 +30,7 @@
   "Settings for the Just Language Server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/terror/just-lsp")
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-just-executable '("just-lsp")
   "Command to run the Just language server."
