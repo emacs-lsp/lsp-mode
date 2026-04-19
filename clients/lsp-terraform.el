@@ -163,7 +163,7 @@ Defaults to side following treemacs default."
     ("parameter" . lsp-face-semhl-parameter)
     ("variable" . lsp-face-semhl-variable)
     ("property" . lsp-face-semhl-property)
-    ("enumMember" . lsp-face-semhl-constant)
+    ("enumMember" . lsp-face-semhl-enum-member)
     ("event" . lsp-face-semhl-event)
     ("function" . lsp-face-semhl-function)
     ("method" . lsp-face-semhl-method)
