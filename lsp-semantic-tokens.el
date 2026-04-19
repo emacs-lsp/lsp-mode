@@ -263,6 +263,8 @@ Examples: Python `@decorator', Java annotations."
     ("label" . lsp-face-semhl-label)
     ("enumConstant" . lsp-face-semhl-constant)
     ("enumMember" . lsp-face-semhl-enum-member)
+    ("modifier" . lsp-face-semhl-modifier)
+    ("decorator" . lsp-face-semhl-decorator)
     ("dependent" . lsp-face-semhl-type)
     ("concept" . lsp-face-semhl-interface))
   "Faces to use for semantic tokens.")
