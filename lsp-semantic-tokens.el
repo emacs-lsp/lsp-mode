@@ -194,7 +194,13 @@ Unless overridden by a more specific face association."
 
 (defface lsp-face-semhl-label
   '((t (:inherit font-lock-comment-face)))
-  "Face used for labels."
+  "Face used for labels.
+
+Obsolete: no longer referenced by the default `lsp-semantic-token-faces'
+alist since 10.0.1 (the LSP 3.17 spec has no `label' token type). Kept
+for backward compatibility with user `set-face-attribute' calls and
+with clients that still register `label' through
+`:semantic-tokens-faces-overrides'. May be removed in a future release."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum-member
@@ -254,20 +260,20 @@ Examples: Python `@decorator', Java annotations."
     ("typeParameter" . lsp-face-semhl-type-parameter)
     ("function" . lsp-face-semhl-function)
     ("method" . lsp-face-semhl-method)
-    ("member" . lsp-face-semhl-member)
     ("property" . lsp-face-semhl-property)
     ("event" . lsp-face-semhl-event)
     ("macro" . lsp-face-semhl-macro)
     ("variable" . lsp-face-semhl-variable)
     ("parameter" . lsp-face-semhl-parameter)
-    ("label" . lsp-face-semhl-label)
-    ("enumConstant" . lsp-face-semhl-constant)
     ("enumMember" . lsp-face-semhl-enum-member)
     ("modifier" . lsp-face-semhl-modifier)
-    ("decorator" . lsp-face-semhl-decorator)
-    ("dependent" . lsp-face-semhl-type)
-    ("concept" . lsp-face-semhl-interface))
-  "Faces to use for semantic tokens.")
+    ("decorator" . lsp-face-semhl-decorator))
+  "Faces to use for LSP 3.17 semantic token types.
+Servers that emit non-spec token types (e.g. clangd's `dependent' and
+`concept', or tree-sitter-backed servers emitting `member' / `label')
+should register them through `:semantic-tokens-faces-overrides' on
+their `lsp-client' rather than relying on entries in this default alist.
+See URL `https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#semanticTokenTypes'.")
 
 (defvar-local lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-interface)
