@@ -100,7 +100,7 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-namespace
-  '((t :inherit font-lock-type-face :weight bold))
+  '((t :inherit lsp-face-semhl-type :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*.
 Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
@@ -121,12 +121,12 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-number
-  '((t (:inherit font-lock-constant-face)))
+  '((t (:inherit lsp-face-semhl-constant)))
   "Face used for numbers."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-regexp
-  '((t (:inherit font-lock-string-face :slant italic)))
+  '((t (:inherit lsp-face-semhl-string :slant italic)))
   "Face used for regexps."
   :group 'lsp-semantic-tokens)
 
@@ -141,27 +141,27 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-struct
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for structs."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-class
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for classes."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-interface
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for interfaces."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for enums."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type-parameter
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for type parameters."
   :group 'lsp-semantic-tokens)
 
@@ -173,12 +173,12 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-property
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for properties."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-event
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for event properties."
   :group 'lsp-semantic-tokens)
 
@@ -188,7 +188,7 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-parameter
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for parameters."
   :group 'lsp-semantic-tokens)
 
