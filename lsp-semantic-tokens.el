@@ -197,6 +197,22 @@ Unless overridden by a more specific face association."
   "Face used for labels."
   :group 'lsp-semantic-tokens)
 
+(defface lsp-face-semhl-enum-member
+  '((t :inherit lsp-face-semhl-constant))
+  "Face used for enum members/variants (LSP `enumMember')."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-modifier
+  '((t :inherit lsp-face-semhl-keyword))
+  "Face used for modifiers (LSP `modifier', e.g. public/private/static)."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-decorator
+  '((t :inherit lsp-face-semhl-macro))
+  "Face used for decorators (LSP `decorator', since 3.17).
+Examples: Python `@decorator', Java annotations."
+  :group 'lsp-semantic-tokens)
+
 (defface lsp-face-semhl-deprecated
   '((t :strike-through t))
   "Face used for semantic highlighting scopes matching constant scopes."
