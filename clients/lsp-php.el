@@ -264,6 +264,14 @@ language server."
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))
 
+(lsp-defcustom lsp-intelephense-phpdoc-use-fully-qualified-names nil
+  "If non-nil, Intelephense will use fully qualified names in generated PHPDoc.
+This corresponds to the LSP setting `intelephense.phpdoc.useFullyQualifiedNames`."
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "9.0")
+  :lsp-path "intelephense.phpdoc.useFullyQualifiedNames")
+
 (lsp-dependency 'intelephense
                 '(:system "intelephense")
                 '(:npm :package "intelephense"
