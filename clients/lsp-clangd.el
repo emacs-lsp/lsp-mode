@@ -254,6 +254,9 @@ This must be set only once after loading the clang client.")
                   :priority -1
                   :server-id 'clangd
                   :library-folders-fn (lambda (_workspace) lsp-clients-clangd-library-directories)
+                  :semantic-tokens-faces-overrides '(:types (("dependent"  . lsp-face-semhl-type)
+                                                             ("concept"    . lsp-face-semhl-interface)
+                                                             ("member"     . lsp-face-semhl-member)))
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'clangd callback error-callback))))
 

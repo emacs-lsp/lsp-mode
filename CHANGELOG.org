@@ -1,5 +1,13 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Overhaul ~lsp-face-semhl-*~ faces to cover the full LSP 3.17 semantic token spec (see: [[https://github.com/emacs-lsp/lsp-mode/issues/5040][#5040]])
+    - Add dedicated faces ~lsp-face-semhl-enum-member~, ~lsp-face-semhl-modifier~, ~lsp-face-semhl-decorator~.
+    - Fix ~enumMember~ mapping (was ~lsp-face-semhl-constant~, now ~lsp-face-semhl-enum-member~); default rendering unchanged by inheritance.
+    - Map the previously missing ~modifier~ (LSP 3.16) and ~decorator~ (LSP 3.17) token types in the default alist.
+    - Cascade the inheritance hierarchy through ~lsp-face-semhl-*~: setting ~lsp-face-semhl-type~ now propagates to ~struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace~; setting ~lsp-face-semhl-variable~ propagates to ~property~/~event~/~parameter~; ~number~ cascades from ~lsp-face-semhl-constant~, ~regexp~ from ~lsp-face-semhl-string~. *Breaking-adjacent*: users who relied on the previous non-cascading behavior should now override the parent face.
+    - Trim non-spec entries from the default ~lsp-semantic-token-faces~ alist: ~enumConstant~, ~member~, ~label~, ~dependent~, ~concept~. Clangd keeps ~dependent~/~concept~/~member~ via ~:semantic-tokens-faces-overrides~; ~lsp-face-semhl-member~ and ~lsp-face-semhl-label~ remain publicly defined.
+    - Migrate ~lsp-terraform-semantic-token-faces~ to ~lsp-face-semhl-enum-member~.
+    - Migration note: users who previously customized ~lsp-face-semhl-constant~ specifically to recolor enum members should now customize ~lsp-face-semhl-enum-member~ instead. ~lsp-face-semhl-constant~ still cascades to ~number~ and the ~readonly~ token modifier. Users who customized ~lsp-face-semhl-type~ expecting it NOT to propagate to ~struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace~ now need to customize those child faces directly.
 
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])

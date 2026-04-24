@@ -73,7 +73,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Consult integration - [consult-lsp](https://github.com/gagbo/consult-lsp)
   - Treemacs integration -
     [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
-  - Semantic tokens as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
+  - Semantic tokens as defined by LSP 3.17 (compatible language servers include recent development builds of clangd and rust-analyzer)
   - [which-key](https://github.com/justbur/emacs-which-key/) integration
     for better discovery
   - [iedit](https://emacs-lsp.github.io/lsp-mode/page/main-features/#iedit)
