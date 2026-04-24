@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Fix ~lsp-clojure-extract-function~ to always send the range-based form required by clojure-lsp 2026.01+, and extract the selected region when one is active (see [[https://github.com/emacs-lsp/lsp-mode/issues/5023][#5023]])
 
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])

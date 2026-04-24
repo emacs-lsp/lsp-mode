@@ -169,9 +169,26 @@ If there are more arguments expected after the line and column numbers."
   (lsp-clojure--refactoring-call "expand-let"))
 
 (defun lsp-clojure-extract-function (function-name)
-  "Move form at point into a new function named FUNCTION-NAME."
+  "Move form at point into a new function named FUNCTION-NAME.
+When a region is active, extract the selected expressions.  Otherwise,
+extract the form at point.
+
+clojure-lsp 2026.01+ always expects the range-based form of the
+`extract-function' command, so we always send the 6-argument form.
+When there is no active region we send the cursor position for both
+start and end, which the server treats as a single-cursor selection
+and then extracts the parent expression at point."
   (interactive "MFunction name: ") ;; Name of the function
-  (lsp-clojure--refactoring-call "extract-function" function-name))
+  (let* ((start (if (use-region-p) (region-beginning) (point)))
+         (end (if (use-region-p) (region-end) (point))))
+    (lsp-clojure--execute-command
+     "extract-function"
+     (list (lsp--buffer-uri)
+           (- (line-number-at-pos start) 1) ;; clojure-lsp expects line numbers to start at 0
+           (save-excursion (goto-char start) (current-column))
+           function-name
+           (- (line-number-at-pos end) 1)
+           (save-excursion (goto-char end) (current-column))))))
 
 (defun lsp-clojure-inline-symbol ()
   "Apply inline-symbol refactoring at point."
