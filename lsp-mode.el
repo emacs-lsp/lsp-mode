@@ -6680,9 +6680,8 @@ and destructuring `(&Location :range)' off a nil `:location' blew
 up the breadcrumb idle timer with
 `(wrong-type-argument hash-table-p nil)' (issue #5047)."
   (--> symbols-informations
-    (-keep (-lambda ((symbol &as &SymbolInformation :location?))
-             (when-let* ((loc location?)
-                         (range (lsp:location-range loc)))
+    (-keep (-lambda ((symbol &as &SymbolInformation :location))
+             (when-let* ((range (and location (lsp:location-range location))))
                (when (lsp-point-in-range? current-position range)
                  (lsp--symbol-information->document-symbol symbol))))
            it)
