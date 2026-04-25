@@ -6672,11 +6672,18 @@ perform the request synchronously."
                             :detail? container-name?))
 
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
-  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
+  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION.
+
+Skips SymbolInformation entries whose `:location' field is missing
+— pylsp occasionally emits duplicate entries without `:location',
+and destructuring `(&Location :range)' off a nil `:location' blew
+up the breadcrumb idle timer with
+`(wrong-type-argument hash-table-p nil)' (issue #5047)."
   (--> symbols-informations
-    (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-             (when (lsp-point-in-range? current-position range)
-               (lsp--symbol-information->document-symbol symbol)))
+    (-keep (-lambda ((symbol &as &SymbolInformation :location))
+             (when-let* ((range (and location (lsp:location-range location))))
+               (when (lsp-point-in-range? current-position range)
+                 (lsp--symbol-information->document-symbol symbol))))
            it)
     (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
                        (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
