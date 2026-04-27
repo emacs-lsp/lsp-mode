@@ -925,6 +925,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-face-semhl-decorator" class="md-nav__link">
+    lsp-face-semhl-decorator
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-face-semhl-default-library" class="md-nav__link">
     lsp-face-semhl-default-library
   </a>
@@ -948,6 +955,13 @@
         <li class="md-nav__item">
   <a href="#lsp-face-semhl-enum" class="md-nav__link">
     lsp-face-semhl-enum
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-face-semhl-enum-member" class="md-nav__link">
+    lsp-face-semhl-enum-member
   </a>
   
 </li>
@@ -1011,6 +1025,13 @@
         <li class="md-nav__item">
   <a href="#lsp-face-semhl-method" class="md-nav__link">
     lsp-face-semhl-method
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-face-semhl-modifier" class="md-nav__link">
+    lsp-face-semhl-modifier
   </a>
   
 </li>
@@ -4161,6 +4182,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-face-semhl-decorator" class="md-nav__link">
+    lsp-face-semhl-decorator
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-face-semhl-default-library" class="md-nav__link">
     lsp-face-semhl-default-library
   </a>
@@ -4184,6 +4212,13 @@
         <li class="md-nav__item">
   <a href="#lsp-face-semhl-enum" class="md-nav__link">
     lsp-face-semhl-enum
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-face-semhl-enum-member" class="md-nav__link">
+    lsp-face-semhl-enum-member
   </a>
   
 </li>
@@ -4247,6 +4282,13 @@
         <li class="md-nav__item">
   <a href="#lsp-face-semhl-method" class="md-nav__link">
     lsp-face-semhl-method
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-face-semhl-modifier" class="md-nav__link">
+    lsp-face-semhl-modifier
   </a>
   
 </li>
@@ -4450,7 +4492,7 @@
 <h1 id="semantic-tokens">Semantic tokens<a class="headerlink" href="#semantic-tokens" title="Permanent link">#</a></h1>
 <h3 id="lsp-face-semhl-class"><code>lsp-face-semhl-class</code><a class="headerlink" href="#lsp-face-semhl-class" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-type-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-type)))</code></p>
 <p>Face used for classes.</p>
 <hr />
 <h3 id="lsp-face-semhl-comment"><code>lsp-face-semhl-comment</code><a class="headerlink" href="#lsp-face-semhl-comment" title="Permanent link">#</a></h3>
@@ -4462,6 +4504,12 @@
 <p><em>Type:</em> <code>face</code></p>
 <p><em>Default:</em> <code>((t :inherit font-lock-constant-face))</code></p>
 <p>Face used for semantic highlighting scopes matching constant scopes.</p>
+<hr />
+<h3 id="lsp-face-semhl-decorator"><code>lsp-face-semhl-decorator</code><a class="headerlink" href="#lsp-face-semhl-decorator" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-face-semhl-macro))</code></p>
+<p>Face used for decorators (LSP <code>decorator</code>, since 3.17).
+Examples: Python <code>@decorator</code>, Java annotations.</p>
 <hr />
 <h3 id="lsp-face-semhl-default-library"><code>lsp-face-semhl-default-library</code><a class="headerlink" href="#lsp-face-semhl-default-library" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
@@ -4480,12 +4528,17 @@
 <hr />
 <h3 id="lsp-face-semhl-enum"><code>lsp-face-semhl-enum</code><a class="headerlink" href="#lsp-face-semhl-enum" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-type-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-type)))</code></p>
 <p>Face used for enums.</p>
+<hr />
+<h3 id="lsp-face-semhl-enum-member"><code>lsp-face-semhl-enum-member</code><a class="headerlink" href="#lsp-face-semhl-enum-member" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-face-semhl-constant))</code></p>
+<p>Face used for enum members/variants (LSP <code>enumMember</code>).</p>
 <hr />
 <h3 id="lsp-face-semhl-event"><code>lsp-face-semhl-event</code><a class="headerlink" href="#lsp-face-semhl-event" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-variable-name-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-variable)))</code></p>
 <p>Face used for event properties.</p>
 <hr />
 <h3 id="lsp-face-semhl-function"><code>lsp-face-semhl-function</code><a class="headerlink" href="#lsp-face-semhl-function" title="Permanent link">#</a></h3>
@@ -4501,7 +4554,7 @@ Unless overridden by a more specific face association.</p>
 <hr />
 <h3 id="lsp-face-semhl-interface"><code>lsp-face-semhl-interface</code><a class="headerlink" href="#lsp-face-semhl-interface" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-type-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-type)))</code></p>
 <p>Face used for interfaces.</p>
 <hr />
 <h3 id="lsp-face-semhl-keyword"><code>lsp-face-semhl-keyword</code><a class="headerlink" href="#lsp-face-semhl-keyword" title="Permanent link">#</a></h3>
@@ -4513,6 +4566,11 @@ Unless overridden by a more specific face association.</p>
 <p><em>Type:</em> <code>face</code></p>
 <p><em>Default:</em> <code>((t (:inherit font-lock-comment-face)))</code></p>
 <p>Face used for labels.</p>
+<p>Obsolete: no longer referenced by the default <code>lsp-semantic-token-faces</code>
+alist since 10.0.1 (the LSP 3.17 spec has no <code>label</code> token type). Kept
+for backward compatibility with user <code>set-face-attribute</code> calls and
+with clients that still register <code>label</code> through
+<code>:semantic-tokens-faces-overrides</code>. May be removed in a future release.</p>
 <hr />
 <h3 id="lsp-face-semhl-macro"><code>lsp-face-semhl-macro</code><a class="headerlink" href="#lsp-face-semhl-macro" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
@@ -4530,15 +4588,20 @@ Unless overridden by a more specific face association.</p>
 <p>Face used for semantic highlighting scopes matching entity.name.method.*.
 Unless overridden by a more specific face association.</p>
 <hr />
+<h3 id="lsp-face-semhl-modifier"><code>lsp-face-semhl-modifier</code><a class="headerlink" href="#lsp-face-semhl-modifier" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-face-semhl-keyword))</code></p>
+<p>Face used for modifiers (LSP <code>modifier</code>, e.g. public/private/static).</p>
+<hr />
 <h3 id="lsp-face-semhl-namespace"><code>lsp-face-semhl-namespace</code><a class="headerlink" href="#lsp-face-semhl-namespace" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t :inherit font-lock-type-face :weight bold))</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-face-semhl-type :weight bold))</code></p>
 <p>Face used for semantic highlighting scopes matching entity.name.namespace.*.
 Unless overridden by a more specific face association.</p>
 <hr />
 <h3 id="lsp-face-semhl-number"><code>lsp-face-semhl-number</code><a class="headerlink" href="#lsp-face-semhl-number" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-constant-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-constant)))</code></p>
 <p>Face used for numbers.</p>
 <hr />
 <h3 id="lsp-face-semhl-operator"><code>lsp-face-semhl-operator</code><a class="headerlink" href="#lsp-face-semhl-operator" title="Permanent link">#</a></h3>
@@ -4548,17 +4611,17 @@ Unless overridden by a more specific face association.</p>
 <hr />
 <h3 id="lsp-face-semhl-parameter"><code>lsp-face-semhl-parameter</code><a class="headerlink" href="#lsp-face-semhl-parameter" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-variable-name-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-variable)))</code></p>
 <p>Face used for parameters.</p>
 <hr />
 <h3 id="lsp-face-semhl-property"><code>lsp-face-semhl-property</code><a class="headerlink" href="#lsp-face-semhl-property" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-variable-name-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-variable)))</code></p>
 <p>Face used for properties.</p>
 <hr />
 <h3 id="lsp-face-semhl-regexp"><code>lsp-face-semhl-regexp</code><a class="headerlink" href="#lsp-face-semhl-regexp" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-string-face :slant italic)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-string :slant italic)))</code></p>
 <p>Face used for regexps.</p>
 <hr />
 <h3 id="lsp-face-semhl-static"><code>lsp-face-semhl-static</code><a class="headerlink" href="#lsp-face-semhl-static" title="Permanent link">#</a></h3>
@@ -4573,7 +4636,7 @@ Unless overridden by a more specific face association.</p>
 <hr />
 <h3 id="lsp-face-semhl-struct"><code>lsp-face-semhl-struct</code><a class="headerlink" href="#lsp-face-semhl-struct" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-type-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-type)))</code></p>
 <p>Face used for structs.</p>
 <hr />
 <h3 id="lsp-face-semhl-type"><code>lsp-face-semhl-type</code><a class="headerlink" href="#lsp-face-semhl-type" title="Permanent link">#</a></h3>
@@ -4583,7 +4646,7 @@ Unless overridden by a more specific face association.</p>
 <hr />
 <h3 id="lsp-face-semhl-type-parameter"><code>lsp-face-semhl-type-parameter</code><a class="headerlink" href="#lsp-face-semhl-type-parameter" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t (:inherit font-lock-type-face)))</code></p>
+<p><em>Default:</em> <code>((t (:inherit lsp-face-semhl-type)))</code></p>
 <p>Face used for type parameters.</p>
 <hr />
 <h3 id="lsp-face-semhl-variable"><code>lsp-face-semhl-variable</code><a class="headerlink" href="#lsp-face-semhl-variable" title="Permanent link">#</a></h3>

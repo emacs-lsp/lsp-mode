@@ -4143,11 +4143,55 @@
 <!-- Markdown content -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-1001">Unreleased 10.0.1<a class="headerlink" href="#unreleased-1001" title="Permanent link">#</a></h2>
+<p>\&lt;\&lt;\&lt;\&lt;\&lt;\&lt;\&lt; refactor/5040-semhl-faces</p>
+<ul>
+<li>Overhaul <code>lsp-face-semhl-*</code> faces to cover the full LSP 3.17
+    semantic token spec (see:
+    <a href="https://github.com/emacs-lsp/lsp-mode/issues/5040">#5040</a>)<ul>
+<li>Add dedicated faces <code>lsp-face-semhl-enum-member</code>,
+    <code>lsp-face-semhl-modifier</code>, <code>lsp-face-semhl-decorator</code>.</li>
+<li>Fix <code>enumMember</code> mapping (was <code>lsp-face-semhl-constant</code>, now
+    <code>lsp-face-semhl-enum-member</code>); default rendering unchanged by
+    inheritance.</li>
+<li>Map the previously missing <code>modifier</code> (LSP 3.16) and <code>decorator</code>
+    (LSP 3.17) token types in the default alist.</li>
+<li>Cascade the inheritance hierarchy through <code>lsp-face-semhl-*</code>:
+    setting <code>lsp-face-semhl-type</code> now propagates to
+    <code>struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace</code>;
+    setting <code>lsp-face-semhl-variable</code> propagates to
+    <code>property~/~event~/~parameter</code>; <code>number</code> cascades from
+    <code>lsp-face-semhl-constant</code>, <code>regexp</code> from
+    <code>lsp-face-semhl-string</code>. <strong>Breaking-adjacent</strong>: users who relied
+    on the previous non-cascading behavior should now override the
+    parent face.</li>
+<li>Trim non-spec entries from the default
+    <code>lsp-semantic-token-faces</code> alist: <code>enumConstant</code>, <code>member</code>,
+    <code>label</code>, <code>dependent</code>, <code>concept</code>. Clangd keeps
+    <code>dependent~/~concept~/~member</code> via
+    <code>:semantic-tokens-faces-overrides</code>; <code>lsp-face-semhl-member</code> and
+    <code>lsp-face-semhl-label</code> remain publicly defined.</li>
+<li>Migrate <code>lsp-terraform-semantic-token-faces</code> to
+    <code>lsp-face-semhl-enum-member</code>.</li>
+<li>Migration note: users who previously customized
+    <code>lsp-face-semhl-constant</code> specifically to recolor enum members
+    should now customize <code>lsp-face-semhl-enum-member</code> instead.
+    <code>lsp-face-semhl-constant</code> still cascades to <code>number</code> and the
+    <code>readonly</code> token modifier. Users who customized
+    <code>lsp-face-semhl-type</code> expecting it NOT to propagate to
+    <code>struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace</code>
+    now need to customize those child faces directly.</li>
+</ul>
+</li>
+</ul>
+<p><code>=====</code></p>
 <ul>
 <li>Fix crash (EXC<sub>CRASH</sub> / SIGABRT) on macOS when installing
     language servers: replace <code>url-copy-file</code> in a background thread
     with <code>make-process</code> (curl) + sentinel, avoiding the NS event-loop
     thread-safety assertion in <code>ns_select_1</code></li>
+</ul>
+<p>>>>>>>> master</p>
+<ul>
 <li>Fix <code>lsp-clojure-extract-function</code> to always send the range-based
     form required by clojure-lsp 2026.01+, and extract the selected
     region when one is active (see
