@@ -6672,11 +6672,18 @@ perform the request synchronously."
                             :detail? container-name?))
 
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
-  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
+  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION.
+
+Skips SymbolInformation entries whose `:location' field is missing
+— pylsp occasionally emits duplicate entries without `:location',
+and destructuring `(&Location :range)' off a nil `:location' blew
+up the breadcrumb idle timer with
+`(wrong-type-argument hash-table-p nil)' (issue #5047)."
   (--> symbols-informations
-    (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-             (when (lsp-point-in-range? current-position range)
-               (lsp--symbol-information->document-symbol symbol)))
+    (-keep (-lambda ((symbol &as &SymbolInformation :location))
+             (when-let* ((range (and location (lsp:location-range location))))
+               (when (lsp-point-in-range? current-position range)
+                 (lsp--symbol-information->document-symbol symbol))))
            it)
     (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
                        (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
@@ -8142,7 +8149,7 @@ SESSION is the active session."
                       :buffers (list (lsp-current-buffer))
                       :host-root (file-remote-p root)))
           ((&lsp-cln 'server-id 'environment-fn 'new-connection 'custom-capabilities
-                     'multi-root 'initialized-fn) client)
+                     'initialized-fn) client)
           ((proc . cmd-proc) (funcall
                               (or (plist-get new-connection :connect)
                                   (user-error "Client %s is configured incorrectly" client))
@@ -8180,14 +8187,13 @@ SESSION is the active session."
               :workDoneToken "1")
         (when lsp-server-trace
           (list :trace lsp-server-trace))
-        (when multi-root
-          (->> workspace-folders
+        (->> (or workspace-folders (list root))
                (-distinct)
                (-map (lambda (folder)
                        (list :uri (lsp--path-to-uri folder)
                              :name (f-filename folder))))
                (apply 'vector)
-               (list :workspaceFolders))))
+               (list :workspaceFolders)))
        (-lambda ((&InitializeResult :capabilities))
          (pcase server-id
            ;; we know that Rust Analyzer will send {} which will be parsed as null
