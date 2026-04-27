@@ -4144,6 +4144,10 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-1001">Unreleased 10.0.1<a class="headerlink" href="#unreleased-1001" title="Permanent link">#</a></h2>
 <ul>
+<li>Fix crash (EXC<sub>CRASH</sub> / SIGABRT) on macOS when installing
+    language servers: replace <code>url-copy-file</code> in a background thread
+    with <code>make-process</code> (curl) + sentinel, avoiding the NS event-loop
+    thread-safety assertion in <code>ns_select_1</code></li>
 <li>Fix <code>lsp-clojure-extract-function</code> to always send the range-based
     form required by clojure-lsp 2026.01+, and extract the selected
     region when one is active (see
