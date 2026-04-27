@@ -386,4 +386,104 @@ post-self-insert-hook, so handler creation should be skipped."
       (goto-char (point-min))
       (should (= (lsp--move-to-utf-8-column 100) eol)))))
 
+;;; lsp-download-install tests
+;;
+;; These tests verify that lsp-download-install uses make-process (curl) rather
+;; than url-copy-file in a background thread.  On macOS the NS backend asserts
+;; that url-retrieve-synchronously runs on the main thread; violating that
+;; causes SIGABRT.  The tests mock make-process so no network access is needed.
+
+(defmacro lsp-test--with-download-mocks (process-exit-event &rest body)
+  "Run BODY with make-process, file predicates, and make-thread mocked.
+The mock for make-process captures the sentinel and, if PROCESS-EXIT-EVENT is
+non-nil, immediately calls it with that event string.  make-thread runs its
+lambda synchronously so decompression callbacks are observable within the test."
+  (declare (indent 1))
+  `(let (lsp-test--sentinel lsp-test--make-process-args)
+     (cl-letf* (((symbol-function 'executable-find) (lambda (_) t))
+                ((symbol-function 'f-exists?) (lambda (_) nil))
+                ((symbol-function 'f-delete) #'ignore)
+                ((symbol-function 'mkdir) #'ignore)
+                ((symbol-function 'make-process)
+                 (lambda (&rest args)
+                   (setq lsp-test--make-process-args args
+                         lsp-test--sentinel (plist-get args :sentinel))
+                   (when ,process-exit-event
+                     (funcall lsp-test--sentinel nil ,process-exit-event))
+                   :mock-process))
+                ((symbol-function 'make-thread)
+                 (lambda (fn &optional _name) (funcall fn))))
+       ,@body)))
+
+(ert-deftest lsp-download-install--no-curl ()
+  "error-callback fires immediately when curl is not on the PATH."
+  (let (error-result)
+    (cl-letf (((symbol-function 'executable-find) (lambda (_) nil)))
+      (lsp-download-install
+       (lambda () (error "success callback must not be called"))
+       (lambda (err) (setq error-result err))
+       :url "https://example.com/server.gz"
+       :store-path "/tmp/lsp-test-server"))
+    (should error-result)
+    (should (string-match-p "curl" (error-message-string error-result)))))
+
+(ert-deftest lsp-download-install--uses-make-process ()
+  "make-process is called with curl and the correct URL and output path."
+  (lsp-test--with-download-mocks nil
+    (lsp-download-install
+     #'ignore #'ignore
+     :url "https://example.com/server.gz"
+     :store-path "/tmp/lsp-test-server"
+     :decompress :gzip)
+    (let ((cmd (plist-get lsp-test--make-process-args :command)))
+      (should (equal (car cmd) "curl"))
+      (should (member "--location" cmd))
+      (should (member "https://example.com/server.gz" cmd))
+      (should (member "/tmp/lsp-test-server.gz" cmd)))))
+
+(ert-deftest lsp-download-install--success-no-decompress ()
+  "callback is called after sentinel signals successful curl exit."
+  (let (callback-called)
+    (lsp-test--with-download-mocks "finished\n"
+      (lsp-download-install
+       (lambda () (setq callback-called t))
+       (lambda (err) (error "unexpected error: %S" err))
+       :url "https://example.com/server"
+       :store-path "/tmp/lsp-test-server"))
+    (should callback-called)))
+
+(ert-deftest lsp-download-install--curl-failure ()
+  "error-callback is called when the curl process exits abnormally."
+  (let (error-result)
+    (lsp-test--with-download-mocks "exited abnormally with code 6\n"
+      (lsp-download-install
+       (lambda () (error "success callback must not be called"))
+       (lambda (err) (setq error-result err))
+       :url "https://example.com/server"
+       :store-path "/tmp/lsp-test-server"))
+    (should error-result)
+    (should (string-match-p "curl failed" (error-message-string error-result)))))
+
+(ert-deftest lsp-download-install--decompresses-after-download ()
+  "The correct decompression function is called after a successful download."
+  (let (gunzip-called unzip-called targz-called)
+    (cl-letf (((symbol-function 'lsp-gunzip) (lambda (_) (setq gunzip-called t)))
+              ((symbol-function 'lsp-unzip) (lambda (_ _d) (setq unzip-called t)))
+              ((symbol-function 'lsp-tar-gz-decompress) (lambda (_ _d) (setq targz-called t))))
+      (lsp-test--with-download-mocks "finished\n"
+        (lsp-download-install #'ignore #'ignore
+                              :url "https://example.com/s.gz"
+                              :store-path "/tmp/lsp-s" :decompress :gzip))
+      (should gunzip-called)
+      (lsp-test--with-download-mocks "finished\n"
+        (lsp-download-install #'ignore #'ignore
+                              :url "https://example.com/s.zip"
+                              :store-path "/tmp/lsp-s" :decompress :zip))
+      (should unzip-called)
+      (lsp-test--with-download-mocks "finished\n"
+        (lsp-download-install #'ignore #'ignore
+                              :url "https://example.com/s.tar.gz"
+                              :store-path "/tmp/lsp-s" :decompress :targz))
+      (should targz-called))))
+
 ;;; lsp-mode-test.el ends here

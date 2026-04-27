@@ -8684,6 +8684,26 @@ nil."
 
 
 ;; Download URL handling
+
+(defun lsp--download-file (url path on-success on-error)
+  "Download URL to PATH using curl as an async subprocess.
+ON-SUCCESS is called with no arguments on the main thread when curl exits
+successfully.  ON-ERROR is called with a list `(error MESSAGE)' on failure.
+The caller is responsible for ensuring curl is available."
+  (lsp--info "Starting to download %s to %s..." url path)
+  (make-process
+   :name (format "lsp-download-%s" (file-name-nondirectory path))
+   :noquery t
+   :command (list "curl" "--silent" "--location" "--output" path url)
+   :sentinel (lambda (_proc event)
+               (if (string= event "finished\n")
+                   (progn
+                     (lsp--info "Finished downloading %s..." path)
+                     (funcall on-success))
+                 (funcall on-error
+                          (list 'error (format "curl failed downloading %s: %s"
+                                               url (string-trim event))))))))
+
 (cl-defun lsp-download-install (callback error-callback &key url asc-url pgp-key store-path decompress &allow-other-keys)
   (let* ((url (lsp-resolve-value url))
          (store-path (lsp-resolve-value store-path))
@@ -8696,53 +8716,72 @@ nil."
             (:tarxz (concat store-path ".tar.xz"))
             (`nil store-path)
             (_ (error ":decompress must be `:gzip', `:zip', `:targz', `:tarxz' or `nil'")))))
-    (make-thread
-     (lambda ()
-       (condition-case err
-           (progn
-             (when (f-exists? download-path)
-               (f-delete download-path))
-             (when (f-exists? store-path)
-               (f-delete store-path))
-             (lsp--info "Starting to download %s to %s..." url download-path)
-             (mkdir (f-parent download-path) t)
-             (url-copy-file url download-path)
-             (lsp--info "Finished downloading %s..." download-path)
-             (when (and lsp-verify-signature asc-url pgp-key)
-               (if (executable-find epg-gpg-program)
-                   (let ((asc-download-path (concat download-path ".asc"))
-                         (context (epg-make-context))
-                         (fingerprint)
-                         (signature))
-                     (when (f-exists? asc-download-path)
-                       (f-delete asc-download-path))
-                     (lsp--info "Starting to download %s to %s..." asc-url asc-download-path)
-                     (url-copy-file asc-url asc-download-path)
-                     (lsp--info "Finished downloading %s..." asc-download-path)
-                     (epg-import-keys-from-string context pgp-key)
-                     (setq fingerprint (epg-import-status-fingerprint
-                                        (car
-                                         (epg-import-result-imports
-                                          (epg-context-result-for context 'import)))))
-                     (lsp--info "Verifying signature %s..." asc-download-path)
-                     (epg-verify-file context asc-download-path download-path)
-                     (setq signature (car (epg-context-result-for context 'verify)))
-                     (unless (and
-                              (eq (epg-signature-status signature) 'good)
-                              (equal (epg-signature-fingerprint signature) fingerprint))
-                       (error "Failed to verify GPG signature: %s" (epg-signature-to-string signature))))
-                 (lsp--warn "GPG is not installed, skipping the signature check.")))
-             (when decompress
-               (lsp--info "Decompressing %s..." download-path)
-               (pcase decompress
-                 (:gzip
-                  (lsp-gunzip download-path))
-                 (:zip (lsp-unzip download-path (f-parent store-path)))
-                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path)))
-                 (:tarxz (lsp-tar-gz-decompress download-path (f-parent store-path)))) ;; NOTE: this function decompresses all tar compressed paths.
-               (lsp--info "Decompressed %s..." store-path))
-             (funcall callback))
-         (error (funcall error-callback err)))))))
+    (condition-case err
+        (progn
+          (unless (executable-find "curl")
+            (error "curl is not available; install curl to download LSP servers"))
+          (when (f-exists? download-path)
+            (f-delete download-path))
+          (when (f-exists? store-path)
+            (f-delete store-path))
+          (mkdir (f-parent download-path) t)
+          ;; Final step: decompression runs in a thread (CPU-bound, does not
+          ;; touch the NS event loop, so thread-safe on macOS).
+          (let ((do-decompress
+                 (lambda ()
+                   (if (not decompress)
+                       (funcall callback)
+                     (make-thread
+                      (lambda ()
+                        (condition-case err
+                            (progn
+                              (lsp--info "Decompressing %s..." download-path)
+                              (pcase decompress
+                                (:gzip (lsp-gunzip download-path))
+                                (:zip (lsp-unzip download-path (f-parent store-path)))
+                                (:targz (lsp-tar-gz-decompress download-path (f-parent store-path)))
+                                ;; NOTE: lsp-tar-gz-decompress handles all tar-compressed paths.
+                                (:tarxz (lsp-tar-gz-decompress download-path (f-parent store-path))))
+                              (lsp--info "Decompressed %s..." store-path)
+                              (funcall callback))
+                          (error (funcall error-callback err)))))))))
+            ;; Download the main file; sentinel fires on the main thread.
+            (lsp--download-file
+             url download-path
+             (lambda ()
+               (if (not (and lsp-verify-signature asc-url pgp-key))
+                   (funcall do-decompress)
+                 (if (not (executable-find epg-gpg-program))
+                     (progn
+                       (lsp--warn "GPG is not installed, skipping the signature check.")
+                       (funcall do-decompress))
+                   (let ((asc-path (concat download-path ".asc")))
+                     (when (f-exists? asc-path)
+                       (f-delete asc-path))
+                     ;; Download the .asc file; sentinel fires on the main thread.
+                     (lsp--download-file
+                      asc-url asc-path
+                      (lambda ()
+                        (condition-case err
+                            (let* ((context (epg-make-context))
+                                   fingerprint signature)
+                              (epg-import-keys-from-string context pgp-key)
+                              (setq fingerprint
+                                    (epg-import-status-fingerprint
+                                     (car (epg-import-result-imports
+                                           (epg-context-result-for context 'import)))))
+                              (lsp--info "Verifying signature %s..." asc-path)
+                              (epg-verify-file context asc-path download-path)
+                              (setq signature (car (epg-context-result-for context 'verify)))
+                              (unless (and (eq (epg-signature-status signature) 'good)
+                                           (equal (epg-signature-fingerprint signature) fingerprint))
+                                (error "Failed to verify GPG signature: %s"
+                                       (epg-signature-to-string signature)))
+                              (funcall do-decompress))
+                          (error (funcall error-callback err))))
+                      error-callback)))))
+             error-callback)))
+      (error (funcall error-callback err)))))
 
 (cl-defun lsp-download-path (&key store-path binary-path set-executable? &allow-other-keys)
   "Download URL and store it into STORE-PATH.
