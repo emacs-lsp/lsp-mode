@@ -8142,7 +8142,7 @@ SESSION is the active session."
                       :buffers (list (lsp-current-buffer))
                       :host-root (file-remote-p root)))
           ((&lsp-cln 'server-id 'environment-fn 'new-connection 'custom-capabilities
-                     'multi-root 'initialized-fn) client)
+                     'initialized-fn) client)
           ((proc . cmd-proc) (funcall
                               (or (plist-get new-connection :connect)
                                   (user-error "Client %s is configured incorrectly" client))
@@ -8180,14 +8180,13 @@ SESSION is the active session."
               :workDoneToken "1")
         (when lsp-server-trace
           (list :trace lsp-server-trace))
-        (when multi-root
-          (->> workspace-folders
+        (->> (or workspace-folders (list root))
                (-distinct)
                (-map (lambda (folder)
                        (list :uri (lsp--path-to-uri folder)
                              :name (f-filename folder))))
                (apply 'vector)
-               (list :workspaceFolders))))
+               (list :workspaceFolders)))
        (-lambda ((&InitializeResult :capabilities))
          (pcase server-id
            ;; we know that Rust Analyzer will send {} which will be parsed as null
