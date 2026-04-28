@@ -199,8 +199,8 @@
     "name": "clojure",
     "full-name": "Clojure",
     "server-name": "clojure-lsp",
-    "server-url": "https://github.com/snoe/clojure-lsp",
-    "installation-url": "https://github.com/snoe/clojure-lsp",
+    "server-url": "https://github.com/clojure-lsp/clojure-lsp",
+    "installation-url": "https://github.com/clojure-lsp/clojure-lsp",
     "lsp-install-server": "clojure-lsp",
     "debugger": "Not available"
   },
