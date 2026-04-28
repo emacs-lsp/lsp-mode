@@ -32,7 +32,7 @@
 
 (defgroup lsp-clojure nil
   "LSP support for Clojure."
-  :link '(url-link "https://github.com/snoe/clojure-lsp")
+  :link '(url-link "https://github.com/clojure-lsp/clojure-lsp")
   :group 'lsp-mode
   :tag "Lsp Clojure")
 
