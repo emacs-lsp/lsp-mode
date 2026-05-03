@@ -13,9 +13,9 @@
 
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
-(source "gnu")
-(source "jcs-elpa")
-(source "melpa")
+(source 'gnu)
+(source 'jcs-elpa)
+(source 'melpa)
 
 (files
  "lsp-protocol.el"
@@ -31,7 +31,7 @@
  "lsp-semantic-tokens.el"
  "clients/*.el")
 
-(depends-on "emacs" "28.1")
+(depends-on "emacs" "29.1")
 (depends-on "dash")
 (depends-on "f")
 (depends-on "ht")

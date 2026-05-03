@@ -23,8 +23,7 @@
 
 (development
  (depends-on "ccls")
- (when (version<= "29.1" emacs-version)
-   (depends-on "dap-mode"))
+ (depends-on "dap-mode")
  (depends-on "helm-lsp")
  (depends-on "lsp-dart")
  (depends-on "lsp-docker")
