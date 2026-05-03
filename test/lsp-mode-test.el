@@ -39,7 +39,14 @@
                                                                        nil))
                              "textDocument/completion")))
     (should (lsp-completion-list? merged-completions))
-    (should (lsp-completion--sort-completions (lsp:completion-list-items merged-completions)))))
+    (should (lsp-completion--sort-completions (lsp:completion-list-items merged-completions))))
+
+  (let ((merged-completions (lsp--merge-results
+                             `([])
+                             "textDocument/completion")))
+    (should (lsp-completion-list? merged-completions))
+    (should (not (lsp:completion-list-is-incomplete merged-completions)))
+    (should (seq-empty-p (lsp:completion-list-items merged-completions)))))
 
 (defun lsp--json-string-equal? (str1 str2)
   "Roughly compare json string STR1 and STR2."

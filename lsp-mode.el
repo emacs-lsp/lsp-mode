@@ -1509,7 +1509,11 @@ the lists according to METHOD."
                 (-filter #'identity results))
     (`() ())
     ;; only one result - simply return it
-    (`(,fst) fst)
+    (`(,fst) (pcase method
+               ("textDocument/completion"
+                (if (lsp-completion-list? fst) fst
+                  (lsp-make-completion-list :items fst :is-incomplete nil)))
+               (_ fst)))
     ;; multiple results merge it based on strategy
     (results
      (pcase method

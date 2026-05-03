@@ -597,9 +597,10 @@ Returns resolved completion item details."
                                      "textDocument/completion"
                                      (plist-put (lsp--text-document-position-params)
                                                 :context (lsp-completion--get-context trigger-chars same-session?))))
-                              (completed (and resp
-                                              (not (and (lsp-completion-list? resp)
-                                                        (lsp:completion-list-is-incomplete resp)))))
+                              ;; If resp is nil (e.g. no server responded), we treat it as complete
+                              ;; to prevent an infinite retry loop.
+                              (completed (not (and (lsp-completion-list? resp)
+                                                   (lsp:completion-list-is-incomplete resp))))
                               (items (lsp--while-no-input
                                        (--> (cond
                                              ((lsp-completion-list? resp)
