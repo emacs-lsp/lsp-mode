@@ -4825,14 +4825,43 @@ Only works when mode is `tick or `alive."
      (lambda ()
        (remove-hook 'before-change-functions func t)))))
 
+(defvar lsp--empty-options-sentinel '(:lsp-empty-object t)
+  "Stand-in value for an empty JSON options object \"{}\" in capabilities.
+
+A server may advertise e.g. `\"completionProvider\": {}' to mean
+\"supported, with no specific options set — take all defaults.\"
+Under `lsp-use-plists', `json-parse-string' parses the empty `{}' to
+Elisp nil, which is indistinguishable from the field being absent, so
+the feature ends up silently disabled.  `lsp--capability' returns this
+sentinel in that case to restore the distinction.
+
+The sentinel is truthy, so capability checks recognize the feature as
+supported.  It contains no LSP option keys, so any subsequent option
+lookup — for example `(lsp:completion-options-trigger-characters? ...)'
+— returns nil, which matches what an empty options object actually
+means on the wire: no specific options were set, take defaults.
+
+Caveat: JSON `false' also parses to nil under `lsp-use-plists', so a
+server explicitly advertising e.g. `\"foo\": false' (\"not supported\")
+is also treated by this fix as supported.  Rare in practice — servers
+usually omit unsupported capabilities rather than send `false'.
+Distinguishing the two would require parsing JSON `false' to a non-nil
+value, a much wider change.")
+
 (defun lsp--capability (cap &optional capabilities)
-  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
+  "Return the value of capability CAP.
+If CAPABILITIES is non-nil, look up CAP there; otherwise use the
+current server\\='s capabilities.  When CAP is present in the
+capabilities plist with a nil value — typically because the server
+advertised `{}' on the wire — return `lsp--empty-options-sentinel'
+instead of nil, so the feature is recognized as supported.  See that
+variable\\='s docstring for the rationale."
   (when (stringp cap)
     (setq cap (intern (concat ":" cap))))
 
-  (lsp-get (or capabilities
-               (lsp--server-capabilities))
-           cap))
+  (let ((src (or capabilities (lsp--server-capabilities))))
+    (or (lsp-get src cap)
+        (and (lsp-member? src cap) lsp--empty-options-sentinel))))
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
