@@ -1,6 +1,7 @@
 ;;; lsp-asm.el --- Assembly Language Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jen-Chieh Shen
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: asm lsp
@@ -61,7 +62,7 @@ Will update if UPDATE? is t."
   (lsp-async-start-process
    callback
    error-callback
-   "cargo" "install" "--git" lsp-asm-home-url "--root" lsp-asm-store-path))
+   "cargo" "install" "--git" lsp-asm-home-url "--root" lsp-asm-store-path "asm-lsp"))
 
 (defun lsp-asm--executable ()
   "Return asm-lsp executable."
@@ -81,7 +82,8 @@ Will update if UPDATE? is t."
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-asm--server-command
-                   (lambda () (f-exists? lsp-asm-store-path)))
+                   (lambda () (or (executable-find "asm-lsp")
+                                  (f-exists? lsp-asm-store-path))))
   :major-modes lsp-asm-active-modes
   :priority -1
   :server-id 'asm-lsp

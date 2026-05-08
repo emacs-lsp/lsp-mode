@@ -1,6 +1,7 @@
 ;;; lsp-generate-settings.el --- Functions for generating settings  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -37,7 +38,8 @@
 ENUM is the value of enum key in vscode manifest."
   (cond
    ((and enum (not (or (equal "boolean" type)
-                       (equal '("boolean") type)))) `(choice (:tag ,@(append enum nil))))
+                       (equal '("boolean") type))))
+    `(choice ,@(mapcar (lambda (e) `(const ,(format "\"%s\"" e))) enum)))
    (t (pcase type
         ("boolean" 'boolean)
         ('("boolean") 'boolean)

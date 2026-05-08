@@ -1,6 +1,7 @@
 ;;; lsp-clojure.el --- Clojure Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Benedek Fazekas
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Benedek Fazekas <benedek.fazekas@gmail.com>
 ;; Keywords: languages,tools
@@ -31,7 +32,7 @@
 
 (defgroup lsp-clojure nil
   "LSP support for Clojure."
-  :link '(url-link "https://github.com/snoe/clojure-lsp")
+  :link '(url-link "https://github.com/clojure-lsp/clojure-lsp")
   :group 'lsp-mode
   :tag "Lsp Clojure")
 
@@ -94,7 +95,7 @@
                                           (expand-file-name "~/.gitlibs/libs"))
   "LSP clojure dirs that should be considered library folders."
   :group 'lsp-clojure
-  :type 'list)
+  :type '(repeat directory))
 
 (defcustom lsp-clojure-test-tree-position-params nil
   "The optional test tree position params.
@@ -110,8 +111,8 @@ Defaults to side following treemacs default."
 
 ;; Internal
 
-(lsp-interface
- (Clojure:CursorInfoParams (:textDocument :position) nil))
+(eval-and-compile
+  (lsp-interface (Clojure:CursorInfoParams (:textDocument :position) nil)))
 
 (lsp-dependency
  'clojure-lsp
@@ -168,9 +169,26 @@ If there are more arguments expected after the line and column numbers."
   (lsp-clojure--refactoring-call "expand-let"))
 
 (defun lsp-clojure-extract-function (function-name)
-  "Move form at point into a new function named FUNCTION-NAME."
+  "Move form at point into a new function named FUNCTION-NAME.
+When a region is active, extract the selected expressions.  Otherwise,
+extract the form at point.
+
+clojure-lsp 2026.01+ always expects the range-based form of the
+`extract-function' command, so we always send the 6-argument form.
+When there is no active region we send the cursor position for both
+start and end, which the server treats as a single-cursor selection
+and then extracts the parent expression at point."
   (interactive "MFunction name: ") ;; Name of the function
-  (lsp-clojure--refactoring-call "extract-function" function-name))
+  (let* ((start (if (use-region-p) (region-beginning) (point)))
+         (end (if (use-region-p) (region-end) (point))))
+    (lsp-clojure--execute-command
+     "extract-function"
+     (list (lsp--buffer-uri)
+           (- (line-number-at-pos start) 1) ;; clojure-lsp expects line numbers to start at 0
+           (save-excursion (goto-char start) (current-column))
+           function-name
+           (- (line-number-at-pos end) 1)
+           (save-excursion (goto-char end) (current-column))))))
 
 (defun lsp-clojure-inline-symbol ()
   "Apply inline-symbol refactoring at point."
@@ -261,6 +279,16 @@ If there are more arguments expected after the line and column numbers."
   "Apply backward slurp refactoring at point."
   (interactive)
   (lsp-clojure--refactoring-call "backward-barf"))
+
+(defun lsp-clojure-kill-sexpr ()
+  "Apply kill sexpr refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "kill-sexp"))
+
+(defun lsp-clojure-raise-sexpr ()
+  "Apply raise refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "raise-sexp"))
 
 (defun lsp-clojure-move-form (dest-filename)
   "Apply move-form refactoring at point to DEST-FILENAME."
@@ -434,7 +462,7 @@ Focus on it if IGNORE-FOCUS? is nil."
 NOTIFICATION is the test tree notification data received from server.
 It updates the test tree view data."
   (when (require 'lsp-treemacs nil t)
-    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+    (when-let* ((buffer (find-buffer-visiting (lsp--uri-to-path uri))))
       (with-current-buffer buffer
         (setq lsp-clojure--test-tree-data notification)
         (when (get-buffer-window lsp-clojure--test-tree-buffer-name)
@@ -571,7 +599,8 @@ Focus on it if IGNORE-FOCUS? is nil."
                    #'lsp-clojure--build-command
                    #'lsp-clojure--build-command)
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode
-                 clojure-ts-mode clojure-ts-clojurec-mode clojure-ts-clojurescript-mode)
+                 clojure-ts-mode clojure-ts-clojurec-mode clojure-ts-clojurescript-mode
+                 edn-mode)
   :library-folders-fn (lambda (_workspace) lsp-clojure-library-dirs)
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("code-lens-references" #'lsp-clojure--show-references))
@@ -593,8 +622,8 @@ Focus on it if IGNORE-FOCUS? is nil."
   (let ((info (lsp-clojure-server-info-raw)))
     (save-match-data
       (when (functionp 'cider-connect-clj)
-        (when-let (port (and (string-match "\"port\":\\([0-9]+\\)" info)
-                             (match-string 1 info)))
+        (when-let* ((port (and (string-match "\"port\":\\([0-9]+\\)" info)
+                              (match-string 1 info))))
           (cider-connect-clj `(:host "localhost"
                                :port ,port)))))))
 
@@ -602,7 +631,7 @@ Focus on it if IGNORE-FOCUS? is nil."
 
 (defun lsp-clojure-semantic-tokens-refresh (&rest _)
   "Force refresh semantic tokens."
-  (when-let ((workspace (and lsp-semantic-tokens-enable
+  (when-let* ((workspace (and lsp-semantic-tokens-enable
                              (lsp-find-workspace 'clojure-lsp (buffer-file-name)))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)

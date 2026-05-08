@@ -19,7 +19,7 @@ features check [Clojure Guide](clojure-guide.md).
 
 # Sample minimal configuration
 
-Here it is sample configuration based on the basic configuration in [Clojure Guide](clojure-guide.md).
+Here is a sample configuration based on the basic configuration in [Clojure Guide](clojure-guide.md).
 
 ``` emacs-lisp
 (require 'package)

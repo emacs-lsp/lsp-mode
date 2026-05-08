@@ -1,6 +1,6 @@
 ;;; lsp-qml.el --- LSP Client for QML -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, qt, qml, gui,

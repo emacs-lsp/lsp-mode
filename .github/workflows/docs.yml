@@ -10,26 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: CHANGELOG.org -> CHANGELOG.md
         uses: docker://pandoc/core:2.9
         with:
           args: -s CHANGELOG.org -t gfm -o docs/page/CHANGELOG.md
 
-      - uses: purcell/setup-emacs@master
+      - uses: jcs090218/setup-emacs@master
         with:
-          version: 27.1
+          version: 30.2
 
-      - uses: conao3/setup-cask@master
+      - uses: emacs-eask/setup-eask@master
         with:
-          version: 0.8.4
+          version: 'snapshot'
 
       - name: Generate LSPs docs
         run: 'make docs'
         
       - name: Docker Login
-        uses: docker/login-action@v1.14.1
+        uses: docker/login-action@v3.6.0
         with:
           registry: ghcr.io
           username: $GITHUB_ACTOR

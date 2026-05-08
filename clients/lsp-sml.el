@@ -1,6 +1,7 @@
 ;;; lsp-sml.el --- Standard ML client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (c) 2023 Ariel Davis
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: Ariel Davis <ariel.z.davis@icloud.com>
 ;; Keywords: languages, lsp, sml, standard-ml, millet

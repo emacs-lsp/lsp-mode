@@ -33,7 +33,7 @@ Again the emacs default is too low 4k considering that the some of the language 
 ```
 
 ### Use `plists` for deserialization.
-`lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in deserialization and also put less presure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
+`lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in deserialization and also put less pressure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
 
 1. Configure the following env variable. Make sure that `Emacs` can see that variable. For example, this can be done by starting `Emacs` from the shell.
 ``` bash

@@ -1,6 +1,7 @@
 ;;; lsp-autotools.el --- Support configure.ac, Makefile.am, Makefile  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jen-Chieh Shen
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: autotools lsp
@@ -41,7 +42,7 @@
      makefile-bsdmake-mode
      makefile-imake-mode)
   "List of major mode that work with Autotools."
-  :type 'list
+  :type '(repeat function)
   :group 'lsp-autotools)
 
 (defun lsp-autotools--download-server (_client callback error-callback update?)

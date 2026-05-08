@@ -1,6 +1,7 @@
 ;;; lsp-dot.el --- LSP client for the DOT/Graphviz language -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Abdelhak Bougouffa
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: Abdelhak Bougouffa <abougouffa@fedoraproject.org>
 ;; Keywords: languages, tools

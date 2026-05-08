@@ -1,6 +1,7 @@
 ;;; lsp-tilt.el --- tilt LSP                      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  konubinix
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: konubinix <konubinixweb@gmail.com>
 ;; Keywords: tools

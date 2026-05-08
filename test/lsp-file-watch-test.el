@@ -1,6 +1,7 @@
 ;;; lsp-file-watch.el --- File notifications tests   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Ivan Yonchovski
+;; Copyright (C) 2018-2026 lsp-mode maintainers
 
 ;; Author: Ivan <kyoncho@myoncho>
 ;; Keywords:
@@ -24,6 +25,7 @@
 ;;; Code:
 (require 'lsp-mode)
 (require 'filenotify)
+(require 'test-helper)
 
 (ert-deftest lsp-file-watch--recursive ()
   :tags '(no-win)
@@ -46,7 +48,7 @@
 
     (write-region "bla" nil matching-file)
 
-    (sit-for 0.2)
+    (lsp-test-wait 0.2)
     ;; created/changed events
     (setq expected-events `((changed ,matching-file)
                             (created ,matching-file)))
@@ -58,13 +60,13 @@
 
     ;; not interested in directories
     (mkdir (concat temp-directory "dirname.ext"))
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     ;; not changed
     (should (equal expected-events events))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created nested-matching-file))
     (add-to-list 'expected-events (list 'changed nested-matching-file))
@@ -77,7 +79,7 @@
       (mkdir nested-dir2)
       (write-region "bla" nil nested-matching-file2)
 
-      (sit-for 0.3)
+      (lsp-test-wait 0.3)
 
       (add-to-list 'expected-events (list 'created nested-matching-file2))
 
@@ -86,7 +88,7 @@
 
       (add-to-list 'expected-events (list 'changed nested-matching-file2))
 
-      (sit-for 0.3)
+      (lsp-test-wait 0.3)
       (should (equal expected-events events)))
 
     (should (equal expected-events events))
@@ -94,7 +96,7 @@
     ;; delete directory
     (delete-directory nested-dir t)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
     (add-to-list 'expected-events (list 'deleted nested-matching-file))
     (add-to-list 'expected-events (list 'deleted nested-dir))
 
@@ -105,7 +107,7 @@
     ;; create directory and then create a file
     ;; no updates after change
     (write-region "bla1" nil matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (should (equal expected-events events))))
 
@@ -140,7 +142,7 @@
                  lsp-file-watch-ignored-directories))
 
     (write-region "bla" nil matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created matching-file))
     (add-to-list 'expected-events (list 'changed matching-file))
@@ -155,58 +157,58 @@
                  '("/home/alice/project/**/*.{ml,eliom}" "/home/alice/project/dune.project"))))
 
 (ert-deftest lsp-file-watch--glob-pattern ()
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "pom.xml") "pom.xml"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/pom.xml") "/pom.xml"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "data/pom.xml"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "pom.xml"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "pom.xml") "pom.xml"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/pom.xml") "/pom.xml"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "data/pom.xml"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "pom.xml"))
 
   ;; Some VSCode tests
   ;; (https://github.com/Microsoft/vscode/blob/466da1c9013c624140f6d1473b23a870abc82d44/src/vs/base/test/node/glob.test.ts)
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") ".git"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") ".hidden.txt"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "git"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "hidden.txt"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") ".git"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") ".hidden.txt"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "git"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "hidden.txt"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.git"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.hidden.txt"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/git"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "pat.h/hidden.txt"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.git"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.hidden.txt"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/git"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/.*") "pat.h/hidden.txt"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules/"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node/_modules/"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules/"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node/_modules/"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "?") "h"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "?") "hi"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "?") "h"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "?") "hi"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[[]") "foo.["))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[[]") "foo.["))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo/test"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar/test"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo/test"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar/test"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "/testing/foo.js"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "testing/foo.d.ts"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.5"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "/testing/foo.js"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "testing/foo.d.ts"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.5"))
 
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/foo.js"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/folder/foo.js"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/foo.js"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/folder/foo.js"))
 
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/foo.js"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/folder/foo.js"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/foo.js"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/folder/foo.js"))
 
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.f"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.8"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.f"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.f"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.8"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.f"))
 
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.5"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.8"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.f"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.5"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.8"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.f"))
 
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.5"))
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.8"))
-  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.f"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.5"))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.8"))
+  (should (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.f"))
 
   ;; ???: This should properly fail since path-separators should be
   ;; ignored inside brackets, but here (and in VSCode) it fails for a
@@ -218,7 +220,7 @@
   ;; way of handling this to recognize that because we're unbalanced
   ;; at the end, that everything should be treated as a literal. But
   ;; after experimenting with zsh, this isn't what they use.
-  (should-not (string-match (lsp-glob-convert-to-wrapped-regexp "foo[/]bar") "foo/bar")))
+  (should-not (string-match-p (lsp-glob-convert-to-wrapped-regexp "foo[/]bar") "foo/bar")))
 
 (ert-deftest lsp-file-watch--ignore-list ()
   :tags '(no-win)
@@ -239,10 +241,51 @@
                  ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (should (null events))
     (lsp-kill-watch watch)))
+
+(ert-deftest lsp-file-watch--invalid-regex-handling ()
+  "Test that invalid regex patterns are handled gracefully (issue #3439)."
+  ;; Clear warning cache for clean test
+  (clrhash lsp--warned-invalid-regexps)
+  ;; Test with valid patterns - should match
+  (should (equal "[/\\\\]\\.git\\'"
+                 (lsp--string-match-any '("[/\\\\]\\.git\\'") "/project/.git")))
+  (should (equal "[/\\\\]__pycache__\\'"
+                 (lsp--string-match-any '("[/\\\\]__pycache__\\'") "/project/__pycache__")))
+  ;; Test with no match
+  (should-not (lsp--string-match-any '("[/\\\\]\\.git\\'") "/project/src"))
+  ;; Test with invalid regex - should return nil and not signal error
+  ;; Use unclosed bracket which is invalid in ALL Emacs versions (28, 29, 30+)
+  (should-not (lsp--string-match-any '("[/\\\\][unclosed") "/project/__pycache__"))
+  ;; Test that valid patterns still work when mixed with invalid ones
+  (should (equal "[/\\\\]\\.git\\'"
+                 (lsp--string-match-any '("[invalid-unclosed"
+                                          "[/\\\\]\\.git\\'")
+                                        "/project/.git")))
+  ;; Edge case: empty list
+  (should-not (lsp--string-match-any '() "/project/.git"))
+  ;; Edge case: empty string to match against
+  (should-not (lsp--string-match-any '("[/\\\\]\\.git\\'") ""))
+  ;; Edge case: all invalid patterns (unclosed brackets - invalid in all versions)
+  (should-not (lsp--string-match-any '("[bad1" "[bad2")
+                                     "/project/.git")))
+
+(ert-deftest lsp-file-watch--invalid-regex-warning-cache ()
+  "Test that invalid regex warnings are only shown once per pattern."
+  ;; Clear warning cache
+  (clrhash lsp--warned-invalid-regexps)
+  ;; First call should cache the invalid pattern
+  ;; Use unclosed bracket which is invalid in ALL Emacs versions
+  (should-not (lsp--string-match-any '("[cached-unclosed") "/test"))
+  (should (gethash "[cached-unclosed" lsp--warned-invalid-regexps))
+  ;; Verify cache prevents repeated warnings (pattern is already cached)
+  (let ((cache-size (hash-table-count lsp--warned-invalid-regexps)))
+    (lsp--string-match-any '("[cached-unclosed") "/test2")
+    ;; Cache size should not increase for same pattern
+    (should (= cache-size (hash-table-count lsp--warned-invalid-regexps)))))
 
 (ert-deftest lsp-file-watch--adding-watches ()
   :tags '(no-win)
@@ -264,7 +307,7 @@
                  ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (add-to-list 'expected-events (list 'created nested-matching-file))
     (add-to-list 'expected-events (list 'changed nested-matching-file))
@@ -318,7 +361,7 @@
 
     (delete-file matching-file-1)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 
@@ -361,7 +404,7 @@
 
     (f-write-text "some-text" 'utf-8 matching-file)
 
-    (sit-for 0.3)
+    (lsp-test-wait 0.3)
 
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 

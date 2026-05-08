@@ -1,6 +1,6 @@
 ---
 title: LSP Mode - Language Server Protocol support for Emacs
-description: Language Server Protocol support with multiples languages support for Emacs
+description: Language Server Protocol support with multiple languages support for Emacs
 root_file: README.md
 ---
 
@@ -73,7 +73,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Consult integration - [consult-lsp](https://github.com/gagbo/consult-lsp)
   - Treemacs integration -
     [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
-  - Semantic tokens as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
+  - Semantic tokens as defined by LSP 3.17 (compatible language servers include recent development builds of clangd and rust-analyzer)
   - [which-key](https://github.com/justbur/emacs-which-key/) integration
     for better discovery
   - [iedit](https://emacs-lsp.github.io/lsp-mode/page/main-features/#iedit)
@@ -98,8 +98,8 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     `company` frontend with icons.
   - [dap-mode](https://github.com/emacs-lsp/dap-mode) - Debugger
     integration for `lsp-mode`.
-  - [eglot](https://github.com/joaotavora/eglot) - An alternative
-    minimal LSP implementation.
+  - [eglot](https://www.gnu.org/software/emacs/manual/html_node/eglot/) -
+    A minimal LSP implementation built in to Emacs.
   - [which-key](https://github.com/justbur/emacs-which-key/) - Emacs
     package that displays available keybindings in popup
   - [projectile](https://github.com/bbatsov/projectile/) - Project
@@ -130,8 +130,8 @@ You can help us keep going and improving it by **[supporting the project](https:
 
 ### Members
 
-Here it is a list of the current `lsp-mode` members and what they are
-primary working on/responsible for.
+Here is a list of the current `lsp-mode` members and what they are
+primarily working on/responsible for.
 
 <table id="emacs-lsp-members">
   <tr>

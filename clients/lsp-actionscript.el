@@ -1,6 +1,7 @@
 ;;; lsp-actionscript.el --- ActionScript Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Jen-Chieh Shen
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: actionscript lsp

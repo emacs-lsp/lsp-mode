@@ -1,6 +1,7 @@
 ;;; lsp-bufls.el --- bufls-langserver Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Jim Myhrberg
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jim Myhrberg
 ;; Keywords: lsp, protobuf, buf, bufls
@@ -31,8 +32,9 @@
 (require 'lsp-mode)
 (require 'lsp-go)
 
+;; Buf Language Server
 (defgroup lsp-bufls nil
-  "Configuration options for lsp-bufls."
+  "Configuration options for Buf Language Server."
   :group 'lsp-mode
   :link '(url-lint "https://github.com/bufbuild/buf-language-server")
   :package-version '(lsp-mode . "9.0.0"))
@@ -60,8 +62,43 @@
                                    #'lsp-bufls-server--stdio-command)
                   :activation-fn (lsp-activate-on "protobuf")
                   :language-id "protobuf"
-                  :priority 0
+                  :priority -1
                   :server-id 'bufls))
+
+;; Buf CLI
+(defgroup lsp-buf nil
+  "Configuration options for buf CLI."
+  :group 'lsp-mode
+  :link '(url-lint "https://github.com/bufbuild/buf")
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-buf-args `("lsp" "serve")
+  "Arguments to pass to buf CLI."
+  :type '(repeat string)
+  :group 'lsp-buf
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-buf-path "buf"
+  "Command to run buf CLI."
+  :type 'string
+  :group 'lsp-buf
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defun lsp-buf--stdio-command ()
+  "Return the command and args to start buf CLI LSP server."
+  (let ((args (list lsp-buf-path)))
+    (when (and (listp lsp-buf-args)
+               (> (length lsp-buf-args) 0))
+      (setq args (append args lsp-buf-args)))
+    args))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   #'lsp-buf--stdio-command)
+                  :activation-fn (lsp-activate-on "protobuf")
+                  :language-id "protobuf"
+                  :priority 0
+                  :server-id 'buf))
 
 (lsp-consistency-check lsp-bufls)
 

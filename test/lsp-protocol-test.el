@@ -1,6 +1,7 @@
 ;;; lsp-protocol-test.el --- lsp-protocol tests      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Ivan Yonchovski
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -81,28 +82,34 @@
                                      (lsp-make-my-position :line 30 :character 40 :camelCase nil)
                                      :specialProperty 42)))
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :line start-line :character start-char :camel-case start-camelcase)
-                        :end  (MyPosition :line end-line :character end-char :camel-case end-camelCase))
+              ((lsp-interface MyRange
+                              :start (lsp-interface MyPosition
+                                                    :line start-line :character start-char :camel-case start-camelcase)
+                              :end (lsp-interface MyPosition
+                                                  :line end-line :character end-char :camel-case end-camelCase))
                t)
               (_ nil)))
 
     (should (pcase particular-extended-range
-              ((MyExtendedRange)
+              ((lsp-interface MyExtendedRange)
                t)
               (_ nil)))
 
     ;; a subclass can be matched by a pattern for a parent class
     (should (pcase particular-extended-range
-              ((MyRange :start (MyPosition :line start-line :character start-char :camel-case start-camelcase)
-                        :end  (MyPosition :line end-line :character end-char :camel-case end-camelCase))
+              ((lsp-interface MyRange
+                              :start (lsp-interface MyPosition
+                                                    :line start-line :character start-char :camel-case start-camelcase)
+                              :end  (lsp-interface MyPosition
+                                                   :line end-line :character end-char :camel-case end-camelCase))
                t)
               (_ nil)))
 
     ;; the new patterns should be able to be used with existing ones
     (should (pcase (list particular-range
                          particular-extended-range)
-              ((seq (MyRange)
-                    (MyExtendedRange))
+              ((seq (lsp-interface MyRange)
+                    (lsp-interface MyExtendedRange))
                t)
               (_ nil)))
 
@@ -110,8 +117,8 @@
     ;; not in the order specified by the inner patterns
     (should-not (pcase (list particular-range
                              particular-extended-range)
-                  ((seq (MyExtendedRange)
-                        (MyRange))
+                  ((seq (lsp-interface MyExtendedRange)
+                        (lsp-interface MyRange))
                    t)
                   (_ nil)))
 
@@ -122,8 +129,11 @@
     ;; and the second instance is an equality check against the other
     ;; :character value, which is different.
     (should-not (pcase particular-range
-                  ((MyRange :start (MyPosition :line start-line :character :camel-case start-camelcase)
-                            :end  (MyPosition :line end-line :character :camel-case end-camelCase))
+                  ((lsp-interface MyRange
+                                  :start (lsp-interface MyPosition
+                                                        :line start-line :character :camel-case start-camelcase)
+                                  :end  (lsp-interface MyPosition
+                                                       :line end-line :character :camel-case end-camelCase))
                    t)
                   (_ nil)))
 
@@ -131,7 +141,7 @@
     ;; should still match if the required stuff matches. Missing
     ;; optional properties are bound to nil.
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :optional?))
+              ((lsp-interface MyRange :start (lsp-interface MyPosition :optional?))
                (null optional?))
               (_ nil)))
 
@@ -139,23 +149,23 @@
     ;; the interface, even if the expr-val has all the types specified
     ;; by the interface. This is a programmer error.
     (should-error (pcase particular-range
-                    ((MyRange :something-unrelated)
+                    ((lsp-interface MyRange :something-unrelated)
                      t)
                     (_ nil)))
 
     ;; we do not use camelCase at this stage. This is a programmer error.
     (should-error (pcase particular-range
-                    ((MyRange :start (MyPosition :camelCase))
+                    ((lsp-interface MyRange :start (lsp-interface MyPosition :camelCase))
                      t)
                     (_ nil)))
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :camel-case))
+              ((lsp-interface MyRange :start (lsp-interface MyPosition :camel-case))
                t)
               (_ nil)))
 
     ;; :end is missing, so we should fail to match the interface.
     (should-not (pcase (lsp-make-my-range :start (lsp-make-my-position :line 10 :character 20 :camelCase nil))
-                  ((MyRange)
+                  ((lsp-interface MyRange)
                    t)
                   (_ nil)))))
 
@@ -166,5 +176,65 @@
     (should (lsp-member? input :import_for_trait_assoc_item))
     (lsp-put input :import_for_trait_assoc_item :json-false)
     (should (eq (lsp-get input :import_for_trait_assoc_item) :json-false))))
+
+(ert-deftest lsp-test-inline-completion-pcase-patterns ()
+  "Regression test for issue #4723: InlineCompletion pcase patterns.
+Verify that InlineCompletion interfaces can be used in pcase patterns
+without `Eager macro-expansion failure' errors."
+  ;; Test InlineCompletionItem with required property
+  (let ((item (lsp-make-inline-completion-item :insert-text "test completion")))
+    (should (pcase item
+              ((lsp-interface InlineCompletionItem :insert-text text)
+               (string= text "test completion"))
+              (_ nil))))
+
+  ;; Test InlineCompletionItem with optional properties (nil values)
+  (let ((item-with-opts (lsp-make-inline-completion-item
+                         :insert-text "completion"
+                         :filter-text? "filter"
+                         :command? nil)))
+    (should (pcase item-with-opts
+              ((lsp-interface InlineCompletionItem :insert-text text :filter-text? filter)
+               (and (string= text "completion")
+                    (string= filter "filter")))
+              (_ nil))))
+
+  ;; Test InlineCompletionList
+  (let ((list (lsp-make-inline-completion-list
+               :items (vector (lsp-make-inline-completion-item
+                               :insert-text "completion 1")))))
+    (should (pcase list
+              ((lsp-interface InlineCompletionList :items items)
+               (and (vectorp items) (= (length items) 1)))
+              (_ nil))))
+
+  ;; Test InlineCompletionContext with invoked trigger
+  (let ((context-invoked (lsp-make-inline-completion-context
+                          :trigger-kind lsp/inline-completion-trigger-invoked)))
+    (should (pcase context-invoked
+              ((lsp-interface InlineCompletionContext :trigger-kind kind)
+               (= kind lsp/inline-completion-trigger-invoked))
+              (_ nil))))
+
+  ;; Test InlineCompletionContext with automatic trigger
+  (let ((context-auto (lsp-make-inline-completion-context
+                       :trigger-kind lsp/inline-completion-trigger-automatic)))
+    (should (pcase context-auto
+              ((lsp-interface InlineCompletionContext :trigger-kind kind)
+               (= kind lsp/inline-completion-trigger-automatic))
+              (_ nil))))
+
+  ;; Test InlineCompletionParams with nested context
+  (let ((params (lsp-make-inline-completion-params
+                 :text-document (lsp-make-text-document-identifier :uri "file:///test.rs")
+                 :position (lsp-make-position :line 10 :character 5)
+                 :context (lsp-make-inline-completion-context
+                           :trigger-kind lsp/inline-completion-trigger-invoked))))
+    (should (pcase params
+              ((lsp-interface InlineCompletionParams :text-document doc :position pos :context ctx)
+               (and (lsp-text-document-identifier? doc)
+                    (lsp-position? pos)
+                    (lsp-inline-completion-context? ctx)))
+              (_ nil)))))
 
 ;;; lsp-protocol-test.el ends here

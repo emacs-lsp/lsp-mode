@@ -1,6 +1,6 @@
 ;;; lsp-marksman.el --- lsp-mode marksman integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 lsp-mode maintainers
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages
@@ -41,7 +41,7 @@
 
 (defcustom lsp-marksman-server-command-args '()
   "Command-line arguments for the marksman lsp server. Not normally Needed."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-marksman
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -49,7 +49,7 @@
   (format "https://github.com/artempyanykh/marksman/releases/latest/download/%s"
           (pcase system-type
             ('gnu/linux
-             (if (string-match "^aarch64-.*" system-configuration)
+             (if (string-match-p "^aarch64-.*" system-configuration)
                  "marksman-linux-arm64"
                "marksman-linux-x64"))
             ('darwin "marksman-macos")

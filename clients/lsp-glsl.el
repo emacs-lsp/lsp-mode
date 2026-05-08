@@ -1,6 +1,6 @@
 ;;; lsp-glsl.el --- GLSL client -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 emacs-lsp maintainers
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: languages lsp glsl
@@ -36,11 +36,13 @@
   "Command to run the GLSL language server."
   :group 'lsp-glsl
   :risky t
-  :type 'list)
+  :type '(repeat string))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-glsl-executable)
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     lsp-glsl-executable))
   :activation-fn (lsp-activate-on "glsl")
   :priority -1
   :server-id 'glslls))

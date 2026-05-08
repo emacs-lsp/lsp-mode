@@ -1,6 +1,7 @@
 ;;; lsp-lisp.el --- LSP client for Lisp  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Shen, Jen-Chieh
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 
@@ -34,7 +35,7 @@
 (defcustom lsp-lisp-active-modes
   '( lisp-mode)
   "List of major mode that work with lisp."
-  :type 'list
+  :type '(repeat function)
   :group 'lsp-lisp)
 
 (defcustom lsp-lisp-alive-port 8006
@@ -49,7 +50,7 @@
 (defun lsp-lisp-alive-start-ls ()
   "Start the alive-lsp."
   (interactive)
-  (when-let ((exe (executable-find "sbcl"))
+  (when-let* ((exe (executable-find "sbcl"))
              ((lsp--port-available "localhost" lsp-lisp-alive-port)))
     (lsp-async-start-process #'ignore #'ignore
                              exe

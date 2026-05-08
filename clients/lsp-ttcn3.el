@@ -1,6 +1,6 @@
 ;;; lsp-ttcn3.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, ttcn3

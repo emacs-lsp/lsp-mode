@@ -1,6 +1,7 @@
 ;;; lsp-move.el --- MOVE client settings -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2023 Dmitri Makarov
+;; Copyright (C) 2023-2026 emacs-lsp maintainers
 
 ;; Author: Dmitri Makarov
 ;; Keywords: lsp, move

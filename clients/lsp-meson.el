@@ -1,6 +1,6 @@
 ;;; lsp-meson.el --- lsp client for meson -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, meson

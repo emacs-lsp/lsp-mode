@@ -1,6 +1,7 @@
 ;;; lsp-haxe.el --- Haxe Client settings             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Yannik Böttcher
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Yannik Böttcher <yannikboettcher@outlook.de>
 ;; Keywords:

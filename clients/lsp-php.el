@@ -1,6 +1,6 @@
 ;;; lsp-php.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, php
@@ -133,7 +133,7 @@ from all language server features."
    "exif" "fileinfo" "filter" "fpm" "ftp" "gd" "hash" "iconv" "imap" "interbase"
    "intl" "json" "ldap" "libxml" "mbstring" "mcrypt" "meta" "mssql" "mysqli"
    "oci8" "odbc" "openssl" "pcntl" "pcre" "PDO" "pdo_ibm" "pdo_mysql"
-   "pdo_pgsql" "pdo_sqlite" "pgsql" "Phar" "posix" "pspell" "readline" "recode"
+   "pdo_pgsql" "pdo_sqlite" "pgsql" "Phar" "posix" "pspell" "random" "readline" "recode"
    "Reflection" "regex" "session" "shmop" "SimpleXML" "snmp" "soap" "sockets"
    "sodium" "SPL" "sqlite3" "standard" "superglobals" "sybase" "sysvmsg"
    "sysvsem" "sysvshm" "tidy" "tokenizer" "wddx" "xml" "xmlreader" "xmlrpc"
@@ -219,7 +219,9 @@ definitions are found in excluded files/folders."
 (lsp-defcustom lsp-intelephense-trace-server "off"
   "Traces the communication between VSCode and the intelephense
 language server."
-  :type '(choice (:tag "off" "messages" "verbose"))
+  :type '(choice (const "off")
+                 (const "messages")
+                 (const "verbose"))
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1")
   :lsp-path "intelephense.trace.server")
@@ -261,6 +263,14 @@ language server."
   :type '(repeat string)
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))
+
+(lsp-defcustom lsp-intelephense-phpdoc-use-fully-qualified-names nil
+  "If non-nil, Intelephense will use fully qualified names in generated PHPDoc.
+This corresponds to the LSP setting `intelephense.phpdoc.useFullyQualifiedNames`."
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "9.0")
+  :lsp-path "intelephense.phpdoc.useFullyQualifiedNames")
 
 (lsp-dependency 'intelephense
                 '(:system "intelephense")
@@ -380,7 +390,8 @@ already present."
                       :fileExtensions ,lsp-serenata-file-extensions)))
 
 
-(lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
+(eval-and-compile
+  (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil)))
 
 (lsp-register-client
  (make-lsp-client
@@ -440,7 +451,7 @@ already present."
   "Alist mapping extension names to `composer' packages.
 These extensions can be installed using
 `lsp-phpactor-install-extension'."
-  :type '(alist :key-type "string" :value-type "string")
+  :type '(alist :key-type string :value-type string)
   :group 'lsp-phpactor)
 
 (defun lsp-phpactor-install-extension (extension)

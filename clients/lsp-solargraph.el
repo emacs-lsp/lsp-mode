@@ -1,6 +1,7 @@
 ;;; lsp-solargraph.el --- Solargraph server configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -98,7 +99,9 @@
 
 (defcustom lsp-solargraph-log-level "warn"
   "Level of debug info to log. `warn` is least and `debug` is most."
-  :type '(choice (const :tag "warn" "info" "debug"))
+  :type '(choice (const "warn")
+                 (const "info")
+                 (const "debug"))
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.1"))
 

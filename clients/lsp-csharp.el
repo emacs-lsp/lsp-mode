@@ -1,6 +1,7 @@
 ;;; lsp-csharp.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Jostein Kjønigsen, Saulius Menkevicius
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Saulius Menkevicius <saulius.menkevicius@fastmail.com>
 ;; Keywords:
@@ -80,19 +81,19 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
                  ; On Windows we're trying to avoid a crash starting 64bit .NET PE binaries in
                  ; Emacs by using x86 version of omnisharp-roslyn on older (<= 26.4) versions
                  ; of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg00893.html"
-                 (if (and (string-match "^x86_64-.*" system-configuration)
+                 (if (and (string-match-p "^x86_64-.*" system-configuration)
                           (version<= "26.4" emacs-version))
                      "omnisharp-win-x64.zip"
                    "omnisharp-win-x86.zip"))
 
                 ((eq system-type 'darwin)
-                 (if (string-match "aarch64-.*" system-configuration)
+                 (if (string-match-p "aarch64-.*" system-configuration)
                      "omnisharp-osx-arm64-net6.0.zip"
                    "omnisharp-osx-x64-net6.0.zip"))
 
                 ((and (eq system-type 'gnu/linux)
-                      (or (eq (string-match "^x86_64" system-configuration) 0)
-                          (eq (string-match "^i[3-6]86" system-configuration) 0)))
+                      (or (eq (string-match-p "^x86_64" system-configuration) 0)
+                          (eq (string-match-p "^i[3-6]86" system-configuration) 0)))
                  "omnisharp-linux-x64-net6.0.zip")
 
                 (t "omnisharp-mono.zip")))
@@ -213,7 +214,7 @@ Returns :elements from omnisharp:CodeStructureResponse."
 
 (defun lsp-csharp--code-element-stack-on-l-c (l c elements)
   "Return omnisharp:CodeElement stack at L (line) and C (column) in ELEMENTS tree."
-  (when-let ((matching-element (seq-find (lambda (el)
+  (when-let* ((matching-element (seq-find (lambda (el)
                                            (-when-let* (((&omnisharp:CodeElement :ranges) el)
                                                         ((&omnisharp:RangeList :full?) ranges))
                                              (lsp-csharp--l-c-within-range l c full?)))
@@ -266,7 +267,7 @@ PRESENT-BUFFER will make the buffer be presented to the user."
 
 (defun lsp-csharp--test-message (message)
   "Emit a MESSAGE to lsp-csharp test run buffer."
-  (when-let ((existing-buffer (get-buffer lsp-csharp-test-run-buffer-name))
+  (when-let* ((existing-buffer (get-buffer lsp-csharp-test-run-buffer-name))
              (inhibit-read-only t))
     (with-current-buffer existing-buffer
       (save-excursion
@@ -309,7 +310,7 @@ PRESENT-BUFFER will make the buffer be presented to the user."
 (defun lsp-csharp-run-last-tests ()
   "Re-run test(s) that were run last time."
   (interactive)
-  (if-let ((last-test-method-framework (lsp-session-get-metadata "last-test-method-framework"))
+  (if-let* ((last-test-method-framework (lsp-session-get-metadata "last-test-method-framework"))
            (last-test-method-names (lsp-session-get-metadata "last-test-method-names")))
       (lsp-csharp--start-tests last-test-method-framework last-test-method-names)
     (message "lsp-csharp: No test method(s) found to be ran previously on this workspace")))
@@ -430,7 +431,7 @@ See https://github.com/OmniSharp/omnisharp-roslyn/wiki/Configuration-Options"
                         (when lsp-csharp-solution-file
                           (list "-s" (expand-file-name lsp-csharp-solution-file)))))
                    #'(lambda ()
-                       (when-let ((binary (lsp-csharp--language-server-path)))
+                       (when-let* ((binary (lsp-csharp--language-server-path)))
                          (f-exists? binary))))
                   :activation-fn (lsp-activate-on "csharp")
                   :server-id 'omnisharp
@@ -479,7 +480,8 @@ filename is returned so lsp-mode can display this file."
                                  (concat symbol-name ".cs")))
                (file-location (expand-file-name filename (lsp-workspace-root)))
                (metadata-file-location (concat file-location ".metadata-uri"))
-               (path (f-dirname file-location)))
+               (path (f-dirname file-location))
+               (coding-system-for-write 'utf-8-unix))
 
     (unless (file-exists-p file-location)
       (unless (file-directory-p path)

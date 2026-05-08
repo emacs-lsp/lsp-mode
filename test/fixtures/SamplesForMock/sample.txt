@@ -1,0 +1,4 @@
+Line 0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here

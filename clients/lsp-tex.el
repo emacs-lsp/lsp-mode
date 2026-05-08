@@ -1,6 +1,6 @@
 ;;; lsp-tex.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, tex
@@ -46,7 +46,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-digestif-executable)
-                  :major-modes '(plain-tex-mode latex-mode context-mode texinfo-mode LaTex-mode)
+                  :major-modes '(plain-tex-mode latex-mode context-mode texinfo-mode LaTeX-mode)
                   :priority (if (eq lsp-tex-server 'digestif) 1 -1)
                   :server-id 'digestif))
 

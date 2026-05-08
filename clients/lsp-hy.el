@@ -1,6 +1,6 @@
 ;;; lsp-rpm-spec.el --- lsp-mode integration for Hy -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, hy, hylang

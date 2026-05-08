@@ -1,6 +1,7 @@
 ;;; lsp-cucumber.el --- LSP Clients for Cucumber  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Shen, Jen-Chieh
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 
@@ -41,7 +42,7 @@ This is only for development use."
 (defcustom lsp-cucumber-active-modes
   '( feature-mode)
   "List of major mode that work with Cucumber language server."
-  :type 'list
+  :type '(repeat function)
   :group 'lsp-cucumber)
 
 (lsp-defcustom lsp-cucumber-features

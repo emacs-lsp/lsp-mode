@@ -1,6 +1,7 @@
 ;;; lsp-vhdl.el --- VHDL Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Christian Birk Sørensen
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Christian Birk Sørensen <chrbirks+emacs@gmail.com>
 ;; Created: 6 October 2019

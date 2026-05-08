@@ -1,6 +1,6 @@
 ;;; lsp-ansible.el --- lsp-mode ansible integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: lsp, yaml, ansible
@@ -212,8 +212,7 @@ Python virtual environment."
 This prevents the Ansible server from being turned on in all yaml files."
   (and (or (derived-mode-p 'yaml-mode)
            (derived-mode-p 'yaml-ts-mode))
-       ;; emacs-ansible provides ansible, not ansible-mode
-       (with-no-warnings (bound-and-true-p ansible))))
+       (bound-and-true-p ansible-mode)))
 
 (declare-function lsp-completion--clear-cache "lsp-completion" (&optional keep-last-result))
 

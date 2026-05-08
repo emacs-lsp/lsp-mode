@@ -1,6 +1,7 @@
 ;;; lsp-verilog.el --- Verilog Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Patrick Grogan
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Patrick Grogan <pogrogan@gmail.com>
 ;; Created: 7 December 2019

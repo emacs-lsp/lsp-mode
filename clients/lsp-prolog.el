@@ -1,6 +1,7 @@
 ;;; lsp-prolog.el --- Prolog Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  James Cash
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: James Cash <james.nvc@gmail.com>
 ;; Keywords: languages,tools
@@ -40,7 +41,7 @@
   "The prolog-lsp server command."
   :group 'lsp-prolog
   :risky t
-  :type 'list)
+  :type '(repeat string))
 
 (lsp-register-client
  (make-lsp-client

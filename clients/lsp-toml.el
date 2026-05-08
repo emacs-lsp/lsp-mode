@@ -1,6 +1,7 @@
 ;;; lsp-toml.el --- lsp-mode TOML integration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Taiki Sugawara
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: Taiki Sugawara <buzz.taiki@gmail.com>
 ;; Keywords: lsp, toml

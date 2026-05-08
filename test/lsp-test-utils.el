@@ -1,6 +1,6 @@
 ;;; lsp-test-utils.el --- unit test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) emacs-lsp maintainers
+;; Copyright (C) 2018-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
     (run-with-timer
      0.001 nil
      (lambda ()
-       (if-let ((result (eval form)))
+       (if-let* ((result (eval form)))
            (deferred:callback-post it result)
          (lsp-test--wait-for form it))))))
 

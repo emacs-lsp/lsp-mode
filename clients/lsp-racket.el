@@ -1,6 +1,6 @@
 ;;; lsp-racket.el --- lsp-mode racket integration    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 lsp-mode maintainers
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages

@@ -1,6 +1,6 @@
 ;;; lsp-diagnostics.el --- LSP diagnostics integration -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -296,7 +296,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                                         :end (&Position :line end-line))) it)
                             ((start . end) (lsp--range-to-region range)))
                       (when (= start end)
-                        (if-let ((region (flymake-diag-region (current-buffer)
+                        (if-let* ((region (flymake-diag-region (current-buffer)
                                                               (1+ start-line)
                                                               character)))
                             (setq start (car region)
@@ -366,6 +366,20 @@ See https://github.com/emacs-lsp/lsp-mode."
 (add-hook 'lsp-configure-hook (lambda ()
                                 (when lsp-auto-configure
                                   (lsp-diagnostics--enable))))
+
+(defun lsp-diagnostics--clear-after-edit (&rest _)
+  "Clear diagnostics for the current buffer after workspace edits.
+This prevents stale diagnostics from appearing at wrong line numbers
+when workspace edits shift line positions (see issue #3888)."
+  (when-let* ((file-path (buffer-file-name))
+              (workspaces (lsp-workspaces)))
+    (let ((path (lsp--fix-path-casing file-path)))
+      (dolist (workspace workspaces)
+        (-let [diagnostics (lsp--workspace-diagnostics workspace)]
+          (remhash path diagnostics))))
+    (run-hooks 'lsp-diagnostics-updated-hook)))
+
+(add-hook 'lsp-after-apply-edits-hook #'lsp-diagnostics--clear-after-edit)
 
 (lsp-consistency-check lsp-diagnostics)
 

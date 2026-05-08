@@ -1,6 +1,7 @@
 ;;; lsp-yang.el --- YANG Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Siddharth Sharma
+;; Copyright (C) 2024-2026 lsp-mode maintainers
 
 ;; Author: Siddharth Sharma <siddharth.sharma@ericsson.com>
 ;; Keywords: languages, yang, lsp

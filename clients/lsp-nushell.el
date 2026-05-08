@@ -1,6 +1,6 @@
 ;;; lsp-nushell.el --- lsp-mode ansible integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 emacs-lsp maintainers
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: lsp, nushell

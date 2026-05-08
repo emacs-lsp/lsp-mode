@@ -1,6 +1,7 @@
 ;;; lsp-io-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2018  Vibhav Pant <vibhavp@gmail.com>.
+;; Copyright (C) 2016-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -65,6 +66,19 @@
          (message-in "Content-Length: 3\r\n\r\n\xe2\x80\x99")
          (messages (funcall fn message-in)))
     (should (equal messages '("’")))))
+
+(ert-deftest lsp--parser-read--multiple-multibyte-messages ()
+  (let* ((fn (lsp--create-process-message))
+         (messages-in '("Content-Length: 3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length:3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length:3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        ))
+         (messages (funcall fn (string-join messages-in))))
+    (should (equal messages '("←" "←" "←" "←" "←" "←" "←")))))
 
 (ert-deftest lsp--parser-read--multibyte-nospace ()
   (let* ((fn (lsp--create-process-message))

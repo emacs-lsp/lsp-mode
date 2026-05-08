@@ -1,5 +1,7 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-mode"
-         "9.0.1"
+         "10.0.1"
          "LSP mode")
 
 (website-url "https://github.com/emacs-lsp/lsp-mode")
@@ -11,9 +13,9 @@
 
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
-(source "gnu")
-(source "jcs-elpa")
-(source "melpa")
+(source 'gnu)
+(source 'jcs-elpa)
+(source 'melpa)
 
 (files
  "lsp-protocol.el"
@@ -29,7 +31,7 @@
  "lsp-semantic-tokens.el"
  "clients/*.el")
 
-(depends-on "emacs" "27.1")
+(depends-on "emacs" "29.1")
 (depends-on "dash")
 (depends-on "f")
 (depends-on "ht")
@@ -50,3 +52,8 @@
  (depends-on "elenv"))
 
 (setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
+
+(add-hook 'eask-before-compile-hook
+           (lambda ()
+             (setq byte-compile-error-on-warn t)
+             (setq byte-compile-docstring-max-column 1000)))

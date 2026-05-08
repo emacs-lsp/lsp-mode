@@ -1,6 +1,6 @@
 ;;; lsp-gleam.el --- gleam client -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: Jonathan Arnett
 ;; Keywords: lsp gleam

@@ -1,6 +1,7 @@
 ;;; lsp-zig.el --- lsp-mode Zig integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021 Riccardo Binetti
+;; Copyright (C) 2021-2026 lsp-mode maintainers
 
 ;; Author: Riccardo Binetti <rbino@gmx.com>
 ;; Keywords: languages,tools
@@ -25,6 +26,8 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'url)
+(require 'json)
 
 (defgroup lsp-zig nil
   "LSP support for Zig via zls."
@@ -162,42 +165,42 @@ If no extra argument is given `record_session_path` is used as the default path.
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-builtin-path ""
+(defcustom lsp-zig-builtin-path nil
   "Path to `builtin'; useful for debugging, automatically set if let null."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom lsp-zig-zig-lib-path ""
+(defcustom lsp-zig-zig-lib-path nil
   "Zig library path.
 e.g. `/path/to/zig/lib/zig`, used to analyze std library imports."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom lsp-zig-zig-exe-path ""
+(defcustom lsp-zig-zig-exe-path nil
   "	Zig executable path.
 e.g. /path/to/zig/zig, used to run the custom build runner.  If null, zig is
 looked up in PATH.  Will be used to infer the zig standard library path if none
 is provided."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom lsp-zig-build-runner-path ""
+(defcustom lsp-zig-build-runner-path nil
   "Path to the `build_runner.zig` file provided by zls.
 null is equivalent to `${executable_directory}/build_runner.zig`."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom lsp-zig-global-cache-path ""
+(defcustom lsp-zig-global-cache-path nil
   "Path to a directory that will be used as zig's cache.
 null is equivalent to `${KnownFolders.Cache}/zls`."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom lsp-zig-build-runner-global-cache-path ""
+(defcustom lsp-zig-build-runner-global-cache-path nil
   "Path to a directory that will be used as the global cache path when executing
 a projects build.zig.  null is equivalent to the path shown by `zig env`."
   :group 'lsp-zig
-  :type 'string)
+  :type '(choice (const nil) string))
 
 (defcustom lsp-zig-completions-with-replace nil
   "Completions confirm behavior.
@@ -214,21 +217,60 @@ If `true', replace the text after the cursor."
   :type 'file
   :group 'lsp-zig)
 
+(defun lsp-zig--get-zls-latest-version ()
+  "Fetch the version number (tag_name) of the latest zls release from GitHub."
+  (let ((url "https://api.github.com/repos/zigtools/zls/releases/latest")
+        (buffer nil)
+        (json-data nil))
+    (message "Fetching latest ZLS version...")
+    ;; Fetch the JSON data synchronously
+    (setq buffer (url-retrieve-synchronously url))
+    (if (not buffer)
+        (message "Failed to retrieve URL")
+      (with-current-buffer buffer
+        (goto-char (point-min))
+        ;; Skip HTTP headers (search for the first empty line)
+        (re-search-forward "^$" nil 'move)
+        (forward-char) ;; Move past the newline
+        ;; Parse the JSON
+        (condition-case err
+            (setq json-data (json-read))
+          (error (message "Error parsing JSON: %s" err)))
+        ;; Clean up the temporary buffer
+        (kill-buffer buffer)))
+
+    ;; Extract the tag_name
+    (when json-data
+      (cdr (assoc 'tag_name json-data)))))
+
+(defcustom lsp-zig-server-version nil
+  "The target language server version for zls.
+
+If the value is `nil', it will use the latest version instead."
+  :type '(choice (string :tag "Specified version")
+                 (const :tag "Latest version" nil))
+  :group 'lsp-zig)
+
 (defconst lsp-zig-download-url-format
-  "https://github.com/zigtools/zls/releases/latest/download/zls-%s-%s.%s"
+  "https://builds.zigtools.org/zls-%s-%s-%s.%s"
   "Format to the download url link.")
 
 (defun lsp-zig--zls-url ()
   "Return Url points to the zls' zip/tar file."
   (let* ((x86 (string-prefix-p "x86_64" system-configuration))
-         (arch (if x86 "x86_64" "aarch64")))
+         (arch (if x86 "x86_64" "aarch64"))
+         (ver (or lsp-zig-server-version
+                  (lsp-zig--get-zls-latest-version))))
     (cl-case system-type
       ((cygwin windows-nt ms-dos)
-       (format lsp-zig-download-url-format arch "windows" "zip"))
+       (format lsp-zig-download-url-format
+               arch "windows" ver "zip"))
       (darwin
-       (format lsp-zig-download-url-format arch "macos" "tar.gz"))
+       (format lsp-zig-download-url-format
+               arch "macos" ver "tar.xz"))
       (gnu/linux
-       (format lsp-zig-download-url-format arch "linux" "tar.gz")))))
+       (format lsp-zig-download-url-format
+               arch "linux" ver "tar.xz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
@@ -236,13 +278,13 @@ If `true', replace the text after the cursor."
 This is differ from the variable `lsp-zig-zls-executable'; this is local storage
 and not the global storage."
   (f-join lsp-zig-server-store-path
-          (pcase system-type ('windows-nt "bin/zls.exe") (_ "bin/zls"))))
+          (pcase system-type ('windows-nt "zls.exe") (_ "zls"))))
 
 (lsp-dependency
  'zls
  '(:system "zls")
- `(:download :url ,(lsp-zig--zls-url)
-             :decompress ,(pcase system-type ('windows-nt :zip) (_ :targz))
+ `(:download :url ,(lambda (&rest _) (lsp-zig--zls-url))
+             :decompress ,(pcase system-type ('windows-nt :zip) (_ :tarxz))
              :store-path ,(f-join lsp-zig-server-store-path "temp")
              :set-executable? t)
  `(:system ,(lsp-zig--stored-zls-executable)))

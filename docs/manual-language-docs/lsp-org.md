@@ -7,10 +7,10 @@ inside of [org-mode](https://orgmode.org/) source blocks. `lsp-mode` is
 achieving this by obtaining the information about the source block from the
 source block header(language + `:tangle`) then translating the point to the LSP
 positions back and forth so the language server thinks that Emacs has opened the
-original file. In order that to work the files has to be present on the disk as
+original file. For this to work, the files have to be present on the disk as
 well because the server expects to find them.
 
-Here it is a sample source block:
+Here is a sample source block:
 
 ``` org
 #+BEGIN_SRC python :tangle "python.py"

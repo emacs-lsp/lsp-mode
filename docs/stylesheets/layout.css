@@ -16,3 +16,21 @@
 .md-typeset a {
   color: #7B58B0;
 }
+
+/* Fix sidebar responsiveness - keep sidebar visible on screens 960px+ (Issue #4946)
+ * Material theme hides sidebar at ~1220px by default, but we want it visible earlier.
+ * This targets the "tablet landscape" range where sidebar was incorrectly hidden.
+ * Using pixels (not em) to match JavaScript breakpoint in expanded_nav.js exactly.
+ */
+@media screen and (min-width: 960px) {
+  /* Force primary sidebar to remain visible */
+  .md-sidebar--primary {
+    display: block;
+    position: sticky;
+  }
+
+  /* Ensure content area has proper margin to avoid sidebar overlap */
+  .md-content {
+    margin-left: 12.1rem;
+  }
+}

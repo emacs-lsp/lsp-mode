@@ -1,6 +1,6 @@
 ;;; lsp-sorbet.el --- Sorbet server configuration  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Christopher Wilson <chris@sencjw.com>
 ;; Keywords:

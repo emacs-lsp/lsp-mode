@@ -1,6 +1,7 @@
 ;;; lsp-common-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017  Lukas Fuermetz <fuermetz@mailbox.org>.
+;; Copyright (C) 2017-2026 lsp-mode maintainers
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -67,6 +68,15 @@
     (let ((lsp--uri-file-prefix "file://")
           (system-type 'gnu/linux))
       (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢")))))
+
+(ert-deftest lsp--uri-to-path--handle-file-anchors ()
+  ;; Issue: #4976
+  (let ((lsp--uri-file-prefix "file:///"))
+    (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs.html#anchor")
+                   "/home/jc/doom/docs.html"))
+    ;; URL encoded text containing # in the filename should still be included
+    (should (equal (lsp--uri-to-path "file:///home/jc/doom/docs-%232.html#myanchor")
+                   "/home/jc/doom/docs-#2.html"))))
 
 (ert-deftest lsp-byte-compilation-test ()
   (let ((dir (if load-file-name
@@ -185,6 +195,13 @@
           (result (aref (lsp--build-workspace-configuration-response request) 0)))
     (cl-assert (equal (ht-get result "prop2") "20"))
     (cl-assert (equal (ht-get result "prop1") "10"))))
+
+(ert-deftest lsp--build-workspace-configuration-response-test-no-section-given ()
+  (-let* ((request (lsp-make-configuration-params
+                    :items (list (lsp-make-configuration-item :section nil))))
+          (result (aref (lsp--build-workspace-configuration-response request) 0)))
+    (cl-assert (equal (hash-table-count (ht-get result "section1")) 1))
+    (cl-assert (equal (hash-table-count (ht-get (ht-get result "section2") "nested")) 2))))
 
 (defcustom lsp-prop3 nil
   "docs"

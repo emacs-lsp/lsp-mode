@@ -1,6 +1,7 @@
 ;;; lsp-astro.el --- lsp-mode astro integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Paweł Kobojek, Luca Fanselau
+;; Copyright (C) 2022-2026 emacs-lsp maintainers
 
 ;; Author: Paweł Kobojek
 ;; Keywords: languages,astro

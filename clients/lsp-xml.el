@@ -1,6 +1,7 @@
 ;;; lsp-xml.el --- LSP XML server integration        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords:
@@ -231,7 +232,11 @@ This only affects the experimental formatter."
 (defcustom lsp-xml-validation-no-grammar "hint"
   "The message severity when a document has no associated
   grammar."
-  :type '(choice (:tag "ignore" "hint" "info" "warning" "error"))
+  :type '(choice  (const "ignore")
+                  (const "hint")
+                  (const "info")
+                  (const "warning")
+                  (const "error"))
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
@@ -336,7 +341,7 @@ The value for `enabled' can be always, never or onValidSchema."
 
 (defcustom lsp-xml-bin-download-url
   ;; This is the version with `latest` tag
-  (format "https://github.com/redhat-developer/vscode-xml/releases/download/latest/%s.zip"
+  (format "https://github.com/redhat-developer/vscode-xml/releases/latest/download/%s.zip"
           lsp-xml-bin-base-name)
   "Automatic download url for lsp-xml's native binary."
   :type 'string

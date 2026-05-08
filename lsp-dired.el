@@ -1,6 +1,6 @@
 ;;; lsp-dired.el --- `lsp-mode' diagnostics integrated into `dired' -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021
+;; Copyright (C) 2021-2026 emacs-lsp maintainers
 
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
@@ -112,7 +112,7 @@ path"
 
 (defun lsp-dired--face-for-path (dir)
   "Calculate the face for DIR."
-  (when-let ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
+  (when-let* ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
     (cl-labels ((check-severity
                  (severity)
                  (not (zerop (aref diags severity)))))

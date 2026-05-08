@@ -1,6 +1,7 @@
 ;;; lsp-elm.el --- Elm Client settings             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Daniel V
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Daniel V
 ;; Keywords: elm lsp

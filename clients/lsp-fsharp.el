@@ -1,6 +1,7 @@
 ;;; lsp-fsharp.el --- description -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Reed Mullanix
+;; Copyright (C) 2019-2026 emacs-lsp maintainers
 
 ;; Author: Reed Mullanix <reedmullanix@gmail.com>
 ;; Keywords:
@@ -305,7 +306,7 @@ UPDATE? is t."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-fsharp--make-launch-cmd
                                    #'lsp-fsharp--test-fsautocomplete-present)
-                  :major-modes '(fsharp-mode)
+                  :major-modes '(fsharp-mode fsharp-ts-mode)
                   :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
                                              ("fsharp/notifyWorkspace" #'ignore)
                                              ("fsharp/fileParsed" #'ignore)

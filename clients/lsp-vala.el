@@ -1,6 +1,7 @@
 ;;; lsp-vala.el --- Vala Client settings         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Daniel Svensson
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Daniel Svensson
 ;; Keywords: vala lsp

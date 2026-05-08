@@ -1,6 +1,6 @@
 ;;; lsp-mdx.el --- lsp-mode mdx integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 lsp-mode maintainers
+;; Copyright (C) 2023-2026 lsp-mode maintainers
 
 ;; Author: lsp-mode maintainers
 ;; Keywords: languages
@@ -40,7 +40,7 @@
 
 (defcustom lsp-mdx-server-command-args '("--stdio")
   "Command-line arguments for the mdx lsp server."
-  :type '(repeat 'string)
+  :type '(repeat string)
   :group 'lsp-mdx
   :package-version '(lsp-mode . "8.0.0"))
 

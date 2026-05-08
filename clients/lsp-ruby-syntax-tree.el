@@ -1,6 +1,7 @@
 ;;; lsp-ruby-syntax-tree.el --- lsp-mode for the Ruby syntax_tree gem -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Geoffrey Lessel
+;; Copyright (C) 2022-2026 lsp-mode maintainers
 
 ;; Author: Geoffrey Lessel
 ;; Keywords: languages

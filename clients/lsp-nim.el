@@ -1,6 +1,6 @@
 ;;; lsp-nim.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, nim
@@ -95,6 +95,8 @@
                                    (lambda () lsp-nim-langserver))
                   :synchronize-sections '("nim")
                   :activation-fn (lsp-activate-on "nim")
+                  :notification-handlers
+                  (ht ("extension/statusUpdate" #'ignore))
                   :server-id 'nimlangserver))
 
 (lsp-consistency-check lsp-nim)

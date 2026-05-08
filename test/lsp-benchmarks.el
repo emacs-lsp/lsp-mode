@@ -1,6 +1,6 @@
 ;;; lsp-benchmarks.el --- lsp benchmarks             -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019
+;; Copyright (C) 2019-2026 lsp-mode maintainers
 
 ;; Author:  Ivan Yonchovski
 ;; Keywords:

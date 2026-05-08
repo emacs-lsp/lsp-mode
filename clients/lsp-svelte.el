@@ -1,6 +1,7 @@
 ;;; lsp-svelte.el --- LSP Svelte integration -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Stepan Lusnikov
+;; Copyright (C) 2020-2026 lsp-mode maintainers
 
 ;; Author: Stepan Lusnikov <endenwer@gmail.com>
 ;; Keywords: lsp svelte

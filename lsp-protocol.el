@@ -1,6 +1,7 @@
 ;;; lsp-protocol.el --- Language Sever Protocol Bindings  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Ivan Yonchovski
+;; Copyright (C) 2020-2026 emacs-lsp maintainers
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: convenience
@@ -111,12 +112,20 @@ Example usage with `dash`.
                                                ',required))))
                     `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
                          (&rest plist &key ,@(-map (-lambda ((key))
-                                                     (intern (substring (symbol-name key) 1))) params)
+                                                     (let ((key-sym (intern (substring (symbol-name key) 1))))
+                                                       (if (special-variable-p key-sym)
+                                                           `((,key ,(intern (format "%s_" (symbol-name key-sym)))))
+                                                         key-sym)))
+                                                   params)
                                 &allow-other-keys)
-                       (ignore ,@(-map (-lambda ((key))
-                                         (intern (substring (symbol-name key) 1))) params))
                        ,(format "Constructs %s from `plist.'
 Allowed params: %s" interface (reverse (-map #'cl-first params)))
+                       (ignore ,@(-map (-lambda ((key))
+                                         (let ((key-sym (intern (substring (symbol-name key) 1))))
+                                           (if (special-variable-p key-sym)
+                                               (intern (format "%s_" (symbol-name key-sym)))
+                                             key-sym)))
+                                       params))
                        ,(if lsp-use-plists
                             `(-mapcat (-lambda ((key value))
                                         (list (or (cl-rest (assoc key ',params)) key) value))
@@ -129,7 +138,7 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                                               $$result))
                                    (-partition 2 plist))
                              $$result)))
-                    `(pcase-defmacro ,interface (&rest property-bindings)
+                    `(cl-defun ,(intern (format "lsp--pcase-macroexpander-%s" interface)) (&rest property-bindings)
                        ,(if lsp-use-plists
                             ``(and
                                (pred listp)
@@ -246,6 +255,25 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
          (apply #'append)
          (cl-list* 'progn))))
 
+(pcase-defmacro lsp-interface (interface &rest property-bindings)
+  "If EXPVAL is an instance of INTERFACE, destructure it by matching its
+properties. EXPVAL should be a plist or hash table depending on the variable
+`lsp-use-plists'.
+
+INTERFACE should be an LSP interface defined with `lsp-interface'. This form
+will not match if any of INTERFACE's required fields are missing in EXPVAL.
+
+Each :PROPERTY keyword matches a field in EXPVAL. The keyword may be followed by
+an optional PATTERN, which is a `pcase' pattern to apply to the field's value.
+Otherwise, PROPERTY is let-bound to the field's value.
+
+\(fn INTERFACE [:PROPERTY [PATTERN]]...)"
+  (cl-check-type interface symbol)
+  (let ((lsp-pcase-macroexpander
+         (intern (format "lsp--pcase-macroexpander-%s" interface))))
+    (cl-assert (fboundp lsp-pcase-macroexpander) nil "not a known LSP interface: %s" interface)
+    (apply lsp-pcase-macroexpander property-bindings)))
+
 (if lsp-use-plists
     (progn
       (defun lsp-get (from key)
@@ -348,95 +376,107 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/markup-kind-plain-text "plaintext")
 (defconst lsp/markup-kind-markdown "markdown")
 
-(lsp-interface (JSONResponse (:params :id :method :result) nil)
-               (JSONResponseError (:error) nil)
-               (JSONMessage nil (:params :id :method :result :error))
-               (JSONResult nil (:params :id :method))
-               (JSONNotification (:params :method) nil)
-               (JSONRequest (:params :method) nil)
-               (JSONError (:message :code) (:data))
-               (ProgressParams (:token :value) nil)
-               (Edit (:kind) nil)
-               (WorkDoneProgress (:kind) nil)
-               (WorkDoneProgressBegin  (:kind :title) (:cancellable :message :percentage))
-               (WorkDoneProgressReport  (:kind) (:cancellable :message :percentage))
-               (WorkDoneProgressEnd  (:kind) (:message))
-               (WorkDoneProgressOptions nil (:workDoneProgress))
-               (SemanticTokensOptions (:legend) (:rangeProvider :documentProvider))
-               (SemanticTokensLegend (:tokenTypes :tokenModifiers))
-               (SemanticTokensResult (:resultId) (:data))
-               (SemanticTokensPartialResult nil (:data))
-               (SemanticTokensEdit (:start :deleteCount) (:data))
-               (SemanticTokensDelta (:resultId) (:edits))
-               (SemanticTokensDeltaPartialResult nil (:edits)))
+(eval-and-compile
+  (lsp-interface (JSONResponse (:params :id :method :result) nil)
+                 (JSONResponseError (:error) nil)
+                 (JSONMessage nil (:params :id :method :result :error))
+                 (JSONResult nil (:params :id :method))
+                 (JSONNotification (:params :method) nil)
+                 (JSONRequest (:params :method) nil)
+                 (JSONError (:message :code) (:data))
+                 (ProgressParams (:token :value) nil)
+                 (Edit (:kind) nil)
+                 (WorkDoneProgress (:kind) nil)
+                 (WorkDoneProgressBegin  (:kind :title) (:cancellable :message :percentage))
+                 (WorkDoneProgressReport  (:kind) (:cancellable :message :percentage))
+                 (WorkDoneProgressEnd  (:kind) (:message))
+                 (WorkDoneProgressOptions nil (:workDoneProgress))
+                 (SemanticTokensOptions (:legend) (:rangeProvider :documentProvider))
+                 (SemanticTokensLegend (:tokenTypes :tokenModifiers))
+                 (SemanticTokensResult (:resultId) (:data))
+                 (SemanticTokensPartialResult nil (:data))
+                 (SemanticTokensEdit (:start :deleteCount) (:data))
+                 (SemanticTokensDelta (:resultId) (:edits))
+                 (SemanticTokensDeltaPartialResult nil (:edits)))
 
-(lsp-interface (v1:ProgressParams (:id :title) (:message :percentage :done)))
+  (lsp-interface (v1:ProgressParams (:id :title) (:message :percentage :done))))
 
 (defun dash-expand:&RangeToPoint (key source)
   "Convert the position KEY from SOURCE into a point."
   `(lsp--position-to-point
     (lsp-get ,source ,key)))
 
-(lsp-interface (eslint:StatusParams  (:state) nil)
-               (eslint:OpenESLintDocParams (:url) nil)
-               (eslint:ConfirmExecutionParams (:scope :file :libraryPath) nil))
+(eval-and-compile
+  (lsp-interface (eslint:StatusParams  (:state) nil)
+                 (eslint:OpenESLintDocParams (:url) nil)
+                 (eslint:ConfirmExecutionParams (:scope :file :libraryPath) nil))
 
-(lsp-interface (haxe:ProcessStartNotification (:title) nil))
+  (lsp-interface (haxe:ProcessStartNotification (:title) nil))
 
-(lsp-interface (pwsh:ScriptRegion (:StartLineNumber :EndLineNumber :StartColumnNumber :EndColumnNumber :Text) nil))
+  (lsp-interface (pwsh:ScriptRegion (:StartLineNumber :EndLineNumber :StartColumnNumber :EndColumnNumber :Text) nil))
 
-(lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column))
-               (omnisharp:ProjectInformationRequest (:FileName))
-               (omnisharp:MsBuildProject (:IsUnitProject :IsExe :Platform :Configuration :IntermediateOutputPath :OutputPath :TargetFrameworks :SourceFiles :TargetFramework :TargetPath :AssemblyName :Path :ProjectGuid))
-               (omnisharp:ProjectInformation (:ScriptProject :MsBuildProject))
-               (omnisharp:CodeStructureRequest (:FileName))
-               (omnisharp:CodeStructureResponse (:Elements))
-               (omnisharp:CodeElement (:Kind :Name :DisplayName :Children :Ranges :Properties))
-               (omnisharp:CodeElementProperties () (:static :accessibility :testMethodName :testFramework))
-               (omnisharp:Range (:Start :End))
-               (omnisharp:RangeList () (:attributes :full :name))
-               (omnisharp:Point (:Line :Column))
-               (omnisharp:RunTestsInClassRequest (:MethodNames :RunSettings :TestFrameworkname :TargetFrameworkVersion :NoBuild :Line :Column :Buffer :FileName))
-               (omnisharp:RunTestResponse (:Results :Pass :Failure :ContextHadNoTests))
-               (omnisharp:TestMessageEvent (:MessageLevel :Message))
-               (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError))
-               (omnisharp:MetadataRequest (:AssemblyName :TypeName :ProjectName :VersionNumber :Language))
-               (omnisharp:MetadataResponse (:SourceName :Source)))
+  (lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column))
+                 (omnisharp:ProjectInformationRequest (:FileName))
+                 (omnisharp:MsBuildProject (:IsUnitProject :IsExe :Platform :Configuration :IntermediateOutputPath :OutputPath :TargetFrameworks :SourceFiles :TargetFramework :TargetPath :AssemblyName :Path :ProjectGuid))
+                 (omnisharp:ProjectInformation (:ScriptProject :MsBuildProject))
+                 (omnisharp:CodeStructureRequest (:FileName))
+                 (omnisharp:CodeStructureResponse (:Elements))
+                 (omnisharp:CodeElement (:Kind :Name :DisplayName :Children :Ranges :Properties))
+                 (omnisharp:CodeElementProperties () (:static :accessibility :testMethodName :testFramework))
+                 (omnisharp:Range (:Start :End))
+                 (omnisharp:RangeList () (:attributes :full :name))
+                 (omnisharp:Point (:Line :Column))
+                 (omnisharp:RunTestsInClassRequest (:MethodNames :RunSettings :TestFrameworkname :TargetFrameworkVersion :NoBuild :Line :Column :Buffer :FileName))
+                 (omnisharp:RunTestResponse (:Results :Pass :Failure :ContextHadNoTests))
+                 (omnisharp:TestMessageEvent (:MessageLevel :Message))
+                 (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError))
+                 (omnisharp:MetadataRequest (:AssemblyName :TypeName :ProjectName :VersionNumber :Language))
+                 (omnisharp:MetadataResponse (:SourceName :Source)))
 
-(lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
-               (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
+  (lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
+                 (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
 
-(lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
+  (lsp-interface (ocaml-lsp:TypeEnclosingParams (:uri :at :index :verbosity) nil)
+                 (ocaml-lsp:TypeEnclosingResult (:index :enclosings :type) nil)
+                 (ocaml-lsp:GetDocumentationParams (:textDocument :position :contentFormat) nil))
 
-(lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
-               (rust-analyzer:SyntaxTreeParams (:textDocument) (:range))
-               (rust-analyzer:ViewHir (:textDocument :position))
-               (rust-analyzer:ViewItemTree (:textDocument))
-               (rust-analyzer:ExpandMacroParams (:textDocument :position) nil)
-               (rust-analyzer:ExpandedMacro (:name :expansion) nil)
-               (rust-analyzer:MatchingBraceParams (:textDocument :positions) nil)
-               (rust-analyzer:OpenCargoTomlParams (:textDocument) nil)
-               (rust-analyzer:OpenExternalDocsParams (:textDocument :position) nil)
-               (rust-analyzer:ResovedCodeActionParams (:id :codeActionParams) nil)
-               (rust-analyzer:JoinLinesParams (:textDocument :ranges) nil)
-               (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
-               (rust-analyzer:RunnablesParams (:textDocument) (:position))
-               (rust-analyzer:Runnable (:label :kind :args) (:location))
-               (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest))
-               (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
-               (rust-analyzer:RelatedTests (:runnable) nil)
-               (rust-analyzer:SsrParams (:query :parseOnly) nil)
-               (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
-               (rust-analyzer:CommandLinkGroup (:commands) (:title)))
+  (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
-(lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
-               (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children))
-               (clojure-lsp:ProjectTreeNode (:name :type) (:nodes :final :id :uri :detail :range)))
+  (lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
+                 (rust-analyzer:SyntaxTreeParams (:textDocument) (:range))
+                 (rust-analyzer:ViewHir (:textDocument :position))
+                 (rust-analyzer:ViewItemTree (:textDocument))
+                 (rust-analyzer:ExpandMacroParams (:textDocument :position) nil)
+                 (rust-analyzer:ExpandedMacro (:name :expansion) nil)
+                 (rust-analyzer:MatchingBraceParams (:textDocument :positions) nil)
+                 (rust-analyzer:OpenCargoTomlParams (:textDocument) nil)
+                 (rust-analyzer:OpenExternalDocsParams (:textDocument :position) nil)
+                 (rust-analyzer:ResovedCodeActionParams (:id :codeActionParams) nil)
+                 (rust-analyzer:JoinLinesParams (:textDocument :ranges) nil)
+                 (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
+                 (rust-analyzer:RunnablesParams (:textDocument) (:position))
+                 (rust-analyzer:Runnable (:label :kind :args) (:location))
+                 (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest :environment))
+                 (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
+                 (rust-analyzer:RelatedTests (:runnable) nil)
+                 (rust-analyzer:SsrParams (:query :parseOnly) nil)
+                 (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
+                 (rust-analyzer:CommandLinkGroup (:commands) (:title)))
 
-(lsp-interface (terraform-ls:ModuleCalls (:v :module_calls) nil))
-(lsp-interface (terraform-ls:Module (:name :docs_link :version :source_type :dependent_modules) nil))
-(lsp-interface (terraform-ls:Providers (:v :provider_requirements :installed_providers) nil))
-(lsp-interface (terraform-ls:module.terraform (:v :required_version :discovered_version)))
+  (lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
+                 (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children))
+                 (clojure-lsp:ProjectTreeNode (:name :type) (:nodes :final :id :uri :detail :range)))
+
+  (lsp-interface (terraform-ls:ModuleCalls (:v :module_calls) nil))
+  (lsp-interface (terraform-ls:Module (:name :docs_link :version :source_type :dependent_modules) nil))
+  (lsp-interface (terraform-ls:Providers (:v :provider_requirements :installed_providers) nil))
+  (lsp-interface (terraform-ls:module.terraform (:v :required_version :discovered_version)))
+
+  (lsp-interface
+   (copilot-ls:SignInInitiateResponse (:status :userCode :verificationUri :expiresIn :interval :user) nil)
+   (copilot-ls:SignInConfirmResponse (:status :user))
+   (copilot-ls:CheckStatusResponse (:status :user))
+   (copilot-ls:McpToolsNotification (:servers))))
 
 
 ;; begin autogenerated code
@@ -473,6 +513,8 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/completion-trigger-kind-invoked 1)
 (defconst lsp/completion-trigger-kind-trigger-character 2)
 (defconst lsp/completion-trigger-kind-trigger-for-incomplete-completions 3)
+(defconst lsp/inline-completion-trigger-invoked 1 "Explicit invocation as per https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#inlineCompletionTriggerKind")
+(defconst lsp/inline-completion-trigger-automatic 2 "Automatic invocation as per https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#inlineCompletionTriggerKind")
 (defvar lsp/diagnostic-severity-lookup
   [nil Error Warning Information Hint Max])
 (defconst lsp/diagnostic-severity-error 1)
@@ -573,8 +615,9 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/response-error-code-server-error-start 6)
 (defconst lsp/response-error-code-server-error-end 7)
 
-(lsp-interface
- (CallHierarchyCapabilities nil (:dynamicRegistration))
+(eval-and-compile
+  (lsp-interface
+   (CallHierarchyCapabilities nil (:dynamicRegistration))
  (CallHierarchyItem (:kind :name :range :selectionRange :uri) (:detail :tags))
  (ClientCapabilities nil (:experimental :textDocument :workspace))
  (ClientInfo (:name) (:version))
@@ -593,7 +636,7 @@ See `-let' for a description of the destructuring mechanism."
  (CompletionCapabilities nil (:completionItem :completionItemKind :contextSupport :dynamicRegistration))
  (CompletionContext (:triggerKind) (:triggerCharacter))
  (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :insertTextMode :kind :preselect :sortText :tags :textEdit :score :labelDetails))
- (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport :insertReplaceSupport :resolveSupport))
+ (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport :insertReplaceSupport :resolveSupport :labelDetailsSupport))
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
  (CompletionOptions nil (:resolveProvider :triggerCharacters :allCommitCharacters))
@@ -633,7 +676,6 @@ See `-let' for a description of the destructuring mechanism."
  (FormattingOptions (:tabSize :insertSpaces) (:trimTrailingWhitespace :insertFinalNewline :trimFinalNewlines))
  (HoverCapabilities nil (:contentFormat :dynamicRegistration))
  (ImplementationCapabilities nil (:dynamicRegistration :linkSupport))
- (LabelDetails (:detail :description) nil)
  (LinkedEditingRanges (:ranges) (:wordPattern))
  (Location (:range :uri) nil)
  (MarkedString (:language :value) nil)
@@ -660,13 +702,13 @@ See `-let' for a description of the destructuring mechanism."
  (SemanticHighlightingCapabilities nil (:semanticHighlighting))
  (SemanticHighlightingInformation (:line) (:tokens))
  (SemanticHighlightingServerCapabilities nil (:scopes))
- (ServerCapabilities nil (:callHierarchyProvider :codeActionProvider :codeLensProvider :colorProvider :completionProvider :declarationProvider :definitionProvider :documentFormattingProvider :documentHighlightProvider :documentLinkProvider :documentOnTypeFormattingProvider :documentRangeFormattingProvider :documentSymbolProvider :executeCommandProvider :experimental :foldingRangeProvider :hoverProvider :implementationProvider :referencesProvider :renameProvider :selectionRangeProvider :semanticHighlighting :signatureHelpProvider :textDocumentSync :typeDefinitionProvider :typeHierarchyProvider :workspace :workspaceSymbolProvider :semanticTokensProvider))
+ (ServerCapabilities nil (:callHierarchyProvider :codeActionProvider :codeLensProvider :colorProvider :completionProvider :declarationProvider :definitionProvider :documentFormattingProvider :documentHighlightProvider :documentLinkProvider :documentOnTypeFormattingProvider :documentRangeFormattingProvider :documentSymbolProvider :executeCommandProvider :experimental :foldingRangeProvider :hoverProvider :implementationProvider :positionEncoding :referencesProvider :renameProvider :selectionRangeProvider :semanticHighlighting :signatureHelpProvider :textDocumentSync :typeDefinitionProvider :typeHierarchyProvider :workspace :workspaceSymbolProvider :semanticTokensProvider :inlineCompletionProvider :inlayHintProvider))
  (ServerInfo (:name) (:version))
  (SignatureHelp (:signatures) (:activeParameter :activeSignature))
  (SignatureHelpCapabilities nil (:contextSupport :dynamicRegistration :signatureInformation))
  (SignatureHelpContext (:triggerKind :isRetrigger) (:activeSignatureHelp :triggerCharacter))
  (SignatureHelpOptions nil (:retriggerCharacters :triggerCharacters))
- (SignatureInformation (:label) (:documentation :parameters))
+ (SignatureInformation (:label) (:documentation :parameters :activeParameter))
  (SignatureInformationCapabilities nil (:documentationFormat :parameterInformation))
  (StaticRegistrationOptions nil (:documentSelector :id))
  (SymbolCapabilities nil (:dynamicRegistration :symbolKind))
@@ -790,9 +832,16 @@ See `-let' for a description of the destructuring mechanism."
  (WillSaveTextDocumentParams (:reason :textDocument) nil)
  (WorkspaceSymbolParams (:query) nil)
  ;; 3.17
+ (RelativePattern (:baseUri :pattern) nil)
+ (LabelDetails nil (:detail :description))
  (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
  (InlayHintLabelPart (:value) (:tooltip :location :command))
- (InlayHintsParams (:textDocument) (:range)))
+ (InlayHintsParams (:textDocument) (:range))
+ ;; 3.18
+ (InlineCompletionParams (:textDocument :position :context))
+ (InlineCompletionContext (:triggerKind))
+ (InlineCompletionItem (:insertText) (:filterText :range :command))
+ (InlineCompletionList (:items) nil)))
 
 ;; 3.17
 (defconst lsp/inlay-hint-kind-type-hint 1)
@@ -800,5 +849,4 @@ See `-let' for a description of the destructuring mechanism."
 
 
 (provide 'lsp-protocol)
-
 ;;; lsp-protocol.el ends here

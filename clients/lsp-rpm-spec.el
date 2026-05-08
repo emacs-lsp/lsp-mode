@@ -32,7 +32,7 @@
   :tag "Language Server"
   :link '(url-link "https://github.com/dcermak/rpm-spec-language-server"))
 
-(defcustom lsp-rpm-spec-server-command '("python" "-m" "rpm_spec_language_server" "--stdio")
+(defcustom lsp-rpm-spec-server-command '("python" "-m" "rpm_spec_language_server" "-vvv")
   "Command to start rpm-spec-language-server."
   :risky t
   :group 'lsp-rpm-spec
@@ -48,8 +48,12 @@ If UPDATE? is true, then pip will update the server."
    error-callback
    "pip" "install" "--user" "rpm-spec-language-server" (when update? "-U")))
 
+(defun lsp-rpm-spec-server-start-fun (port)
+  "Command to start the language server in TCP mode, requires PORT."
+  (append lsp-rpm-spec-server-command (list "--port" (number-to-string port))))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-rpm-spec-server-command))
+ (make-lsp-client :new-connection (lsp-tcp-connection 'lsp-rpm-spec-server-start-fun)
                   :activation-fn (lsp-activate-on "rpm-spec")
                   :server-id 'rpm-spec-language-server))
 

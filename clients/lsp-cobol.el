@@ -1,6 +1,7 @@
 ;;; lsp-cobol.el --- COBOL support  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Shen, Jen-Chieh
+;; Copyright (C) 2024-2026 emacs-lsp maintainers
 
 ;; This file is not part of GNU Emacs.
 
@@ -106,7 +107,7 @@ This is only for development use."
 (defun lsp-cobol-start-ls ()
   "Start the COBOL language service."
   (interactive)
-  (when-let ((exe (lsp-cobol--executable))
+  (when-let* ((exe (lsp-cobol--executable))
              ((lsp--port-available "localhost" lsp-cobol-port)))
     (lsp-async-start-process #'ignore #'ignore exe)))
 

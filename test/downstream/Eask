@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-mode"
          "9.0.0"
          "Test downstream packages")
@@ -7,8 +9,8 @@
 
 (package-file "lsp-mode.el")
 
-(source "gnu")
-(source "melpa")
+(source 'gnu)
+(source 'melpa)
 
 (depends-on "emacs" "26.3")
 (depends-on "dash")
