@@ -1,6 +1,5 @@
 * Changelog
 ** Unreleased 10.0.1
-<<<<<<< refactor/5040-semhl-faces
   * Overhaul ~lsp-face-semhl-*~ faces to cover the full LSP 3.17 semantic token spec (see: [[https://github.com/emacs-lsp/lsp-mode/issues/5040][#5040]])
     - Add dedicated faces ~lsp-face-semhl-enum-member~, ~lsp-face-semhl-modifier~, ~lsp-face-semhl-decorator~.
     - Fix ~enumMember~ mapping (was ~lsp-face-semhl-constant~, now ~lsp-face-semhl-enum-member~); default rendering unchanged by inheritance.
@@ -9,10 +8,10 @@
     - Trim non-spec entries from the default ~lsp-semantic-token-faces~ alist: ~enumConstant~, ~member~, ~label~, ~dependent~, ~concept~. Clangd keeps ~dependent~/~concept~/~member~ via ~:semantic-tokens-faces-overrides~; ~lsp-face-semhl-member~ and ~lsp-face-semhl-label~ remain publicly defined.
     - Migrate ~lsp-terraform-semantic-token-faces~ to ~lsp-face-semhl-enum-member~.
     - Migration note: users who previously customized ~lsp-face-semhl-constant~ specifically to recolor enum members should now customize ~lsp-face-semhl-enum-member~ instead. ~lsp-face-semhl-constant~ still cascades to ~number~ and the ~readonly~ token modifier. Users who customized ~lsp-face-semhl-type~ expecting it NOT to propagate to ~struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace~ now need to customize those child faces directly.
-=======
   * Fix crash (EXC_CRASH / SIGABRT) on macOS when installing language servers: replace ~url-copy-file~ in a background thread with ~make-process~ (curl) + sentinel, avoiding the NS event-loop thread-safety assertion in ~ns_select_1~
->>>>>>> master
   * Fix ~lsp-clojure-extract-function~ to always send the range-based form required by clojure-lsp 2026.01+, and extract the selected region when one is active (see [[https://github.com/emacs-lsp/lsp-mode/issues/5023][#5023]])
+  * Fix PHP Language Server detection.
+
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
   * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
