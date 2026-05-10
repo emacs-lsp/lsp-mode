@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Add support for [[https://github.com/tailwindlabs/tailwindcss-intellisense][Tailwind CSS]] language server.
   * Overhaul ~lsp-face-semhl-*~ faces to cover the full LSP 3.17 semantic token spec (see: [[https://github.com/emacs-lsp/lsp-mode/issues/5040][#5040]])
     - Add dedicated faces ~lsp-face-semhl-enum-member~, ~lsp-face-semhl-modifier~, ~lsp-face-semhl-decorator~.
     - Fix ~enumMember~ mapping (was ~lsp-face-semhl-constant~, now ~lsp-face-semhl-enum-member~); default rendering unchanged by inheritance.
