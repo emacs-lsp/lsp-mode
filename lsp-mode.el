@@ -7445,60 +7445,113 @@ server. WORKSPACE is the active workspace."
                     (concat leftovers (encode-coding-string input 'utf-8-unix t))))
 
       (let (messages)
-        (while (not (s-blank? chunk))
-          (if (not body-length)
-              ;; Read headers
-              (if-let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
-                  ;; We've got all the headers, handle them all at once:
-                  (setf body-length (lsp--get-body-length
-                                     (mapcar #'lsp--parse-header
-                                             (split-string
-                                              (substring-no-properties chunk
-                                                                       (or (string-match-p "Content-Length" chunk)
-                                                                           (error "Unable to find Content-Length header."))
-                                                                       body-sep-pos)
-                                              "\r\n")))
-                        body-received 0
-                        leftovers nil
-                        chunk (substring-no-properties chunk (+ body-sep-pos 4)))
+        ;; Wrap the while-loop parsing the messages in a condition-case. If any
+        ;; error escapes the loop, log it, reset parser state for the next read,
+        ;; and fall through to the dispatch step for already-parsed messages.
+        ;; This ensures that any message parsed before the error still gets
+        ;; dispatched.
+        (condition-case parsing-err
+            (while (not (s-blank? chunk))
+              (if (not body-length)
+                  ;; Read headers
+                  (if-let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
+                      ;; We've got all the headers, handle them all at once:
+                      (setf body-length (lsp--get-body-length
+                                         (mapcar #'lsp--parse-header
+                                                 (split-string
+                                                  (substring-no-properties chunk
+                                                                           (or (string-match-p "Content-Length" chunk)
+                                                                               (error "Unable to find Content-Length header."))
+                                                                           body-sep-pos)
+                                                  "\r\n")))
+                            body-received 0
+                            leftovers nil
+                            chunk (substring-no-properties chunk (+ body-sep-pos 4)))
 
-                ;; Haven't found the end of the headers yet. Save everything
-                ;; for when the next chunk arrives and await further input.
-                (setf leftovers chunk
-                      chunk nil))
-            (let* ((chunk-length (string-bytes chunk))
-                   (left-to-receive (- body-length body-received))
-                   (this-body (if (< left-to-receive chunk-length)
-                                  (prog1 (substring-no-properties chunk 0 left-to-receive)
-                                    (setf chunk (substring-no-properties chunk left-to-receive)))
-                                (prog1 chunk
-                                  (setf chunk nil))))
-                   (body-bytes (string-bytes this-body)))
-              (push this-body body)
-              (setf body-received (+ body-received body-bytes))
-              (when (>= chunk-length left-to-receive)
-                (condition-case err
-                    (with-temp-buffer
-                      (apply #'insert
-                             (nreverse
-                              (prog1 body
-                                (setf leftovers nil
-                                      body-length nil
-                                      body-received nil
-                                      body nil))))
-                      (decode-coding-region (point-min)
-                                            (point-max)
-                                            'utf-8)
-                      (goto-char (point-min))
-                      (push (lsp-json-read-buffer) messages))
+                    ;; Haven't found the end of the headers yet. Save everything
+                    ;; for when the next chunk arrives and await further input.
+                    (setf leftovers chunk
+                          chunk nil))
+                (let* ((chunk-length (string-bytes chunk))
+                       (left-to-receive (- body-length body-received))
+                       (this-body (if (< left-to-receive chunk-length)
+                                      (prog1 (substring-no-properties chunk 0 left-to-receive)
+                                        (setf chunk (substring-no-properties chunk left-to-receive)))
+                                    (prog1 chunk
+                                      (setf chunk nil))))
+                       (body-bytes (string-bytes this-body)))
+                  (push this-body body)
+                  (setf body-received (+ body-received body-bytes))
+                  (when (>= chunk-length left-to-receive)
+                    (condition-case err
+                        (with-temp-buffer
+                          (apply #'insert
+                                 (nreverse
+                                  (prog1 body
+                                    (setf leftovers nil
+                                          body-length nil
+                                          body-received nil
+                                          body nil))))
+                          (decode-coding-region (point-min)
+                                                (point-max)
+                                                'utf-8)
+                          (goto-char (point-min))
+                          (push (lsp-json-read-buffer) messages))
 
-                  (error
-                   (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
-                             (concat leftovers input)
-                             err)))))))
-        (mapc (lambda (msg)
-                (lsp--parser-on-message msg workspace))
-              (nreverse messages))))))
+                      (error
+                       (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                                 (concat leftovers input)
+                                 err)))))))
+          (error
+           ;; Parsing error interrupted the loop, e.g., caused by a wrong
+           ;; framing of the LSP message (e.g. mid-body bytes mistaken for
+           ;; headers). Reset parser state and fall through so that
+           ;; already-parsed messages still reach the dispatcher instead of
+           ;; being silently discarded.
+           (lsp-warn "LSP message framing error when filtering messages; salvaged %d parsed message(s): %S"
+                     (length messages) parsing-err)
+           (setf leftovers nil
+                 body-length nil
+                 body-received 0
+                 body nil)))
+        ;; Per-message dispatch: catch known throw tags ('lsp-done or 'input) so
+        ;; that a non-local exit from the handler of one message doesn't cause
+        ;; the rest of the batch to be abandoned. The throw is re-issued after
+        ;; all messages have been dispatched, so the original target catch (e.g.
+        ;; (catch 'lsp-done ...) in `lsp-request-while-no-input' or (lsp--catch
+        ;; 'input ...) in lsp-completion.el) still receives it.
+        (let ((no-throw
+               ;; Allocate a unique fresh object to signal that the handler
+               ;; returned normally (i.e., no non-local exit). Allocated using
+               ;; `cons' so `eq' reliably distinguishes it from any value throw
+               ;; could carry.
+               (cons nil nil))
+              queued-tag queued-value)
+          (dolist (msg (nreverse messages))
+            (let ((r (catch 'lsp-done
+                       (let ((r2 (catch 'input
+                                   (lsp--parser-on-message msg workspace)
+                                   no-throw)))
+                         (unless (eq r2 no-throw)
+                           ;; If 'input was thrown, stash the tag and
+                           ;; value for later re-throwing.
+                           (setq queued-tag 'input queued-value r2))
+                         ;; Yield the marker, so the outer (catch 'lsp-done ...)
+                         ;; returns no-throw whenever 'lsp-done was not thrown
+                         ;; (regardless of whether or not 'input was thrown and
+                         ;; caught above).
+                         no-throw))))
+              (unless (eq r no-throw)
+                ;; If 'lsp-done was thrown, stash the tag and value for later
+                ;; later re-throwing.
+                (setq queued-tag 'lsp-done queued-value r))))
+          ;; When we reach this point, we have safely processed all messages and
+          ;; stashed any possible non-local exit tag and associated value in
+          ;; 'queued-tag.
+          (when queued-tag
+            ;; Re-throw the non-local exit that was caught while processing
+            ;; the messages.
+            (throw queued-tag queued-value)))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions
