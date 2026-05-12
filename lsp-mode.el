@@ -3524,12 +3524,19 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
               (and
                lsp-response-timeout
                (+ send-time lsp-response-timeout)))
-             resp-result resp-error done?)
+             resp-result resp-error done?
+             (catch-active t))
         (unwind-protect
             (progn
               (lsp-request-async method params
-                                 (lambda (res) (setf resp-result (or res :finished)) (throw 'lsp-done '_))
-                                 :error-handler (lambda (err) (setf resp-error err) (throw 'lsp-done '_))
+                                 (lambda (res)
+                                   (when catch-active
+                                     (setf resp-result (or res :finished))
+                                     (throw 'lsp-done '_)))
+                                 :error-handler (lambda (err)
+                                                  (when catch-active
+                                                    (setf resp-error err)
+                                                    (throw 'lsp-done '_)))
                                  :mode 'detached
                                  :cancel-token :sync-request)
               (while (not (or resp-error resp-result (input-pending-p)))
@@ -3546,6 +3553,7 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
                ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
                ((lsp-json-error? (cl-first resp-error))
                 (error (lsp:json-error-message (cl-first resp-error))))))
+          (setq catch-active nil)
           (unless done?
             (lsp-cancel-request-by-token :sync-request))
           (when (and (input-pending-p) lsp--throw-on-input)
