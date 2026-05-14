@@ -4144,6 +4144,15 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-1001">Unreleased 10.0.1<a class="headerlink" href="#unreleased-1001" title="Permanent link">#</a></h2>
 <ul>
+<li>Add <code>lsp-diagnostics-flymake-message-formatter</code> defcustom for
+    customizing how an LSP diagnostic is rendered into the flymake text
+    string; the default appends the code in brackets, and users can
+    suppress it, prepend the source tool, add a severity prefix, etc.
+    (see: <a href="https://github.com/emacs-lsp/lsp-mode/pull/5036">#5036</a>).</li>
+<li>Append the LSP diagnostic code (e.g. <code>reportUnusedExpression</code>,
+    <code>E501</code>) to flymake messages, mirroring what flycheck already exposes
+    via <code>flycheck-error-id</code> (see:
+    <a href="https://github.com/emacs-lsp/lsp-mode/pull/5036">#5036</a>).</li>
 <li>Add support for <a href="https://github.com/tailwindlabs/tailwindcss-intellisense">Tailwind
     CSS</a>
     language server.</li>
@@ -4931,7 +4940,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 12, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 14, 2026</span>
       
     
   </small>

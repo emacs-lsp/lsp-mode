@@ -862,6 +862,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-diagnostics-flymake-message-formatter" class="md-nav__link">
+    lsp-diagnostics-flymake-message-formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-diagnostics-provider" class="md-nav__link">
     lsp-diagnostics-provider
   </a>
@@ -3951,6 +3958,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-diagnostics-flymake-message-formatter" class="md-nav__link">
+    lsp-diagnostics-flymake-message-formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-diagnostics-provider" class="md-nav__link">
     lsp-diagnostics-provider
   </a>
@@ -4039,6 +4053,23 @@ on top the flycheck face for that error level.</p>
 <p><em>Default:</em> <code>error</code></p>
 <p>Error level to use when the server does not report back a diagnostic level.</p>
 <hr />
+<h3 id="lsp-diagnostics-flymake-message-formatter"><code>lsp-diagnostics-flymake-message-formatter</code><a class="headerlink" href="#lsp-diagnostics-flymake-message-formatter" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>function</code></p>
+<p><em>Default:</em> <code>lsp-diagnostics-flymake-default-message-formatter</code></p>
+<p>Function used to build the flymake text string for an LSP diagnostic.</p>
+<p>Flymake stores a single string per diagnostic
+(<code>flymake-diagnostic-text</code>), so any presentation choice (whether to
+append the rule code, the source, severity prefix, etc.) must be made
+before the <code>flymake-diagnostic</code> is constructed.  This hook provides the
+place to make that choice.</p>
+<p>Called with one argument, the LSP <code>Diagnostic</code> plist (with fields such
+as <code>:message</code>, <code>:code?</code>, <code>:source?</code>, <code>:severity?</code>, <code>:tags?</code>).  Must
+return a string.</p>
+<p>The default <code>lsp-diagnostics-flymake-default-message-formatter</code> appends
+<code>[code]</code> when the diagnostic carries one and returns the bare message
+otherwise.  Override to suppress the code, prepend the source, or
+reformat the message in any other way.</p>
+<hr />
 <h3 id="lsp-diagnostics-provider"><code>lsp-diagnostics-provider</code><a class="headerlink" href="#lsp-diagnostics-provider" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag Pick flycheck if present and fallback to flymake :auto) (const :tag Pick flycheck :flycheck) (const :tag Pick flymake :flymake) (const :tag Use neither flymake nor lsp :none) (const :tag Prefer flymake t) (const :tag Prefer flycheck nil))</code></p>
 <p><em>Default:</em> <code>:auto</code></p>
@@ -4052,7 +4083,7 @@ on top the flycheck face for that error level.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 12, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 14, 2026</span>
       
     
   </small>
