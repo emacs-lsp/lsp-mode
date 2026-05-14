@@ -292,7 +292,7 @@ otherwise.  Override to suppress the code, prepend the source, or
 reformat the message in any other way."
   :type 'function
   :group 'lsp-diagnostics
-  :package-version '(lsp-mode . "9.1.0"))
+  :package-version '(lsp-mode . "10.0.1"))
 
 (defun lsp-diagnostics--flymake-setup ()
   "Setup flymake."
