@@ -114,13 +114,13 @@ be available here: https://github.com/clangd/clangd/releases/"
 This function assumes that the current buffer contains the result
 of browsing `clang.llvm.org', as returned by `url-retrieve'.
 More concretely, this function returns the main <div> element
-with class `section', and also removes `headerlinks'."
+with tag `section', and also removes `headerlinks'."
   (goto-char (point-min))
   (lsp-cpp-flycheck-clang-tidy--narrow-to-http-body)
   (lsp-cpp-flycheck-clang-tidy--decode-region-as-utf8 (point-min) (point-max))
   (lsp-cpp-flycheck-clang-tidy--remove-crlf)
   (let* ((dom (libxml-parse-html-region (point-min) (point-max)))
-         (section (dom-by-class dom "section")))
+         (section (dom-by-tag dom 'section)))
     (dolist (headerlink (dom-by-class section "headerlink"))
       (dom-remove-node section headerlink))
     section))
@@ -254,6 +254,9 @@ This must be set only once after loading the clang client.")
                   :priority -1
                   :server-id 'clangd
                   :library-folders-fn (lambda (_workspace) lsp-clients-clangd-library-directories)
+                  :semantic-tokens-faces-overrides '(:types (("dependent"  . lsp-face-semhl-type)
+                                                             ("concept"    . lsp-face-semhl-interface)
+                                                             ("member"     . lsp-face-semhl-member)))
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'clangd callback error-callback))))
 

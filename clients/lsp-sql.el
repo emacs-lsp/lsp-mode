@@ -31,7 +31,7 @@
   "LSP support for SQL, using sql-language-server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/joe-re/sql-language-server")
-  :package-version `(lsp-mode . "9.0.1"))
+  :package-version `(lsp-mode . "10.0.0"))
 
 (defcustom lsp-sql-server-path nil
   "Path points for SQL language server.

@@ -72,7 +72,7 @@
             ('windows-nt
              "ols-x86_64-pc-windows-msvc.exe")
             ('darwin
-             (if (string-match "aarch64-.*" system-configuration)
+             (if (string-match-p "aarch64-.*" system-configuration)
                  "ols-arm64-darwin"
                "ols-x86_64-darwin"))
             (_

@@ -70,7 +70,7 @@
                (progn
                  (lsp-log "%s is not present." php-file)
                  nil)))
-       t))))
+       nil))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-php--create-connection)
@@ -133,7 +133,7 @@ from all language server features."
    "exif" "fileinfo" "filter" "fpm" "ftp" "gd" "hash" "iconv" "imap" "interbase"
    "intl" "json" "ldap" "libxml" "mbstring" "mcrypt" "meta" "mssql" "mysqli"
    "oci8" "odbc" "openssl" "pcntl" "pcre" "PDO" "pdo_ibm" "pdo_mysql"
-   "pdo_pgsql" "pdo_sqlite" "pgsql" "Phar" "posix" "pspell" "readline" "recode"
+   "pdo_pgsql" "pdo_sqlite" "pgsql" "Phar" "posix" "pspell" "random" "readline" "recode"
    "Reflection" "regex" "session" "shmop" "SimpleXML" "snmp" "soap" "sockets"
    "sodium" "SPL" "sqlite3" "standard" "superglobals" "sybase" "sysvmsg"
    "sysvsem" "sysvshm" "tidy" "tokenizer" "wddx" "xml" "xmlreader" "xmlrpc"
@@ -263,6 +263,14 @@ language server."
   :type '(repeat string)
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))
+
+(lsp-defcustom lsp-intelephense-phpdoc-use-fully-qualified-names nil
+  "If non-nil, Intelephense will use fully qualified names in generated PHPDoc.
+This corresponds to the LSP setting `intelephense.phpdoc.useFullyQualifiedNames`."
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "9.0")
+  :lsp-path "intelephense.phpdoc.useFullyQualifiedNames")
 
 (lsp-dependency 'intelephense
                 '(:system "intelephense")

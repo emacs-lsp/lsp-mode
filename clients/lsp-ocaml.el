@@ -49,7 +49,7 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-ocaml-lang-server-command))
-                  :major-modes '(reason-mode caml-mode tuareg-mode)
+                  :major-modes '(reason-mode caml-mode neocaml-mode neocaml-interface-mode tuareg-mode)
                   :priority -1
                   :server-id 'ocaml-ls))
 
@@ -66,7 +66,7 @@
 ;;; -------------------
 
 (defcustom lsp-ocaml-lsp-server-command
-  '("ocamllsp")
+  '("opam" "exec" "--" "ocamllsp")
   "Command to start ocaml-lsp-server."
   :group 'lsp-ocaml-lsp-server
   :type '(choice
@@ -78,7 +78,7 @@
  (make-lsp-client
   :new-connection
   (lsp-stdio-connection (lambda () lsp-ocaml-lsp-server-command))
-  :major-modes '(reason-mode caml-mode tuareg-mode)
+  :major-modes '(reason-mode caml-mode neocaml-mode neocaml-interface-mode tuareg-mode)
   :priority 0
   :server-id 'ocaml-lsp-server))
 

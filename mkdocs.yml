@@ -55,6 +55,7 @@ nav:
     - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
+    - Biome: page/lsp-biome.md
     - Buf/Protocol Buffers (Buf CLI): page/lsp-buf.md
     - Buf/Protocol Buffers (Buf Language Server): page/lsp-bufls.md
     - Camel: page/lsp-camel.md
@@ -86,6 +87,7 @@ nav:
     - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
+    - Fish (fish-lsp): page/lsp-fish.md
     - Fortran (fortls): page/lsp-fortran.md
     - Fortran (fortitude): page/lsp-fortitude.md
     - Futhark: page/lsp-futhark.md

@@ -263,6 +263,37 @@ See https://github.com/emacs-lsp/lsp-mode."
 (defvar flymake-mode)
 (defvar-local lsp-diagnostics--flymake-report-fn nil)
 
+(defun lsp-diagnostics-flymake-default-message-formatter (diag)
+  "Default formatter for the flymake text of an LSP `Diagnostic' DIAG.
+Returns the message, appending the code in brackets when present, e.g.
+\"foo is unused [reportUnusedExpression]\"."
+  (-let (((&Diagnostic :message :code?) diag))
+    (if code?
+        (format "%s [%s]" message code?)
+      message)))
+
+(defcustom lsp-diagnostics-flymake-message-formatter
+  #'lsp-diagnostics-flymake-default-message-formatter
+  "Function used to build the flymake text string for an LSP diagnostic.
+
+Flymake stores a single string per diagnostic
+(`flymake-diagnostic-text'), so any presentation choice (whether to
+append the rule code, the source, severity prefix, etc.) must be made
+before the `flymake-diagnostic' is constructed.  This hook provides the
+place to make that choice.
+
+Called with one argument, the LSP `Diagnostic' plist (with fields such
+as `:message', `:code?', `:source?', `:severity?', `:tags?').  Must
+return a string.
+
+The default `lsp-diagnostics-flymake-default-message-formatter' appends
+`[code]' when the diagnostic carries one and returns the bare message
+otherwise.  Override to suppress the code, prepend the source, or
+reformat the message in any other way."
+  :type 'function
+  :group 'lsp-diagnostics
+  :package-version '(lsp-mode . "10.0.1"))
+
 (defun lsp-diagnostics--flymake-setup ()
   "Setup flymake."
   (setq lsp-diagnostics--flymake-report-fn nil)
@@ -290,15 +321,16 @@ See https://github.com/emacs-lsp/lsp-mode."
   (funcall lsp-diagnostics--flymake-report-fn
            (-some->> (lsp-diagnostics t)
              (gethash (lsp--fix-path-casing buffer-file-name))
-             (--map (-let* (((&Diagnostic :message :severity?
+             (--map (-let* (((&Diagnostic :severity?
                                           :range (range &as &Range
                                                         :start (&Position :line start-line :character)
                                                         :end (&Position :line end-line))) it)
-                            ((start . end) (lsp--range-to-region range)))
+                            ((start . end) (lsp--range-to-region range))
+                            (text (funcall lsp-diagnostics-flymake-message-formatter it)))
                       (when (= start end)
                         (if-let* ((region (flymake-diag-region (current-buffer)
-                                                              (1+ start-line)
-                                                              character)))
+                                                               (1+ start-line)
+                                                               character)))
                             (setq start (car region)
                                   end (cdr region))
                           (lsp-save-restriction-and-excursion
@@ -312,7 +344,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                                  (1 :error)
                                                  (2 :warning)
                                                  (t :note))
-                                               message))))
+                                               text))))
            ;; This :region keyword forces flymake to delete old diagnostics in
            ;; case the buffer hasn't changed since the last call to the report
            ;; function. See https://github.com/joaotavora/eglot/issues/159

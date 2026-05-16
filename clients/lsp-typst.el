@@ -31,14 +31,14 @@
   "LSP support for Typst, using Tinymist."
   :group 'lsp-mode
   :link '(url-link "https://github.com/Myriad-Dreamin/tinymist")
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-typst-server-command '("tinymist")
   "Command to run the Tinymist language server."
   :type '(repeat string)
   :group 'lsp-typst
   :risky t
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Formatter options
 
@@ -49,21 +49,21 @@
                  (const "typstfmt"))
   :group 'lsp-typst
   :lsp-path "tinymist.formatterMode"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-formatter-indent-size 2
   "Number of spaces for indentation."
   :type 'number
   :group 'lsp-typst
   :lsp-path "tinymist.formatterIndentSize"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-formatter-print-width 120
   "Soft limit on line width for the formatter."
   :type 'number
   :group 'lsp-typst
   :lsp-path "tinymist.formatterPrintWidth"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Export options
 
@@ -76,7 +76,7 @@ Possible values: never, onSave, onType, onDocumentHasTitle."
                  (const "onDocumentHasTitle"))
   :group 'lsp-typst
   :lsp-path "tinymist.exportPdf"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-export-target "paged"
   "Export target format."
@@ -84,7 +84,7 @@ Possible values: never, onSave, onType, onDocumentHasTitle."
                  (const "html"))
   :group 'lsp-typst
   :lsp-path "tinymist.exportTarget"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-output-path ""
   "Path pattern for output files.
@@ -93,7 +93,7 @@ Supports $root, $dir, $name variable substitution."
   :group 'lsp-typst
   :risky t
   :lsp-path "tinymist.outputPath"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Lint options
 
@@ -102,7 +102,7 @@ Supports $root, $dir, $name variable substitution."
   :type 'boolean
   :group 'lsp-typst
   :lsp-path "tinymist.lint.enabled"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-lint-when "onSave"
   "When to perform lint checks."
@@ -110,7 +110,7 @@ Supports $root, $dir, $name variable substitution."
                  (const "onType"))
   :group 'lsp-typst
   :lsp-path "tinymist.lint.when"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Font and path options
 
@@ -120,14 +120,14 @@ Supports $root, $dir, $name variable substitution."
   :group 'lsp-typst
   :risky t
   :lsp-path "tinymist.fontPaths"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-system-fonts t
   "Include system fonts in font search."
   :type 'boolean
   :group 'lsp-typst
   :lsp-path "tinymist.systemFonts"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-root-path nil
   "Root path for absolute paths in Typst.
@@ -137,7 +137,7 @@ Set to \"-\" to use parent directory of the file."
   :group 'lsp-typst
   :risky t
   :lsp-path "tinymist.rootPath"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Miscellaneous options
 
@@ -146,7 +146,7 @@ Set to \"-\" to use parent directory of the file."
   :type 'boolean
   :group 'lsp-typst
   :lsp-path "tinymist.semanticTokens"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-project-resolution "singleFile"
   "How to resolve projects.
@@ -156,14 +156,14 @@ lockDatabase: Manage documents like Rust with project tracking."
                  (const "lockDatabase"))
   :group 'lsp-typst
   :lsp-path "tinymist.projectResolution"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-defcustom lsp-typst-extra-args ""
   "Extra arguments to pass to the Typst compiler."
   :type 'string
   :group 'lsp-typst
   :lsp-path "tinymist.typstExtraArgs"
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 ;;; Client registration
 

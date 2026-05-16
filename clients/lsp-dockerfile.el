@@ -48,7 +48,7 @@
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.deprecatedMaintainer")
 
 (lsp-defcustom lsp-dockerfile-directive-casing "warning"
@@ -58,7 +58,7 @@ Parser directives include escape and syntax."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.directiveCasing")
 
 (lsp-defcustom lsp-dockerfile-empty-continuation-line "ignore"
@@ -67,7 +67,7 @@ Parser directives include escape and syntax."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.emptyContinuationLine")
 
 (lsp-defcustom lsp-dockerfile-instruction-casing "warning"
@@ -77,7 +77,7 @@ Instructions include FROM, RUN, COPY, etc."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.instructionCasing")
 
 (lsp-defcustom lsp-dockerfile-instruction-cmd-multiple "warning"
@@ -87,7 +87,7 @@ Only the last CMD instruction takes effect in a Dockerfile."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.instructionCmdMultiple")
 
 (lsp-defcustom lsp-dockerfile-instruction-entrypoint-multiple "warning"
@@ -97,7 +97,7 @@ Only the last ENTRYPOINT instruction takes effect in a Dockerfile."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.instructionEntrypointMultiple")
 
 (lsp-defcustom lsp-dockerfile-instruction-healthcheck-multiple "warning"
@@ -107,7 +107,7 @@ Only the last HEALTHCHECK instruction takes effect in a Dockerfile."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.instructionHealthcheckMultiple")
 
 (lsp-defcustom lsp-dockerfile-instruction-json-single-quotes "warning"
@@ -117,7 +117,7 @@ JSON arrays in Dockerfile instructions should use double quotes."
                  (const "warning")
                  (const "error"))
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.diagnostics.instructionJSONInSingleQuotes")
 
 ;; Formatter settings
@@ -125,7 +125,7 @@ JSON arrays in Dockerfile instructions should use double quotes."
   "Whether to ignore multiline instructions during formatting."
   :type 'boolean
   :group 'lsp-dockerfile
-  :package-version '(lsp-mode . "9.0.1")
+  :package-version '(lsp-mode . "10.0.0")
   :lsp-path "docker.languageserver.formatter.ignoreMultilineInstructions")
 
 (lsp-register-custom-settings

@@ -100,7 +100,7 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-namespace
-  '((t :inherit font-lock-type-face :weight bold))
+  '((t :inherit lsp-face-semhl-type :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*.
 Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
@@ -121,12 +121,12 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-number
-  '((t (:inherit font-lock-constant-face)))
+  '((t (:inherit lsp-face-semhl-constant)))
   "Face used for numbers."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-regexp
-  '((t (:inherit font-lock-string-face :slant italic)))
+  '((t (:inherit lsp-face-semhl-string :slant italic)))
   "Face used for regexps."
   :group 'lsp-semantic-tokens)
 
@@ -141,27 +141,27 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-struct
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for structs."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-class
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for classes."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-interface
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for interfaces."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for enums."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type-parameter
-  '((t (:inherit font-lock-type-face)))
+  '((t (:inherit lsp-face-semhl-type)))
   "Face used for type parameters."
   :group 'lsp-semantic-tokens)
 
@@ -173,12 +173,12 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-property
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for properties."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-event
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for event properties."
   :group 'lsp-semantic-tokens)
 
@@ -188,13 +188,35 @@ Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-parameter
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit lsp-face-semhl-variable)))
   "Face used for parameters."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-label
   '((t (:inherit font-lock-comment-face)))
-  "Face used for labels."
+  "Face used for labels.
+
+Obsolete: no longer referenced by the default `lsp-semantic-token-faces'
+alist since 10.0.1 (the LSP 3.17 spec has no `label' token type). Kept
+for backward compatibility with user `set-face-attribute' calls and
+with clients that still register `label' through
+`:semantic-tokens-faces-overrides'. May be removed in a future release."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-enum-member
+  '((t :inherit lsp-face-semhl-constant))
+  "Face used for enum members/variants (LSP `enumMember')."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-modifier
+  '((t :inherit lsp-face-semhl-keyword))
+  "Face used for modifiers (LSP `modifier', e.g. public/private/static)."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-decorator
+  '((t :inherit lsp-face-semhl-macro))
+  "Face used for decorators (LSP `decorator', since 3.17).
+Examples: Python `@decorator', Java annotations."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-deprecated
@@ -238,18 +260,20 @@ Unless overridden by a more specific face association."
     ("typeParameter" . lsp-face-semhl-type-parameter)
     ("function" . lsp-face-semhl-function)
     ("method" . lsp-face-semhl-method)
-    ("member" . lsp-face-semhl-member)
     ("property" . lsp-face-semhl-property)
     ("event" . lsp-face-semhl-event)
     ("macro" . lsp-face-semhl-macro)
     ("variable" . lsp-face-semhl-variable)
     ("parameter" . lsp-face-semhl-parameter)
-    ("label" . lsp-face-semhl-label)
-    ("enumConstant" . lsp-face-semhl-constant)
-    ("enumMember" . lsp-face-semhl-constant)
-    ("dependent" . lsp-face-semhl-type)
-    ("concept" . lsp-face-semhl-interface))
-  "Faces to use for semantic tokens.")
+    ("enumMember" . lsp-face-semhl-enum-member)
+    ("modifier" . lsp-face-semhl-modifier)
+    ("decorator" . lsp-face-semhl-decorator))
+  "Faces to use for LSP 3.17 semantic token types.
+Servers that emit non-spec token types (e.g. clangd's `dependent' and
+`concept', or tree-sitter-backed servers emitting `member' / `label')
+should register them through `:semantic-tokens-faces-overrides' on
+their `lsp-client' rather than relying on entries in this default alist.
+See URL `https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#semanticTokenTypes'.")
 
 (defvar-local lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-interface)

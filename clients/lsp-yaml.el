@@ -187,7 +187,7 @@ Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
 `lsp-yaml-schema-store-uri'."
   :type  '(repeat lsp--yaml-schema-extension-type)
   :group 'lsp-yaml
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defun lsp-yaml-download-schema-store-db (&optional force-downloading)
   "Download remote schema store at `lsp-yaml-schema-store-uri' into local cache.

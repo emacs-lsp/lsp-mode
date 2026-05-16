@@ -281,11 +281,11 @@ It must match those used in https://github.com/WhatsApp/erlang-language-platform
   (format "https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/elp-%s-otp-%s.tar.gz"
           (pcase system-type
             ('gnu/linux
-             (if (string-match "^aarch64-.*" system-configuration)
+             (if (string-match-p "^aarch64-.*" system-configuration)
                  "linux-aarch64-unknown-linux-gnu"
                "linux-x86_64-unknown-linux-gnu"))
              ('darwin
-              (if (string-match "^aarch64-.*" system-configuration)
+              (if (string-match-p "^aarch64-.*" system-configuration)
                   "macos-aarch64-apple-darwin"
                 "macos-x86_64-apple-darwin")))
             lsp-erlang-elp-otp-download-version)

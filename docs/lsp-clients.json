@@ -89,6 +89,13 @@
     "lsp-install-server": "beancount-ls",
     "debugger": "Not available"
   },
+  { "name": "biome",
+    "full-name": "Biome",
+    "server-name": "biome-language-server",
+    "server-url": "https://github.com/biomejs/biome",
+    "installation": "npm install -g @biomejs/biome-language-server",
+    "installation-url": "https://biomejs.dev/guides/getting-started/"
+  },
   {
     "name": "buf",
     "full-name": "buf CLI (Beta)",
@@ -192,8 +199,8 @@
     "name": "clojure",
     "full-name": "Clojure",
     "server-name": "clojure-lsp",
-    "server-url": "https://github.com/snoe/clojure-lsp",
-    "installation-url": "https://github.com/snoe/clojure-lsp",
+    "server-url": "https://github.com/clojure-lsp/clojure-lsp",
+    "installation-url": "https://github.com/clojure-lsp/clojure-lsp",
     "lsp-install-server": "clojure-lsp",
     "debugger": "Not available"
   },
@@ -359,6 +366,14 @@
     "installation": "Automatic by lsp-mode",
     "lsp-install-server": "fsac",
     "debugger": "Yes (netcoredbg)"
+  },
+  {
+    "name": "fish",
+    "full-name": "Fish shell",
+    "server-name": "fish-lsp",
+    "server-url": "https://fish-lsp.dev/",
+    "installation-url": "https://github.com/ndonfris/fish-lsp#installation",
+    "debugger": "Not available"
   },
   {
     "name": "fortitude",

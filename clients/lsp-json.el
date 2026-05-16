@@ -59,7 +59,7 @@ here, https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155.
   "Enable JSON validation."
   :type 'boolean
   :group 'lsp-json
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (lsp-register-custom-settings
  '(("json.schemas" lsp-json-schemas)

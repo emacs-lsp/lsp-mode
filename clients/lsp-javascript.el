@@ -521,7 +521,7 @@ workspace."
   "Prefer to put the `type` keyword before auto-generated imports,
 when they are used only in a type checking context."
   :type 'boolean
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-javascript-preferences-quote-style "auto" nil
   :type '(choice
@@ -561,7 +561,7 @@ Requires using TypeScript 4.5+ in the workspace."
           (const "minimal")
           (const "index")
           (const "js"))
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-typescript-preferences-import-module-specifier-ending "auto"
   "Preferred path ending for auto imports.
@@ -571,7 +571,7 @@ Requires using TypeScript 4.5+ in the workspace."
           (const "minimal")
           (const "index")
           (const "js"))
-  :package-version '(lsp-mode . "9.0.1"))
+  :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-javascript-preferences-rename-shorthand-properties t
   "Enable/disable introducing aliases for object shorthand

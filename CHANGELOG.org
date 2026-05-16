@@ -1,6 +1,22 @@
 * Changelog
-** Unreleased 9.0.1
+** Unreleased 10.0.1
   * Add support for LSP 3.17 InlayHint features: ~textEdits~, ~tooltip~, ~data~, ~InlayHintLabelPart~ (per-part ~tooltip~/~location~/~command~), ~inlayHint/resolve~, interactive mouse handler, and ~lsp-inlay-hint-accept~ command (see [[https://github.com/emacs-lsp/lsp-mode/issues/4775][#4775]])
+  * Add ~lsp-diagnostics-flymake-message-formatter~ defcustom for customizing how an LSP diagnostic is rendered into the flymake text string; the default appends the code in brackets, and users can suppress it, prepend the source tool, add a severity prefix, etc. (see: [[https://github.com/emacs-lsp/lsp-mode/pull/5036][#5036]]).
+  * Append the LSP diagnostic code (e.g. ~reportUnusedExpression~, ~E501~) to flymake messages, mirroring what flycheck already exposes via ~flycheck-error-id~ (see: [[https://github.com/emacs-lsp/lsp-mode/pull/5036][#5036]]).
+  * Add support for [[https://github.com/tailwindlabs/tailwindcss-intellisense][Tailwind CSS]] language server.
+  * Overhaul ~lsp-face-semhl-*~ faces to cover the full LSP 3.17 semantic token spec (see: [[https://github.com/emacs-lsp/lsp-mode/issues/5040][#5040]])
+    - Add dedicated faces ~lsp-face-semhl-enum-member~, ~lsp-face-semhl-modifier~, ~lsp-face-semhl-decorator~.
+    - Fix ~enumMember~ mapping (was ~lsp-face-semhl-constant~, now ~lsp-face-semhl-enum-member~); default rendering unchanged by inheritance.
+    - Map the previously missing ~modifier~ (LSP 3.16) and ~decorator~ (LSP 3.17) token types in the default alist.
+    - Cascade the inheritance hierarchy through ~lsp-face-semhl-*~: setting ~lsp-face-semhl-type~ now propagates to ~struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace~; setting ~lsp-face-semhl-variable~ propagates to ~property~/~event~/~parameter~; ~number~ cascades from ~lsp-face-semhl-constant~, ~regexp~ from ~lsp-face-semhl-string~. *Breaking-adjacent*: users who relied on the previous non-cascading behavior should now override the parent face.
+    - Trim non-spec entries from the default ~lsp-semantic-token-faces~ alist: ~enumConstant~, ~member~, ~label~, ~dependent~, ~concept~. Clangd keeps ~dependent~/~concept~/~member~ via ~:semantic-tokens-faces-overrides~; ~lsp-face-semhl-member~ and ~lsp-face-semhl-label~ remain publicly defined.
+    - Migrate ~lsp-terraform-semantic-token-faces~ to ~lsp-face-semhl-enum-member~.
+    - Migration note: users who previously customized ~lsp-face-semhl-constant~ specifically to recolor enum members should now customize ~lsp-face-semhl-enum-member~ instead. ~lsp-face-semhl-constant~ still cascades to ~number~ and the ~readonly~ token modifier. Users who customized ~lsp-face-semhl-type~ expecting it NOT to propagate to ~struct~/~class~/~interface~/~enum~/~typeParameter~/~namespace~ now need to customize those child faces directly.
+  * Fix crash (EXC_CRASH / SIGABRT) on macOS when installing language servers: replace ~url-copy-file~ in a background thread with ~make-process~ (curl) + sentinel, avoiding the NS event-loop thread-safety assertion in ~ns_select_1~
+  * Fix ~lsp-clojure-extract-function~ to always send the range-based form required by clojure-lsp 2026.01+, and extract the selected region when one is active (see [[https://github.com/emacs-lsp/lsp-mode/issues/5023][#5023]])
+  * Fix PHP Language Server detection.
+
+** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
   * Fix ~lsp--npm-dependency-path~ to return correct executable path and improve error message
   * Add support for [[https://github.com/PlasmaFAIR/fortitude][Fortitude]] (Fortran)
@@ -79,6 +95,7 @@
   * Add support for ~~crates-lsp~~
   * Remove outdated Ruff option and add new lint-related options
   * Add new Nextflow client customizations
+  * Add support for ~~fish-lsp~~
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
