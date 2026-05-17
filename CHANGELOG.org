@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Add support for LSP 3.17 InlayHint features: ~textEdits~, ~tooltip~, ~data~, ~InlayHintLabelPart~ (per-part ~tooltip~/~location~/~command~), ~inlayHint/resolve~, interactive mouse handler, and ~lsp-inlay-hint-accept~ command (see [[https://github.com/emacs-lsp/lsp-mode/issues/4775][#4775]])
   * Add ~lsp-diagnostics-flymake-message-formatter~ defcustom for customizing how an LSP diagnostic is rendered into the flymake text string; the default appends the code in brackets, and users can suppress it, prepend the source tool, add a severity prefix, etc. (see: [[https://github.com/emacs-lsp/lsp-mode/pull/5036][#5036]]).
   * Append the LSP diagnostic code (e.g. ~reportUnusedExpression~, ~E501~) to flymake messages, mirroring what flycheck already exposes via ~flycheck-error-id~ (see: [[https://github.com/emacs-lsp/lsp-mode/pull/5036][#5036]]).
   * Add support for [[https://github.com/tailwindlabs/tailwindcss-intellisense][Tailwind CSS]] language server.

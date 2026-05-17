@@ -875,6 +875,91 @@ line 3 words here and here
           (should (equal (line-number-at-pos) (1+ hint-line)))
           (should (equal (current-column) hint-col))))))))
 
+(ert-deftest lsp-mock-server-inlay-hint-stores-data ()
+  "Inlay hint overlays store the full hint data for later resolve/accept."
+  (let ((lsp-inlay-hint-enable t)
+        (hint-line 2)
+        (hint-col 10))
+    (lsp-mock-run-with-mock-server
+     (lsp-mock-with-temp-window
+      (current-buffer)
+      (lambda ()
+        (lsp-test-schedule-response
+         "textDocument/inlayHint"
+         (vconcat (list `(:kind 1
+                          :position (:line ,hint-line :character ,hint-col)
+                          :paddingLeft ()
+                          :label "my_type"
+                          :textEdits [(:range (:start (:line ,hint-line :character ,hint-col)
+                                               :end (:line ,hint-line :character ,hint-col))
+                                       :newText ": my_type")]))))
+        (run-hooks 'lsp-on-idle-hook)
+        (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                   (lsp-test-all-overlays 'lsp-inlay-hint)))
+        (let* ((hints (lsp-test-all-overlays 'lsp-inlay-hint))
+               (hint-overlay (car hints))
+               (hint-data (overlay-get hint-overlay 'lsp-inlay-hint-data)))
+          (should (eq (length hints) 1))
+          (should hint-data)
+          (should (lsp:inlay-hint-text-edits? hint-data))))))))
+
+(ert-deftest lsp-mock-server-inlay-hint-label-parts ()
+  "Inlay hints with label parts render per-part text properties."
+  (let ((lsp-inlay-hint-enable t)
+        (hint-line 2)
+        (hint-col 10))
+    (lsp-mock-run-with-mock-server
+     (lsp-mock-with-temp-window
+      (current-buffer)
+      (lambda ()
+        (lsp-test-schedule-response
+         "textDocument/inlayHint"
+         (vconcat (list `(:kind 1
+                          :position (:line ,hint-line :character ,hint-col)
+                          :paddingLeft ()
+                          :label [(:value "Vec" :tooltip "A vector type")
+                                  (:value "<" )
+                                  (:value "String")
+                                  (:value ">")]))))
+        (run-hooks 'lsp-on-idle-hook)
+        (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                   (lsp-test-all-overlays 'lsp-inlay-hint)))
+        (let* ((hints (lsp-test-all-overlays 'lsp-inlay-hint))
+               (hint-overlay (car hints))
+               (before-str (overlay-get hint-overlay 'before-string)))
+          (should (eq (length hints) 1))
+          ;; The before-string should contain the concatenated parts
+          (should (string-match-p "Vec" before-str))
+          (should (string-match-p "String" before-str))
+          ;; First part "Vec" should have help-echo from its tooltip
+          (should (get-text-property 0 'help-echo before-str))))))))
+
+(ert-deftest lsp-mock-server-inlay-hint-has-keymap ()
+  "Inlay hint overlays have a mouse keymap for click interaction."
+  (let ((lsp-inlay-hint-enable t)
+        (hint-line 2)
+        (hint-col 10))
+    (lsp-mock-run-with-mock-server
+     (lsp-mock-with-temp-window
+      (current-buffer)
+      (lambda ()
+        (lsp-test-schedule-response
+         "textDocument/inlayHint"
+         (vconcat (list `(:kind 2
+                          :position (:line ,hint-line :character ,hint-col)
+                          :paddingLeft ()
+                          :label "param"))))
+        (run-hooks 'lsp-on-idle-hook)
+        (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                   (lsp-test-all-overlays 'lsp-inlay-hint)))
+        (let* ((hints (lsp-test-all-overlays 'lsp-inlay-hint))
+               (hint-overlay (car hints))
+               (before-str (overlay-get hint-overlay 'before-string))
+               (keymap (get-text-property 0 'keymap before-str)))
+          (should (eq (length hints) 1))
+          (should keymap)
+          (should (keymapp keymap))))))))
+
 (ert-deftest lsp-mock-server-provides-code-lens ()
   "lsp-mode accepts code lenses from the server and displays them."
   (let ((line 2))

@@ -834,7 +834,8 @@ See `-let' for a description of the destructuring mechanism."
  ;; 3.17
  (RelativePattern (:baseUri :pattern) nil)
  (LabelDetails nil (:detail :description))
- (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
+ (InlayHintOptions nil (:resolveProvider))
+ (InlayHint (:label :position) (:kind :paddingLeft :paddingRight :textEdits :tooltip :data))
  (InlayHintLabelPart (:value) (:tooltip :location :command))
  (InlayHintsParams (:textDocument) (:range))
  ;; 3.18
