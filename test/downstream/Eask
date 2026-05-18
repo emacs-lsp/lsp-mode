@@ -40,7 +40,7 @@
  (depends-on "lsp-python-ms")
  (depends-on "lsp-sonarlint")
  (depends-on "lsp-sourcekit")
- (depends-on "lsp-tailwindcss")
+ ;;(depends-on "lsp-tailwindcss")  ; Removed after #5061
  (depends-on "lsp-treemacs")
  (depends-on "lsp-ui"))
 
