@@ -35,7 +35,7 @@
   :tag "Lsp Magik"
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-version "0.11.0"
+(defcustom lsp-magik-version "0.12.0"
   "Version of LSP server."
   :type 'string
   :group 'lsp-magik
@@ -72,6 +72,21 @@
   :group 'lsp-magik
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "magik.lint.overrideConfigFile")
+
+(lsp-defcustom lsp-magik-lint-run-checks-on-change-delay 333
+  "Run checks delayed after <value> milliseconds since last change.
+The next update resets the delay."
+  :type 'number
+  :group 'lsp-magik
+  :package-version '(lsp-mode . "11.0.0")
+  :lsp-path "magik.lint.runChecksOnChangeDelay")
+
+(lsp-defcustom lsp-magik-lint-run-checks-on-save nil
+  "Run checks when saving the file, immediately."
+  :type 'boolean
+  :group 'lsp-magik
+  :package-version '(lsp-mode . "11.0.0")
+  :lsp-path "magik.lint.runChecksOnSave")
 
 (lsp-defcustom lsp-magik-typing-type-database-paths []
   "Paths to type databases."
@@ -129,12 +144,20 @@
   :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexConditionUsages")
 
-(lsp-defcustom lsp-magik-typing-cache-indexed-definitions-method-usages t
+(lsp-defcustom lsp-magik-typing-cache-indexed-definitions-method-usages nil
   "Store and load the indexed definitions in the workspace folders."
   :type 'boolean
   :group 'lsp-magik
   :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.cacheIndexedDefinitions")
+
+(lsp-defcustom lsp-magik-formatting-indent-strategy "null"
+  "The strategy used for indentation, \"null\" or \"relative\"."
+  :type '(choice (const "null")
+                 (const "relative"))
+  :group 'lsp-magik
+  :package-version '(lsp-mode . "10.0.0")
+  :lsp-path "magik.formatting.indentStrategy")
 
 (lsp-defcustom lsp-magik-formatting-indent-char "tab"
   "Indent character, \"tab\" or \"space\"."
@@ -171,14 +194,6 @@
   :group 'lsp-magik
   :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.trimFinalNewlines")
-
-(lsp-defcustom lsp-magik-formatting-indent-strategy "null"
-  "The strategy used for indentation, \"null\" or \"relative\"."
-  :type '(choice (const "null")
-                 (const "relative"))
-  :group 'lsp-magik
-  :package-version '(lsp-mode . "10.0.0")
-  :lsp-path "magik.formatting.indentStrategy")
 
 (defcustom lsp-magik-java-path (lambda ()
                                  (cond ((eq system-type 'windows-nt)
