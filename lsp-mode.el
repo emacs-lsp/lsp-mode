@@ -4967,7 +4967,7 @@ Added to `before-change-functions'."
                 (lsp-notify "textDocument/didChange"
                             (list :textDocument document
                                   :contentChanges (vector change)))
-                (lsp-diagnostics--request-pull-diagnostics))))
+                (lsp-diagnostics--request-pull-diagnostics workspace))))
           (prog1 (nreverse lsp--delayed-requests)
             (setq lsp--delayed-requests nil)))))
 
