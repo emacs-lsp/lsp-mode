@@ -28,6 +28,11 @@
 
 (require 'lsp-mode)
 
+(declare-function magik-utils-get-buffer-mode "magik-utils")
+(declare-function barf-if-no-gis "magik-session")
+(defvar magik-session-buffer)
+(defvar magik-session-buffer-alist-prefix-function)
+
 (defgroup lsp-magik nil
   "LSP support for Magik."
   :link '(url-link "https://github.com/StevenLooman/magik-tools")
@@ -205,6 +210,63 @@ The next update resets the delay."
   :group 'lsp-magik
   :package-version '(lsp-mode . "10.0.0"))
 
+(defun lsp-magik--send-string (string msg)
+  "Send STRING to the active GIS session process and show MSG."
+  (unless (and (require 'magik-utils nil t) (require 'magik-session nil t))
+    (user-error "The magik-mode is not available"))
+  (let* ((gis (magik-utils-get-buffer-mode nil
+                                           'magik-session-mode
+                                           "Enter Magik Session buffer:"
+                                           magik-session-buffer
+                                           'magik-session-buffer-alist-prefix-function))
+         (process (barf-if-no-gis gis)))
+    (message "%s" msg)
+    (when-let* ((window (display-buffer gis)))
+      (set-window-point window (with-current-buffer gis (point-max))))
+    (process-send-string process string)))
+
+(lsp-defun lsp-magik--load-module ((&Command :arguments?))
+  "Load the module in ARGUMENTS? into the GIS session."
+  (when-let* ((module-name (lsp-seq-first arguments?)))
+    (lsp-magik--send-string
+     (format "sw_module_manager.load_module(\"%s\")\n$\n" module-name)
+     (format "Adding module %s" module-name))))
+
+(lsp-defun lsp-magik--add-product ((&Command :arguments?))
+  "Add the product in ARGUMENTS? into the GIS session."
+  (when-let* ((product-dir (lsp-seq-first arguments?)))
+    (lsp-magik--send-string
+     (format "smallworld_product.add_product(\"%s\")\n$\n" product-dir)
+     (format "Adding product %s" product-dir))))
+
+(lsp-defun lsp-magik--run-test ((&Command :arguments?))
+  "Run the test identified by ARGUMENTS? in the active GIS session."
+  (when-let* ((test-id (lsp-seq-first arguments?)))
+    (cond
+     ((string-prefix-p "method:" test-id)
+      (let* ((rest (substring test-id 7))
+             (dot-pos (string-match "\\." rest))
+             (test-expr (format "%s.new(:|%s|)" (substring rest 0 dot-pos) (substring rest (1+ dot-pos)))))
+        (lsp-magik--send-string
+         (format (concat "_block\n"
+                         "    _local suite << sw:test_suite.new()\n"
+                         "    suite.add_test(%s)\n"
+                         "    sw:test_runner.new().run_in_foreground(suite)\n"
+                         "_endblock\n$\n")
+                 test-expr)
+         (format "Running test %s" rest))))
+     ((string-prefix-p "test_case:" test-id)
+      (lsp-magik--send-string
+       (format "sw:test_runner.new().run_in_foreground(%s.suite())\n$\n"
+               (substring test-id 10))
+       (format "Running all tests in %s" (substring test-id 10)))))))
+
+(defun lsp-magik-re-index ()
+  "Trigger the Magik language server to re-index the workspace."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (lsp-send-execute-command "magik.reIndex"))
+
 (lsp-register-client
  (make-lsp-client
   :download-server-fn (lambda (_client callback error-callback _update?)
@@ -220,7 +282,10 @@ The next update resets the delay."
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "magik"))))
-  :server-id 'magik))
+  :server-id 'magik
+  :action-handlers (ht ("magik.session.loadModule" #'lsp-magik--load-module)
+                       ("magik.session.addProduct" #'lsp-magik--add-product)
+                       ("magik.munit.runTest"      #'lsp-magik--run-test))))
 
 (lsp-consistency-check lsp-magik)
 
