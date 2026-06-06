@@ -7394,9 +7394,9 @@ server. WORKSPACE is the active workspace."
         (let* ((client (lsp--workspace-client workspace))
                (method (json-get json-data "method"))
                (raw-id (json-get json-data "id"))
-               (has-method (not (null method)))
-               (has-id (not (null raw-id)))
-               (has-error (not (null (json-get json-data "error"))))
+               (has-method (and method t))
+               (has-id (and raw-id t))
+               (has-error (and (json-get json-data "error") t))
                ;; Kind-First routing: if a method exists, it's a server-initiated
                ;; message (request/notification) regardless of ID collisions.
                (message-type (cond
