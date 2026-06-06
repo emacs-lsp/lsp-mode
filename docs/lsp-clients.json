@@ -525,6 +525,16 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
+    "name": "typescript-go",
+    "common-group-name": "javascript",
+    "full-name": "JavaScript/TypeScript (Go native)",
+    "server-name": "typescript-go",
+    "server-url": "https://github.com/microsoft/typescript-go",
+    "installation": "npm install -g @typescript/native-preview",
+    "lsp-install-server": "tsgo",
+    "debugger": "Not available"
+  },
+  {
     "name": "typescript",
     "common-group-name": "javascript",
     "full-name": "JavaScript/TypeScript (RECOMMENDED)",
