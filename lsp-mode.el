@@ -473,6 +473,31 @@ level or at a root of an lsp workspace."
 ;; Allow lsp-file-watch-ignored-files as a file or directory-local variable
 ;;;###autoload(put 'lsp-file-watch-ignored-files 'safe-local-variable 'lsp--string-listp)
 
+(defcustom lsp-file-watch-respect-gitignore nil
+  "If non-nil, exclude paths ignored by Git from file watchers.
+
+When a workspace root is inside a Git working tree, the paths reported by
+
+  git ls-files --others --ignored --exclude-standard --directory
+
+are added to the file-watch ignore lists, on top of
+`lsp-file-watch-ignored-directories' and `lsp-file-watch-ignored-files'.
+This delegates `.gitignore' semantics -- negation rules, nested ignore
+files, `core.excludesFile' and `.git/info/exclude' -- to Git itself,
+rather than duplicating them as regexps.
+
+Has no effect outside a Git working tree, or when the `git' executable
+is not found.  The Git query runs once per workspace root when watches
+are created, so changes to ignore rules take effect after the workspace
+is restarted.
+
+Customization of this variable is only honored at the global level or at
+a root of an lsp workspace."
+  :group 'lsp-mode
+  :type 'boolean
+  :package-version '(lsp-mode . "10.0.1"))
+;;;###autoload(put 'lsp-file-watch-respect-gitignore 'safe-local-variable #'booleanp)
+
 (defcustom lsp-after-uninitialized-functions nil
   "List of functions to be called after a Language Server has been uninitialized."
   :type 'hook
@@ -4006,6 +4031,43 @@ access dir-local variables."
      (prog1 ,@body
        (setq-local buffer-file-name nil))))
 
+(defun lsp--gitignore-ignored-regexes (workspace-root)
+  "Return ignore regexes for paths Git ignores under WORKSPACE-ROOT.
+The return value is a list (FILES DIRECTORIES) where each element is a
+list of regexps matching absolute paths, suitable for appending to
+`lsp-file-watch-ignored-files' and `lsp-file-watch-ignored-directories'
+respectively.
+
+Paths are obtained from
+
+  git ls-files --others --ignored --exclude-standard --directory
+
+so all `.gitignore' semantics are resolved by Git.  Returns nil when
+WORKSPACE-ROOT is not an accessible directory or when the `git'
+executable cannot be found."
+  (when (and workspace-root
+             (file-accessible-directory-p workspace-root)
+             (executable-find "git"))
+    (let* ((default-directory (file-name-as-directory
+                               (file-truename workspace-root)))
+           (root (directory-file-name default-directory))
+           files directories)
+      (with-temp-buffer
+        (when (eq 0 (process-file "git" nil (list t nil) nil
+                                  "ls-files" "-z" "--others" "--ignored"
+                                  "--exclude-standard" "--directory"))
+          (dolist (entry (split-string (buffer-string) "\0" t))
+            ;; Git appends "/" to whole ignored directories; such entries
+            ;; suppress the directory watch, others only the file events.
+            (let* ((dir-only (string-suffix-p "/" entry))
+                   (relative (if dir-only (substring entry 0 -1) entry))
+                   (absolute (expand-file-name relative root))
+                   (regex (concat "\\`" (regexp-quote absolute)
+                                  (if dir-only "\\(?:/\\|\\'\\)" "\\'"))))
+              (push regex directories)
+              (unless dir-only (push regex files))))))
+      (list (nreverse files) (nreverse directories)))))
+
 (defun lsp--get-ignored-regexes-for-workspace-root (workspace-root)
   "Return a list of the form
 (lsp-file-watch-ignored-files lsp-file-watch-ignored-directories) for the given
@@ -4013,7 +4075,14 @@ WORKSPACE-ROOT."
   ;; The intent of this function is to provide per-root workspace-level customization of the
   ;; lsp-file-watch-ignored-directories and lsp-file-watch-ignored-files variables.
   (lsp--with-workspace-temp-buffer workspace-root
-    (list lsp-file-watch-ignored-files (lsp-file-watch-ignored-directories))))
+    (let ((files lsp-file-watch-ignored-files)
+          (directories (lsp-file-watch-ignored-directories))
+          (gitignore (when lsp-file-watch-respect-gitignore
+                       (lsp--gitignore-ignored-regexes workspace-root))))
+      (if gitignore
+          (list (append files (nth 0 gitignore))
+                (append directories (nth 1 gitignore)))
+        (list files directories)))))
 
 
 (defun lsp--cleanup-hanging-watches ()
