@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-tailwindcss/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Vue 2 - LSP Mode - LSP support for Emacs</title>
+        <title>Tailwind CSS - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vue-2" class="md-skip">
+        <a href="#tailwind-css" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Vue 2
+              Tailwind CSS
             
           </span>
         </div>
@@ -2998,11 +2998,260 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-tailwindcss/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tailwind CSS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Tailwind CSS
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-add-on-mode" class="md-nav__link">
+    lsp-tailwindcss-add-on-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-class-attributes" class="md-nav__link">
+    lsp-tailwindcss-class-attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-class-functions" class="md-nav__link">
+    lsp-tailwindcss-class-functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-code-actions" class="md-nav__link">
+    lsp-tailwindcss-code-actions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-emmet-completions" class="md-nav__link">
+    lsp-tailwindcss-emmet-completions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-experimental-class-regex" class="md-nav__link">
+    lsp-tailwindcss-experimental-class-regex
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-experimental-config-file" class="md-nav__link">
+    lsp-tailwindcss-experimental-config-file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-hovers" class="md-nav__link">
+    lsp-tailwindcss-hovers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-css-conflict" class="md-nav__link">
+    lsp-tailwindcss-lint-css-conflict
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-invalid-apply" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-apply
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-invalid-config-path" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-config-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-invalid-screen" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-screen
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-invalid-tailwind-directive" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-tailwind-directive
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-invalid-variant" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-variant
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-lint-recommended-variant-order" class="md-nav__link">
+    lsp-tailwindcss-lint-recommended-variant-order
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-major-modes" class="md-nav__link">
+    lsp-tailwindcss-major-modes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-root-font-size" class="md-nav__link">
+    lsp-tailwindcss-root-font-size
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-rustywind-command" class="md-nav__link">
+    lsp-tailwindcss-rustywind-command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-rustywind-extra-args" class="md-nav__link">
+    lsp-tailwindcss-rustywind-extra-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-server-path" class="md-nav__link">
+    lsp-tailwindcss-server-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-server-version" class="md-nav__link">
+    lsp-tailwindcss-server-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-show-pixel-equivalents" class="md-nav__link">
+    lsp-tailwindcss-show-pixel-equivalents
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-skip-config-check" class="md-nav__link">
+    lsp-tailwindcss-skip-config-check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-suggestions" class="md-nav__link">
+    lsp-tailwindcss-suggestions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-tailwindcss-validate" class="md-nav__link">
+    lsp-tailwindcss-validate
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3292,309 +3541,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Vue 2
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-vetur/" class="md-nav__link">
         Vue 2
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
-    Debugger: Yes (Firefox/Chrome)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-auto-import" class="md-nav__link">
-    lsp-vetur-completion-auto-import
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
-    lsp-vetur-completion-scaffold-snippet-sources
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-log-level" class="md-nav__link">
-    lsp-vetur-dev-log-level
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-path" class="md-nav__link">
-    lsp-vetur-dev-vls-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-port" class="md-nav__link">
-    lsp-vetur-dev-vls-port
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-emmet" class="md-nav__link">
-    lsp-vetur-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-experimental-template-interpolation-service" class="md-nav__link">
-    lsp-vetur-experimental-template-interpolation-service
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-css" class="md-nav__link">
-    lsp-vetur-format-default-formatter-css
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-html" class="md-nav__link">
-    lsp-vetur-format-default-formatter-html
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-js" class="md-nav__link">
-    lsp-vetur-format-default-formatter-js
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-less" class="md-nav__link">
-    lsp-vetur-format-default-formatter-less
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-options" class="md-nav__link">
-    lsp-vetur-format-default-formatter-options
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-postcss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-postcss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-scss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-scss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-stylus" class="md-nav__link">
-    lsp-vetur-format-default-formatter-stylus
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-ts" class="md-nav__link">
-    lsp-vetur-format-default-formatter-ts
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-enable" class="md-nav__link">
-    lsp-vetur-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-tab-size" class="md-nav__link">
-    lsp-vetur-format-options-tab-size
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-use-tabs" class="md-nav__link">
-    lsp-vetur-format-options-use-tabs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-script-initial-indent" class="md-nav__link">
-    lsp-vetur-format-script-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-style-initial-indent" class="md-nav__link">
-    lsp-vetur-format-style-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-global-snippets-dir" class="md-nav__link">
-    lsp-vetur-global-snippets-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-grammar-custom-blocks" class="md-nav__link">
-    lsp-vetur-grammar-custom-blocks
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-ignore-project-warning" class="md-nav__link">
-    lsp-vetur-ignore-project-warning
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-language-features-code-actions" class="md-nav__link">
-    lsp-vetur-language-features-code-actions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-server-command" class="md-nav__link">
-    lsp-vetur-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-trace-server" class="md-nav__link">
-    lsp-vetur-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-use-workspace-dependencies" class="md-nav__link">
-    lsp-vetur-use-workspace-dependencies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-script" class="md-nav__link">
-    lsp-vetur-validation-script
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-style" class="md-nav__link">
-    lsp-vetur-validation-style
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-template" class="md-nav__link">
-    lsp-vetur-validation-template
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -4179,8 +4130,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
-    Debugger: Yes (Firefox/Chrome)
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -4199,225 +4150,176 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-auto-import" class="md-nav__link">
-    lsp-vetur-completion-auto-import
+  <a href="#lsp-tailwindcss-add-on-mode" class="md-nav__link">
+    lsp-tailwindcss-add-on-mode
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
-    lsp-vetur-completion-scaffold-snippet-sources
+  <a href="#lsp-tailwindcss-class-attributes" class="md-nav__link">
+    lsp-tailwindcss-class-attributes
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
+  <a href="#lsp-tailwindcss-class-functions" class="md-nav__link">
+    lsp-tailwindcss-class-functions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-log-level" class="md-nav__link">
-    lsp-vetur-dev-log-level
+  <a href="#lsp-tailwindcss-code-actions" class="md-nav__link">
+    lsp-tailwindcss-code-actions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-path" class="md-nav__link">
-    lsp-vetur-dev-vls-path
+  <a href="#lsp-tailwindcss-emmet-completions" class="md-nav__link">
+    lsp-tailwindcss-emmet-completions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-port" class="md-nav__link">
-    lsp-vetur-dev-vls-port
+  <a href="#lsp-tailwindcss-experimental-class-regex" class="md-nav__link">
+    lsp-tailwindcss-experimental-class-regex
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-emmet" class="md-nav__link">
-    lsp-vetur-emmet
+  <a href="#lsp-tailwindcss-experimental-config-file" class="md-nav__link">
+    lsp-tailwindcss-experimental-config-file
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-experimental-template-interpolation-service" class="md-nav__link">
-    lsp-vetur-experimental-template-interpolation-service
+  <a href="#lsp-tailwindcss-hovers" class="md-nav__link">
+    lsp-tailwindcss-hovers
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-css" class="md-nav__link">
-    lsp-vetur-format-default-formatter-css
+  <a href="#lsp-tailwindcss-lint-css-conflict" class="md-nav__link">
+    lsp-tailwindcss-lint-css-conflict
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-html" class="md-nav__link">
-    lsp-vetur-format-default-formatter-html
+  <a href="#lsp-tailwindcss-lint-invalid-apply" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-apply
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-js" class="md-nav__link">
-    lsp-vetur-format-default-formatter-js
+  <a href="#lsp-tailwindcss-lint-invalid-config-path" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-config-path
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-less" class="md-nav__link">
-    lsp-vetur-format-default-formatter-less
+  <a href="#lsp-tailwindcss-lint-invalid-screen" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-screen
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-options" class="md-nav__link">
-    lsp-vetur-format-default-formatter-options
+  <a href="#lsp-tailwindcss-lint-invalid-tailwind-directive" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-tailwind-directive
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-postcss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-postcss
+  <a href="#lsp-tailwindcss-lint-invalid-variant" class="md-nav__link">
+    lsp-tailwindcss-lint-invalid-variant
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-scss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-scss
+  <a href="#lsp-tailwindcss-lint-recommended-variant-order" class="md-nav__link">
+    lsp-tailwindcss-lint-recommended-variant-order
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-stylus" class="md-nav__link">
-    lsp-vetur-format-default-formatter-stylus
+  <a href="#lsp-tailwindcss-major-modes" class="md-nav__link">
+    lsp-tailwindcss-major-modes
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-ts" class="md-nav__link">
-    lsp-vetur-format-default-formatter-ts
+  <a href="#lsp-tailwindcss-root-font-size" class="md-nav__link">
+    lsp-tailwindcss-root-font-size
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-enable" class="md-nav__link">
-    lsp-vetur-format-enable
+  <a href="#lsp-tailwindcss-rustywind-command" class="md-nav__link">
+    lsp-tailwindcss-rustywind-command
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-tab-size" class="md-nav__link">
-    lsp-vetur-format-options-tab-size
+  <a href="#lsp-tailwindcss-rustywind-extra-args" class="md-nav__link">
+    lsp-tailwindcss-rustywind-extra-args
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-use-tabs" class="md-nav__link">
-    lsp-vetur-format-options-use-tabs
+  <a href="#lsp-tailwindcss-server-path" class="md-nav__link">
+    lsp-tailwindcss-server-path
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-script-initial-indent" class="md-nav__link">
-    lsp-vetur-format-script-initial-indent
+  <a href="#lsp-tailwindcss-server-version" class="md-nav__link">
+    lsp-tailwindcss-server-version
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-format-style-initial-indent" class="md-nav__link">
-    lsp-vetur-format-style-initial-indent
+  <a href="#lsp-tailwindcss-show-pixel-equivalents" class="md-nav__link">
+    lsp-tailwindcss-show-pixel-equivalents
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-global-snippets-dir" class="md-nav__link">
-    lsp-vetur-global-snippets-dir
+  <a href="#lsp-tailwindcss-skip-config-check" class="md-nav__link">
+    lsp-tailwindcss-skip-config-check
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-grammar-custom-blocks" class="md-nav__link">
-    lsp-vetur-grammar-custom-blocks
+  <a href="#lsp-tailwindcss-suggestions" class="md-nav__link">
+    lsp-tailwindcss-suggestions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-ignore-project-warning" class="md-nav__link">
-    lsp-vetur-ignore-project-warning
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-language-features-code-actions" class="md-nav__link">
-    lsp-vetur-language-features-code-actions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-server-command" class="md-nav__link">
-    lsp-vetur-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-trace-server" class="md-nav__link">
-    lsp-vetur-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-use-workspace-dependencies" class="md-nav__link">
-    lsp-vetur-use-workspace-dependencies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-script" class="md-nav__link">
-    lsp-vetur-validation-script
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-style" class="md-nav__link">
-    lsp-vetur-validation-style
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-template" class="md-nav__link">
-    lsp-vetur-validation-template
+  <a href="#lsp-tailwindcss-validate" class="md-nav__link">
+    lsp-tailwindcss-validate
   </a>
   
 </li>
@@ -4464,7 +4366,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-vetur.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-tailwindcss.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -4483,182 +4385,159 @@
 
 
 <!-- Markdown content -->
-<h1 id="vue-2">Vue 2<a class="headerlink" href="#vue-2" title="Permanent link">#</a></h1>
+<h1 id="tailwind-css">Tailwind CSS<a class="headerlink" href="#tailwind-css" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/vuejs/vetur/tree/master/server">vue-language-server</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/tailwindlabs/tailwindcss-intellisense/tree/main/packages/tailwindcss-language-server">tailwindcss-language-server</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
 <p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>vls</code><kbd>RET</kbd>.</p>
-<p><code>npm install -g vls</code></p>
-<h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
+Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>tailwindcss</code><kbd>RET</kbd>.</p>
+<p><code>npm install -g @tailwindcss/language-server</code></p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-vetur-completion-auto-import"><code>lsp-vetur-completion-auto-import</code><a class="headerlink" href="#lsp-vetur-completion-auto-import" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-add-on-mode"><code>lsp-tailwindcss-add-on-mode</code><a class="headerlink" href="#lsp-tailwindcss-add-on-mode" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Specify lsp-tailwindcss as add-on so it can work with other language servers.</p>
+<hr />
+<h3 id="lsp-tailwindcss-class-attributes"><code>lsp-tailwindcss-class-attributes</code><a class="headerlink" href="#lsp-tailwindcss-class-attributes" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>[class className ngClass class:list]</code></p>
+<p>The HTML attributes to provide class completions, hover previews, linting etc.</p>
+<hr />
+<h3 id="lsp-tailwindcss-class-functions"><code>lsp-tailwindcss-class-functions</code><a class="headerlink" href="#lsp-tailwindcss-class-functions" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Functions in which to provide completions, hover previews, linting etc.
+Currently, this works for both function calls and tagged template literals
+in JavaScript / TypeScript.</p>
+<hr />
+<h3 id="lsp-tailwindcss-code-actions"><code>lsp-tailwindcss-code-actions</code><a class="headerlink" href="#lsp-tailwindcss-code-actions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Include completion for module export and auto import them</p>
+<p>Enable code actions.</p>
 <hr />
-<h3 id="lsp-vetur-completion-scaffold-snippet-sources"><code>lsp-vetur-completion-scaffold-snippet-sources</code><a class="headerlink" href="#lsp-vetur-completion-scaffold-snippet-sources" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((workspace . (W)) (user . (U)) (vetur . (V)))</code></p>
-<p>Where Vetur source Scaffold Snippets from and how to indicate them.
-- workspace: <WORKSPACE>/.vscode/vetur/snippets.
-- user: <USER-DATA-DIR>/User/snippets/vetur.
-- vetur: Bundled in Vetur.
-The source value can be a string "(User)" or an emoji "✌".
-Set a source to "" to disable it.</p>
+<h3 id="lsp-tailwindcss-emmet-completions"><code>lsp-tailwindcss-emmet-completions</code><a class="headerlink" href="#lsp-tailwindcss-emmet-completions" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable completions when using Emmet-style syntax.
+For example div.bg-red-500.uppercase.</p>
 <hr />
-<h3 id="lsp-vetur-completion-tag-casing"><code>lsp-vetur-completion-tag-casing</code><a class="headerlink" href="#lsp-vetur-completion-tag-casing" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const initial) (const kebab))</code></p>
-<p><em>Default:</em> <code>kebab</code></p>
-<p>Casing conversion for tag completion</p>
-<hr />
-<h3 id="lsp-vetur-dev-log-level"><code>lsp-vetur-dev-log-level</code><a class="headerlink" href="#lsp-vetur-dev-log-level" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const INFO) (const DEBUG))</code></p>
-<p><em>Default:</em> <code>INFO</code></p>
-<p>The vls log level for development</p>
-<hr />
-<h3 id="lsp-vetur-dev-vls-path"><code>lsp-vetur-dev-vls-path</code><a class="headerlink" href="#lsp-vetur-dev-vls-path" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-experimental-class-regex"><code>lsp-tailwindcss-experimental-class-regex</code><a class="headerlink" href="#lsp-tailwindcss-experimental-class-regex" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> ``</p>
-<p>The vls path for development</p>
+<p>Custom regex to match tailwindcss classes.</p>
 <hr />
-<h3 id="lsp-vetur-dev-vls-port"><code>lsp-vetur-dev-vls-port</code><a class="headerlink" href="#lsp-vetur-dev-vls-port" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>integer</code></p>
-<p><em>Default:</em> <code>-1</code></p>
-<p>The vls port for development</p>
-<hr />
-<h3 id="lsp-vetur-emmet"><code>lsp-vetur-emmet</code><a class="headerlink" href="#lsp-vetur-emmet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const never) (const inMarkupAndStylesheetFilesOnly) (const always))</code></p>
-<p><em>Default:</em> <code>never</code></p>
-<p>Controls the Emmet suggestions that show up in the suggestion/completion list.</p>
-<hr />
-<h3 id="lsp-vetur-experimental-template-interpolation-service"><code>lsp-vetur-experimental-template-interpolation-service</code><a class="headerlink" href="#lsp-vetur-experimental-template-interpolation-service" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
+<h3 id="lsp-tailwindcss-experimental-config-file"><code>lsp-tailwindcss-experimental-config-file</code><a class="headerlink" href="#lsp-tailwindcss-experimental-config-file" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>sexp</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have template interpolation service</p>
+<p>Manually specify the Tailwind config file or files.
+It can be a single string or a hash map.  See
+https://github.com/tailwindlabs/tailwindcss-intellisense#tailwindcssexperimentalconfigfile</p>
+<p>Example:
+  (setq lsp-tailwindcss-experimental-config-file "config/tailwindcss.conf.js")</p>
+<p>(setq lsp-tailwindcss-experimental-config-file
+        (ht
+         ("themes/simple/tailwind.config.js" "themes/simple/<strong>")
+         ("themes/neon/tailwind.config.js" "themes/neon/</strong>")))</p>
 <hr />
-<h3 id="lsp-vetur-format-default-formatter-css"><code>lsp-vetur-format-default-formatter-css</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-css" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-html"><code>lsp-vetur-format-default-formatter-html</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-html" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettyhtml) (const js-beautify-html) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettyhtml</code></p>
-<p>Default formatter for <template> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-js"><code>lsp-vetur-format-default-formatter-js</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-js" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier) (const prettier-eslint) (const vscode-typescript))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-less"><code>lsp-vetur-format-default-formatter-less</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-less" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>less</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-options"><code>lsp-vetur-format-default-formatter-options</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-options" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((js-beautify-html (wrap_attributes . force-expand-multiline)) (prettyhtml (printWidth . 100) (singleQuote . :json-false) (wrapAttributes . :json-false) (sortAttributes . :json-false)))</code></p>
-<p>Options for all default formatters</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-postcss"><code>lsp-vetur-format-default-formatter-postcss</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-postcss" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>postcss</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-scss"><code>lsp-vetur-format-default-formatter-scss</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-scss" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>scss</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-stylus"><code>lsp-vetur-format-default-formatter-stylus</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-stylus" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const stylus-supremacy))</code></p>
-<p><em>Default:</em> <code>stylus-supremacy</code></p>
-<p>Default formatter for <style lang=<code>stylus</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-ts"><code>lsp-vetur-format-default-formatter-ts</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-ts" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier) (const vscode-typescript))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-enable"><code>lsp-vetur-format-enable</code><a class="headerlink" href="#lsp-vetur-format-enable" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-hovers"><code>lsp-tailwindcss-hovers</code><a class="headerlink" href="#lsp-tailwindcss-hovers" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable the Vetur document formatter.</p>
+<p>Enable hovers.</p>
 <hr />
-<h3 id="lsp-vetur-format-options-tab-size"><code>lsp-vetur-format-options-tab-size</code><a class="headerlink" href="#lsp-vetur-format-options-tab-size" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-lint-css-conflict"><code>lsp-tailwindcss-lint-css-conflict</code><a class="headerlink" href="#lsp-tailwindcss-lint-css-conflict" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Class names on the same HTML element which apply the same CSS property or properties.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-invalid-apply"><code>lsp-tailwindcss-lint-invalid-apply</code><a class="headerlink" href="#lsp-tailwindcss-lint-invalid-apply" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>error</code></p>
+<p>Unsupported use of the @apply directive.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-invalid-config-path"><code>lsp-tailwindcss-lint-invalid-config-path</code><a class="headerlink" href="#lsp-tailwindcss-lint-invalid-config-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>error</code></p>
+<p>Unknown or invalid path used with the theme helper.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-invalid-screen"><code>lsp-tailwindcss-lint-invalid-screen</code><a class="headerlink" href="#lsp-tailwindcss-lint-invalid-screen" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>error</code></p>
+<p>Unknown screen name used with the @screen directive.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-invalid-tailwind-directive"><code>lsp-tailwindcss-lint-invalid-tailwind-directive</code><a class="headerlink" href="#lsp-tailwindcss-lint-invalid-tailwind-directive" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>error</code></p>
+<p>Unknown value used with the @tailwind directive.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-invalid-variant"><code>lsp-tailwindcss-lint-invalid-variant</code><a class="headerlink" href="#lsp-tailwindcss-lint-invalid-variant" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>error</code></p>
+<p>Unknown variant name used with the @variants directive.</p>
+<hr />
+<h3 id="lsp-tailwindcss-lint-recommended-variant-order"><code>lsp-tailwindcss-lint-recommended-variant-order</code><a class="headerlink" href="#lsp-tailwindcss-lint-recommended-variant-order" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (const ignore) (const warning) (const error))</code></p>
+<p><em>Default:</em> <code>warning</code></p>
+<p>Class variants not in the recommended order (applies in JIT mode only).</p>
+<hr />
+<h3 id="lsp-tailwindcss-major-modes"><code>lsp-tailwindcss-major-modes</code><a class="headerlink" href="#lsp-tailwindcss-major-modes" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat symbol)</code></p>
+<p><em>Default:</em> <code>(rjsx-mode web-mode html-mode css-mode typescript-mode typescript-tsx-mode tsx-ts-mode)</code></p>
+<p>Major modes that lsp-tailwindcss should activate.</p>
+<hr />
+<h3 id="lsp-tailwindcss-root-font-size"><code>lsp-tailwindcss-root-font-size</code><a class="headerlink" href="#lsp-tailwindcss-root-font-size" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>number</code></p>
-<p><em>Default:</em> <code>2</code></p>
-<p>Number of spaces per indentation level. Inherited by all formatters.</p>
+<p><em>Default:</em> <code>16</code></p>
+<p>Root font size in pixels.
+Used to convert rem CSS values to their px equivalents.
+See <code>lsp-tailwindcss-show-pixel-equivalents</code>.</p>
 <hr />
-<h3 id="lsp-vetur-format-options-use-tabs"><code>lsp-vetur-format-options-use-tabs</code><a class="headerlink" href="#lsp-vetur-format-options-use-tabs" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
+<h3 id="lsp-tailwindcss-rustywind-command"><code>lsp-tailwindcss-rustywind-command</code><a class="headerlink" href="#lsp-tailwindcss-rustywind-command" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Use tabs for indentation. Inherited by all formatters.</p>
+<p>[Experimental] Command used for sorting the tailwindcss classes.</p>
 <hr />
-<h3 id="lsp-vetur-format-script-initial-indent"><code>lsp-vetur-format-script-initial-indent</code><a class="headerlink" href="#lsp-vetur-format-script-initial-indent" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have initial indent for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-style-initial-indent"><code>lsp-vetur-format-style-initial-indent</code><a class="headerlink" href="#lsp-vetur-format-style-initial-indent" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have initial indent for <style> region</p>
-<hr />
-<h3 id="lsp-vetur-global-snippets-dir"><code>lsp-vetur-global-snippets-dir</code><a class="headerlink" href="#lsp-vetur-global-snippets-dir" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/work/lsp-mode/lsp-mode/docs/.eask/30.2/.snippets/vetur</code></p>
-<p>Path to snippets dir.</p>
-<hr />
-<h3 id="lsp-vetur-grammar-custom-blocks"><code>lsp-vetur-grammar-custom-blocks</code><a class="headerlink" href="#lsp-vetur-grammar-custom-blocks" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((docs . md) (i18n . json))</code></p>
-<p>Mapping from custom block tag name to language name. Used for
- generating grammar to support syntax highlighting for custom
- blocks.</p>
-<hr />
-<h3 id="lsp-vetur-ignore-project-warning"><code>lsp-vetur-ignore-project-warning</code><a class="headerlink" href="#lsp-vetur-ignore-project-warning" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Ignore projects without jsconfig.json or tsconfig.json warnings.</p>
-<hr />
-<h3 id="lsp-vetur-language-features-code-actions"><code>lsp-vetur-language-features-code-actions</code><a class="headerlink" href="#lsp-vetur-language-features-code-actions" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable code actions.</p>
-<hr />
-<h3 id="lsp-vetur-server-command"><code>lsp-vetur-server-command</code><a class="headerlink" href="#lsp-vetur-server-command" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-rustywind-extra-args"><code>lsp-tailwindcss-rustywind-extra-args</code><a class="headerlink" href="#lsp-tailwindcss-rustywind-extra-args" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>(vls)</code></p>
-<p>Command to start vetur.</p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>[Experimental] Extra arguments to use when invoking rustywind.</p>
 <hr />
-<h3 id="lsp-vetur-trace-server"><code>lsp-vetur-trace-server</code><a class="headerlink" href="#lsp-vetur-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const off) (const messages) (const verbose))</code></p>
-<p><em>Default:</em> <code>off</code></p>
-<p>Traces the communication between VS Code and Vue Language Server.</p>
+<h3 id="lsp-tailwindcss-server-path"><code>lsp-tailwindcss-server-path</code><a class="headerlink" href="#lsp-tailwindcss-server-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<p>Path to the tailwindcss lsp server binary (node.js executable).</p>
+<p>Leave empty to use the managed installation.</p>
 <hr />
-<h3 id="lsp-vetur-use-workspace-dependencies"><code>lsp-vetur-use-workspace-dependencies</code><a class="headerlink" href="#lsp-vetur-use-workspace-dependencies" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-server-version"><code>lsp-tailwindcss-server-version</code><a class="headerlink" href="#lsp-tailwindcss-server-version" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>0.14.7</code></p>
+<p>Specify the version of tailwindcss intellisense.</p>
+<hr />
+<h3 id="lsp-tailwindcss-show-pixel-equivalents"><code>lsp-tailwindcss-show-pixel-equivalents</code><a class="headerlink" href="#lsp-tailwindcss-show-pixel-equivalents" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Show px equivalents for rem CSS values in completions and hovers.</p>
+<hr />
+<h3 id="lsp-tailwindcss-skip-config-check"><code>lsp-tailwindcss-skip-config-check</code><a class="headerlink" href="#lsp-tailwindcss-skip-config-check" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Use dependencies from workspace. Currently only for
-TypeScript.</p>
+<p>Force skip config file check.
+Only use it when your config file is in an unconventional location
+and you are sure tailwindcss language server can find it.</p>
 <hr />
-<h3 id="lsp-vetur-validation-script"><code>lsp-vetur-validation-script</code><a class="headerlink" href="#lsp-vetur-validation-script" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-suggestions"><code>lsp-tailwindcss-suggestions</code><a class="headerlink" href="#lsp-tailwindcss-suggestions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Validate js/ts in <script></p>
+<p>Enable autocomplete suggestions.</p>
 <hr />
-<h3 id="lsp-vetur-validation-style"><code>lsp-vetur-validation-style</code><a class="headerlink" href="#lsp-vetur-validation-style" title="Permanent link">#</a></h3>
+<h3 id="lsp-tailwindcss-validate"><code>lsp-tailwindcss-validate</code><a class="headerlink" href="#lsp-tailwindcss-validate" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Validate css/scss/less/postcss in <style></p>
-<hr />
-<h3 id="lsp-vetur-validation-template"><code>lsp-vetur-validation-template</code><a class="headerlink" href="#lsp-vetur-validation-template" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Validate vue-html in <template> using eslint-plugin-vue</p>
+<p>Enable linting.
+Rules can be configured individually using the lsp-tailwindcss-lint-* settings:
+  ignore: disable lint rule entirely
+  warning: rule violations will be considered "warnings"
+  error: rule violations will be considered "errors"</p>
 <hr />
 
 <!-- Source file information -->
@@ -4686,7 +4565,7 @@ TypeScript.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-vimscript/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vimscript" rel="prev">
+        <a href="../lsp-svelte/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Svelte" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -4695,20 +4574,20 @@ TypeScript.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Vimscript
+              Svelte
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-volar/" class="md-footer__link md-footer__link--next" aria-label="Next: Vue 3" rel="next">
+        <a href="../lsp-terraform/" class="md-footer__link md-footer__link--next" aria-label="Next: Terraform (terraform-lsp)" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Vue 3
+              Terraform (terraform-lsp)
             </div>
           </div>
           <div class="md-footer__button md-icon">
