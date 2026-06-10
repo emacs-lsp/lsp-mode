@@ -1228,6 +1228,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "tailwindcss",
+    "full-name": "Tailwind CSS",
+    "server-name": "tailwindcss-language-server",
+    "server-url": "https://github.com/tailwindlabs/tailwindcss-intellisense/tree/main/packages/tailwindcss-language-server",
+    "installation": "npm install -g @tailwindcss/language-server",
+    "lsp-install-server": "tailwindcss",
+    "debugger": "Not available"
+  },
+  {
     "name": "terraform",
     "full-name": "Terraform",
     "server-name": "terraform-lsp",
