@@ -69,6 +69,7 @@ nav:
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
     - Crates: page/lsp-crates.md
+    - Credo: page/lsp-credo.md
     - Crystal: page/lsp-crystalline.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
     - Cucumber: page/lsp-cucumber.md
@@ -77,6 +78,7 @@ nav:
     - Dart: https://emacs-lsp.github.io/lsp-dart
     - Dhall: page/lsp-dhall.md
     - Dockerfile: page/lsp-dockerfile.md
+    - DOT: page/lsp-dot.md
     - Earthfile: page/lsp-earthly.md
     - Elixir: page/lsp-elixir.md
     - Elm: page/lsp-elm.md
@@ -84,7 +86,7 @@ nav:
     - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
     - Emmet: page/lsp-emmet-ls.md
     - Erlang (ELP): page/lsp-erlang-elp.md
-    - Erlang (Erlang Language Server): page/lsp-erlang-ls.md
+    - Erlang (Erlang LS): page/lsp-erlang-ls.md
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fennel: page/lsp-fennel.md
@@ -93,25 +95,29 @@ nav:
     - Fortran (fortls): page/lsp-fortran.md
     - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
+    - gettext: page/lsp-gettext.md
     - GitHub Copilot: page/lsp-copilot.md
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
     - GNAT Project: page/lsp-gpr.md
     - Go (gopls): manual-language-docs/lsp-go.md
+    - golangci-lint: page/lsp-golangci-lint.md
     - Grammarly: page/lsp-grammarly.md
     - GraphQL: page/lsp-graphql.md
     - Groovy: page/lsp-groovy.md
     - Hack: page/lsp-hack.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
+    - Haxe: page/lsp-haxe.md
     - HTML: page/lsp-html.md
     - Hy (hyuga): page/lsp-hy.md
     - Idris: page/lsp-idris.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - JavaScript Flow: page/lsp-flow.md
     - Javascript/Typescript (deno): page/lsp-deno.md
-    - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
-    - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
     - JavaScript/TypeScript (Go native): page/lsp-tsgo.md
+    - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
+    - JavaScript/TypeScript (theia-ide, RECOMMENDED): page/lsp-typescript.md
+    - Jq (jq-lsp): page/lsp-jq.md
     - Json: page/lsp-json.md
     - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
@@ -121,23 +127,29 @@ nav:
     - LanguageTool (LTEX+): page/lsp-ltex-plus.md
     - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
-    - Lua (Lua Language Server): page/lsp-lua-language-server.md
-    - Lua (Lua-Lsp): page/lsp-lua-lsp.md
+    - Lua (lua-language-server): page/lsp-lua-language-server.md
+    - Lua (lua-lsp): page/lsp-lua-lsp.md
+    - Lua Roblox: page/lsp-lua-roblox-language-server.md
     - Magik: page/lsp-magik.md
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
     - MATLAB: page/lsp-matlab.md
     - MDX: page/lsp-mdx.md
     - Meson: page/lsp-meson.md
+    - mint-lang: page/lsp-mint.md
+    - Mojo: page/lsp-mojo.md
     - Move: page/lsp-move.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nextflow: page/lsp-nextflow.md
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nimlsp.md
+    - Nim (nimlangserver): page/lsp-nim.md
     - Nix (nil): page/lsp-nix-nil.md
-    - Nix (nixd-lsp): page/lsp-nix-nixd.md
+    - Nix (nixd): page/lsp-nix-nixd.md
     - Nix (rnix-lsp): page/lsp-nix-rnix.md
+    - nomicfoundation/solidity-language-server: page/lsp-solidity.md
     - Nushell: page/lsp-nushell.md
+    - OCaml (ocaml-language-server): page/lsp-ocaml.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Odin (ols): page/lsp-odin-ols.md
     - OpenSCAD: page/lsp-openscad.md
@@ -146,7 +158,7 @@ nav:
     - Perl (Perl::LanguageServer): page/lsp-perl.md
     - Perl (PLS): page/lsp-pls.md
     - PHP (felixbecker): page/lsp-php.md
-    - PHP (intelephense): page/lsp-intelephense.md
+    - PHP (intelephense, RECOMMENDED): page/lsp-intelephense.md
     - PHP (phpactor): page/lsp-phpactor.md
     - PHP (Serenata): page/lsp-serenata.md
     - Powershell: page/lsp-pwsh.md
@@ -155,7 +167,7 @@ nav:
     - Python (Jedi Language Server): page/lsp-jedi.md
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - Python (Palantir deprecated): page/lsp-pyls.md
-    - Python (Pylsp): page/lsp-pylsp.md
+    - Python (pylsp): page/lsp-pylsp.md
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Ruff): page/lsp-ruff.md
     - Python (ty): page/lsp-python-ty.md
@@ -163,6 +175,8 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - Remark: page/lsp-remark.md
+    - robot framework: page/lsp-rf.md
     - Roc: page/lsp-roc.md
     - RON: page/ron-lsp.md
     - RPM Spec: page/lsp-rpm-spec.md
@@ -172,6 +186,7 @@ nav:
     - Ruby (Sorbet): page/lsp-sorbet.md
     - Ruby (Steep): page/lsp-steep.md
     - Ruby (TypeProf): page/lsp-typeprof.md
+    - ruby-syntax-tree: page/lsp-ruby-syntax-tree.md
     - Rust (rls): page/lsp-rust-rls.md
     - Rust (rust-analyzer): page/lsp-rust-analyzer.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
@@ -196,8 +211,10 @@ nav:
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
     - TypeSpec: page/lsp-typespec.md
+    - Typos source code spell checker: page/lsp-typos.md
     - Typst: page/lsp-typst.md
     - V: page/lsp-v.md
+    - V (v-analyzer): page/lsp-v-analyzer.md
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
