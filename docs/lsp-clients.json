@@ -30,7 +30,7 @@
     "full-name": "Ansible",
     "server-name": "ansible-language-server",
     "server-url": "https://github.com/ansible/ansible-language-server",
-    "installation": "npm i -g @ansible/ansible-language-server",
+    "installation": "npm install -g @ansible/ansible-language-server",
     "lsp-install-server": "ansible-ls",
     "debugger": "Not available"
   },
@@ -48,7 +48,7 @@
     "full-name": "Astro",
     "server-name": "astro-ls",
     "server-url": "https://github.com/withastro/language-tools",
-    "installation": "npm i -g @astrojs/language-server",
+    "installation": "npm install -g @astrojs/language-server",
     "lsp-install-server": "astro-ls",
     "debugger": "Not available"
   },
@@ -66,7 +66,7 @@
     "full-name": "AWK",
     "server-name": "awk-language-server",
     "server-url": "https://github.com/Beaglefoot/awk-language-server",
-    "installation": "npm i -g awk-language-server",
+    "installation": "npm install -g awk-language-server",
     "lsp-install-server": "awkls",
     "debugger": "Not available"
   },
@@ -75,7 +75,7 @@
     "full-name": "Bash",
     "server-name": "bash-language-server",
     "server-url": "https://github.com/mads-hartmann/bash-language-server",
-    "installation": "npm i -g bash-language-server",
+    "installation": "npm install -g bash-language-server",
     "lsp-install-server": "bash-ls",
     "debugger": "Not available"
   },
@@ -121,7 +121,6 @@
     "full-name": "C# (csharp-ls)",
     "server-name": "csharp-ls",
     "server-url": "https://github.com/razzmatazz/csharp-language-server",
-    "installation": "Automatic by lsp-mode with `dotnet tool install -g`",
     "lsp-install-server": "csharp-ls",
     "debugger": "Yes (netcoredbg)"
   },
@@ -131,7 +130,6 @@
     "full-name": "C# (csharp-roslyn)",
     "server-name": "Microsoft.CodeAnalysis.LanguageServer (Roslyn)",
     "server-url": "https://github.com/dotnet/roslyn/tree/main/src/LanguageServer",
-    "installation": "Supports automatic installation via NuGet",
     "lsp-install-server": "csharp-roslyn",
     "debugger": "Yes (netcoredbg)"
   },
@@ -141,7 +139,6 @@
     "full-name": "C# (omnisharp-roslyn)",
     "server-name": "OmniSharp-Roslyn",
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
-    "installation": "Supports automatic installation.",
     "lsp-install-server": "omnisharp",
     "debugger": "Yes (netcoredbg)"
   },
@@ -176,7 +173,6 @@
     "full-name": "Camel",
     "server-name": "camells",
     "server-url": "https://github.com/camel-tooling/camel-language-server/",
-    "installation": "Automatic by lsp-mode with `lsp-install-server`",
     "lsp-install-server": "camells",
     "debugger": "Not available"
   },
@@ -314,7 +310,7 @@
     "full-name": "Elm",
     "server-name": "elmLS",
     "server-url": "https://github.com/elm-tooling/elm-language-server",
-    "installation": "npm i -g @elm-tooling/elm-language-server, or clone the repository and follow installation instructions",
+    "installation": "npm install -g @elm-tooling/elm-language-server, or clone the repository and follow installation instructions",
     "lsp-install-server": "elm-ls",
     "debugger": "Not available"
   },
@@ -323,7 +319,7 @@
     "full-name": "Emmet",
     "server-name": "emmet-ls",
     "server-url": "https://github.com/aca/emmet-ls",
-    "installation": "npm i -g emmet-ls",
+    "installation": "npm install -g emmet-ls",
     "lsp-install-server": "emmet-ls",
     "debugger": "Not available"
   },
@@ -356,7 +352,6 @@
     "full-name": "F#",
     "server-name": "fsautocomplete",
     "server-url": "https://github.com/fsharp/FsAutoComplete",
-    "installation": "Automatic by lsp-mode",
     "lsp-install-server": "fsac",
     "debugger": "Yes (netcoredbg)"
   },
@@ -474,7 +469,7 @@
     "server-name": "@emacs-grammarly/grammarly-languageserver",
     "server-url": "https://github.com/emacs-grammarly/grammarly-language-server",
     "installation-url": "https://github.com/emacs-grammarly/grammarly-language-server",
-    "installation": "npm i -g @emacs-grammarly/grammarly-languageserver",
+    "installation": "npm install -g @emacs-grammarly/grammarly-languageserver",
     "debugger": "Not available"
   },
   {
@@ -483,7 +478,7 @@
     "server-name": "graphql-language-service-cli",
     "server-url": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#readme",
     "installation-url": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#installation-and-usage",
-    "installation": "npm i -g graphql-language-service-cli",
+    "installation": "npm install -g graphql-language-service-cli",
     "debugger": "Not available"
   },
   {
@@ -567,7 +562,7 @@
     "full-name": "JavaScript/TypeScript (sourcegraph)",
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
-    "installation": "npm i -g javascript-typescript-langserver",
+    "installation": "npm install -g javascript-typescript-langserver",
     "lsp-install-server": "jsts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
@@ -577,7 +572,7 @@
     "full-name": "JavaScript/TypeScript (theia-ide, RECOMMENDED)",
     "server-name": "typescript-language-server (formerly theia-ide / TypeFox)",
     "server-url": "https://github.com/typescript-language-server/typescript-language-server",
-    "installation": "npm i -g typescript-language-server; npm i -g typescript",
+    "installation": "npm install -g typescript-language-server; npm install -g typescript",
     "lsp-install-server": "ts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
@@ -595,7 +590,7 @@
     "full-name": "Json",
     "server-name": "vscode-json-languageserver",
     "server-url": "https://github.com/microsoft/vscode/tree/main/extensions/json-language-features/server",
-    "installation": "Automatic or manual by npm i -g vscode-langservers-extracted",
+    "installation": "npm install -g vscode-langservers-extracted",
     "lsp-install-server": "json-ls",
     "debugger": "Not available"
   },
@@ -700,7 +695,6 @@
     "full-name": "Magik",
     "server-name": "magik-language-server",
     "server-url": "https://github.com/StevenLooman/magik-tools",
-    "installation": "Automatic by lsp-mode with `lsp-install-server`",
     "lsp-install-server": "magik-ls",
     "debugger": "Yes"
   },
@@ -709,7 +703,7 @@
     "full-name": "Markdown",
     "server-name": "unified-language-server (deprecated in favor of remark-language-server)",
     "server-url": "https://github.com/unifiedjs/unified-language-server",
-    "installation": "npm i -g unified-language-server",
+    "installation": "npm install -g unified-language-server",
     "debugger": "Not available"
   },
   {
@@ -924,7 +918,7 @@
     "full-name": "PHP (intelephense, RECOMMENDED)",
     "server-name": "intelephense",
     "server-url": "https://github.com/bmewburn/vscode-intelephense",
-    "installation": "Automatic or manual by `npm i intelephense -g`",
+    "installation": "npm install -g intelephense",
     "debugger": "Yes"
   },
   {
@@ -950,7 +944,6 @@
     "full-name": "Powershell",
     "server-name": "PowerShellEditorServices",
     "server-url": "https://github.com/PowerShell/PowerShellEditorServices",
-    "installation": "Automatic",
     "lsp-install-server": "pwsh-ls",
     "debugger": "Yes"
   },
@@ -968,7 +961,7 @@
     "server-name": "purescript-language-server",
     "server-url": "https://github.com/nwolverson/purescript-language-server",
     "installation-url": "https://github.com/nwolverson/purescript-language-server#usage",
-    "installation": "npm i -g purescript-language-server",
+    "installation": "npm install -g purescript-language-server",
     "lsp-install-server": "pursls",
     "debugger": "Not available"
   },
@@ -1073,7 +1066,7 @@
     "full-name": "Remark",
     "server-name": "remark-language-server",
     "server-url": "https://github.com/remarkjs/remark-language-server",
-    "installation": "npm i -g remark-language-server",
+    "installation": "npm install -g remark-language-server",
     "debugger": "Not available"
   },
   {
@@ -1216,7 +1209,7 @@
     "full-name": "SQL (sql)",
     "server-name": "sql-language-server",
     "server-url": "https://github.com/joe-re/sql-language-server",
-    "installation": "npm i -g sql-language-server",
+    "installation": "npm install -g sql-language-server",
     "debugger": "Not available"
   },
   {
@@ -1240,7 +1233,7 @@
     "full-name": "Svelte",
     "server-name": "svelteserver",
     "server-url": "https://github.com/sveltejs/language-tools",
-    "installation": "npm i -g svelte-language-server",
+    "installation": "npm install -g svelte-language-server",
     "lsp-install-server": "svelte-ls",
     "debugger": "Not available"
   },
@@ -1349,7 +1342,7 @@
     "full-name": "TypeSpec",
     "server-name": "tsp server",
     "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
-    "installation": "npm i -g @typespec/compiler",
+    "installation": "npm install -g @typespec/compiler",
     "lsp-install-server": "@typespec/compiler",
     "debugger": "Yes (Firefox/Chrome)"
   },
@@ -1477,7 +1470,6 @@
     "full-name": "XML",
     "server-name": "lsp4xml",
     "server-url": "https://github.com/eclipse/lemminx",
-    "installation": "Automatic by lsp-mode",
     "lsp-install-server": "xmlls",
     "debugger": "Not available"
   },
