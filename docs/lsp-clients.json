@@ -89,7 +89,8 @@
     "lsp-install-server": "beancount-ls",
     "debugger": "Not available"
   },
-  { "name": "biome",
+  {
+    "name": "biome",
     "full-name": "Biome",
     "server-name": "biome-language-server",
     "server-url": "https://github.com/biomejs/biome",
@@ -115,31 +116,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "camel",
-    "full-name": "CAMEL",
-    "server-name": "camells",
-    "server-url": "https://github.com/camel-tooling/camel-language-server/",
-    "installation": "Automatic by lsp-mode with `lsp-install-server`",
-    "lsp-install-server": "camells",
-    "debugger": "Not available"
-  },
-  {
-    "name": "copilot",
-    "full-name": "GitHub Copilot",
-    "server-name": "copilot-language-server",
-    "server-url": "https://www.npmjs.com/package/@github/copilot-language-server",
-    "installation-url": "https://www.npmjs.com/package/@github/copilot-language-server",
-    "debugger": "Not available"
-  },
-  {
-    "name": "credo",
-    "full-name": "Credo",
-    "server-name": "credo-ls",
-    "server-url": "https://github.com/elixir-tools/credo-language-server",
-    "installation-url": "https://github.com/elixir-tools/credo-language-server#installation",
-    "debugger": "Not available"
-  },
-  {
     "name": "csharp",
     "common-group-name": "csharp",
     "full-name": "C# (csharp-ls)",
@@ -147,16 +123,6 @@
     "server-url": "https://github.com/razzmatazz/csharp-language-server",
     "installation": "Automatic by lsp-mode with `dotnet tool install -g`",
     "lsp-install-server": "csharp-ls",
-    "debugger": "Yes (netcoredbg)"
-  },
-  {
-    "name": "csharp-omnisharp",
-    "common-group-name": "csharp",
-    "full-name": "C# (Omnisharp-Roslyn)",
-    "server-name": "OmniSharp-Roslyn",
-    "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
-    "installation": "Supports automatic installation.",
-    "lsp-install-server": "omnisharp",
     "debugger": "Yes (netcoredbg)"
   },
   {
@@ -170,12 +136,14 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
-    "name": "c3",
-    "full-name": "c3 language server",
-    "server-name": "c3lsp",
-    "server-url": "https://github.com/pherrymason/c3-lsp",
-    "installation-url": "https://github.com/pherrymason/c3-lsp",
-    "debugger": "Yes (gdb or lldb)"
+    "name": "csharp-omnisharp",
+    "common-group-name": "csharp",
+    "full-name": "C# (Omnisharp-Roslyn)",
+    "server-name": "OmniSharp-Roslyn",
+    "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
+    "installation": "Supports automatic installation.",
+    "lsp-install-server": "omnisharp",
+    "debugger": "Yes (netcoredbg)"
   },
   {
     "name": "ccls",
@@ -194,6 +162,23 @@
     "server-url": "https://clangd.llvm.org/",
     "installation-url": "https://clangd.llvm.org/installation.html",
     "debugger": "Yes (gdb or lldb)"
+  },
+  {
+    "name": "c3",
+    "full-name": "c3 language server",
+    "server-name": "c3lsp",
+    "server-url": "https://github.com/pherrymason/c3-lsp",
+    "installation-url": "https://github.com/pherrymason/c3-lsp",
+    "debugger": "Yes (gdb or lldb)"
+  },
+  {
+    "name": "camel",
+    "full-name": "CAMEL",
+    "server-name": "camells",
+    "server-url": "https://github.com/camel-tooling/camel-language-server/",
+    "installation": "Automatic by lsp-mode with `lsp-install-server`",
+    "lsp-install-server": "camells",
+    "debugger": "Not available"
   },
   {
     "name": "clojure",
@@ -228,6 +213,14 @@
     "server-url": "https://github.com/MathiasPius/crates-lsp",
     "installation-url": "https://github.com/MathiasPius/crates-lsp?tab=readme-ov-file#1-installing-crates-lsp",
     "lsp-install-server": "crates-lsp",
+    "debugger": "Not available"
+  },
+  {
+    "name": "credo",
+    "full-name": "Credo",
+    "server-name": "credo-ls",
+    "server-url": "https://github.com/elixir-tools/credo-language-server",
+    "installation-url": "https://github.com/elixir-tools/credo-language-server#installation",
     "debugger": "Not available"
   },
   {
@@ -368,6 +361,16 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
+    "name": "fennel",
+    "common-group-name": "fennel",
+    "full-name": "Fennel",
+    "server-name": "fennel-ls",
+    "installation-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "server-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "installation": "luarocks install fennel-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "fish",
     "full-name": "Fish shell",
     "server-name": "fish-lsp",
@@ -408,11 +411,28 @@
     "debugger": "Not available"
   },
   {
+    "name": "magik",
+    "full-name": "GE Smallworld Magik",
+    "server-name": "magik-language-server",
+    "server-url": "https://github.com/StevenLooman/magik-tools",
+    "installation": "Automatic by lsp-mode with `lsp-install-server`",
+    "lsp-install-server": "magik-ls",
+    "debugger": "Yes"
+  },
+  {
     "name": "gettext",
     "full-name": "gettext",
     "server-name": "po-language-server",
     "server-url": "https://github.com/JulienPalard/po-language-server",
     "installation-url": "https://github.com/JulienPalard/po-language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "copilot",
+    "full-name": "GitHub Copilot",
+    "server-name": "copilot-language-server",
+    "server-url": "https://www.npmjs.com/package/@github/copilot-language-server",
+    "installation-url": "https://www.npmjs.com/package/@github/copilot-language-server",
     "debugger": "Not available"
   },
   {
@@ -432,6 +452,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "gpr",
+    "full-name": "GNAT Project",
+    "server-name": "ada_language_server",
+    "server-url": "https://github.com/AdaCore/ada_language_server",
+    "installation-url": "https://github.com/AdaCore/ada_language_server#install",
+    "lsp-install-server": "gpr-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "go",
     "full-name": "Go",
     "server-name": "gopls",
@@ -446,15 +475,6 @@
     "server-url": "https://github.com/nametake/golangci-lint-langserver",
     "installation": "go install github.com/nametake/golangci-lint-langserver@latest",
     "installation-url": "https://github.com/nametake/golangci-lint-langserver#installation",
-    "debugger": "Not available"
-  },
-  {
-    "name": "gpr",
-    "full-name": "GNAT Project",
-    "server-name": "ada_language_server",
-    "server-url": "https://github.com/AdaCore/ada_language_server",
-    "installation-url": "https://github.com/AdaCore/ada_language_server#install",
-    "lsp-install-server": "gpr-ls",
     "debugger": "Not available"
   },
   {
@@ -492,6 +512,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "haxe",
+    "full-name": "Haxe",
+    "server-name": "vshaxe",
+    "server-url": "https://github.com/vshaxe/vshaxe",
+    "installation-url": "https://github.com/vshaxe/vshaxe#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "html",
     "full-name": "HTML",
     "server-name": "html",
@@ -525,6 +553,14 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
+    "name": "deno",
+    "common-group-name": "javascript",
+    "full-name": "Javascript/Typescript (deno)",
+    "server-name": "deno lsp",
+    "server-url": "https://deno.land/#installation",
+    "debugger": "Yes (Chrome)"
+  },
+  {
     "name": "tsgo",
     "common-group-name": "javascript",
     "full-name": "JavaScript/TypeScript (Go native)",
@@ -555,21 +591,13 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
-    "name": "typespec",
-    "full-name": "TypeSpec",
-    "server-name": "tsp server",
-    "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
-    "installation": "npm i -g @typespec/compiler",
-    "lsp-install-server": "@typespec/compiler",
-    "debugger": "Yes (Firefox/Chrome)"
-  },
-  {
-    "name": "deno",
-    "common-group-name": "javascript",
-    "full-name": "Javascript/Typescript (deno)",
-    "server-name": "deno lsp",
-    "server-url": "https://deno.land/#installation",
-    "debugger": "Yes (Chrome)"
+    "name": "jq",
+    "full-name": "Jq (jq-lsp)",
+    "server-name": "jq-lsp",
+    "server-url": "https://github.com/wader/jq-lsp",
+    "installation": "go install github.com/wader/jq-lsp@master",
+    "installation-url": "https://github.com/wader/jq-lsp#install",
+    "debugger": "Not available"
   },
   {
     "name": "json",
@@ -608,28 +636,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "jq",
-    "full-name": "Jq (jq-lsp)",
-    "server-name": "jq-lsp",
-    "server-url": "https://github.com/wader/jq-lsp",
-    "installation": "go install github.com/wader/jq-lsp@master",
-    "installation-url": "https://github.com/wader/jq-lsp#install",
-    "debugger": "Not available"
-  },
-  {
     "name": "kotlin",
     "full-name": "Kotlin",
     "server-name": "kotlin-language-server",
     "server-url": "https://github.com/fwcd/KotlinLanguageServer",
     "installation-url": "https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md",
-    "debugger": "Not available"
-  },
-  {
-    "name": "lisp",
-    "full-name": "Lisp",
-    "server-name": "alive-lsp",
-    "server-url": "https://github.com/nobody-famous/alive-lsp",
-    "installation-url": "https://github.com/nobody-famous/alive-lsp?tab=readme-ov-file#running-the-server",
     "debugger": "Not available"
   },
   {
@@ -646,6 +657,14 @@
     "server-name": "LTEX+",
     "server-url": "https://github.com/ltex-plus/ltex-ls-plus",
     "installation-url": "https://ltex-plus.github.io/ltex-plus/installation-usage.html",
+    "debugger": "Not available"
+  },
+  {
+    "name": "lisp",
+    "full-name": "Lisp",
+    "server-name": "alive-lsp",
+    "server-url": "https://github.com/nobody-famous/alive-lsp",
+    "installation-url": "https://github.com/nobody-famous/alive-lsp?tab=readme-ov-file#running-the-server",
     "debugger": "Not available"
   },
   {
@@ -686,25 +705,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "fennel",
-    "common-group-name": "fennel",
-    "full-name": "Fennel",
-    "server-name": "fennel-ls",
-    "installation-url": "https://git.sr.ht/~xerool/fennel-ls",
-    "server-url": "https://git.sr.ht/~xerool/fennel-ls",
-    "installation": "luarocks install fennel-ls",
-    "debugger": "Not available"
-  },
-  {
-    "name": "magik",
-    "full-name": "GE Smallworld Magik",
-    "server-name": "magik-language-server",
-    "server-url": "https://github.com/StevenLooman/magik-tools",
-    "installation": "Automatic by lsp-mode with `lsp-install-server`",
-    "lsp-install-server": "magik-ls",
-    "debugger": "Yes"
-  },
-  {
     "name": "markdown",
     "full-name": "Markdown",
     "server-name": "unified-language-server (deprecated in favor of remark-language-server)",
@@ -729,19 +729,19 @@
     "debugger": "Not available"
   },
   {
+    "name": "mdx",
+    "full-name": "mdx",
+    "server-name": "mdx-analyzer",
+    "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
+    "installation": "npm install -g @mdx-js/language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "meson",
     "full-name": "Meson",
     "server-name": "mesonlsp",
     "server-url": "https://github.com/JCWasmx86/mesonlsp",
     "installation-url": "https://github.com/JCWasmx86/mesonlsp",
-    "debugger": "Not available"
-  },
-  {
-    "name": "sml",
-    "full-name": "Standard ML (Millet)",
-    "server-name": "millet",
-    "server-url": "https://github.com/azdavis/millet",
-    "installation-url": "https://github.com/azdavis/millet",
     "debugger": "Not available"
   },
   {
@@ -753,19 +753,19 @@
     "debugger": "Not available"
   },
   {
+    "name": "mojo",
+    "full-name": "Mojo",
+    "server-name": "mojo-lsp-server",
+    "server-url": "https://mojolang.org/",
+    "installation-url": "https://mojolang.org/docs/manual/quickstart/",
+    "debugger": "Not available"
+  },
+  {
     "name": "move",
     "full-name": "Move Language",
     "server-name": "move-analyzer",
     "server-url": "https://github.com/move-language/move",
     "installation-url": "https://github.com/move-language/move/tree/main/language/move-analyzer",
-    "debugger": "Not available"
-  },
-  {
-    "name": "mdx",
-    "full-name": "mdx",
-    "server-name": "mdx-analyzer",
-    "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
-    "installation": "npm install -g @mdx-js/language-server",
     "debugger": "Not available"
   },
   {
@@ -801,11 +801,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "ocaml-lsp-server",
-    "full-name": "OCaml",
-    "server-name": "ocaml-lsp-server",
-    "server-url": "https://github.com/ocaml/ocaml-lsp",
-    "installation-url": "https://github.com/ocaml/ocaml-lsp#installation",
+    "name": "nix-nil",
+    "full-name": "Nix",
+    "server-name": "nix-nil",
+    "server-url": "https://github.com/oxalica/nil",
+    "installation": "nix-env -i nil || nix profile install nixpkgs#nil",
     "debugger": "Not available"
   },
   {
@@ -825,11 +825,12 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix-nil",
-    "full-name": "Nix",
-    "server-name": "nix-nil",
-    "server-url": "https://github.com/oxalica/nil",
-    "installation": "nix-env -i nil || nix profile install nixpkgs#nil",
+    "name": "solidity",
+    "full-name": "nomicfoundation/solidity-language-server",
+    "server-name": "solidity-language-server",
+    "installation": "npx @nomicfoundation/solidity-language-server",
+    "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
     "debugger": "Not available"
   },
   {
@@ -838,6 +839,14 @@
     "server-name": "nu",
     "server-url": "https://github.com/nushell/nushell/tree/main/crates/nu-lsp",
     "installation": "It is included in Nushell >= 0.87.0",
+    "debugger": "Not available"
+  },
+  {
+    "name": "ocaml-lsp-server",
+    "full-name": "OCaml",
+    "server-name": "ocaml-lsp-server",
+    "server-url": "https://github.com/ocaml/ocaml-lsp",
+    "installation-url": "https://github.com/ocaml/ocaml-lsp#installation",
     "debugger": "Not available"
   },
   {
@@ -876,14 +885,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "pls",
-    "full-name": "PLS",
-    "server-name": "Perl Language Server",
-    "server-url": "https://metacpan.org/pod/PLS",
-    "installation": "cpan PLS",
-    "debugger": "Not available"
-  },
-  {
     "name": "perl",
     "full-name": "Perl",
     "server-name": "Perl::LanguageServer",
@@ -910,6 +911,15 @@
     "debugger": "Yes"
   },
   {
+    "name": "serenata",
+    "common-group-name": "php",
+    "full-name": "PHP (Serenata)",
+    "server-name": "Serenata",
+    "server-url": "https://gitlab.com/Serenata/Serenata",
+    "installation-url": "https://gitlab.com/Serenata/Serenata/-/releases",
+    "debugger": "Yes"
+  },
+  {
     "name": "intelephense",
     "common-group-name": "php",
     "full-name": "PHP(recommended)",
@@ -926,6 +936,14 @@
     "server-url": "https://github.com/phpactor/phpactor",
     "installation-url": "https://phpactor.readthedocs.io/en/master/usage/standalone.html#installation-global",
     "debugger": "yes"
+  },
+  {
+    "name": "pls",
+    "full-name": "PLS",
+    "server-name": "Perl Language Server",
+    "server-url": "https://metacpan.org/pod/PLS",
+    "installation": "cpan PLS",
+    "debugger": "Not available"
   },
   {
     "name": "pwsh",
@@ -955,20 +973,20 @@
     "debugger": "Not available"
   },
   {
-    "name": "jedi",
-    "full-name": "Python (Jedi-language-server)",
-    "server-name": "jedi",
-    "server-url": "https://github.com/pappasam/jedi-language-server",
-    "installation-url": "https://github.com/fredcamps/lsp-jedi",
-    "debugger": "Not available"
-  },
-  {
     "name": "pylsp",
     "full-name": "Python",
     "server-name": "pylsp",
     "server-url": "https://github.com/python-lsp/python-lsp-server",
     "installation": "pip install 'python-lsp-server[all]'",
     "debugger": "Yes"
+  },
+  {
+    "name": "ruff",
+    "full-name": "Python",
+    "server-name": "ruff",
+    "server-url": "https://github.com/astral-sh/ruff",
+    "installation": "pip install ruff (previous pip install ruff-lsp)",
+    "debugger": "Not available"
   },
   {
     "name": "pyls",
@@ -979,14 +997,12 @@
     "debugger": "Yes"
   },
   {
-    "name": "pyright",
-    "full-name": "Python (Pyright)",
-    "server-name": "pyright-langserver",
-    "server-url": "https://github.com/microsoft/pyright",
-    "client-name": "lsp-pyright",
-    "client-url": "https://github.com/emacs-lsp/lsp-pyright",
-    "installation-url": "https://github.com/emacs-lsp/lsp-pyright",
-    "debugger": "Yes"
+    "name": "jedi",
+    "full-name": "Python (Jedi-language-server)",
+    "server-name": "jedi",
+    "server-url": "https://github.com/pappasam/jedi-language-server",
+    "installation-url": "https://github.com/fredcamps/lsp-jedi",
+    "debugger": "Not available"
   },
   {
     "name": "python-ms",
@@ -996,6 +1012,16 @@
     "client-name": "lsp-python-ms",
     "client-url": "https://github.com/emacs-lsp/lsp-python-ms",
     "installation-url": "https://github.com/emacs-lsp/lsp-python-ms",
+    "debugger": "Yes"
+  },
+  {
+    "name": "pyright",
+    "full-name": "Python (Pyright)",
+    "server-name": "pyright-langserver",
+    "server-url": "https://github.com/microsoft/pyright",
+    "client-name": "lsp-pyright",
+    "client-url": "https://github.com/emacs-lsp/lsp-pyright",
+    "installation-url": "https://github.com/emacs-lsp/lsp-pyright",
     "debugger": "Yes"
   },
   {
@@ -1051,23 +1077,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "rpm-spec",
-    "full-name": "RPM Spec",
-    "server-name": "rpm-spec-language-server",
-    "server-url": "https://github.com/dcermak/rpm-spec-language-server",
-    "installation": "pip install --user rpm-spec-language-server",
-    "debugger": "Not available"
-  },
-  {
-    "name": "rubocop",
-    "full-name": "Ruby (RuboCop)",
-    "server-name": "rubocop",
-    "server-url": "https://github.com/rubocop/rubocop",
-    "installation-url": "https://docs.rubocop.org/rubocop/installation.html",
-    "installation": "gem install rubocop",
-    "debugger": "Not available"
-  },
-  {
     "name": "rf",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",
@@ -1086,11 +1095,20 @@
     "debugger": "Not available"
   },
   {
-    "name": "ron",
-    "full-name": "Rusty Object Notation",
-    "server-name": "ron-lsp",
-    "server-url": "https://github.com/jasonjmcghee/ron-lsp/",
-    "installation": "cargo install ron-lsp",
+    "name": "rpm-spec",
+    "full-name": "RPM Spec",
+    "server-name": "rpm-spec-language-server",
+    "server-url": "https://github.com/dcermak/rpm-spec-language-server",
+    "installation": "pip install --user rpm-spec-language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "rubocop",
+    "full-name": "Ruby (RuboCop)",
+    "server-name": "rubocop",
+    "server-url": "https://github.com/rubocop/rubocop",
+    "installation-url": "https://docs.rubocop.org/rubocop/installation.html",
+    "installation": "gem install rubocop",
     "debugger": "Not available"
   },
   {
@@ -1102,11 +1120,44 @@
     "debugger": "Not available"
   },
   {
-    "name": "ruff",
-    "full-name": "Python",
-    "server-name": "ruff",
-    "server-url": "https://github.com/astral-sh/ruff",
-    "installation": "pip install ruff (previous pip install ruff-lsp)",
+    "name": "solargraph",
+    "full-name": "Ruby (Solargraph)",
+    "server-name": "solargraph",
+    "server-url": "https://github.com/castwide/solargraph",
+    "installation": "gem install solargraph",
+    "debugger": "Yes"
+  },
+  {
+    "name": "sorbet",
+    "full-name": "Ruby (Sorbet)",
+    "server-name": "sorbet",
+    "server-url": "https://github.com/sorbet/sorbet",
+    "installation-url": "https://sorbet.org/docs/adopting#step-1-install-dependencies",
+    "debugger": "Not available"
+  },
+  {
+    "name": "steep",
+    "full-name": "Ruby (Steep)",
+    "server-name": "steep",
+    "server-url": "https://github.com/soutaro/steep",
+    "installation": "gem install steep",
+    "debugger": "Not available"
+  },
+  {
+    "name": "typeprof",
+    "full-name": "Ruby (TypeProf)",
+    "server-name": "typeprof",
+    "server-url": "https://github.com/ruby/typeprof",
+    "installation": "It is included in Ruby >= 3.1",
+    "debugger": "Not available"
+  },
+  {
+    "name": "ruby-syntax-tree",
+    "common-group-name": "Ruby (syntax_tree)",
+    "full-name": "ruby-syntax-tree",
+    "server-name": "stree",
+    "server-url": "https://github.com/ruby-syntax-tree/syntax_tree",
+    "installation-url": "https://github.com/ruby-syntax-tree/syntax_tree#installation",
     "debugger": "Not available"
   },
   {
@@ -1128,21 +1179,20 @@
     "debugger": "Yes"
   },
   {
+    "name": "ron",
+    "full-name": "Rusty Object Notation",
+    "server-name": "ron-lsp",
+    "server-url": "https://github.com/jasonjmcghee/ron-lsp/",
+    "installation": "cargo install ron-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "semgrep",
     "full-name": "Semgrep",
     "server-name": "semgrep-ls",
     "server-url": "https://github.com/returntocorp/semgrep",
     "installation": "pip install semgrep --user",
     "debugger": "Not available"
-  },
-  {
-    "name": "serenata",
-    "common-group-name": "php",
-    "full-name": "PHP (Serenata)",
-    "server-name": "Serenata",
-    "server-url": "https://gitlab.com/Serenata/Serenata",
-    "installation-url": "https://gitlab.com/Serenata/Serenata/-/releases",
-    "debugger": "Yes"
   },
   {
     "name": "shader",
@@ -1154,28 +1204,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "solargraph",
-    "full-name": "Ruby (Solargraph)",
-    "server-name": "solargraph",
-    "server-url": "https://github.com/castwide/solargraph",
-    "installation": "gem install solargraph",
-    "debugger": "Yes"
-  },
-  {
-    "name": "solidity",
-    "full-name": "nomicfoundation/solidity-language-server",
-    "server-name": "solidity-language-server",
-    "installation": "npx @nomicfoundation/solidity-language-server",
-    "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-    "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-    "debugger": "Not available"
-  },
-  {
-    "name": "sorbet",
-    "full-name": "Ruby (Sorbet)",
-    "server-name": "sorbet",
-    "server-url": "https://github.com/sorbet/sorbet",
-    "installation-url": "https://sorbet.org/docs/adopting#step-1-install-dependencies",
+    "name": "postgres",
+    "full-name": "SQL (postgres-ls)",
+    "server-name": "postgres-language-server",
+    "server-url": "https://github.com/supabase-community/postgres-language-server",
+    "installation-url": "https://pgtools.dev/#installation",
     "debugger": "Not available"
   },
   {
@@ -1195,19 +1228,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "postgres",
-    "full-name": "SQL (postgres-ls)",
-    "server-name": "postgres-language-server",
-    "server-url": "https://github.com/supabase-community/postgres-language-server",
-    "installation-url": "https://pgtools.dev/#installation",
-    "debugger": "Not available"
-  },
-  {
-    "name": "steep",
-    "full-name": "Ruby (Steep)",
-    "server-name": "steep",
-    "server-url": "https://github.com/soutaro/steep",
-    "installation": "gem install steep",
+    "name": "sml",
+    "full-name": "Standard ML (Millet)",
+    "server-name": "millet",
+    "server-url": "https://github.com/azdavis/millet",
+    "installation-url": "https://github.com/azdavis/millet",
     "debugger": "Not available"
   },
   {
@@ -1217,24 +1242,6 @@
     "server-url": "https://github.com/sveltejs/language-tools",
     "installation": "npm i -g svelte-language-server",
     "lsp-install-server": "svelte-ls",
-    "debugger": "Not available"
-  },
-  {
-    "name": "svlangserver",
-    "common-group-name": "verilog",
-    "full-name": "Verilog/SystemVerilog",
-    "server-name": "svlangserver",
-    "server-url": "https://github.com/imc-trading/svlangserver",
-    "installation-url": "https://github.com/imc-trading/svlangserver#installation",
-    "debugger": "Not available"
-  },
-  {
-    "name": "ruby-syntax-tree",
-    "common-group-name": "Ruby (syntax_tree)",
-    "full-name": "ruby-syntax-tree",
-    "server-name": "stree",
-    "server-url": "https://github.com/ruby-syntax-tree/syntax_tree",
-    "installation-url": "https://github.com/ruby-syntax-tree/syntax_tree#installation",
     "debugger": "Not available"
   },
   {
@@ -1260,15 +1267,6 @@
     "server-name": "terraform-ls",
     "server-url": "https://github.com/hashicorp/terraform-ls",
     "installation-url": "https://github.com/hashicorp/terraform-ls",
-    "debugger": "Not available"
-  },
-  {
-    "name": "tilt",
-    "full-name": "Tilt LSP",
-    "server-name": "tilt",
-    "installation": "To be used with tilt-mode available in https://github.com/Konubinix/tilt-mode",
-    "server-url": "https://docs.tilt.dev/cli/tilt_lsp.html",
-    "installation-url": "https://docs.tilt.dev/",
     "debugger": "Not available"
   },
   {
@@ -1298,6 +1296,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "tilt",
+    "full-name": "Tilt LSP",
+    "server-name": "tilt",
+    "installation": "To be used with tilt-mode available in https://github.com/Konubinix/tilt-mode",
+    "server-url": "https://docs.tilt.dev/cli/tilt_lsp.html",
+    "installation-url": "https://docs.tilt.dev/",
+    "debugger": "Not available"
+  },
+  {
     "name": "toml",
     "full-name": "TOML",
     "server-name": "taplo",
@@ -1314,15 +1321,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "trunk",
-    "full-name": "Trunk",
-    "server-name": "trunk-lsp",
-    "server-url": "https://docs.trunk.io",
-    "installation": "curl https://get.trunk.io -fsSL | bash -s -- -y; trunk init",
-    "installation-url": "https://docs.trunk.io/check",
-    "debugger": "Not available"
-  },
-  {
     "name": "ts-query",
     "full-name": "Tree-sitter Query",
     "server-name": "ts-query-lsp",
@@ -1330,27 +1328,12 @@
     "debugger": "Not available"
   },
   {
-    "name": "typeprof",
-    "full-name": "Ruby (TypeProf)",
-    "server-name": "typeprof",
-    "server-url": "https://github.com/ruby/typeprof",
-    "installation": "It is included in Ruby >= 3.1",
-    "debugger": "Not available"
-  },
-  {
-    "name": "typst",
-    "full-name": "Typst",
-    "server-name": "tinymist",
-    "server-url": "https://github.com/Myriad-Dreamin/tinymist",
-    "installation": "cargo install tinymist",
-    "debugger": "Not available"
-  },
-  {
-    "name": "typos",
-    "full-name": "Typos source code spell checker",
-    "server-name": "typos-lsp",
-    "server-url": "https://github.com/tekumara/typos-lsp",
-    "installation": "cargo install --git https://github.com/tekumara/typos-lsp typos-lsp",
+    "name": "trunk",
+    "full-name": "Trunk",
+    "server-name": "trunk-lsp",
+    "server-url": "https://docs.trunk.io",
+    "installation": "curl https://get.trunk.io -fsSL | bash -s -- -y; trunk init",
+    "installation-url": "https://docs.trunk.io/check",
     "debugger": "Not available"
   },
   {
@@ -1362,6 +1345,31 @@
     "debugger": "Not available"
   },
   {
+    "name": "typespec",
+    "full-name": "TypeSpec",
+    "server-name": "tsp server",
+    "server-url": "https://github.com/microsoft/typespec/tree/main/packages/compiler",
+    "installation": "npm i -g @typespec/compiler",
+    "lsp-install-server": "@typespec/compiler",
+    "debugger": "Yes (Firefox/Chrome)"
+  },
+  {
+    "name": "typos",
+    "full-name": "Typos source code spell checker",
+    "server-name": "typos-lsp",
+    "server-url": "https://github.com/tekumara/typos-lsp",
+    "installation": "cargo install --git https://github.com/tekumara/typos-lsp typos-lsp",
+    "debugger": "Not available"
+  },
+  {
+    "name": "typst",
+    "full-name": "Typst",
+    "server-name": "tinymist",
+    "server-url": "https://github.com/Myriad-Dreamin/tinymist",
+    "installation": "cargo install tinymist",
+    "debugger": "Not available"
+  },
+  {
     "name": "v",
     "full-name": "V",
     "server-name": "vls",
@@ -1370,11 +1378,28 @@
     "debugger": "Not available"
   },
   {
+    "name": "v-analyzer",
+    "full-name": "V (v-analyzer)",
+    "server-name": "v-analyzer",
+    "server-url": "https://github.com/vlang/v-analyzer",
+    "installation-url": "https://github.com/vlang/v-analyzer",
+    "debugger": "Not available"
+  },
+  {
     "name": "vala",
     "full-name": "Vala",
     "server-name": "vala-language-server",
     "server-url": "https://github.com/benwaffle/vala-language-server",
     "installation": "meson build && ninja -C build install",
+    "debugger": "Not available"
+  },
+  {
+    "name": "svlangserver",
+    "common-group-name": "verilog",
+    "full-name": "Verilog/SystemVerilog",
+    "server-name": "svlangserver",
+    "server-url": "https://github.com/imc-trading/svlangserver",
+    "installation-url": "https://github.com/imc-trading/svlangserver#installation",
     "debugger": "Not available"
   },
   {
@@ -1487,30 +1512,6 @@
     "server-name": "zls",
     "server-url": "https://github.com/zigtools/zls",
     "installation-url": "https://github.com/zigtools/zls#installation",
-    "debugger": "Not available"
-  },
-  {
-    "name": "haxe",
-    "full-name": "Haxe",
-    "server-name": "vshaxe",
-    "server-url": "https://github.com/vshaxe/vshaxe",
-    "installation-url": "https://github.com/vshaxe/vshaxe#installation",
-    "debugger": "Not available"
-  },
-  {
-    "name": "mojo",
-    "full-name": "Mojo",
-    "server-name": "mojo-lsp-server",
-    "server-url": "https://mojolang.org/",
-    "installation-url": "https://mojolang.org/docs/manual/quickstart/",
-    "debugger": "Not available"
-  },
-  {
-    "name": "v-analyzer",
-    "full-name": "V (v-analyzer)",
-    "server-name": "v-analyzer",
-    "server-url": "https://github.com/vlang/v-analyzer",
-    "installation-url": "https://github.com/vlang/v-analyzer",
     "debugger": "Not available"
   }
 ]
