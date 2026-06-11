@@ -62,14 +62,14 @@ nav:
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
     - C# (omnisharp-roslyn): page/lsp-csharp-omnisharp.md
-    - C# (csharp-roslyn): page/lsp-csharp-roslyn.md
-    - C# (csharp-ls): page/lsp-csharp-ls.md
-    - C3 (c3-lsp): page/lsp-c3-lsp.md
+    - C# (csharp-roslyn): page/lsp-roslyn.md
+    - C# (csharp-ls): page/lsp-csharp.md
+    - C3 (c3-lsp): page/lsp-c3.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - COBOL: page/lsp-cobol.md
     - Crates: page/lsp-crates.md
-    - Crystal: page/lsp-crystal.md
+    - Crystal: page/lsp-crystalline.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
     - Cucumber: page/lsp-cucumber.md
     - Cypher: page/lsp-cypher.md
@@ -82,7 +82,7 @@ nav:
     - Elm: page/lsp-elm.md
     - Emacs Lisp (Ellsp): https://github.com/elisp-lsp/ellsp
     - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
-    - Emmet: page/lsp-emmet.md
+    - Emmet: page/lsp-emmet-ls.md
     - Erlang (Erlang Language Server): page/lsp-erlang-ls.md
     - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
@@ -96,7 +96,7 @@ nav:
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
     - GNAT Project: page/lsp-gpr.md
-    - Go (gopls): manual-language-docs/lsp-gopls.md
+    - Go (gopls): manual-language-docs/lsp-go.md
     - Grammarly: page/lsp-grammarly.md
     - GraphQL: page/lsp-graphql.md
     - Groovy: page/lsp-groovy.md
@@ -109,7 +109,7 @@ nav:
     - Javascript/Typescript (deno): page/lsp-deno.md
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
-    - JavaScript/TypeScript (Go native): page/lsp-typescript-go.md
+    - JavaScript/TypeScript (Go native): page/lsp-tsgo.md
     - JavaScript Flow: page/lsp-flow.md
     - Json: page/lsp-json.md
     - Jsonnet: page/lsp-jsonnet.md
@@ -133,13 +133,13 @@ nav:
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nextflow: page/lsp-nextflow.md
     - Nginx: page/lsp-nginx.md
-    - Nim: page/lsp-nim.md
+    - Nim: page/lsp-nimlsp.md
     - Nix (nixd-lsp): page/lsp-nix-nixd.md
     - Nix (rnix-lsp): page/lsp-nix-rnix.md
     - Nix (nil): page/lsp-nix-nil.md
     - Nushell: page/lsp-nushell.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
-    - Odin (ols): page/lsp-odin-ols-server.md
+    - Odin (ols): page/lsp-odin-ols.md
     - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl (PLS): page/lsp-pls.md
@@ -191,7 +191,7 @@ nav:
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Tilt: page/lsp-tilt.md
     - TOML (Taplo): page/lsp-toml.md
-    - TOML (Tombi): page/lsp-toml-tombi.md
+    - TOML (Tombi): page/lsp-tombi-toml.md
     - Tree-sitter Query: page/lsp-ts-query.md
     - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
@@ -203,10 +203,10 @@ nav:
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
     - Verilog/SystemVerilog (verible): page/lsp-verible.md
     - VHDL: page/lsp-vhdl.md
-    - Vimscript: page/lsp-vimscript.md
+    - Vimscript: page/lsp-vim.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
-    - WebAssembly: page/lsp-wasm-language-tools.md
+    - WebAssembly: page/lsp-wat.md
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md

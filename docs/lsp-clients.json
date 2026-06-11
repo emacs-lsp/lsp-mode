@@ -140,7 +140,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "csharp-ls",
+    "name": "csharp",
     "common-group-name": "csharp",
     "full-name": "C# (csharp-ls)",
     "server-name": "csharp-ls",
@@ -160,7 +160,7 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
-    "name": "csharp-roslyn",
+    "name": "roslyn",
     "common-group-name": "csharp",
     "full-name": "C# (csharp-roslyn)",
     "server-name": "Microsoft.CodeAnalysis.LanguageServer (Roslyn)",
@@ -170,7 +170,7 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
-    "name": "c3-lsp",
+    "name": "c3",
     "full-name": "c3 language server",
     "server-name": "c3lsp",
     "server-url": "https://github.com/pherrymason/c3-lsp",
@@ -231,7 +231,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "crystal",
+    "name": "crystalline",
     "full-name": "Crystal",
     "server-name": "crystalline",
     "server-url": "https://github.com/elbywan/crystalline",
@@ -326,7 +326,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "emmet",
+    "name": "emmet-ls",
     "full-name": "Emmet",
     "server-name": "emmet-ls",
     "server-url": "https://github.com/aca/emmet-ls",
@@ -432,7 +432,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "gopls",
+    "name": "go",
     "full-name": "Go",
     "server-name": "gopls",
     "server-url": "https://github.com/golang/tools/tree/master/gopls",
@@ -440,7 +440,7 @@
     "debugger": "Yes"
   },
   {
-    "name": "golangci-lint-server",
+    "name": "golangci-lint",
     "full-name": "golangci-lint",
     "server-name": "golangci-lint-server",
     "server-url": "https://github.com/nametake/golangci-lint-langserver",
@@ -501,7 +501,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "hyuga",
+    "name": "hy",
     "full-name": "Hy",
     "server-name": "hyuga",
     "server-url": "https://github.com/sakuraiyuta/hyuga",
@@ -525,7 +525,7 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
-    "name": "typescript-go",
+    "name": "tsgo",
     "common-group-name": "javascript",
     "full-name": "JavaScript/TypeScript (Go native)",
     "server-name": "typescript-go",
@@ -677,7 +677,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "lua-roblox",
+    "name": "lua-roblox-language-server",
     "common-group-name": "lua",
     "full-name": "Lua Roblox",
     "server-name": "lua-roblox-language-server",
@@ -737,7 +737,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "millet",
+    "name": "sml",
     "full-name": "Standard ML (Millet)",
     "server-name": "millet",
     "server-url": "https://github.com/azdavis/millet",
@@ -785,7 +785,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nim",
+    "name": "nimlsp",
     "full-name": "Nim",
     "server-name": "nimlsp",
     "server-url": "https://github.com/PMunch/nimlsp",
@@ -849,7 +849,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "ols",
+    "name": "odin-ols",
     "full-name": "Odin Language Server",
     "server-name": "ols",
     "server-url": "https://github.com/DanielGavin/ols",
@@ -1068,7 +1068,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "robot",
+    "name": "rf",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",
     "server-url": "https://github.com/tomi/vscode-rf-language-server",
@@ -1229,7 +1229,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "syntax_tree",
+    "name": "ruby-syntax-tree",
     "common-group-name": "Ruby (syntax_tree)",
     "full-name": "ruby-syntax-tree",
     "server-name": "stree",
@@ -1306,7 +1306,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "toml-tombi",
+    "name": "tombi-toml",
     "full-name": "TOML",
     "server-name": "tombi",
     "server-url": "https://github.com/tombi-toml/tombi",
@@ -1404,7 +1404,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "vimscript",
+    "name": "vim",
     "full-name": "Vimscript",
     "server-name": "vim-language-server",
     "server-url": "https://github.com/iamcco/vim-language-server",
@@ -1431,7 +1431,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "wasm-language-tools",
+    "name": "wat",
     "common-group-name": "wat",
     "full-name": "WebAssembly",
     "server-name": "wat_server",
@@ -1440,7 +1440,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "wgsl-analyzer",
+    "name": "wgsl",
     "full-name": "wgsl",
     "server-name": "wgsl-analyzer",
     "server-url": "https://github.com/wgsl-analyzer/wgsl-analyzer",
@@ -1487,6 +1487,30 @@
     "server-name": "zls",
     "server-url": "https://github.com/zigtools/zls",
     "installation-url": "https://github.com/zigtools/zls#installation",
+    "debugger": "Not available"
+  },
+  {
+    "name": "haxe",
+    "full-name": "Haxe",
+    "server-name": "vshaxe",
+    "server-url": "https://github.com/vshaxe/vshaxe",
+    "installation-url": "https://github.com/vshaxe/vshaxe#installation",
+    "debugger": "Not available"
+  },
+  {
+    "name": "mojo",
+    "full-name": "Mojo",
+    "server-name": "mojo-lsp-server",
+    "server-url": "https://mojolang.org/",
+    "installation-url": "https://mojolang.org/docs/manual/quickstart/",
+    "debugger": "Not available"
+  },
+  {
+    "name": "v-analyzer",
+    "full-name": "V (v-analyzer)",
+    "server-name": "v-analyzer",
+    "server-url": "https://github.com/vlang/v-analyzer",
+    "installation-url": "https://github.com/vlang/v-analyzer",
     "debugger": "Not available"
   }
 ]

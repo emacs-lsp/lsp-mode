@@ -31,12 +31,6 @@
 (require 'lsp-semantic-tokens)
 (require 's)
 
-(defgroup lsp-rust nil
-  "LSP support for Rust, using Rust Language Server or rust-analyzer."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/rust-lang/rls")
-  :package-version '(lsp-mode . "6.1"))
-
 (defgroup lsp-rust-rls nil
   "LSP support for Rust, using Rust Language Server."
   :group 'lsp-mode
@@ -59,7 +53,7 @@
   "Choose LSP server."
   :type '(choice (const :tag "rls" rls)
                  (const :tag "rust-analyzer" rust-analyzer))
-  :group 'lsp-rust
+  :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
 ;; RLS
