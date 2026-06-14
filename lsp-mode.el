@@ -8313,7 +8313,8 @@ SESSION is the active session."
       (lsp-request-async
        "initialize"
        (append
-        (list :processId (unless (file-remote-p (buffer-file-name))
+        (list :processId (unless (file-remote-p (or (buffer-file-name)
+                                                    default-directory))
                            (emacs-pid))
               :rootPath (lsp-file-local-name (expand-file-name root))
               :clientInfo (list :name "emacs"
@@ -9077,7 +9078,9 @@ the next question until the queue is empty."
 (defun lsp--supports-buffer? (client)
   (and
    ;; both file and client remote or both local
-   (eq (---truthy? (file-remote-p (buffer-file-name)))
+   ;; Fall back to `default-directory' for buffers with no file name, so
+   ;; `file-remote-p' is never called with nil (which would signal).
+   (eq (---truthy? (file-remote-p (or (buffer-file-name) default-directory)))
        (---truthy? (lsp--client-remote? client)))
 
    ;; activation function or major-mode match.
