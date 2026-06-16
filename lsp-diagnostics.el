@@ -399,19 +399,93 @@ reformat the message in any other way."
                                 (when lsp-auto-configure
                                   (lsp-diagnostics--enable))))
 
-(defun lsp-diagnostics--clear-after-edit (&rest _)
-  "Clear diagnostics for the current buffer after workspace edits.
-This prevents stale diagnostics from appearing at wrong line numbers
-when workspace edits shift line positions (see issue #3888)."
-  (when-let* ((file-path (buffer-file-name))
-              (workspaces (lsp-workspaces)))
-    (let ((path (lsp--fix-path-casing file-path)))
-      (dolist (workspace workspaces)
-        (-let [diagnostics (lsp--workspace-diagnostics workspace)]
-          (remhash path diagnostics))))
-    (run-hooks 'lsp-diagnostics-updated-hook)))
+(defsubst lsp-diagnostics--position< (line-a char-a line-b char-b)
+  "Non-nil if 0-based position (LINE-A, CHAR-A) precedes (LINE-B, CHAR-B)."
+  (or (< line-a line-b)
+      (and (= line-a line-b) (< char-a char-b))))
 
-(add-hook 'lsp-after-apply-edits-hook #'lsp-diagnostics--clear-after-edit)
+(defun lsp-diagnostics--remap-point (line char esl esc oel oec nel nec)
+  "Map 0-based (LINE, CHAR) across an edit; return a cons (NEW-LINE . NEW-CHAR).
+The edit replaced the text from (ESL, ESC) to (OEL, OEC) with text whose
+end is now at (NEL, NEC).  A point before the edit is returned unchanged;
+a point at or after the edit's old end is shifted accordingly.  Callers
+must keep points inside the replaced region away from here (see
+`lsp-diagnostics--remap-diagnostic')."
+  (cond
+   ;; At or before the edit's start: unaffected.
+   ((not (lsp-diagnostics--position< esl esc line char))
+    (cons line char))
+   ;; On the edit's old end line, past the change: rebase onto the new end.
+   ((= line oel)
+    (cons nel (+ nec (- char oec))))
+   ;; On a later line: only the line number shifts.
+   (t
+    (cons (+ line (- nel oel)) char))))
+
+(lsp-defun lsp-diagnostics--remap-diagnostic
+  ((diagnostic &as &Diagnostic
+               :range (&Range :start (start &as &Position :line sl :character sc)
+                              :end (end &as &Position :line el :character ec)))
+   esl esc oel oec nel nec)
+  "Return DIAGNOSTIC with its range remapped across an edit, or nil to drop it.
+The edit replaced the text from 0-based (ESL, ESC) to (OEL, OEC) with
+text now ending at (NEL, NEC).  A diagnostic disjoint from the replaced
+region is shifted to its new location; one that overlaps the replaced
+region is dropped (returns nil) so the server can republish it.  See
+issue #3888."
+  (if (and (lsp-diagnostics--position< sl sc oel oec)
+           (lsp-diagnostics--position< esl esc el ec))
+      ;; Overlaps the replaced region: its text changed, so drop it.
+      nil
+    (-let (((new-start-line . new-start-char)
+            (lsp-diagnostics--remap-point sl sc esl esc oel oec nel nec))
+           ((new-end-line . new-end-char)
+            (lsp-diagnostics--remap-point el ec esl esc oel oec nel nec)))
+      (lsp:set-position-line start new-start-line)
+      (lsp:set-position-character start new-start-char)
+      (lsp:set-position-line end new-end-line)
+      (lsp:set-position-character end new-end-char)
+      diagnostic)))
+
+(defun lsp-diagnostics--update-after-change (esl esc oel oec nel nec)
+  "Remap the current buffer's stored diagnostics after a local edit.
+Keeps diagnostics aligned with the buffer until the server republishes,
+rather than discarding them.  The edit replaced the text from 0-based
+(ESL, ESC) to (OEL, OEC) with text now ending at (NEL, NEC); see
+`lsp-diagnostics--remap-diagnostic' for the remapping rule.  Fixes issue
+#3888 for every edit (typing and workspace edits alike)."
+  (when-let* ((file-path (buffer-file-name)))
+    (let ((path (lsp--fix-path-casing file-path))
+          (changed nil))
+      (dolist (workspace (lsp-workspaces))
+        (let* ((diagnostics (lsp--workspace-diagnostics workspace))
+               (file-diagnostics (gethash path diagnostics)))
+          (when file-diagnostics
+            (setq changed t)
+            (if-let* ((remapped (-keep (lambda (diagnostic)
+                                         (lsp-diagnostics--remap-diagnostic
+                                          diagnostic esl esc oel oec nel nec))
+                                       file-diagnostics)))
+                (puthash path remapped diagnostics)
+              (remhash path diagnostics)))))
+      (when changed
+        (run-hooks 'lsp-diagnostics-updated-hook)))))
+
+(defun lsp-diagnostics--clear-after-edit (&rest _)
+  "Clear the current buffer's diagnostics across all of its workspaces.
+Fallback used when an edit cannot be mapped to a line range (see
+`lsp-on-change'); otherwise diagnostics are remapped in place by
+`lsp-diagnostics--update-after-change'."
+  (when-let* ((file-path (buffer-file-name)))
+    (let ((path (lsp--fix-path-casing file-path))
+          (changed nil))
+      (dolist (workspace (lsp-workspaces))
+        (-let [diagnostics (lsp--workspace-diagnostics workspace)]
+          (when (gethash path diagnostics)
+            (setq changed t)
+            (remhash path diagnostics))))
+      (when changed
+        (run-hooks 'lsp-diagnostics-updated-hook)))))
 
 (lsp-consistency-check lsp-diagnostics)
 
