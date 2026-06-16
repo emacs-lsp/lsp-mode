@@ -51,20 +51,26 @@
   :type 'string
   :group 'lsp-openscad)
 
-(defcustom lsp-openscad-format-exe "clang-format"
-  "Path to the clang-format executable."
+(defcustom lsp-openscad-indent "    "
+  "Indentation string used by Topiary when formatting."
   :type 'string
   :group 'lsp-openscad)
 
-(defcustom lsp-openscad-format-style "file"
-  "Style argument to use with clang-format."
-  :type 'string
+(defcustom lsp-openscad-query-file ""
+  "Path to a custom Topiary query file for OpenSCAD formatting."
+  :type 'file
+  :group 'lsp-openscad)
+
+(defcustom lsp-openscad-default-param t
+  "Whether to include default parameter values in auto-completion."
+  :type 'boolean
   :group 'lsp-openscad)
 
 (lsp-register-custom-settings
  '(("openscad.search_paths" lsp-openscad-search-paths)
-   ("openscad.fmt_exe" lsp-openscad-format-exe)
-   ("openscad.fmt_style" lsp-openscad-format-style)))
+   ("openscad.indent" lsp-openscad-indent)
+   ("openscad.query_file" lsp-openscad-query-file)
+   ("openscad.default_param" lsp-openscad-default-param t)))
 
 (defun lsp-openscad-server-stdio-start-fun ()
   "Create arguments to start openscad language server in stdio mode."
