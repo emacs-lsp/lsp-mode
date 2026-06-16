@@ -28,11 +28,6 @@
 (require 'lsp-mode)
 (require 'lsp-semantic-tokens)
 
-(defgroup lsp-erlang nil
-  "LSP support for the Erlang programming language.
-It can use erlang-ls or erlang-language-platform (ELP)."
-  :group 'lsp-mode)
-
 (defgroup lsp-erlang-ls nil
   "LSP support for the Erlang programming language using erlang-ls."
   :group 'lsp-mode
@@ -53,7 +48,7 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   "Choose LSP server."
   :type '(choice (const :tag "erlang-ls" erlang-ls)
                  (const :tag "erlang-language-platform" erlang-language-platform))
-  :group 'lsp-erlang
+  :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
 ;; ---------------------------------------------------------------------

@@ -8,7 +8,7 @@ LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-unix-ci: clean build compile prepare_cpp_project unix-test
+unix-ci: clean build compile prepare_cpp_project check-docs unix-test
 # TODO: add 'windows-test' back
 windows-ci: clean build compile prepare_cpp_project
 
@@ -27,6 +27,10 @@ prepare_cpp_project:
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
 	./test/downstream/run.sh
+
+check-docs:
+	@echo "Checking built-in client documentation..."
+	@scripts/check-docs.sh
 
 checkdoc:
 	@echo "Run checkdoc..."
@@ -60,4 +64,4 @@ clean:
 	rm -rf test/fixtures/SampleCppProject/build test/fixtures/SampleCppProject/.cache
 
 
-.PHONY: build ci compile checkdoc lint test docs local-webpage clean
+.PHONY: build ci compile check-docs checkdoc lint test docs local-webpage clean
