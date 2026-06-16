@@ -33,7 +33,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/tailwindlabs/tailwindcss-intellisense"))
 
-(defcustom lsp-tailwindcss-add-on-mode nil
+(defcustom lsp-tailwindcss-add-on-mode t
   "Specify lsp-tailwindcss as add-on so it can work with other language servers."
   :type 'boolean
   :group 'lsp-tailwindcss)
