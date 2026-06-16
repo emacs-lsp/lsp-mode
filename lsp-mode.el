@@ -3178,6 +3178,12 @@ and end-of-string meta-characters."
   ;; cf. https://microsoft.github.io/language-server-protocol/specification#initialize.
   (server-capabilities nil)
 
+  ;; ‘server-info’ is the LSP ServerInfo object reported by the language server
+  ;; in the InitializeResult, or nil if the server did not provide it.  It holds
+  ;; the server ‘name’ and, optionally, its ‘version’; cf.
+  ;; https://microsoft.github.io/language-server-protocol/specification#initialize.
+  (server-info nil)
+
   ;; ‘registered-server-capabilities’ is a list of hash tables that represent
   ;; dynamically-registered Registration objects.  See
   ;; https://microsoft.github.io/language-server-protocol/specification#client_registerCapability.
@@ -8272,6 +8278,24 @@ should return the command to start the LS server."
                       (push folder result)))))
     result))
 
+(defun lsp-workspace-server-name (&optional workspace)
+  "Return the name reported by WORKSPACE's language server, or nil.
+WORKSPACE defaults to the current workspace.  The name comes from the
+ServerInfo of the InitializeResult and is only available when the server
+provides it."
+  (when-let* ((workspace (or workspace lsp--cur-workspace))
+              (info (lsp--workspace-server-info workspace)))
+    (lsp:server-info-name info)))
+
+(defun lsp-workspace-server-version (&optional workspace)
+  "Return the version reported by WORKSPACE's language server, or nil.
+WORKSPACE defaults to the current workspace.  The version comes from the
+ServerInfo of the InitializeResult and is only available when the server
+provides it."
+  (when-let* ((workspace (or workspace lsp--cur-workspace))
+              (info (lsp--workspace-server-info workspace)))
+    (lsp:server-info-version? info)))
+
 (defun lsp--start-workspace (session client-template root &optional initialization-options)
   "Create new workspace for CLIENT-TEMPLATE with project root ROOT.
 INITIALIZATION-OPTIONS are passed to initialize function.
@@ -8331,7 +8355,7 @@ SESSION is the active session."
                              :name (f-filename folder))))
                (apply 'vector)
                (list :workspaceFolders)))
-       (-lambda ((&InitializeResult :capabilities))
+       (-lambda ((&InitializeResult :capabilities :server-info?))
          (pcase server-id
            ;; we know that Rust Analyzer will send {} which will be parsed as null
            ;; when using plists
@@ -8341,6 +8365,7 @@ SESSION is the active session."
                 (lsp:set-text-document-sync-options-save? t))))
 
          (setf (lsp--workspace-server-capabilities workspace) capabilities
+               (lsp--workspace-server-info workspace) server-info?
                (lsp--workspace-status workspace) 'initialized)
 
          ;; Apply the negotiated position encoding to all workspace buffers.
