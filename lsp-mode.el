@@ -8831,7 +8831,7 @@ The caller is responsible for ensuring curl is available."
   (make-process
    :name (format "lsp-download-%s" (file-name-nondirectory path))
    :noquery t
-   :command (list "curl" "--silent" "--location" "--output" path url)
+   :command (list "curl" "--silent" "--location" "--compressed" "--output" path url)
    :sentinel (lambda (_proc event)
                (if (string= event "finished\n")
                    (progn

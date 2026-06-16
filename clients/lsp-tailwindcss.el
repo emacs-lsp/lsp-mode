@@ -335,9 +335,12 @@ Workaround for company-mode completion not working when typing \"-\" in classnam
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     `("node" ,(lsp-tailwindcss--server-path) "--stdio")))
+   :new-connection (lsp-stdio-connection
+                    (lambda ()
+                      `("node" ,(lsp-tailwindcss--server-path) "--stdio"))
+                    (lambda ()
+                      (when-let* ((server-path (lsp-tailwindcss--server-path)))
+                        (file-exists-p server-path))))
   :activation-fn #'lsp-tailwindcss--activate-p
   :server-id 'tailwindcss
   :priority -1
