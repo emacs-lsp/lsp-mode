@@ -5097,6 +5097,24 @@ Added to `after-change-functions'."
                                 lsp-debounce-full-sync-notifications-interval
                                 nil
                                 #'lsp--flush-delayed-changes))
+        ;; Keep stored diagnostics aligned with the buffer until the server
+        ;; republishes them, instead of leaving them at stale line numbers
+        ;; (issue #3888).  A bracketed change carries a reliable before/after
+        ;; line range, so remap in place; otherwise fall back to clearing this
+        ;; buffer's diagnostics.
+        (when (fboundp 'lsp-diagnostics--update-after-change)
+          (if (and lsp--before-change-vals
+                   (lsp--bracketed-change-p start length))
+              (let ((edit-start (lsp--point-to-position start))
+                    (edit-old-end (plist-get lsp--before-change-vals :end-pos))
+                    (edit-new-end (lsp--point-to-position end)))
+                ;; These positions are plists built by `lsp--point-to-position'
+                ;; regardless of `lsp-use-plists', so read them with `plist-get'.
+                (lsp-diagnostics--update-after-change
+                 (plist-get edit-start :line) (plist-get edit-start :character)
+                 (plist-get edit-old-end :line) (plist-get edit-old-end :character)
+                 (plist-get edit-new-end :line) (plist-get edit-new-end :character)))
+            (lsp-diagnostics--clear-after-edit)))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--after-change (current-buffer))))))
