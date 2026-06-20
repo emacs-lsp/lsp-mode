@@ -786,6 +786,30 @@ diagnostics until server publishes the new set of diagnostics"
   :group 'lsp-diagnostics
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-diagnostics-on-edit 'remap
+  "What to do with stored diagnostics when the buffer is edited locally.
+
+After an edit, the buffer no longer matches the diagnostics the server
+last published, and it stays that way until the server re-checks and
+republishes.  This option controls what happens in that window:
+
+- `remap': shift the stored diagnostics to follow the edit, so they stay
+  on the text they describe.  A diagnostic whose text the edit changed is
+  dropped.  This keeps the display correct with no flicker.
+
+- `keep': leave the stored diagnostics untouched.  They may appear at
+  outdated positions until the server republishes.  This does the least
+  work per edit, which can matter in buffers with very many diagnostics.
+
+- `clear': discard the buffer's diagnostics after a workspace edit (for
+  example a code action or a rename) and wait for the server to send a
+  fresh set."
+  :type '(choice (const :tag "Remap to follow the edit" remap)
+                 (const :tag "Keep until the server republishes" keep)
+                 (const :tag "Clear after a workspace edit" clear))
+  :safe (lambda (value) (memq value '(remap keep clear)))
+  :group 'lsp-diagnostics)
+
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
 The actual trace output at each level depends on the language server in use.
@@ -5097,6 +5121,27 @@ Added to `after-change-functions'."
                                 lsp-debounce-full-sync-notifications-interval
                                 nil
                                 #'lsp--flush-delayed-changes))
+        ;; Keep stored diagnostics aligned with the buffer until the server
+        ;; republishes them, instead of leaving them at stale line numbers
+        ;; (issue #3888).  A bracketed change carries a reliable before/after
+        ;; line range, so remap in place; otherwise fall back to clearing this
+        ;; buffer's diagnostics.  Other `lsp-diagnostics-on-edit' modes are
+        ;; handled elsewhere: `keep' does nothing here, `clear' acts on
+        ;; `lsp-after-apply-edits-hook'.
+        (when (and (eq lsp-diagnostics-on-edit 'remap)
+                   (fboundp 'lsp-diagnostics--update-after-change))
+          (if (and lsp--before-change-vals
+                   (lsp--bracketed-change-p start length))
+              (let ((edit-start (lsp--point-to-position start))
+                    (edit-old-end (plist-get lsp--before-change-vals :end-pos))
+                    (edit-new-end (lsp--point-to-position end)))
+                ;; These positions are plists built by `lsp--point-to-position'
+                ;; regardless of `lsp-use-plists', so read them with `plist-get'.
+                (lsp-diagnostics--update-after-change
+                 (plist-get edit-start :line) (plist-get edit-start :character)
+                 (plist-get edit-old-end :line) (plist-get edit-old-end :character)
+                 (plist-get edit-new-end :line) (plist-get edit-new-end :character)))
+            (lsp-diagnostics--clear-after-edit)))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--after-change (current-buffer))))))
@@ -10179,6 +10224,8 @@ Returns t if org 9.7+ API is available (property-based), nil otherwise."
 (declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
 (declare-function flycheck-add-mode "ext:flycheck")
 (declare-function lsp-diagnostics-lsp-checker-if-needed "lsp-diagnostics")
+(declare-function lsp-diagnostics--update-after-change "lsp-diagnostics")
+(declare-function lsp-diagnostics--clear-after-edit "lsp-diagnostics")
 
 (defalias 'lsp-client-download-server-fn 'lsp--client-download-server-fn)
 

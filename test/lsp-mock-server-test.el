@@ -33,6 +33,9 @@
 
 (require 'seq)
 (require 'lsp-mode)
+;; The diagnostics-remap tests exercise behavior that lives in
+;; `lsp-diagnostics', which `lsp-mode' only loads lazily.
+(require 'lsp-diagnostics)
 
 ;; Taken from lsp-integration-tests.el
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name))
@@ -319,30 +322,30 @@ TEST-BODY can interact with the mock server."
                                        "Line 0 unique word fegam and common"
                                        "                   ^^^^^           ")))))
 
-(ert-deftest lsp-mock-server-updates-diags-with-delay ()
-  "Test demonstrating delay in the diagnostics update.
+(ert-deftest lsp-mock-server-remaps-diags-after-edit ()
+  "Test that diagnostics follow a local edit instead of going stale.
 
-If server takes noticeable time to update diagnostics after a
-document change, and `lsp-diagnostic-clean-after-change' is
-nil (default), diagnostic ranges will be off until server
-publishes the update. This test demonstrates this behavior."
+When the buffer is edited before the server republishes, lsp-mode
+remaps the stored diagnostics to track the change, so they stay on the
+text they describe.  This replaces the stale-position problem from
+issue #3888, where the diagnostics kept the server's old line numbers
+until the next publish arrived."
+  (let ((lsp-diagnostics-on-edit 'remap))
   (lsp-mock-run-with-mock-server
    ;; There are no diagnostics at first
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
 
-   ;; Server found diagnostic
+   ;; Server found a diagnostic on the "broming" line
    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
    (lsp-test-sync-wait (progn (should (lsp-workspaces))
                               (gethash lsp-test-sample-file (lsp-diagnostics t))))
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
-
-   ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-range-make (buffer-string)
                                        "line 1 unique word broming + common"
                                        "                   ^^^^^^^         ")))
 
-   ;; Change the text: remove the first line
+   ;; Change the text: remove the first line, shifting "broming" up by one
    (goto-char (point-min))
    (kill-line 1)
    (should (string-equal (buffer-string)
@@ -350,26 +353,14 @@ publishes the update. This test demonstrates this behavior."
 line 2 unique word normalw common here
 line 3 words here and here
 "))
-   ;; Give it some time to update
-   (sleep-for 0.5)
-   ;; The diagnostic is not updated and now points to a wrong line
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 2 unique word normalw common here"
-                                       "                   ^^^^^^^            ")))
 
-   ;; Server sent an update
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-
-   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-     (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
-
-   ;; Now the diagnostic is correct again
+   ;; With no server update yet, the diagnostic has already followed the
+   ;; edit: it is still on "broming", now one line higher.
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-range-make (buffer-string)
                                        "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))))
+                                       "                   ^^^^^^^         "))))))
 
 (ert-deftest lsp-mock-server-updates-diags-clears-up ()
   "Test ensuring diagnostics are cleared after a change."
@@ -411,35 +402,87 @@ line 3 words here and here
                                        "line 1 unique word broming + common"
                                        "                   ^^^^^^^         "))))))
 
-(ert-deftest lsp-mock-server-clears-diags-after-workspace-edit ()
-  "Test ensuring diagnostics are cleared after workspace edits.
+(ert-deftest lsp-mock-server-drops-overlapped-diag-after-edit ()
+  "Test that editing the text under a diagnostic drops only that diagnostic.
 
-Diagnostics should be cleared after workspace edits (like organize
-imports) to prevent stale diagnostics from appearing at wrong line
-numbers. This test verifies the fix for issue #3888."
+When an edit changes the very text a diagnostic covers, that diagnostic
+can no longer be placed and is dropped until the server re-checks.
+Diagnostics the edit did not touch are kept.  This replaces the
+unconditional post-edit clear added in PR #4984, which discarded every
+diagnostic in the buffer."
+  (let ((lsp-diagnostics-on-edit 'remap))
   (lsp-mock-run-with-mock-server
    ;; There are no diagnostics at first
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
 
-   ;; Server found diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   ;; Server flags every "unique" -- one on each of lines 0, 1 and 2
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "unique")
    (lsp-test-sync-wait (progn (should (lsp-workspaces))
                               (gethash lsp-test-sample-file (lsp-diagnostics t))))
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 3))
 
-   ;; Simulate workspace edit (like organize imports) by running the hook
-   (run-hook-with-args 'lsp-after-apply-edits-hook 'code-action)
+   ;; Overwrite the "unique" on line 1 with a same-length word, so only
+   ;; that word's text changes.  The edit overlaps the line-1 diagnostic.
+   (goto-char (point-min))
+   (should (search-forward "unique" nil t))      ; line 0
+   (should (search-forward "unique" nil t))      ; line 1
+   (replace-match "XXXXXX" t t)
 
-   ;; After the hook runs, diagnostics should be cleared
-   (should (null (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   ;; The line-1 diagnostic is dropped; the line-0 and line-2 ones survive.
+   (should (equal (sort (mapcar (lambda (d) (plist-get (lsp-test-diag-get d) :line))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t)))
+                        #'<)
+                  '(0 2))))))
 
-   ;; Server sent new diagnostics
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+(ert-deftest lsp-mock-server-on-edit-clear-clears-after-workspace-edit ()
+  "Test that `lsp-diagnostics-on-edit' set to `clear' clears on a workspace edit.
 
-   ;; Now the diagnostic is available again
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))))
+In `clear' mode a workspace edit discards the buffer's diagnostics and
+waits for the server to send a fresh set."
+  (let ((lsp-diagnostics-on-edit 'clear))
+    (lsp-mock-run-with-mock-server
+     ;; There are no diagnostics at first
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+     ;; Server found a diagnostic
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t))))
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+     ;; Simulate a workspace edit (like organize imports or a code action)
+     (run-hook-with-args 'lsp-after-apply-edits-hook 'code-action)
+
+     ;; In `clear' mode the buffer's diagnostics are discarded
+     (should (null (gethash lsp-test-sample-file (lsp-diagnostics t)))))))
+
+(ert-deftest lsp-mock-server-on-edit-keep-leaves-diags-untouched ()
+  "Test that `lsp-diagnostics-on-edit' set to `keep' leaves diagnostics as-is.
+
+In `keep' mode an edit neither remaps nor drops the stored diagnostics,
+so a diagnostic may sit at a stale position until the server republishes."
+  (let ((lsp-diagnostics-on-edit 'keep))
+    (lsp-mock-run-with-mock-server
+     ;; There are no diagnostics at first
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+     ;; Server flagged "broming" on line 1
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t))))
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+     ;; Remove the first line; the text shifts but the diagnostic does not
+     (goto-char (point-min))
+     (kill-line 1)
+
+     ;; The diagnostic is untouched -- still on its original line, which now
+     ;; holds different text (a stale position, as expected in `keep' mode).
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 2 unique word normalw common here"
+                                         "                   ^^^^^^^            "))))))
 
 (defun lsp-test-xref-loc-to-range (xref-loc)
   "Convert XREF-LOC to a range p-list.
