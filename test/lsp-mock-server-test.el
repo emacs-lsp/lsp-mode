@@ -441,6 +441,56 @@ numbers. This test verifies the fix for issue #3888."
    ;; Now the diagnostic is available again
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))))
 
+(ert-deftest lsp-mock-server-on-edit-clear-clears-after-workspace-edit ()
+  "Test that `lsp-diagnostics-on-edit' set to `clear' clears on a workspace edit.
+
+In `clear' mode a workspace edit discards the buffer's diagnostics and
+waits for the server to send a fresh set."
+  (let ((lsp-diagnostics-on-edit 'clear))
+    (lsp-mock-run-with-mock-server
+     ;; There are no diagnostics at first
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+     ;; Server found a diagnostic
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t))))
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+     ;; Simulate a workspace edit (like organize imports or a code action)
+     (run-hook-with-args 'lsp-after-apply-edits-hook 'code-action)
+
+     ;; In `clear' mode the buffer's diagnostics are discarded
+     (should (null (gethash lsp-test-sample-file (lsp-diagnostics t)))))))
+
+(ert-deftest lsp-mock-server-on-edit-keep-leaves-diags-untouched ()
+  "Test that `lsp-diagnostics-on-edit' set to `keep' leaves diagnostics as-is.
+
+In `keep' mode an edit neither remaps nor drops the stored diagnostics,
+so a diagnostic may sit at a stale position until the server republishes."
+  (let ((lsp-diagnostics-on-edit 'keep))
+    (lsp-mock-run-with-mock-server
+     ;; There are no diagnostics at first
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+     ;; Server flagged "broming" on line 1
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t))))
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+     ;; Remove the first line; the text shifts but the diagnostic does not
+     (goto-char (point-min))
+     (kill-line 1)
+
+     ;; The diagnostic is untouched -- still on its original line, which now
+     ;; holds different text (a stale position, as expected in `keep' mode).
+     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 2 unique word normalw common here"
+                                         "                   ^^^^^^^            "))))))
+
 (defun lsp-test-xref-loc-to-range (xref-loc)
   "Convert XREF-LOC to a range p-list.
 

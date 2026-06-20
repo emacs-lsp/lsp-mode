@@ -473,9 +473,9 @@ rather than discarding them.  The edit replaced the text from 0-based
 
 (defun lsp-diagnostics--clear-after-edit (&rest _)
   "Clear the current buffer's diagnostics across all of its workspaces.
-Fallback used when an edit cannot be mapped to a line range (see
-`lsp-on-change'); otherwise diagnostics are remapped in place by
-`lsp-diagnostics--update-after-change'."
+Used as the fallback when a `remap' edit cannot be mapped to a line
+range, and as the action for the `clear' value of
+`lsp-diagnostics-on-edit' (see `lsp-diagnostics--clear-on-workspace-edit')."
   (when-let* ((file-path (buffer-file-name)))
     (let ((path (lsp--fix-path-casing file-path))
           (changed nil))
@@ -486,6 +486,16 @@ Fallback used when an edit cannot be mapped to a line range (see
             (remhash path diagnostics))))
       (when changed
         (run-hooks 'lsp-diagnostics-updated-hook)))))
+
+(defun lsp-diagnostics--clear-on-workspace-edit (&rest _)
+  "Clear the buffer's diagnostics after a workspace edit.
+Only acts when `lsp-diagnostics-on-edit' is `clear'; with the default
+`remap' the diagnostics are instead kept and remapped by
+`lsp-on-change'."
+  (when (eq lsp-diagnostics-on-edit 'clear)
+    (lsp-diagnostics--clear-after-edit)))
+
+(add-hook 'lsp-after-apply-edits-hook #'lsp-diagnostics--clear-on-workspace-edit)
 
 (lsp-consistency-check lsp-diagnostics)
 
