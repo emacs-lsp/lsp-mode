@@ -16,6 +16,7 @@
   * Fix crash (EXC_CRASH / SIGABRT) on macOS when installing language servers: replace ~url-copy-file~ in a background thread with ~make-process~ (curl) + sentinel, avoiding the NS event-loop thread-safety assertion in ~ns_select_1~
   * Fix ~lsp-clojure-extract-function~ to always send the range-based form required by clojure-lsp 2026.01+, and extract the selected region when one is active (see [[https://github.com/emacs-lsp/lsp-mode/issues/5023][#5023]])
   * Fix PHP Language Server detection.
+  * Fix rust-analyzer server detection when binary is missing.
 
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
