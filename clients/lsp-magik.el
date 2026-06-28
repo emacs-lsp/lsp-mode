@@ -277,7 +277,10 @@ The next update resets the delay."
                       (substitute-in-file-name (lsp-resolve-value lsp-magik-java-path))
                       "-jar"
                       (substitute-in-file-name lsp-magik-ls-path)
-                      "--debug")))
+                      "--debug"))
+                   (lambda ()
+                     (and (executable-find (lsp-resolve-value lsp-magik-java-path) t)
+                          (file-exists-p (substitute-in-file-name lsp-magik-ls-path)))))
   :activation-fn (lsp-activate-on "magik" "sw-product-def" "sw-module-def" "sw-load-list")
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
