@@ -1881,14 +1881,31 @@ etc."
 ;; Forward-declare; actual `defvar-local' is in the "Position encoding" section.
 (defvar lsp--move-to-column-function)
 
+(defvar-local lsp--line-character-to-point-cache-tick nil)
+(defvar-local lsp--line-character-to-point-cache nil)
+
+(defun lsp--line-character-to-point-line-start (line)
+  "Return the point at the start of LINE, caching by buffer modified tick."
+  (let ((tick (buffer-chars-modified-tick)))
+    (unless (and (eq tick lsp--line-character-to-point-cache-tick)
+                 lsp--line-character-to-point-cache)
+      (setq lsp--line-character-to-point-cache-tick tick
+            lsp--line-character-to-point-cache (make-hash-table :test 'eql)))
+    (or (gethash line lsp--line-character-to-point-cache)
+        (puthash line
+                 (save-excursion
+                   (goto-char (point-min))
+                   (forward-line line)
+                   (point))
+                 lsp--line-character-to-point-cache))))
+
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
   "Return the point for character CHARACTER on line LINE."
   (or (lsp-virtual-buffer-call :line/character->point line character)
       (let ((inhibit-field-text-motion t))
         (lsp-save-restriction-and-excursion
-          (goto-char (point-min))
-          (forward-line line)
+          (goto-char (lsp--line-character-to-point-line-start line))
           (funcall lsp--move-to-column-function character)))))
 
 (lsp-defun lsp--position-to-point ((&Position :line :character))
