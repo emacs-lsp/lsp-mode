@@ -41,7 +41,7 @@
   :type '(repeat string))
 
 (lsp-dependency
- 'typespec-lsp
+ 'tsp-server
  '(:npm
    :package "@typespec/compiler"
    :path "tsp-server")
@@ -66,7 +66,9 @@
   :new-connection (lsp-stdio-connection `(,(lsp-typespec--server-executable-path) "--stdio"))
   :activation-fn (lsp-activate-on "typespec")
   :major-modes '(typespec-mode typespec-ts-mode)
-  :server-id 'typespec-lsp))
+  :server-id 'typespec-lsp
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'typespec-lsp callback error-callback))))
 
 (lsp-consistency-check lsp-typespec)
 
@@ -87,4 +89,3 @@
 
 (provide 'lsp-typespec)
 ;;; lsp-typespec.el ends here
-
