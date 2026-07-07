@@ -68,7 +68,7 @@
   :major-modes '(typespec-mode typespec-ts-mode)
   :server-id 'typespec-lsp
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'typespec-lsp callback error-callback))))
+                        (lsp-package-ensure 'tsp-server callback error-callback))))
 
 (lsp-consistency-check lsp-typespec)
 
