@@ -928,6 +928,15 @@
     "debugger": "yes"
   },
   {
+    "name": "prisma",
+    "full-name": "Prisma",
+    "server-name": "prisma-language-server",
+    "server-url": "https://github.com/prisma/language-tools",
+    "installation": "npm i -g @prisma/language-server",
+    "lsp-install-server": "prisma-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "pwsh",
     "full-name": "Powershell",
     "server-name": "PowerShellEditorServices",

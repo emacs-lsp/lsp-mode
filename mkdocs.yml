@@ -150,6 +150,7 @@ nav:
     - PHP (felixbecker): page/lsp-php.md
     - PHP (phpactor): page/lsp-phpactor.md
     - Powershell: page/lsp-pwsh.md
+    - Prisma: page/lsp-prisma.md
     - Prolog: page/lsp-prolog.md
     - PureScript: page/lsp-purescript.md
     - Python (Pylsp): page/lsp-pylsp.md
