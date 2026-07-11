@@ -53,6 +53,8 @@
                     (lsp-package-ensure 'prisma-language-server
                                         callback error-callback))))
 
+(add-to-list 'lsp-language-id-configuration '(prisma-mode . "prisma"))
+
 (lsp-consistency-check lsp-prisma)
 
 (provide 'lsp-prisma)
