@@ -157,9 +157,10 @@ The next update resets the delay."
   :lsp-path "magik.typing.cacheIndexedDefinitions")
 
 (lsp-defcustom lsp-magik-formatting-indent-strategy "null"
-  "The strategy used for indentation, \"null\" or \"relative\"."
+  "The strategy used for indentation: \"null\", \"block\", or \"visual\"."
   :type '(choice (const "null")
-                 (const "relative"))
+                 (const "block")
+                 (const "visual"))
   :group 'lsp-magik
   :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.formatting.indentStrategy")

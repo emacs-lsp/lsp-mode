@@ -132,10 +132,39 @@
   :type '(repeat string))
 
 
+;; Register a `:system' provider so `lsp-package-path' can resolve an
+;; externally installed lua-language-server (e.g. on PATH via package
+;; manager). Mirrors other lsp-mode clients, such as rust-analyzer.
+(lsp-dependency
+ 'lua-language-server
+ '(:system "lua-language-server"))
+
+(defun lsp-clients-lua-language-server--command ()
+  "Compute the command used to start lua-language-server.
+Resolve the binary dynamically so an externally provided server is
+honored, instead of relying solely on the hardcoded install directory.
+This mirrors how the `clangd' and `rust-analyzer' clients resolve their
+executables."
+  (or lsp-clients-lua-language-server-command
+      (let ((bin (or (when (and lsp-clients-lua-language-server-bin
+                                (f-exists? lsp-clients-lua-language-server-bin))
+                       lsp-clients-lua-language-server-bin)
+                     (lsp-package-path 'lua-language-server)
+                     (executable-find "lua-language-server"))))
+        `(,(or bin "lua-language-server")
+          ,@lsp-clients-lua-language-server-args
+          ;; Only pass main.lua for the manual/lsp-managed layout
+          ;; where it exists; standalone launchers locate their own
+          ;; main.lua and must not receive it as an argument.
+          ,@(when (f-exists? lsp-clients-lua-language-server-main-location)
+              (list lsp-clients-lua-language-server-main-location))))))
+
 (defun lsp-clients-lua-language-server-test ()
-  "Test Lua language server binaries and files."
-  (and (f-exists? lsp-clients-lua-language-server-main-location)
-       (f-exists? lsp-clients-lua-language-server-bin)))
+  "Test whether the Lua language server is available.
+Checks that the dynamically resolved executable can be found,
+rather than requiring the hardcoded install paths to exist."
+  (when-let* ((bin (car (lsp-clients-lua-language-server--command))))
+    (and (executable-find bin t) t)))
 
 (defcustom lsp-lua-color-mode "Semantic"
   "Color mode."
@@ -590,10 +619,7 @@ and `../lib` ,exclude `../lib/temp`.
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
-                                                       `(,lsp-clients-lua-language-server-bin
-                                                         ,@lsp-clients-lua-language-server-args
-                                                         ,lsp-clients-lua-language-server-main-location)))
+  :new-connection (lsp-stdio-connection #'lsp-clients-lua-language-server--command
                                         #'lsp-clients-lua-language-server-test)
   :activation-fn (lsp-activate-on "lua")
   :priority -2
