@@ -57,9 +57,9 @@
    (if lsp-ruby-lsp-use-bundler '("bundle" "exec"))
    lsp-ruby-lsp-server-command))
 
-(defun lsp-ruby-lsp--open-file (arg_hash)
+(defun lsp-ruby-lsp--open-file (action)
   "Open a file. This function is for code-lens provided by ruby-lsp-rails."
-  (let* ((arguments (gethash "arguments" arg_hash))
+  (let* ((arguments (lsp-get action :arguments))
          (uri (aref (aref arguments 0) 0))
          (path-with-line-number (split-string (lsp--uri-to-path uri) "#L"))
          (path (car path-with-line-number))
@@ -67,9 +67,9 @@
     (find-file path)
     (when line-number (forward-line (1- (string-to-number line-number))))))
 
-(defun lsp-ruby-lsp--run-test (arg_hash)
+(defun lsp-ruby-lsp--run-test (action)
   "Run a test file. This function is for code-lens provided by ruby-lsp-rails."
-  (let* ((arguments (gethash "arguments" arg_hash))
+  (let* ((arguments (lsp-get action :arguments))
          (command (aref arguments 2))
          (default-directory (lsp-workspace-root))
          (buffer-name "*run test results*")
