@@ -42,7 +42,7 @@
   :type '(choice (const "debug")
                  (const "error")
                  (const "info")
-                 (const "off")
+                 (const "trace")
                  (const "warn"))
   :group 'lsp-ruff)
 
