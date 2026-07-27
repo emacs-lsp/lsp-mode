@@ -6572,10 +6572,12 @@ This action fixes all auto-fixable issues in the buffer."
     (2 . lsp-face-highlight-read)
     (3 . lsp-face-highlight-write)))
 
-(defun lsp--remove-overlays (name)
+(defun lsp--remove-overlays (name &optional beg end)
   (save-restriction
     (widen)
-    (remove-overlays (point-min) (point-max) name t)))
+    (remove-overlays (or beg (point-min))
+                     (or end (point-max))
+                     name t)))
 
 (defun lsp-document-highlight ()
   "Highlight all relevant references to the symbol under point."
@@ -10532,7 +10534,7 @@ Click precedence: label part location > label part command > hint accept."
                            :end
                            (lsp-point-to-position end)))
    (lambda (res)
-     (lsp--remove-overlays 'lsp-inlay-hint)
+     (lsp--remove-overlays 'lsp-inlay-hint start end)
      (dolist (hint res)
        (-let* (((&InlayHint :label :position :kind? :padding-left? :padding-right?
                              :tooltip?) hint)
