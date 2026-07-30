@@ -19,6 +19,7 @@
   * Fix PHP Language Server detection.
   * Add support for [[https://github.com/prisma/language-tools][Prisma Schema Language]] via ~@prisma/language-server~ (see [[https://github.com/emacs-lsp/lsp-mode/pull/5095][#5095]]).
   * Fix Magik server detection when JAR is missing.
+  * Fix unknown ~didChangeStatus/v2~ notification warnings from recent GitHub Copilot language servers.
 
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
