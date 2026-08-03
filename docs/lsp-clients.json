@@ -867,6 +867,16 @@
     "debugger": "Not available"
   },
   {
+    "name": "oxfmt",
+    "full-name": "Oxfmt",
+    "server-name": "oxfmt",
+    "server-url": "https://github.com/oxc-project/oxc",
+    "installation": "npm install -g oxfmt",
+    "installation-url": "https://oxc.rs/docs/guide/usage/formatter/editors",
+    "lsp-install-server": "oxfmt",
+    "debugger": "Not available"
+  },
+  {
     "name": "pascal",
     "full-name": "Pascal/Object Pascal",
     "server-name": "pascal-language-server",
