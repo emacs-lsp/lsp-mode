@@ -40,7 +40,7 @@
   :tag "Lsp Magik"
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-version "0.12.0"
+(defcustom lsp-magik-version "0.12.1"
   "Version of LSP server."
   :type 'string
   :group 'lsp-magik
