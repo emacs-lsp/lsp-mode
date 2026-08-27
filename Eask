@@ -51,6 +51,13 @@
  (depends-on "org")
  (depends-on "elenv"))
 
+;; Emacs 32 changed the default of `current-time-list' to nil, so `current-time'
+;; returns a (TICKS . HZ) cons cell.  Eask's `eask-current-time' still expects
+;; the older list form and fails with "Wrong type argument: listp, 1000000000",
+;; which breaks `eask package'.  See emacs-eask/cli#431; remove this once a
+;; corrected Eask is released.
+(setq current-time-list t)
+
 (setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
 
 (add-hook 'eask-before-compile-hook
