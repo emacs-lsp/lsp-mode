@@ -88,7 +88,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-openscad-server-connection)
-                  :major-modes '(scad-mode)
+                  :major-modes '(scad-mode scad-ts-mode)
                   :priority -1
                   :initialized-fn (lambda (workspace)
                                     ;; OpenSCAD-LSP returns an empty list of
