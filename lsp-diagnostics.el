@@ -311,10 +311,13 @@ reformat the message in any other way."
 
 (defun lsp-diagnostics--flymake-backend (report-fn &rest _args)
   "Flymake backend using REPORT-FN."
-  (let ((first-run (null lsp-diagnostics--flymake-report-fn)))
-    (setq lsp-diagnostics--flymake-report-fn report-fn)
-    (when first-run
-      (lsp-diagnostics--flymake-update-diagnostics))))
+  (setq lsp-diagnostics--flymake-report-fn report-fn)
+  ;; Report the cached diagnostics on every call, not only the first
+  ;; one.  Flymake counts this backend as running from the moment it is
+  ;; called and as reported only once REPORT-FN is invoked; a backend
+  ;; that stays silent leaves the mode-line stuck on "Wait".  Eglot's
+  ;; `eglot-flymake-backend' re-reports the same way.
+  (lsp-diagnostics--flymake-update-diagnostics))
 
 (defun lsp-diagnostics--flymake-update-diagnostics ()
   "Report new diagnostics to flymake."

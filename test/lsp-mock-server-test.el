@@ -263,6 +263,40 @@ TEST-BODY can interact with the mock server."
                                        "line 1 unique word broming + common"
                                        "                   ^^^^^^^         ")))))
 
+(ert-deftest lsp-mock-server-flymake-reports-on-every-restart ()
+  "Test that the flymake backend reports on every `flymake-start'.
+
+Flymake counts a backend as reporting only once it invokes its
+REPORT-FN for the current check.  A backend that stays silent on a
+restart re-enters the running set but never the reporting set, so the
+mode-line shows `Wait' indefinitely even though diagnostics are
+current."
+  (require 'flymake)
+  (lsp-mock-run-with-mock-server
+   ;; The mock server environment binds `lsp-diagnostics-provider' to
+   ;; :none, so rebind it here before enabling the flymake integration
+   (let ((lsp-diagnostics-provider :flymake))
+     (lsp-diagnostics-mode 1)
+     (should flymake-mode)
+     ;; First run: the backend reports the (still empty) cached diagnostics
+     (flymake-start)
+     (should (null (cl-set-difference (flymake-running-backends)
+                                      (flymake-reporting-backends))))
+     (should (eq (length (flymake-diagnostics)) 0))
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (gethash lsp-test-sample-file (lsp-diagnostics t))))
+     ;; A restart must re-report the cached diagnostics, not stay silent
+     (flymake-start)
+     (should (null (cl-set-difference (flymake-running-backends)
+                                      (flymake-reporting-backends))))
+     (should (eq (length (flymake-diagnostics)) 1))
+     ;; And a further restart must not lose them
+     (flymake-start)
+     (should (null (cl-set-difference (flymake-running-backends)
+                                      (flymake-reporting-backends))))
+     (should (eq (length (flymake-diagnostics)) 1)))))
+
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
   (let ((initial-serv-count (lsp-test-total-folder-count)))
