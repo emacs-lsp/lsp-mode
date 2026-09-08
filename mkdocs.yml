@@ -141,6 +141,7 @@ nav:
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Odin (ols): page/lsp-ols.md
     - OpenSCAD: page/lsp-openscad.md
+    - Oxfmt: page/lsp-oxfmt.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl (PLS): page/lsp-pls.md
     - Perl (Perl::LanguageServer): page/lsp-perl.md
