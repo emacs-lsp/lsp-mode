@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Add a built-in Biome client.
   * Add ~lsp-pylsp-plugins-ruff-format-enabled~ to expose python-lsp-ruff's ~formatEnabled~ setting.
   * Fix ~lsp-install-server~ download from the Visual Studio Code Marketplace.
   * Add support for LSP 3.17 InlayHint features: ~textEdits~, ~tooltip~, ~data~, ~InlayHintLabelPart~ (per-part ~tooltip~/~location~/~command~), ~inlayHint/resolve~, interactive mouse handler, and ~lsp-inlay-hint-accept~ command (see [[https://github.com/emacs-lsp/lsp-mode/issues/4775][#4775]])
