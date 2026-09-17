@@ -1230,6 +1230,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "sysml",
+    "full-name": "SysML v2 / KerML (OpenSysML)",
+    "server-name": "sysml-lsp",
+    "server-url": "https://github.com/Open-MBEE/OpenSysML",
+    "installation": "go install github.com/Open-MBEE/OpenSysML/cmd/sysml-lsp@latest",
+    "installation-url": "https://github.com/Open-MBEE/OpenSysML/releases",
+    "debugger": "Not available"
+  },
+  {
     "name": "svlangserver",
     "common-group-name": "verilog",
     "full-name": "Verilog/SystemVerilog",
