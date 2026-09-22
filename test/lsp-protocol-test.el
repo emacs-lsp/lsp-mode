@@ -237,4 +237,26 @@ without `Eager macro-expansion failure' errors."
                     (lsp-inline-completion-context? ctx)))
               (_ nil)))))
 
+(ert-deftest lsp-test-interface-keys-independent-of-syntax-table ()
+  "Interface keys must not depend on the ambient syntax table.
+`lsp-interface' derives its keys with `s-dashed-words', which splits on
+`[^[:word:]0-9]+'.  That character class is resolved against the current
+buffer's syntax table, so a major mode giving `:' word syntax -- as
+magik-mode does -- used to yield `::contents' instead of `:contents',
+breaking every destructuring form in lsp-mode when it was first loaded
+from such a buffer."
+  (with-temp-buffer
+    ;; A child of the standard table, so the mutation cannot leak into
+    ;; `standard-syntax-table' and mask the very thing we are testing.
+    (let ((table (make-syntax-table)))
+      (modify-syntax-entry ?: "w" table)
+      (modify-syntax-entry ?_ "w" table)
+      (set-syntax-table table))
+    (should (equal (lsp--dashed-words ":contents") "contents"))
+    (should (equal (lsp--dashed-words ":contentFormat") "content-format"))
+    (should (equal (lsp--dashed-words "Hover") "hover"))
+    ;; End to end: the macro itself must still generate usable keys here.
+    (eval '(lsp-interface (SyntaxProbe (:contents) (:range))) t)
+    (should (dash-expand:&SyntaxProbe :contents 'source))))
+
 ;;; lsp-protocol-test.el ends here
