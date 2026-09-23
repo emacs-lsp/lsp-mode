@@ -100,7 +100,8 @@ When nil (the default), the setting is not sent to ruff at all and
 ruff uses its default rules and any configuration files (e.g.
 pyproject.toml).  Note that an empty vector explicitly selects
 zero rules, silencing all lint diagnostics."
-  :type '(lsp-repeatable-vector string)
+  :type '(choice (const :tag "Default" nil)
+                 (lsp-repeatable-vector string))
   :group 'lsp-ruff)
 
 (defcustom lsp-ruff-lint-extend-select nil
@@ -108,7 +109,8 @@ zero rules, silencing all lint diagnostics."
 When nil (the default), the setting is not sent to ruff at all.
 Note that an empty vector explicitly selects no extra rules and
 overrides configuration files."
-  :type '(lsp-repeatable-vector string)
+  :type '(choice (const :tag "Default" nil)
+                 (lsp-repeatable-vector string))
   :group 'lsp-ruff)
 
 (defcustom lsp-ruff-lint-ignore nil
@@ -116,7 +118,8 @@ overrides configuration files."
 When nil (the default), the setting is not sent to ruff at all.
 Note that an empty vector explicitly ignores nothing, but still
 overrides the `ignore' list from configuration files."
-  :type '(lsp-repeatable-vector string)
+  :type '(choice (const :tag "Default" nil)
+                 (lsp-repeatable-vector string))
   :group 'lsp-ruff)
 
 (lsp-register-client
