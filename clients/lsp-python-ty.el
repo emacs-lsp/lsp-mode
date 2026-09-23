@@ -37,12 +37,24 @@
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-python-ty-log-level "error"
+  "Tracing level."
+  :type '(choice (const "debug")
+                 (const "error")
+                 (const "info")
+                 (const "trace")
+                 (const "warn"))
+  :group 'lsp-ruff)
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-python-ty-clients-server-command))
                   :activation-fn (lsp-activate-on "python")
                   :priority -1
                   :add-on? t
                   :server-id 'ty-ls
+                  :initialization-options
+                  (lambda ()
+                    (list :logLevel lsp-python-ty-log-level))
                   :initialized-fn (lambda (workspace)
                                     (let ((caps (lsp--workspace-server-capabilities workspace)))
                                       (unless (lsp-get caps :inlayHintProvider)
