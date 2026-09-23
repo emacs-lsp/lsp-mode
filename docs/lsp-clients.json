@@ -851,6 +851,7 @@
   {
     "name": "ols",
     "full-name": "Odin Language Server",
+    "common-group-name": "odin-ols",
     "server-name": "ols",
     "server-url": "https://github.com/DanielGavin/ols",
     "installation-url": "https://github.com/DanielGavin/ols",

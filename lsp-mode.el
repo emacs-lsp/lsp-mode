@@ -907,6 +907,7 @@ Changes take effect only when a new session is started."
     (ssass-mode . "sass")
     (scss-mode . "scss")
     (scad-mode . "openscad")
+    (scad-ts-mode . "openscad")
     (xml-mode . "xml")
     (c-mode . "c")
     (c-ts-mode . "c")
