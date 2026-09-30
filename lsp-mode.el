@@ -8278,7 +8278,11 @@ should return the command to start the LS server."
 INITIALIZATION-OPTIONS are passed to initialize function.
 SESSION is the active session."
   (lsp--spinner-start)
-  (-let* ((default-directory root)
+  ;; `default-directory' must end with a directory slash (see the Elisp
+  ;; manual): it is inherited as the `default-directory' of every buffer
+  ;; created while starting the process, e.g. the `*SERVER*' and
+  ;; `*SERVER::stderr*' process buffers.
+  (-let* ((default-directory (file-name-as-directory root))
           (client (copy-lsp--client client-template))
           (workspace (make-lsp--workspace
                       :root root

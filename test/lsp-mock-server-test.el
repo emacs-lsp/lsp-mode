@@ -279,6 +279,20 @@ TEST-BODY can interact with the mock server."
          (should (search-forward "crashed by command"))
          (goto-char (point-max)))))))
 
+(ert-deftest lsp-mock-server-process-buffers-default-directory ()
+  "Check the `default-directory' inherited by buffers created for the server.
+The Elisp manual documents that `default-directory' always ends with
+a directory slash.  See issue #4997."
+  (dolist (buffer-name '("*mock-server*" "*mock-server::stderr*"))
+    (when-let* ((buffer (get-buffer buffer-name)))
+      (kill-buffer buffer)))
+  (lsp-mock-run-with-mock-server
+   (let ((root (file-name-as-directory (lsp-workspace-root))))
+     (dolist (buffer-name '("*mock-server*" "*mock-server::stderr*"))
+       (let ((buffer (get-buffer buffer-name)))
+         (should buffer)
+         (should (equal (buffer-local-value 'default-directory buffer) root)))))))
+
 (defun lsp-mock-get-first-diagnostic-line ()
   "Get the line number of the first diagnostic on `lsp-test-sample-file'."
   (let ((diags (gethash lsp-test-sample-file (lsp-diagnostics t))))
