@@ -4186,6 +4186,11 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-1001">Unreleased 10.0.1<a class="headerlink" href="#unreleased-1001" title="Permanent link">#</a></h2>
 <ul>
+<li>Fix <code>lsp-ruff</code> sending empty <code>lint.select~/~extendSelect~/~ignore</code>
+    arrays by default: ruff interprets empty arrays as "zero rules",
+    silently swallowing all diagnostics. The options now default to nil
+    (not sent) so ruff uses its own defaults and project configuration
+    (see <a href="https://github.com/emacs-lsp/lsp-mode/issues/5119">#5119</a>)</li>
 <li>Unregister the Python <code>ty</code> client as an add-on: <code>ty</code> now provides
     full language server features (hover, completion, go-to-definition,
     inlay hints), so running it in parallel with other Python servers
@@ -5002,7 +5007,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 1, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2026</span>
       
     
   </small>

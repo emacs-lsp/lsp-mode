@@ -4274,18 +4274,28 @@
 <hr />
 <h3 id="lsp-ruff-lint-extend-select"><code>lsp-ruff-lint-extend-select</code><a class="headerlink" href="#lsp-ruff-lint-extend-select" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(lsp-repeatable-vector string)</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>A list of rule codes or prefixes to enable, in addition to those specified by <code>select</code>.</p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>A list of rule codes or prefixes to enable, in addition to <code>select</code>.
+When nil (the default), the setting is not sent to ruff at all.
+Note that an empty vector explicitly selects no extra rules and
+overrides configuration files.</p>
 <hr />
 <h3 id="lsp-ruff-lint-ignore"><code>lsp-ruff-lint-ignore</code><a class="headerlink" href="#lsp-ruff-lint-ignore" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(lsp-repeatable-vector string)</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>A list of rule codes or prefixes to ignore.</p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>A list of rule codes or prefixes to ignore.
+When nil (the default), the setting is not sent to ruff at all.
+Note that an empty vector explicitly ignores nothing, but still
+overrides the <code>ignore</code> list from configuration files.</p>
 <hr />
 <h3 id="lsp-ruff-lint-select"><code>lsp-ruff-lint-select</code><a class="headerlink" href="#lsp-ruff-lint-select" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(lsp-repeatable-vector string)</code></p>
-<p><em>Default:</em> <code>[]</code></p>
-<p>A list of rule codes or prefixes to enable.</p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>A list of rule codes or prefixes to enable.
+When nil (the default), the setting is not sent to ruff at all and
+ruff uses its default rules and any configuration files (e.g.
+pyproject.toml).  Note that an empty vector explicitly selects
+zero rules, silencing all lint diagnostics.</p>
 <hr />
 <h3 id="lsp-ruff-log-level"><code>lsp-ruff-log-level</code><a class="headerlink" href="#lsp-ruff-log-level" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const debug) (const error) (const info) (const off) (const warn))</code></p>
@@ -4326,7 +4336,7 @@ Previous ruff-lsp should change this to ("ruff-lsp")</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 1, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2026</span>
       
     
   </small>
