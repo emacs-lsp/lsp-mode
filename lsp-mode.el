@@ -192,7 +192,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-rf lsp-roc lsp-ron lsp-roslyn lsp-rubocop lsp-ruby-lsp
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
-     lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
+     lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-sysml lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3
      lsp-typeprof lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog
      lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wat lsp-wgsl lsp-xml
@@ -824,6 +824,7 @@ Changes take effect only when a new session is started."
     ("\\.jsonc$" . "jsonc")
     ("\\.jsonnet$" . "jsonnet")
     ("\\.jsx$" . "javascriptreact")
+    ("\\.kerml\\'" . "kerml")
     ("\\.lua$" . "lua")
     ("\\.fnl$" . "fennel")
     ("\\.mdx\\'" . "mdx")
@@ -835,6 +836,7 @@ Changes take effect only when a new session is started."
     ("\\.spec\\'" . "rpm-spec")
     ("\\.sql$" . "sql")
     ("\\.svelte$" . "svelte")
+    ("\\.sysml\\'" . "sysml")
     ("\\.toml\\'" . "toml")
     ("\\.ts$" . "typescript")
     ("\\.tsp$" . "typespec")
@@ -1038,6 +1040,8 @@ Changes take effect only when a new session is started."
     (glsl-mode . "glsl")
     (shader-mode . "shaderlab")
     (wgsl-mode . "wgsl")
+    (sysml-mode . "sysml")
+    (kerml-mode . "kerml")
     (wat-mode . "wat")
     (jq-mode . "jq")
     (jq-ts-mode . "jq")
