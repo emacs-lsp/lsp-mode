@@ -407,6 +407,10 @@ when workspace edits shift line positions (see issue #3888)."
               (workspaces (lsp-workspaces)))
     (let ((path (lsp--fix-path-casing file-path)))
       (dolist (workspace workspaces)
+        ;; Decrement the global stats for the diagnostics being removed,
+        ;; otherwise ghost error counts accumulate until restart
+        ;; (issue #5043).
+        (lsp-diagnostics--convert-and-update-path-stats workspace path nil)
         (-let [diagnostics (lsp--workspace-diagnostics workspace)]
           (remhash path diagnostics))))
     (run-hooks 'lsp-diagnostics-updated-hook)))

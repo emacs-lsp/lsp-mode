@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 10.0.1
+  * Fix ghost diagnostic counts accumulating in ~lsp-diagnostic-stats~ (modeline, dired): ~lsp-diagnostics--clear-after-edit~ now decrements the stats for the diagnostics it removes instead of dropping them silently (see [[https://github.com/emacs-lsp/lsp-mode/issues/5043][#5043]])
   * Add ~.slnx~ solution file support to ~lsp-roslyn~: ~lsp-roslyn--find-solution-file~ now also detects the new XML-based solution format (see [[https://github.com/emacs-lsp/lsp-mode/issues/5106][#5106]])
   * Fix ~lsp-ruff~ sending empty ~lint.select~/~extendSelect~/~ignore~ arrays by default: ruff interprets empty arrays as "zero rules", silently swallowing all diagnostics. The options now default to nil (not sent) so ruff uses its own defaults and project configuration (see [[https://github.com/emacs-lsp/lsp-mode/issues/5119][#5119]])
   * Unregister the Python ~ty~ client as an add-on: ~ty~ now provides full language server features (hover, completion, go-to-definition, inlay hints), so running it in parallel with other Python servers such as ~pylsp~ yields duplicated results, e.g. duplicated xref definitions (see [[https://github.com/emacs-lsp/lsp-mode/issues/5122][#5122]])

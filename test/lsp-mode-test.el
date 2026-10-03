@@ -159,6 +159,29 @@
     (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
                    [0 0 0 0 0]))))
 
+(ert-deftest lsp-diagnostics-clear-after-edit-updates-stats ()
+  "Clearing diagnostics after edits must also decrement the stats.
+Otherwise ghost error counts accumulate in `lsp-diagnostic-stats'
+(and thus in the modeline/dired) until restart (issue #5043)."
+  (let ((workspace (make-lsp--workspace))
+        (lsp-diagnostic-stats (ht)))
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt")
+                          :diagnostics (vector
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-error)
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-warning))))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 1 1 0 0]))
+    (cl-letf (((symbol-function 'lsp-workspaces) (lambda () (list workspace))))
+      (let ((buffer-file-name "/foo/bar/baz/txt.txt"))
+        (lsp-diagnostics--clear-after-edit)))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 0 0 0 0]))
+    (should-not (gethash (lsp--fix-path-casing
+                          (expand-file-name "/foo/bar/baz/txt.txt"))
+                         (lsp--workspace-diagnostics workspace)))))
+
 (ert-deftest lsp-point-in-range?-test ()
   (let ((range (lsp-make-range :start (lsp-make-position :character 1 :line 1)
                                :end (lsp-make-position :character 3 :line 3))))
