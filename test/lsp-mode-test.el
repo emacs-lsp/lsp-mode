@@ -159,6 +159,15 @@
     (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
                    [0 0 0 0 0]))))
 
+(ert-deftest lsp--get-indent-width-test ()
+  "Check the indent-width resolution used for formatting requests."
+  (should (eq (lsp--get-indent-width 'sh-mode) 'sh-basic-offset))
+  (should (eq (lsp--get-indent-width 'ada-mode) 'ada-indent))
+  ;; bash-ts-mode's parent is sh-base-mode, not sh-mode, so without an
+  ;; explicit entry it used to fall through to `standard-indent'
+  ;; (issue #5038).
+  (should (eq (lsp--get-indent-width 'bash-ts-mode) 'sh-basic-offset)))
+
 (ert-deftest lsp-point-in-range?-test ()
   (let ((range (lsp-make-range :start (lsp-make-position :character 1 :line 1)
                                :end (lsp-make-position :character 3 :line 3))))

@@ -6416,6 +6416,7 @@ one or more symbols, and STRUCTURE should be compatible with
   '(
     (ada-mode                   . ada-indent)                       ; Ada
     (ada-ts-mode                . ada-ts-mode-indent-offset)
+    (bash-ts-mode               . sh-basic-offset)                 ; Bash (tree-sitter, Emacs29)
     (c++-mode                   . c-basic-offset)                   ; C++
     (c++-ts-mode                . c-ts-mode-indent-offset)
     (c-mode                     . c-basic-offset)                   ; C
