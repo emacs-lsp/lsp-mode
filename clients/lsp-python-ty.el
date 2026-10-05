@@ -50,7 +50,6 @@
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-python-ty-clients-server-command))
                   :activation-fn (lsp-activate-on "python")
                   :priority -1
-                  :add-on? t
                   :server-id 'ty-ls
                   :initialization-options
                   (lambda ()
