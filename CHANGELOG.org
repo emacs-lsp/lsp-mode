@@ -22,6 +22,7 @@
   * Fix PHP Language Server detection.
   * Add support for [[https://github.com/prisma/language-tools][Prisma Schema Language]] via ~@prisma/language-server~ (see [[https://github.com/emacs-lsp/lsp-mode/pull/5095][#5095]]).
   * Fix Magik server detection when JAR is missing.
+  * Add support for [[https://github.com/Open-MBEE/OpenSysML][SysML v2 / KerML]] via the OpenSysML ~sysml-lsp~ language server.
 
 ** 10.0.0
   * Fix ~lsp-zig--zls-url~ to use the new zigtools.org url (see: [[https://github.com/emacs-lsp/lsp-mode/issues/4445][#4445]])
