@@ -607,7 +607,9 @@ Focus on it if IGNORE-FOCUS? is nil."
   :notification-handlers (lsp-ht ("clojure/textDocument/testTree" #'lsp-clojure--handle-test-tree))
   :initialization-options '(:dependency-scheme "jar"
                             :show-docs-arity-on-same-line? t)
-  :custom-capabilities `((experimental . ((testTree . ,(and (require 'lsp-treemacs nil t) t)))))
+  :custom-capabilities `((experimental . ((testTree . ,(and (or (featurep 'lsp-treemacs)
+                                                               (locate-library "lsp-treemacs"))
+                                                           t)))))
   :server-id 'clojure-lsp))
 
 (lsp-consistency-check lsp-clojure)
