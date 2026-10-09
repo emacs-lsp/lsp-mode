@@ -4186,6 +4186,11 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="unreleased-1001">Unreleased 10.0.1<a class="headerlink" href="#unreleased-1001" title="Permanent link">#</a></h2>
 <ul>
+<li>Avoid loading <code>lsp-treemacs</code> (and thus <code>treemacs</code>) when the Clojure
+    client is registered: the <code>testTree</code> capability is now advertised
+    when <code>lsp-treemacs</code> is loaded or locatable, and the library is only
+    required when the test tree is used (see
+    <a href="https://github.com/emacs-lsp/lsp-mode/issues/5127">#5127</a>)</li>
 <li>Add <code>.slnx</code> solution file support to <code>lsp-roslyn</code>:
     <code>lsp-roslyn--find-solution-file</code> now also detects the new XML-based
     solution format (see
@@ -5011,7 +5016,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2026</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 9, 2026</span>
       
     
   </small>
