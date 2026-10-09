@@ -103,6 +103,16 @@
   :lsp-path "nixd.options.home-manager.expr"
   :package-version '(lsp-mode . "10.0.0"))
 
+(lsp-defcustom lsp-nix-nixd-darwin-options-expr nil
+  "Option set for nix-darwin option completion.
+
+  Example:
+  `\"(builtins.getFlake \"/home/nb/nix\").darwinConfigurations.\"mnd\".options\"`"
+  :type 'string
+  :group 'lsp-nix-nixd
+  :lsp-path "nixd.options.darwin.expr"
+  :package-version '(lsp-mode . "10.0.0"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () (cons lsp-nix-nixd-server-path lsp-nix-nixd-server-arguments)))
                   :major-modes '(nix-mode nix-ts-mode)
