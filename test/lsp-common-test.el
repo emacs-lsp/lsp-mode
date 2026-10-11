@@ -18,6 +18,11 @@
 
 ;;; Code:
 
+;; `lsp-byte-compilation-test' let-binds `byte-compile-error-on-warn', which is
+;; only declared special once bytecomp is loaded.  Without this require the
+;; binding is lexical, and bytecomp's own `defvar' then fails with
+;; "Defining as dynamic an already lexical var".
+(require 'bytecomp)
 (require 'ert)
 (require 'lsp-mode)
 (require 'elenv)
