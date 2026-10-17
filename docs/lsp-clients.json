@@ -929,6 +929,15 @@
     "debugger": "yes"
   },
   {
+    "name": "symfony",
+    "common-group-name": "php",
+    "full-name": "Symfony Language Tools",
+    "server-name": "symfony-lsp",
+    "server-url": "https://github.com/symfony/language-tools",
+    "installation": "Manual from the GitHub releases",
+    "debugger": "Not available"
+  },
+  {
     "name": "prisma",
     "full-name": "Prisma",
     "server-name": "prisma-language-server",

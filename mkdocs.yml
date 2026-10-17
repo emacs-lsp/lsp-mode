@@ -149,6 +149,7 @@ nav:
     - PHP (Serenata): page/lsp-serenata.md
     - PHP (felixbecker): page/lsp-php.md
     - PHP (phpactor): page/lsp-phpactor.md
+    - PHP (symfony): page/lsp-symfony.md
     - Powershell: page/lsp-pwsh.md
     - Prisma: page/lsp-prisma.md
     - Prolog: page/lsp-prolog.md

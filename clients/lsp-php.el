@@ -469,6 +469,104 @@ https://phpactor.readthedocs.io/en/develop/extensions.html."
    (lambda (_mode)
      (format "*Phpactor install %s*" extension))))
 
+;;; Symfony
+(defgroup lsp-symfony nil
+  "LSP support for Symfony PHP, using symfony-lsp.
+
+For configuration you can use a `.symfony-lsp.json' file."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/symfony/language-tools")
+  :package-version '(lsp-mode . "10.0.1"))
+
+(defcustom lsp-symfony-workspace-trust nil
+  "Allow runtime indexing by trusting the project.
+
+You should only enable this per project with e.g.
+`.dir-locals.el': `((nil . ((lsp-symfony-workspace-trust . t))))'"
+  :type 'boolean
+  :risky t
+  :group 'lsp-symfony
+  :package-version '(lsp-mode . "10.0.1"))
+
+(defcustom lsp-symfony-executable "symfony-lsp"
+  "Command to start the Symfony Language Tools."
+  :type 'file
+  :risky t
+  :group 'lsp-symfony
+  :package-version '(lsp-mode . "10.0.1"))
+
+(lsp-defcustom lsp-symfony-trace "off"
+  "Write redacted Language Server Protocol traffic to the Symfony Language Tools output channel."
+  :type '(choice (const "off") (const "messages") (const "verbose"))
+  :group 'lsp-symfony
+  :package-version '(lsp-mode . "10.0.1")
+  :lsp-path "symfony.trace")
+
+(lsp-defcustom lsp-symfony-release-metadata nil
+  "Allow runtime indexing to request Symfony release metadata for the installed-branch support check."
+  :type 'boolean
+  :group 'lsp-symfony
+  :package-version '(lsp-mode . "10.0.1")
+  :lsp-path "symfony.releaseMetadata")
+
+(lsp-defcustom lsp-symfony-translation-diagnostics nil
+  "Report statically known translation keys missing from the effective catalogue."
+  :type 'boolean
+  :group 'lsp-symfony
+  :package-version '(lsp-mode . "10.0.1")
+  :lsp-path "symfony.translationDiagnostics")
+
+(defun lsp-symfony-index-status (&optional _command)
+  "Show the index status."
+  (interactive)
+  (let* ((root (lsp-workspace-root default-directory))
+         (results (lsp-workspace-command-execute "symfony.indexStatus"))
+         (buf (get-buffer-create (format "*symfony-lsp status %s*" root))))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (pp results buf)
+        (special-mode)))
+    (pop-to-buffer buf)))
+
+(defun lsp-symfony-refresh-index (&optional _command)
+  "Refresh the index."
+  (interactive)
+  (lsp-request-async
+   "workspace/executeCommand"
+   (list :command "symfony.refreshIndex")
+   (lambda (response)
+     (lsp--info "Symfony LSP index refreshed: %S" (lsp-get (car response) :root)))
+   :error-handler (lambda (response)
+                    (lsp-warn "Failed to refresh the Symfony LSP index: %S" response))))
+
+(defun lsp-symfony-switch-environment (&optional _command)
+  "Switch the active environment."
+  (interactive)
+  (lsp-request-async
+   "workspace/executeCommand"
+   (list :command "symfony.switchEnvironment"
+         :arguments (vector
+                     (lsp-workspace-root default-directory)
+                     (completing-read
+                      "Select environment: "
+                      '("dev" "prod" "test"))))
+   (lambda (response)
+     (lsp--info "Switched symfony environment to: %S" (lsp-get (car response) :environment)))
+   :error-handler (lambda (response)
+                    (lsp-warn "Failed to switch the Symfony environment: %S" response))))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-symfony-executable)
+                  :activation-fn (lsp-activate-on "php" "twig" "yaml" "xml" "json" "javascript" "typescript" "dotenv")
+                  :priority -5
+                  :add-on? t
+                  :initialization-options (lambda ()
+                                            (list :workspaceTrust lsp-symfony-workspace-trust
+                                                  :trace lsp-symfony-trace))
+                  :server-id 'symfony
+                  :synchronize-sections '("symfony")))
+
 (lsp-consistency-check lsp-php)
 
 (provide 'lsp-php)
