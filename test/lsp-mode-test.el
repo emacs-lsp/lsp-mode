@@ -493,4 +493,76 @@ lambda synchronously so decompression callbacks are observable within the test."
                               :store-path "/tmp/lsp-s" :decompress :targz))
       (should targz-called))))
 
+;; Selection range tests
+
+(defun lsp-test--selection-range (ranges)
+  "Build a SelectionRange chain from RANGES, innermost first.
+Each element of RANGES is a (START . END) pair of character offsets
+on line 0."
+  (when ranges
+    (lsp-make-selection-range
+     :range (lsp-make-range
+             :start (lsp-make-position :line 0 :character (caar ranges))
+             :end (lsp-make-position :line 0 :character (cdar ranges)))
+     :parent? (lsp-test--selection-range (cdr ranges)))))
+
+(defmacro lsp-test--with-selection-range-server (requests &rest body)
+  "Run BODY in a buffer containing \"(foo) (bar)\".
+A fake server answers `textDocument/selectionRange' and REQUESTS is
+bound to the number of requests it received."
+  (declare (indent 1))
+  `(let ((,requests 0)
+         (transient-mark-mode t))
+     (with-temp-buffer
+       (insert "(foo) (bar)")
+       (cl-letf (((symbol-function 'lsp-feature?) (lambda (_) t))
+                 ((symbol-function 'lsp--text-document-identifier) #'ignore)
+                 ((symbol-function 'lsp-request)
+                  (lambda (method params)
+                    (should (equal method "textDocument/selectionRange"))
+                    (cl-incf ,requests)
+                    (let ((character (plist-get (aref (plist-get params :positions) 0)
+                                                :character)))
+                      (list (lsp-test--selection-range
+                             (if (< character 6)
+                                 '((1 . 4) (0 . 5) (0 . 11))
+                               '((7 . 10) (6 . 11) (0 . 11)))))))))
+         ,@body))))
+
+(ert-deftest lsp-extend-selection-at-new-point ()
+  "Extending the selection at another point must not reuse the old range."
+  (lsp-test--with-selection-range-server requests
+    (goto-char 3)
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(2 . 5)))
+    (deactivate-mark)
+    (goto-char 9)
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(8 . 11)))
+    (should (= requests 2))))
+
+(ert-deftest lsp-extend-selection-of-new-region ()
+  "Extending a region selected elsewhere must not reuse the old range."
+  (lsp-test--with-selection-range-server requests
+    (goto-char 3)
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(2 . 5)))
+    (set-mark 11)
+    (goto-char 8)
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(7 . 12)))
+    (should (= requests 2))))
+
+(ert-deftest lsp-extend-selection-repeatedly ()
+  "Repeated extension walks up the cached ranges with one request."
+  (lsp-test--with-selection-range-server requests
+    (goto-char 3)
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(2 . 5)))
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(1 . 6)))
+    (lsp-extend-selection)
+    (should (equal (cons (region-beginning) (region-end)) '(1 . 12)))
+    (should (= requests 1))))
+
 ;;; lsp-mode-test.el ends here
