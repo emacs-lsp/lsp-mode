@@ -1026,6 +1026,8 @@ Changes take effect only when a new session is started."
     (magik-product-mode . "sw-product-def")
     (magik-module-mode . "sw-module-def")
     (magik-loadlist-mode . "sw-load-list")
+    (magik-msg-mode . "sw-message")
+    (magik-trn-mode . "sw-translation")
     (idris-mode . "idris")
     (idris2-mode . "idris2")
     (gleam-mode . "gleam")
