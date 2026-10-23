@@ -194,13 +194,7 @@ Unless overridden by a more specific face association."
 
 (defface lsp-face-semhl-label
   '((t (:inherit font-lock-comment-face)))
-  "Face used for labels.
-
-Obsolete: no longer referenced by the default `lsp-semantic-token-faces'
-alist since 10.0.1 (the LSP 3.17 spec has no `label' token type). Kept
-for backward compatibility with user `set-face-attribute' calls and
-with clients that still register `label' through
-`:semantic-tokens-faces-overrides'. May be removed in a future release."
+  "Face used for labels (LSP `label', since 3.18)."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum-member
@@ -267,13 +261,14 @@ Examples: Python `@decorator', Java annotations."
     ("parameter" . lsp-face-semhl-parameter)
     ("enumMember" . lsp-face-semhl-enum-member)
     ("modifier" . lsp-face-semhl-modifier)
-    ("decorator" . lsp-face-semhl-decorator))
-  "Faces to use for LSP 3.17 semantic token types.
+    ("decorator" . lsp-face-semhl-decorator)
+    ("label" . lsp-face-semhl-label))
+  "Faces to use for LSP 3.17/3.18 semantic token types.
 Servers that emit non-spec token types (e.g. clangd's `dependent' and
-`concept', or tree-sitter-backed servers emitting `member' / `label')
+`concept', or tree-sitter-backed servers emitting `member')
 should register them through `:semantic-tokens-faces-overrides' on
 their `lsp-client' rather than relying on entries in this default alist.
-See URL `https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#semanticTokenTypes'.")
+See URL `https://microsoft.github.io/language-server-protocol/specifications/lsp/3.18/specification/#semanticTokenTypes'.")
 
 (defvar-local lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-interface)
