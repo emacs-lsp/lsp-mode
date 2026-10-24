@@ -184,6 +184,7 @@ nav:
     - Standard ML (Millet): page/lsp-sml.md
     - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
+    - SysML v2 / KerML (OpenSysML): page/lsp-sysml.md
     - Tailwind CSS: page/lsp-tailwindcss.md
     - Terraform (terraform-lsp): page/lsp-terraform.md
     - Terraform (terraform-ls): page/lsp-terraform-ls.md
