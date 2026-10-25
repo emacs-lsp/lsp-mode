@@ -335,6 +335,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "epher",
+    "full-name": "Epher",
+    "server-name": "epher-lsp",
+    "server-url": "https://github.com/upyesp/epher",
+    "installation-url": "https://github.com/upyesp/epher/releases/latest",
+    "debugger": "Not available"
+  },
+  {
     "name": "erlang-ls",
     "full-name": "Erlang",
     "server-name": "erlang_ls",

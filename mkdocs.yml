@@ -83,6 +83,7 @@ nav:
     - Emacs Lisp (Ellsp): https://github.com/elisp-lsp/ellsp
     - Emacs Lisp (Elsa): https://github.com/emacs-elsa/Elsa
     - Emmet: page/lsp-emmet.md
+    - Epher: page/lsp-epher.md
     - Erlang (Erlang Language Server): page/lsp-erlang-ls.md
     - Erlang (ELP): page/lsp-erlang-elp.md
     - ESLint: page/lsp-eslint.md
