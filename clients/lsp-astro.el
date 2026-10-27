@@ -40,13 +40,16 @@
   :link '(url-link "https://github.com/withastro/language-tools"))
 
 (lsp-dependency 'astro-language-server
-                '(:system "astroserver")
+                '(:system "astro-ls")
                 '(:npm :package "@astrojs/language-server"
-                       :path "astroserver"))
+                       :path "astro-ls"))
 
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda ()
+                                     `(,(lsp-package-path 'astro-language-server)
+                                       "--stdio")))
                   :activation-fn (lsp-activate-on "astro")
                   :initialization-options #'lsp-astro--get-initialization-options
                   :server-id 'astro-ls
