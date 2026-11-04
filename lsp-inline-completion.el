@@ -77,7 +77,7 @@ should not cancel the inline completion UI"
            (put defn 'lsp-inline-completion-keep t)
          (error "Unexpected type (str . defn) key definition %S" (type-of defn))))
       ;; Keymaps and macros are unsupported
-      (t (error "Unsupported definition with keep -- %S" def)))))
+      (_ (error "Unsupported definition with keep -- %S" def)))))
 
 (defvar lsp-inline-completion-active-map
   (let ((map (make-sparse-keymap)))
@@ -132,7 +132,8 @@ should cancel the completion UI")
 
 (defcustom lsp-inline-completion-accepted-functions nil
   "Functions executed after accepting a code suggestion.
-The functions receive the inserted text and the range that was updated by the completion."
+The functions receive the inserted text and the range that was updated
+by the completion."
   :type 'hook
   :group 'lsp-mode)
 
@@ -422,7 +423,10 @@ lsp-inline-completion-mode is active."
   :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-inline-completion-inhibit-predicates nil
-  "When a function of this list returns non nil, lsp-inline-completion-mode will not show the completion."
+  "lsp-inline-completion-mode won't show completion if fct return non-nil.
+
+The `lsp-inline-completion-mode' will not show the completion when a function
+listed here returns non-nil."
   :type '(repeat function)
   :group 'lsp-mode)
 
@@ -488,7 +492,7 @@ lsp-inline-completion-mode is active."
 (declare-function company-manual-begin "ext:company")
 (defvar company--begin-inhibit-commands)
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
-  "If the inline completion mode should avoid calling completions when company is active."
+  "If inline completion mode should avoid calling completions if company is on."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -512,7 +516,7 @@ lsp-inline-completion-mode is active."
 
 ;;;###autoload
 (define-minor-mode lsp-inline-completion-company-integration-mode
-  "Minor mode to be used when company mode is active with lsp-inline-completion-mode."
+  "Minor mode, use when company mode is active with lsp-inline-completion-mode."
   :lighter nil
   (cond
    ((and lsp-inline-completion-company-integration-mode lsp--buffer-workspaces (bound-and-true-p company-mode))

@@ -1,4 +1,4 @@
-;;; lsp-wat.el --- lsp-mode WAT integration -*- lexical-binding: t; -*-
+;;; lsp-wat.el --- lsp-mode WAT integration -*- lexical-binding: t; byte-compile-docstring-max-column: 90; -*-
 
 ;; Copyright (C) 2026 Pig Fang
 ;; Copyright (C) 2026 lsp-mode maintainers

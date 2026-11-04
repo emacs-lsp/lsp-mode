@@ -86,10 +86,12 @@ if its enabled."
 
 (defun lsp-icons-all-the-icons-icon (icon-set icon-name face fallback &optional feature &rest args)
   "Get icon ICON-NAME from `all-the-icons' ICON-SET using FACE.
-If ARGS is provided, it's a plist passed directly to the `all-the-icons' function.
+
+If ARGS is provided, it's a plist passed directly to the `all-the-icons'
+function.
 Fallback to FALLBACK string if not found or not available.
-FEATURE is the feature that will use the icon which we should check
-if its enabled."
+FEATURE is the feature that will use the icon which we should check if
+its enabled."
   (let ((icon-set-fn (intern-soft (concat "all-the-icons-" (symbol-name icon-set)))))
     (if (and (fboundp icon-set-fn)
              (lsp-icons--enabled-for-feature feature))

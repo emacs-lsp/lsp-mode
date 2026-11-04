@@ -2275,7 +2275,8 @@ PARAMS - the data sent from WORKSPACE."
       (lsp-log message))))
 
 (lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection? :external?))
-  "Show document URI in a buffer or in a external browser if EXTERNAL is t, and go to SELECTION if any."
+  "Show document URI in a buffer or in a external browser if EXTERNAL is t.
+If so then go to SELECTION if any."
   (let ((path (lsp--uri-to-path uri)))
     (if external?
         (progn
@@ -5036,8 +5037,8 @@ Added to `before-change-functions'."
   (if (boundp 'revert-buffer-in-progress)
       'revert-buffer-in-progress
     'revert-buffer-in-progress-p)
-  "Alias for `revert-buffer-in-progress' if available, or `revert-buffer-in-progress-p'
-prior to emacs 31.")
+  "Alias for `revert-buffer-in-progress' if available.
+Use `revert-buffer-in-progress-p' prior to emacs 31.")
 
 (defun lsp-on-change (start end length &optional content-change-event-fn)
   "Executed when a file is changed.
@@ -5164,8 +5165,8 @@ Added to `after-change-functions'."
 
 
 (defvar-local lsp--after-change-vals nil
-  "plist that stores the buffer state when `lsp--after-change' has ben activated. Since the
-functions in `lsp-on-change-hook' are called with a timer, mouse
+  "plist that stores buffer state when `lsp--after-change' has been activated.
+Since the functions in `lsp-on-change-hook' are called with a timer, mouse
 movements may have changed the position")
 
 (defun lsp--after-change (buffer)
@@ -7189,7 +7190,7 @@ PARAMS are the `workspace/configuration' request params"
        (apply #'vector)))
 
 (defun lsp--section-workspace-configuration (section-from-request)
-  "Get the configuration for the SECTION from the `workspace/configuration' request."
+  "Configuration for the SECTION from the `workspace/configuration' request."
   (-let* ((path-parts (split-string section-from-request "\\."))
           (path-without-last (s-join "." (-slice path-parts 0 -1)))
           (path-parts-len (length path-parts)))
@@ -8011,8 +8012,17 @@ Originally copied from eglot."
                          " "))
     program))
 
-(defvar tramp-use-ssh-controlmaster-options)
+(defvar tramp-use-ssh-controlmaster-options) ; from tramp-sh.el in Emacs < 30.1
+(defvar tramp-use-connection-share)          ; from tramp-sh.el in Emacs ≥ 30.1
 (defvar tramp-ssh-controlmaster-options)
+
+(defmacro lsp--with-tramp-controlmaster-suppressed (&rest body)
+  "Bind the correct Tramp variable to \\='suppress based on the Emacs version."
+  (let ((var (if (>= emacs-major-version 30)
+                 'tramp-use-connection-share
+               'tramp-use-ssh-controlmaster-options)))
+    `(let ((,var 'suppress))
+       ,@body)))
 
 (defun lsp-stdio-connection (command &optional test-command)
   "Returns a connection property list using COMMAND.
@@ -8039,28 +8049,29 @@ returned by COMMAND is available via `executable-find'"
                      (let ((final-command (lsp-resolve-final-command command))
                            (process-name (generate-new-buffer-name name))
                            (process-environment
-                            (lsp--compute-process-environment environment-fn)))
-                       (let* ((stderr-buf (get-buffer-create (format "*%s::stderr*" process-name)))
-                              (default-directory (lsp--default-directory-for-connection))
-                              (tramp-use-ssh-controlmaster-options 'suppress)
-                              (tramp-ssh-controlmaster-options "-o ControlMaster=no -o ControlPath=none")
-                              (proc (make-process
-                                     :name process-name
-                                     :connection-type 'pipe
-                                     :buffer (format "*%s*" process-name)
-                                     :coding 'no-conversion
-                                     :command final-command
-                                     :filter filter
-                                     :sentinel sentinel
-                                     :stderr stderr-buf
-                                     :noquery t
-                                     :file-handler t)))
-                         (set-process-query-on-exit-flag proc nil)
-                         (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
-                         (with-current-buffer (get-buffer stderr-buf)
-                           ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
-                           (special-mode))
-                         (cons proc proc)))))
+                            (lsp--compute-process-environment
+                             environment-fn)))
+                       (lsp--with-tramp-controlmaster-suppressed
+                        (let* ((stderr-buf (get-buffer-create (format "*%s::stderr*" process-name)))
+                               (default-directory (lsp--default-directory-for-connection))
+                               (tramp-ssh-controlmaster-options "-o ControlMaster=no -o ControlPath=none")
+                               (proc (make-process
+                                      :name process-name
+                                      :connection-type 'pipe
+                                      :buffer (format "*%s*" process-name)
+                                      :coding 'no-conversion
+                                      :command final-command
+                                      :filter filter
+                                      :sentinel sentinel
+                                      :stderr stderr-buf
+                                      :noquery t
+                                      :file-handler t)))
+                          (set-process-query-on-exit-flag proc nil)
+                          (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
+                          (with-current-buffer (get-buffer stderr-buf)
+                            ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+                            (special-mode))
+                          (cons proc proc))))))
         :test? (or
                 test-command
                 (lambda ()

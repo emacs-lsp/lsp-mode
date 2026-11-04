@@ -54,7 +54,8 @@ Example usage with `dash`.
   :failure-reason?) (ht (\"failureReason\" \"...\"))]
   failure-reason?)
 
-\(fn (INTERFACE-NAME-1 REQUIRED-FIELDS-1 OPTIONAL-FIELDS-1) (INTERFACE-NAME-2 REQUIRED-FIELDS-2 OPTIONAL-FIELDS-2) ...)"
+\(fn (INTERFACE-NAME-1 REQUIRED-FIELDS-1 OPTIONAL-FIELDS-1)
+     (INTERFACE-NAME-2 REQUIRED-FIELDS-2 OPTIONAL-FIELDS-2) ...)"
   (with-case-table ascii-case-table
     (->> interfaces
          (-map (-lambda ((interface required optional))
@@ -118,8 +119,9 @@ Example usage with `dash`.
                                                          key-sym)))
                                                    params)
                                 &allow-other-keys)
-                       ,(format "Constructs %s from `plist.'
-Allowed params: %s" interface (reverse (-map #'cl-first params)))
+                       ,(format "Constructs %s from `plist.'\n\nAllowed params:\n  %s"
+                                interface
+                                (mapconcat #'symbol-name (reverse (-map #'cl-first params)) "\n  "))
                        (ignore ,@(-map (-lambda ((key))
                                          (let ((key-sym (intern (substring (symbol-name key) 1))))
                                            (if (special-variable-p key-sym)

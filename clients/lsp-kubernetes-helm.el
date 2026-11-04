@@ -69,7 +69,7 @@
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-kubernetes-helm-additional-values-files-pattern "values*.yaml"
-  "Pattern for additional values files, which will be shown for completion and hover."
+  "Additional values file patterns;  will be shown for completion and hover."
   :group 'lsp-kubernetes-helm
   :type 'string
   :package-version '(lsp-mode . "9.0.0"))
@@ -166,23 +166,25 @@ Preserve: wrap prose as-is."
   :type 'boolean
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-kubernetes-helm-yaml-ls-schema-store-extensions '(((name . "Kubernetes v1.30.3")
-                                                                   (description . "Kubernetes v1.30.3 manifest schema definition")
-                                                                   (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")))
+(defcustom lsp-kubernetes-helm-yaml-ls-schema-store-extensions
+  '(((name . "Kubernetes v1.30.3")
+     (description . "Kubernetes v1.30.3 manifest schema definition")
+     (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")))
   "Schemas defined by user schemas to files in a glob pattern.
-Used by Yaml Language Server to determine which schema to use for which types of files."
+Used by Yaml Language Server to determine which schema to use for which
+types of files."
   :group 'lsp-kubernetes-helm
   :type '(list (list (alist
-                       :key-type (choice
-                                   (const :tag "Name" name)
-                                   (const :tag "Description" description)
-                                   (const :tag "URL" url))
-                       :value-type string)))
+                      :key-type (choice
+                                 (const :tag "Name" name)
+                                 (const :tag "Description" description)
+                                 (const :tag "URL" url))
+                      :value-type string)))
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-kubernetes-helm-yaml-ls-schema-store-enable nil
-  "Enable/disable JSON Schema store.  When set to true, available YAML \
-schemas will be automatically pulled from
+  "Enable/disable JSON Schema store.
+When set to true, available YAML schemas will be automatically pulled from
 `lsp-kubernetes-helm-yaml-ls-schema-store-uri'."
   :group 'lsp-kubernetes-helm
   :type 'boolean
@@ -217,7 +219,8 @@ Limited for performance reasons."
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-kubernetes-helm-server-arguments '("serve" "--stdio")
-  "Command to start helm-ls.  Minimally needs serve otherwise the server won't start properly."
+  "Command to start helm-ls.
+Minimally needs serve otherwise the server won't start properly."
   :type '(repeat string)
   :group 'lsp-kubernetes-helm
   :package-version '(lsp-mode . "9.0.0"))
