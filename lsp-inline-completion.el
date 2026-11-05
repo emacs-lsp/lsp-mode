@@ -492,7 +492,11 @@ listed here returns non-nil."
 (declare-function company-manual-begin "ext:company")
 (defvar company--begin-inhibit-commands)
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
-  "If inline completion mode should avoid calling completions if company is on."
+  "Whether to inhibit automatic inline completion while Company is active.
+
+With `lsp-inline-completion-company-integration-mode' enabled, a non-nil
+value inhibits automatic inline completion while Company's completion
+popup is active.  Enabling `company-mode' alone does not inhibit it."
   :type 'boolean
   :group 'lsp-mode)
 
