@@ -376,8 +376,13 @@ If TYPE is a single-line that represents a module type, reformat it."
                   (write-file intf-path)))))))))
 
 (defun lsp-ocaml-find-alternate-file ()
-  "Return the URI corresponding to the alternate file if there's only one.
-Otherwise prompt for a choice."
+  "Open an alternate file for the current file in the current window.
+
+If exactly one alternate URI is available, use it without prompting.
+Otherwise, prompt for a choice.
+
+Switch to an existing buffer for the selected file, or open the file
+if it exists.  If neither exists, display a message."
   (interactive)
   (let ((uri (lsp-ocaml--find-alternate-uri)))
     (unless (lsp-ocaml--load-uri uri nil)

@@ -492,13 +492,20 @@ listed here returns non-nil."
 (declare-function company-manual-begin "ext:company")
 (defvar company--begin-inhibit-commands)
 (defcustom lsp-inline-completion-mode-inhibit-when-company-active t
-  "Whether to inhibit automatic inline completion while Company is active.
+  "Whether active Company completion inhibits automatic inline completion.
 
-With `lsp-inline-completion-company-integration-mode' enabled, a non-nil
-value inhibits automatic inline completion while Company's completion
-popup is active.  Enabling `company-mode' alone does not inhibit it."
+With `lsp-inline-completion-company-integration-mode' configured, a
+non-nil value inhibits automatic inline completion while a Company
+completion session is active, whether or not a popup is visible.
+Enabling `company-mode' alone does not inhibit inline completion.
+
+This option is read when the integration mode is enabled.
+Enable the integration mode in each buffer after `company-mode' is
+enabled and an LSP workspace is active.  After changing this option,
+disable and then enable the integration mode in each affected buffer."
   :type 'boolean
   :group 'lsp-mode)
+
 
 (defvar-local lsp-inline-completion--showing-company nil "If company was active when the tooltip is shown.")
 
