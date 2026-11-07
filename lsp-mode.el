@@ -1405,17 +1405,18 @@ See #2049"
 
 FORMAT and ARGS i the same as for `message'."
   (when lsp-log-max
-    (let ((log-buffer (get-buffer "*lsp-log*"))
-          (inhibit-read-only t))
+    (let ((log-buffer (get-buffer "*lsp-log*")))
       (unless log-buffer
         (setq log-buffer (get-buffer-create "*lsp-log*"))
         (with-current-buffer log-buffer
-          (buffer-disable-undo)
-          (view-mode 1)
-          (set (make-local-variable 'lsp--log-lines) 0)))
+          (let ((inhibit-read-only t))
+            (buffer-disable-undo)
+            (view-mode 1)
+            (set (make-local-variable 'lsp--log-lines) 0))))
       (with-current-buffer log-buffer
         (save-excursion
-          (let* ((message (apply 'format format args))
+          (let* ((inhibit-read-only t)
+                 (message (apply 'format format args))
                  ;; Count newlines in message.
                  (newlines (1+ (cl-loop with start = 0
                                         for count from 0
