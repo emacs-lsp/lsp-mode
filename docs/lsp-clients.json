@@ -867,6 +867,16 @@
     "debugger": "Not available"
   },
   {
+    "name": "oxlint",
+    "full-name": "Oxlint",
+    "server-name": "oxlint",
+    "server-url": "https://github.com/oxc-project/oxc",
+    "installation": "npm install -g oxlint",
+    "installation-url": "https://oxc.rs/docs/guide/usage/linter/editors",
+    "lsp-install-server": "oxlint",
+    "debugger": "Not available"
+  },
+  {
     "name": "pascal",
     "full-name": "Pascal/Object Pascal",
     "server-name": "pascal-language-server",
