@@ -91,10 +91,12 @@
   },
   { "name": "biome",
     "full-name": "Biome",
-    "server-name": "biome-language-server",
+    "server-name": "biome",
     "server-url": "https://github.com/biomejs/biome",
-    "installation": "npm install -g @biomejs/biome-language-server",
-    "installation-url": "https://biomejs.dev/guides/getting-started/"
+    "installation": "npm install -g @biomejs/biome",
+    "installation-url": "https://biomejs.dev/guides/getting-started/",
+    "lsp-install-server": "biome",
+    "debugger": "Not available"
   },
   {
     "name": "buf",
