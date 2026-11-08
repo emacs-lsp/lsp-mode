@@ -40,7 +40,8 @@
   :group 'lsp-ruby-lsp)
 
 (defcustom lsp-ruby-lsp-library-directories
-  '("~/.rbenv/" "/usr/lib/ruby/" "~/.rvm/" "~/.gem/" "~/.asdf")
+  '("~/.rbenv/" "/usr/lib/ruby/" "~/.rvm/" "~/.gem/" "~/.asdf"
+    "~/.local/share/mise/")
   "List of directories which will be considered to be libraries."
   :type '(repeat string)
   :group 'lsp-ruby-lsp
