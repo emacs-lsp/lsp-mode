@@ -26,16 +26,16 @@
 (require 'lsp-mode)
 
 (defgroup lsp-roc nil
-  "LSP support for Roc, using roc_language_server"
+  "LSP support for Roc, using roc experimental-lsp."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/roc-lang/roc/tree/main/crates/language_server")
+  :link '(url-link "https://github.com/roc-lang/roc")
   :package-version `(lsp-mode . "10.0.0"))
 
-(lsp-register-client (make-lsp-client :new-connection (lsp-stdio-connection "roc_language_server")
+(lsp-register-client (make-lsp-client :new-connection (lsp-stdio-connection '("roc" "experimental-lsp"))
                                       :activation-fn (lsp-activate-on "roc")
                                       :major-modes '(roc-ts-mode)
                                       :server-id 'roc_language_server))
 (lsp-consistency-check lsp-roc)
 
 (provide 'lsp-roc)
-;;; lsp-futhark.el ends here
+;;; lsp-roc.el ends here
