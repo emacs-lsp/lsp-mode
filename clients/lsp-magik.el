@@ -149,7 +149,7 @@ The next update resets the delay."
   :package-version '(lsp-mode . "10.0.0")
   :lsp-path "magik.typing.indexConditionUsages")
 
-(lsp-defcustom lsp-magik-typing-cache-indexed-definitions-method-usages nil
+(lsp-defcustom lsp-magik-typing-cache-indexed-definitions nil
   "Store and load the indexed definitions in the workspace folders."
   :type 'boolean
   :group 'lsp-magik
