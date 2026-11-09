@@ -1247,7 +1247,9 @@ when using `lsp-tcp-server'.")
   "The latest document symbols.")
 
 (defvar-local lsp--document-selection-range-cache nil
-  "The document selection cache.")
+  "The document selection cache.
+A list (RESPONSE TICK POINT) of the last selection range response,
+the `buffer-modified-tick' and the point it was requested for.")
 
 (defvar-local lsp--document-symbols-request-async nil
   "If non-nil, request document symbols asynchronously.")
@@ -1916,17 +1918,33 @@ etc."
     (cons start end))
    (parent? (lsp--find-wrapping-range parent?))))
 
+(lsp-defun lsp--region-in-selection-range? ((&SelectionRange :parent? :range (&RangeToPoint :start :end)))
+  "Return non-nil if the active region is one of the ranges in the chain."
+  (or (and (= start (region-beginning))
+           (= end (region-end)))
+      (and parent? (lsp--region-in-selection-range? parent?))))
+
 (defun lsp--get-selection-range ()
+  "Return the selection range at point.
+The cached response is reused while the buffer is unmodified and
+either point has not moved or the active region is one of its
+ranges, so that repeated `lsp-extend-selection' calls walk up the
+same chain."
   (or
-   (-when-let ((cache . cache-tick) lsp--document-selection-range-cache)
-     (when (= cache-tick (buffer-modified-tick)) cache))
+   (-when-let ((cache cache-tick cache-point) lsp--document-selection-range-cache)
+     (when (and cache
+                (= cache-tick (buffer-modified-tick))
+                (if (region-active-p)
+                    (lsp--region-in-selection-range? cache)
+                  (= cache-point (point))))
+       cache))
    (let ((response (cl-first
                     (lsp-request
                      "textDocument/selectionRange"
                      (list :textDocument (lsp--text-document-identifier)
                            :positions (vector (lsp--cur-position)))))))
      (setq lsp--document-selection-range-cache
-           (cons response (buffer-modified-tick)))
+           (list response (buffer-modified-tick) (point)))
      response)))
 
 (defun lsp-extend-selection ()

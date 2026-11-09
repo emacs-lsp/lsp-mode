@@ -68,23 +68,23 @@ jobs:
       
     - uses: actions/setup-python@v6.1.0
       with:
-        python-version: "3.9"
+        python-version: "3.13"
       
     - name: Install depedencies (Linux)
       if: runner.os == 'Linux'
       run: |
-        pip3 install python-language-server
+        pip3 install python-lsp-server
         sudo apt-get update
-        sudo apt-get install clangd-15
+        sudo apt-get install clangd
 
     - name: Install depedencies (macOS)
       if: runner.os == 'macOS'
       run: |
-        pip3 install python-language-server
+        pip3 install python-lsp-server
 
     - name: Check clangd
       if: runner.os == 'Linux'
-      run: "clangd-15 --version"
+      run: "clangd --version"
 
     - uses: actions/checkout@v6
 
