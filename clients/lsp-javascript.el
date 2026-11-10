@@ -1117,40 +1117,39 @@ Examples: `./import-map.json',
 
 
 
-(defgroup lsp-tsgo nil
+(defgroup lsp-tsc nil
   "LSP support for the TypeScript (Go native) language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/microsoft/typescript-go"))
 
-(defcustom lsp-clients-tsgo-path "tsgo"
-  "Path to the tsgo binary."
-  :group 'lsp-tsgo
+(defcustom lsp-clients-tsc-path "tsc"
+  "Path to the tsc binary."
+  :group 'lsp-tsc
   :risky t
   :type 'string)
 
-(defcustom lsp-clients-tsgo-args '("--lsp" "--stdio")
-  "Extra arguments for the tsgo language server."
-  :group 'lsp-tsgo
+(defcustom lsp-clients-tsc-args '("--lsp" "--stdio")
+  "Extra arguments for the tsc language server."
+  :group 'lsp-tsc
   :risky t
   :type '(repeat string))
 
-(lsp-dependency 'tsgo
-                '(:system lsp-clients-tsgo-path)
-                '(:npm :package "@typescript/native-preview"
-                       :path "tsgo"))
+(lsp-dependency 'tsc
+                '(:system lsp-clients-tsc-path)
+                '(:npm :package "typescript" :path "tsc"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,(lsp-package-path 'tsgo)
-                                                            ,@lsp-clients-tsgo-args)))
+                                                          `(,(lsp-package-path 'tsc)
+                                                            ,@lsp-clients-tsc-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -4
                   :completion-in-comments? t
                   :initialized-fn (lambda (_workspace))
-                  :server-id 'tsgo
+                  :server-id 'tsc
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure
-                                         'tsgo
+                                         'tsc
                                          callback
                                          error-callback))))
 
