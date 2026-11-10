@@ -41,7 +41,7 @@
   :type '(repeat string))
 
 (lsp-dependency
- 'typespec-lsp
+ 'tsp-server
  '(:npm
    :package "@typespec/compiler"
    :path "tsp-server")
@@ -63,10 +63,12 @@
  (make-lsp-client
   :semantic-tokens-faces-overrides '(:types (("docCommentTag" . font-lock-keyword-face)
                                              ("event" . default)))
-  :new-connection (lsp-stdio-connection `(,(lsp-typespec--server-executable-path) "--stdio"))
+  :new-connection (lsp-stdio-connection (lambda () (list (lsp-typespec--server-executable-path) "--stdio")))
   :activation-fn (lsp-activate-on "typespec")
   :major-modes '(typespec-mode typespec-ts-mode)
-  :server-id 'typespec-lsp))
+  :server-id 'typespec-lsp
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'tsp-server callback error-callback))))
 
 (lsp-consistency-check lsp-typespec)
 
@@ -76,8 +78,9 @@
                               (lsp-find-workspace 'typespec-lsp (buffer-file-name)))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)
-        (lsp-with-current-buffer it
-          (lsp-semantic-tokens--enable))))))
+        (lsp-with-current-buffer
+         it
+         (lsp-semantic-tokens--enable))))))
 
 (with-eval-after-load 'typespec
   (when lsp-semantic-tokens-enable
@@ -87,4 +90,3 @@
 
 (provide 'lsp-typespec)
 ;;; lsp-typespec.el ends here
-
