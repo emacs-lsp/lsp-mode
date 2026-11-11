@@ -1770,6 +1770,58 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   (interactive)
   (lsp-rust-analyzer-move-item "Down"))
 
+(defcustom lsp-rust-analyzer-extra-settings nil
+  "Additional rust-analyzer settings, merged into the server's init options.
+
+This is a plist mirroring the structure of the rust-analyzer
+configuration, with the `rust-analyzer.' prefix omitted and every
+dot-separated path segment turned into a nested plist level.  Use it
+to set options that have no dedicated `lsp-rust-analyzer-*' variable.
+Values given here take precedence over the ones derived from the other
+`lsp-rust-analyzer-*' variables.  Use `:json-false' for false and a
+vector for a JSON array.
+
+For example, to set `rust-analyzer.procMacro.ignored' and
+`rust-analyzer.hover.memoryLayout.enable':
+
+  (setq lsp-rust-analyzer-extra-settings
+        \='(:procMacro (:ignored (:async-trait [\"async_trait\"]))
+          :hover (:memoryLayout (:enable :json-false))))
+
+See https://rust-analyzer.github.io/book/configuration.html for the
+list of available settings."
+  :type 'sexp
+  :risky t
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "10.0.1"))
+
+(defun lsp-rust-analyzer--plist-p (value)
+  "Return non-nil if VALUE is a non-empty plist with keyword keys."
+  (and (consp value) (keywordp (car value))))
+
+(defun lsp-rust-analyzer--merge-settings (base override)
+  "Return BASE with the settings in OVERRIDE merged in.
+Both are (possibly nested) plists.  Where a key is present in both and
+both values are plists, they are merged recursively; otherwise the
+value from OVERRIDE wins.  Neither argument is modified."
+  (let ((result (copy-sequence base)))
+    (cl-loop for (key value) on override by #'cddr
+             do (let ((old (plist-get result key)))
+                  (setq result
+                        (plist-put result key
+                                   (if (and (lsp-rust-analyzer--plist-p old)
+                                            (lsp-rust-analyzer--plist-p value))
+                                       (lsp-rust-analyzer--merge-settings old value)
+                                     value)))))
+    result))
+
+(defun lsp-rust-analyzer--init-options ()
+  "Return the init options for rust-analyzer.
+These are the options derived from the `lsp-rust-analyzer-*' variables
+with `lsp-rust-analyzer-extra-settings' merged on top."
+  (lsp-rust-analyzer--merge-settings (lsp-rust-analyzer--make-init-options)
+                                     lsp-rust-analyzer-extra-settings))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics
@@ -1895,7 +1947,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                    (lambda () t))
   :activation-fn (lsp-activate-on "rust")
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
-  :initialization-options 'lsp-rust-analyzer--make-init-options
+  :initialization-options #'lsp-rust-analyzer--init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
                        ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)

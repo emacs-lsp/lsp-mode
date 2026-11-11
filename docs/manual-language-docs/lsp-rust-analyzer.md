@@ -39,6 +39,29 @@ after:
 
 ![](../examples/lsp-rust-join-lines-after.png)
 
+### Setting rust-analyzer options without a dedicated variable
+
+Only a subset of the [rust-analyzer configuration](https://rust-analyzer.github.io/book/configuration.html)
+has a dedicated `lsp-rust-analyzer-*` variable. Any other option can be set
+through `lsp-rust-analyzer-extra-settings`, a plist that mirrors the structure
+of the configuration: drop the `rust-analyzer.` prefix and turn every
+dot-separated segment into a nested plist level. Use `:json-false` for `false`
+and a vector for a JSON array. The plist is merged on top of the options built
+from the other variables, so values given here take precedence.
+
+``` emacs-lisp
+(setq lsp-rust-analyzer-extra-settings
+      '(;; rust-analyzer.procMacro.ignored
+        :procMacro (:ignored (:async-trait ["async_trait"]))
+        ;; rust-analyzer.hover.memoryLayout.enable
+        :hover (:memoryLayout (:enable :json-false))
+        ;; rust-analyzer.completion.snippets.custom
+        :completion (:snippets (:custom (:Arc::new (:postfix "arc"
+                                                   :body "Arc::new(${receiver})"
+                                                   :requires "std::sync::Arc"
+                                                   :scope "expr"))))))
+```
+
 ### inlay-hints
 
 `lsp-inlay-hints-mode` enables displaying of inlay hints
