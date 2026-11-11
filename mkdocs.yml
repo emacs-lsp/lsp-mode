@@ -160,6 +160,7 @@ nav:
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - Python (Ruff): page/lsp-ruff.md
     - Python (ty): page/lsp-python-ty.md
+    - Python (Zuban): page/lsp-zuban.md
     - QML: page/lsp-qml.md
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md

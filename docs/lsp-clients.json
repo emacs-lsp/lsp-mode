@@ -1498,5 +1498,15 @@
     "server-url": "https://github.com/zigtools/zls",
     "installation-url": "https://github.com/zigtools/zls#installation",
     "debugger": "Not available"
+  },
+  {
+    "name": "zuban",
+    "full-name": "Python (Zuban)",
+    "server-name": "zuban",
+    "server-url": "https://github.com/zubanls/zuban",
+    "client-name": "lsp-zuban",
+    "installation": "pip install zuban",
+    "installation-url": "https://docs.zubanls.com/en/latest/installation.html",
+    "debugger": "Not available"
   }
 ]
