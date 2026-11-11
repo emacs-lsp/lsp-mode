@@ -196,7 +196,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-tex lsp-tilt lsp-toml lsp-toml-tombi lsp-trunk lsp-ts-query lsp-ttcn3
      lsp-typeprof lsp-typespec lsp-typst lsp-typos lsp-v lsp-vala lsp-verilog
      lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wat lsp-wgsl lsp-xml
-     lsp-yaml lsp-yang lsp-zig)
+     lsp-yaml lsp-yang lsp-zig lsp-zuban)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
