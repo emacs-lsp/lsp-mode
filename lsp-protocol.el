@@ -43,6 +43,11 @@
     "Convert a KEYWORD to string."
     (substring (symbol-name keyword) 1))
 
+  (defun lsp--dashed-words (string)
+    "Convert STRING to dashed words, independent of the syntax table."
+    (with-syntax-table (standard-syntax-table)
+      (s-dashed-words string)))
+
   (defvar lsp-use-plists (getenv "LSP_USE_PLISTS")))
 
 (defmacro lsp-interface (&rest interfaces)
@@ -61,11 +66,11 @@ Example usage with `dash`.
                  (let ((params (nconc
                                 (-map (lambda (param-name)
                                         (cons
-                                         (intern (concat ":" (s-dashed-words (symbol-name param-name)) "?"))
+                                         (intern (concat ":" (lsp--dashed-words (symbol-name param-name)) "?"))
                                          param-name))
                                       optional)
                                 (-map (lambda (param-name)
-                                        (cons (intern (concat ":" (s-dashed-words (symbol-name param-name))))
+                                        (cons (intern (concat ":" (lsp--dashed-words (symbol-name param-name))))
                                               param-name))
                                       required))))
                    (cl-list*
@@ -98,7 +103,7 @@ Example usage with `dash`.
                                                    1)
                                        ,source))))
 
-                    `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
+                    `(defun ,(intern (format "lsp-%s?" (lsp--dashed-words (symbol-name interface)))) (object)
                        (cond
                         ((ht? object)
                          (-all? (let ((keys (ht-keys object)))
@@ -110,7 +115,7 @@ Example usage with `dash`.
                         ((listp object) (-all? (lambda (prop)
                                                  (plist-member object prop))
                                                ',required))))
-                    `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
+                    `(cl-defun ,(intern (format "lsp-make-%s" (lsp--dashed-words (symbol-name interface))))
                          (&rest plist &key ,@(-map (-lambda ((key))
                                                      (let ((key-sym (intern (substring (symbol-name key) 1))))
                                                        (if (special-variable-p key-sym)
@@ -237,14 +242,14 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                     (-mapcat (-lambda ((label . name))
                                (list
                                 `(defun ,(intern (format "lsp:%s-%s"
-                                                         (s-dashed-words (symbol-name interface))
+                                                         (lsp--dashed-words (symbol-name interface))
                                                          (substring (symbol-name label) 1)))
                                      (object)
                                    ,(if lsp-use-plists
                                         `(plist-get object ,name)
                                       `(when (ht? object) (gethash ,(lsp-keyword->string name) object))))
                                 `(defun ,(intern (format "lsp:set-%s-%s"
-                                                         (s-dashed-words (symbol-name interface))
+                                                         (lsp--dashed-words (symbol-name interface))
                                                          (substring (symbol-name label) 1)))
                                      (object value)
                                    ,@(if lsp-use-plists
