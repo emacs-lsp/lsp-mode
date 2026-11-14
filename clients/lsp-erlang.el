@@ -97,7 +97,8 @@ have more false positives than usual."
   :lsp-path "elp.diagnostics.onSave.enable")
 
 (lsp-defcustom lsp-elp-eqwalizer-all nil
-  "Whether to report Eqwalizer diagnostics for the whole project and not only for opened files."
+  "Whether to report Eqwalizer diagnostics for the whole project.
+Not only for opened files."
   :type 'boolean
   :group 'lsp-erlang-elp
   :package-version '(lsp-mode . "9.0.0")
@@ -118,7 +119,8 @@ have more false positives than usual."
   :lsp-path "elp.eqwalizer.maxTasks")
 
 (lsp-defcustom lsp-elp-highlight-dynamic-enable nil
-  "If enabled, highlight variables with type `dynamic()` when Eqwalizer results are available."
+  "If enabled, highlight variables with type `dynamic()`.
+Used when Eqwalizer results are available."
   :type 'boolean
   :group 'lsp-erlang-elp
   :package-version '(lsp-mode . "9.0.0")

@@ -265,8 +265,8 @@ language server."
   :package-version '(lsp-mode . "6.1"))
 
 (lsp-defcustom lsp-intelephense-phpdoc-use-fully-qualified-names nil
-  "If non-nil, Intelephense will use fully qualified names in generated PHPDoc.
-This corresponds to the LSP setting `intelephense.phpdoc.useFullyQualifiedNames`."
+  "If non-nil, Intelephense use fully qualified names in generated PHPDoc.
+This corresponds to LSP setting `intelephense.phpdoc.useFullyQualifiedNames`."
   :type 'boolean
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "9.0")
@@ -390,8 +390,7 @@ already present."
                       :fileExtensions ,lsp-serenata-file-extensions)))
 
 
-(eval-and-compile
-  (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil)))
+(eval-and-compile (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil)))
 
 (lsp-register-client
  (make-lsp-client

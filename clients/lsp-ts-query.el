@@ -86,8 +86,8 @@ name. Ordered from highest to lowest precedence."
 (defun lsp-ts-query--stored-executable ()
   "Return the stored ts-query executable.
 
-This is differ from the variable `lsp-ts-query-executable'; this is local storage
-and not the global storage."
+This is differ from the variable `lsp-ts-query-executable'; this is
+local storage and not the global storage."
   (f-join lsp-ts-query-server-store-path
           (pcase system-type ('windows-nt "ts_query_ls.exe") (_ "ts_query_ls"))))
 

@@ -1,4 +1,4 @@
-;;; lsp-tailwindcss.el --- A lsp-mode client for Tailwind CSS  -*- lexical-binding: t; -*-
+;;; lsp-tailwindcss.el --- A lsp-mode client for Tailwind CSS  -*- lexical-binding: t; byte-compile-docstring-max-column: 90; -*-
 
 ;; Copyright (C) 2020 Merrick Luo
 ;; Copyright (C) 2024-2026 emacs-lsp maintainers

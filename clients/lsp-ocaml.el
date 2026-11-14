@@ -142,7 +142,8 @@ https://github.com/ocaml/ocaml-lsp/blob/master/ocaml-lsp-server/docs/ocamllsp/ty
     (lsp--warn "Your version of ocaml-lsp doesn't support the typeEnclosing extension")))
 
 (defun lsp-ocaml--get-documentation (identifier content-format)
-  "Get the documentation of IDENTIFIER or the identifier at point if IDENTIFIER is nil.
+  "Get documentation of IDENTIFIER or the identifier at point.
+Use identifier at point when IDENTIFIER argument is nil.
 
 CONTENT-FORMAT is `Markdown' or `Plaintext'.
 OCaml-lsp protocol documented here
@@ -212,7 +213,8 @@ If OTHER-WINDOW is not nil, open the buffer in an other window."
       nil))))
 
 (defun lsp-ocaml--find-alternate-uri ()
-  "Return the URI corresponding to the alternate file if there's only one or prompt for a choice."
+  "Return the URI corresponding to the alternate file if there's only one.
+Otherwise prompt for a choice."
   (let ((uris (lsp-ocaml--switch-impl-intf)))
     (if (lsp-ocaml--has-one-element-p uris)
         (car uris)
@@ -374,7 +376,13 @@ If TYPE is a single-line that represents a module type, reformat it."
                   (write-file intf-path)))))))))
 
 (defun lsp-ocaml-find-alternate-file ()
-  "Return the URI corresponding to the alternate file if there's only one or prompt for a choice."
+  "Open an alternate file for the current file in the current window.
+
+If exactly one alternate URI is available, use it without prompting.
+Otherwise, prompt for a choice.
+
+Switch to an existing buffer for the selected file, or open the file
+if it exists.  If neither exists, display a message."
   (interactive)
   (let ((uri (lsp-ocaml--find-alternate-uri)))
     (unless (lsp-ocaml--load-uri uri nil)

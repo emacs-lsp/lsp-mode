@@ -141,7 +141,7 @@ included into the current script."
   :lsp-path "nextflow.errorReportingMode")
 
 (lsp-defcustom lsp-nextflow-formatting-mahesh-form nil
-  "Place process outputs at the end of the process body when formatting Nextflow scripts."
+  "Append process outputs to process body end when formatting Nextflow scripts."
   :type 'boolean
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")

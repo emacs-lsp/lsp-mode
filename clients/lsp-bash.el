@@ -41,7 +41,8 @@
 
 (defcustom lsp-bash-explainshell-endpoint nil
   "The endpoint to use explainshell.com to answer `onHover' queries.
-See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
+See instructions at
+https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
   :type 'string
   :risky t
   :group 'lsp-bash
@@ -73,7 +74,8 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
 (defun lsp-bash-check-sh-shell (&rest _)
   "Check whether `sh-shell' is supported.
 
-This prevents the Bash server from being turned on for unsupported dialects, e.g. `zsh`."
+This prevents the Bash server from being turned on for unsupported dialects,
+e.g. `zsh`."
   (and (local-variable-p 'sh-shell)
        (memq sh-shell lsp-bash-allowed-shells)))
 

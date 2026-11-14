@@ -547,11 +547,12 @@ be helpful to assure yourself whether mypy is still running."
 (defcustom lsp-pylsp-plugins-mypy-exclude nil
   "A list of regular expressions which should be ignored.
 
-The mypy runner will not be invoked when a document path is matched by one of the
-expressions.  Note that this differs from the exclude directive of a mypy config
-which is only used for recursively discovering files when mypy is invoked on a
-whole directory.  For both windows or unix platforms you should use forward
-slashes (/) to indicate paths."
+The mypy runner will not be invoked when a document path is matched by
+one of the expressions.  Note that this differs from the exclude
+directive of a mypy config which is only used for recursively
+discovering files when mypy is invoked on a whole directory.  For both
+windows or unix platforms you should use forward slashes (/) to indicate
+paths."
   :type 'lsp-string-vector
   :group 'lsp-pylsp)
 

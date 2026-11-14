@@ -69,7 +69,8 @@ The input are the file name and the major mode of the buffer."
   :group 'lsp-copilot)
 
 (defcustom lsp-copilot-server-disabled-languages nil
-  "The languages for which the server must not be enabled (initialization setup for Copilot)"
+  "The languages for which the server must not be enabled.
+Initialization setup for Copilot."
   :type '(repeat string)
   :group 'lsp-copilot)
 

@@ -627,9 +627,12 @@ which overrides any value that would otherwise be inherited from
 
 (defcustom lsp-rust-analyzer-check-invocation-location "workspace"
   "Specifies the working directory for running checks.
-- \"workspace\": run checks for workspaces in the corresponding workspaces' root directories.  This falls back to \"root\" if rust-analyzer.check.invocationStrategy is set to once.
+- \"workspace\": run checks for workspaces in the corresponding workspaces'
+  root directories.  This falls back to \"root\" if
+  rust-analyzer.check.invocationStrategy is set to once.
 - \"root\": run checks in the project’s root directory.
-This config only has an effect when rust-analyzer.check.overrideCommand is set."
+This config only has an effect when rust-analyzer.check.overrideCommand
+is set."
   :type '(choice
           (const "workspace")
           (const "root"))
@@ -728,9 +731,12 @@ syntax highlighting."
 
 (defcustom lsp-rust-analyzer-cargo-build-scripts-invocation-location "workspace"
   "Specifies the working directory for running checks.
-- \"workspace\": run checks for workspaces in the corresponding workspaces' root directories.  This falls back to \"root\" if rust-analyzer.check.invocationStrategy is set to once.
+- \"workspace\": run checks for workspaces in the corresponding workspaces'
+  root directories.  This falls back to \"root\" if
+  rust-analyzer.check.invocationStrategy is set to once.
 - \"root\": run checks in the project’s root directory.
-This config only has an effect when rust-analyzer.check.overrideCommand is set."
+This config only has an effect when rust-analyzer.check.overrideCommand
+is set."
   :type '(choice
           (const "workspace")
           (const "root"))
@@ -741,7 +747,8 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
   "Specifies the invocation strategy to use when running the check command.
 If per_workspace is set, the command will be executed for each workspace.
 If once is set, the command will be executed once.
-This config only has an effect when rust-analyzer.check.overrideCommand is set."
+This config only has an effect when rust-analyzer.check.overrideCommand
+is set."
   :type '(choice
           (const "per_workspace")
           (const "once"))
@@ -749,7 +756,7 @@ This config only has an effect when rust-analyzer.check.overrideCommand is set."
   :package-version '(lsp-mode . "10.0.0"))
 
 (defcustom lsp-rust-analyzer-cargo-build-scripts-override-command []
-  "Override the command rust-analyzer uses to run build scripts and build procedural macros."
+  "Command rust-analyzer uses to run build scripts & build procedural macros."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "10.0.0"))
@@ -951,7 +958,8 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
 
 (defcustom lsp-rust-analyzer-cargo-sysroot-src nil
   "Relative path to the sysroot library sources.
-If left unset, this will default to {cargo.sysroot}/lib/rustlib/src/rust/library.
+
+If left unset, this defaults to {cargo.sysroot}/lib/rustlib/src/rust/library.
 This option does not take effect until rust-analyzer is restarted."
   :type 'string
   :group 'lsp-rust-analyzer
