@@ -274,6 +274,17 @@
     "debugger": "Yes"
   },
   {
+    "name": "dbt",
+    "full-name": "dbt",
+    "server-name": "dbt-lsp-plus",
+    "server-url": "https://github.com/piotr-yuxuan/dbt-lsp-plus",
+    "client-name": "dbt-mode",
+    "client-url": "https://github.com/piotr-yuxuan/dbt-mode",
+    "installation": "cargo install --locked --git https://github.com/piotr-yuxuan/dbt-lsp-plus --bin dbt-lsp-plus",
+    "installation-url": "https://github.com/piotr-yuxuan/dbt-mode/blob/main/docs/how-to/install.md",
+    "debugger": "Not available"
+  },
+  {
     "name": "dhall",
     "full-name": "Dhall",
     "server-name": "dhall-lsp-server",
