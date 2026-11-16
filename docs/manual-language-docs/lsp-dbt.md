@@ -46,4 +46,4 @@ dbt-mode's options are in the customisation group `dbt`:
   built-in linter; default `nil`.
 
 dbt-lsp-plus's own options are its command line and environment: see
-[its configuration](https://github.com/piotr-yuxuan/dbt-lsp-plus/blob/main/docs/reference/configuration.md).
+[its configuration](https://github.com/piotr-yuxuan/dbt-lsp-plus/blob/main/docs/reference/features.md#configuration).
