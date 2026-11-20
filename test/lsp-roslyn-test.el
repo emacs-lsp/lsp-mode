@@ -80,5 +80,27 @@ Regression test for issue #5106."
                            (sort (list sln slnx) #'string-lessp)))))
       (delete-directory root t))))
 
+(ert-deftest lsp-roslyn-peek-references-runs-on-client ()
+  "The references code lens is handled on the client.
+Regression test for issue #5107."
+  (let* ((lsp--cur-workspace (make-lsp--workspace :client (gethash 'csharp-roslyn lsp-clients)))
+         (uri "file:///project/Program.cs")
+         (position (list :line 3 :character 17))
+         requests)
+    (cl-letf (((symbol-function 'lsp-workspaces) (lambda () (list lsp--cur-workspace)))
+              ((symbol-function 'lsp-request)
+               (lambda (method params) (push (cons method params) requests) []))
+              ((symbol-function 'lsp-send-execute-command)
+               (lambda (command &rest _) (error "Sent %s to the server" command)))
+              ((symbol-function 'lsp-show-xrefs) #'ignore))
+      (lsp--execute-command (lsp-make-command :title "3 references"
+                                              :command "roslyn.client.peekReferences"
+                                              :arguments? (vector uri position)))
+      (should (equal requests
+                     `(("textDocument/references"
+                        :textDocument (:uri ,uri)
+                        :position ,position
+                        :context (:includeDeclaration t))))))))
+
 (provide 'lsp-roslyn-test)
 ;;; lsp-roslyn-test.el ends here

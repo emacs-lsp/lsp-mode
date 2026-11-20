@@ -215,6 +215,15 @@ creates another process connecting to the named pipe it specifies."
   (lsp--info "%s: Project initialized successfully."
              (lsp--workspace-print workspace)))
 
+(lsp-defun lsp-roslyn--action-client-peek-references ((&Command :arguments? [uri position]))
+  "Show the references for the code lens at URI and POSITION."
+  (lsp-show-xrefs
+   (lsp--locations-to-xref-items
+    (lsp-request "textDocument/references"
+                 (lsp--make-reference-params
+                  (lsp--text-document-position-params (list :uri uri) position))))
+   nil t))
+
 (defun lsp-roslyn--find-files-in-parent-directories (directory regex &optional result)
   "Search DIRECTORY for files matching REGEX and return their full paths if found."
   (let* ((parent-dir (file-truename (concat (file-name-directory directory) "../")))
@@ -345,6 +354,7 @@ FORCED if specified with prefix argument."
                   :server-id 'csharp-roslyn
                   :activation-fn (lsp-activate-on "csharp")
                   :notification-handlers (ht ("workspace/projectInitializationComplete" 'lsp-roslyn--on-project-initialization-complete))
+                  :action-handlers (ht ("roslyn.client.peekReferences" #'lsp-roslyn--action-client-peek-references))
 
                   ;; These two functions are the same as lsp-mode's except they do not
                   ;; (un)hexify URIs.
